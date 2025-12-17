@@ -1,0 +1,302 @@
+/* This rule positions the entire floating window */
+.abacus-popup-wrapper {
+  position: fixed;
+  z-index: 1000;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+/* This is the container for the abacus, value, and button */
+.abacus-widget-container {
+  text-align: center;
+}
+
+/* This new style ensures the handle is on top of other elements INSIDE the popup */
+.abacus-drag-handle {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 6px;
+  cursor: move;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  font-weight: bold;
+  user-select: none;
+  font-size: 12px;
+  touch-action: none;
+}
+
+#abacus {
+  display: flex;
+  justify-content: center;
+  background: #deb887;
+  padding: 12px;
+  border-radius: 10px;
+  width: max-content;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+  margin-top: 8px;
+}
+
+.rod {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20px;
+  margin: 0 6px;
+  position: relative;
+  background-image: linear-gradient(to right, #777, #ccc, #777);
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.divider {
+  width: 120%;
+  height: 4px;
+  background: #333;
+  margin: 12px 0;
+  border-radius: 2px;
+  z-index: 1;
+}
+
+.top-bead, .bottom-bead {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin: 3px 0;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+  z-index: 2;
+  background: linear-gradient(145deg, #ff9a9e, #fad0c4);
+  box-shadow: inset -3px -3px 6px rgba(0,0,0,0.2), inset 3px 3px 6px rgba(255,255,255,0.7), 0 3px 6px rgba(0,0,0,0.3);
+}
+
+.rod:nth-child(1) .top-bead, .rod:nth-child(1) .bottom-bead {
+  background: linear-gradient(145deg, #ff6b6b, #feca57);
+}
+
+.rod:nth-child(2) .top-bead, .rod:nth-child(2) .bottom-bead {
+  background: linear-gradient(145deg, #48dbfb, #1dd1a1);
+}
+
+.rod:nth-child(3) .top-bead, .rod:nth-child(3) .bottom-bead {
+  background: linear-gradient(145deg, #5f27cd, #c8d6e5);
+}
+
+.rod:nth-child(4) .top-bead, .rod:nth-child(4) .bottom-bead {
+  background: linear-gradient(145deg, #ff9f43, #ee5253);
+}
+
+.rod:nth-child(5) .top-bead, .rod:nth-child(5) .bottom-bead {
+  background: linear-gradient(145deg, #00d2d3, #54a0ff);
+}
+
+.top-bead.active {
+  transform: translateY(18px);
+}
+
+.bottom-bead.active {
+  transform: translateY(-20px);
+}
+
+.abacus-widget-container h2 {
+  font-size: 16px;
+  margin: 10px 0 5px 0;
+  color: #333;
+}
+
+.abacus-widget-container h2 #output {
+  color: #3742fa;
+  font-weight: bold;
+}
+
+button#resetBtn {
+  padding: 6px 14px;
+  margin-top: 8px;
+  font-size: 13px;
+  border: none;
+  border-radius: 6px;
+  background: #3742fa;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: background 0.3s ease;
+}
+
+button#resetBtn:hover {
+  background: #2f3542;
+}
+
+button#resetBtn:active {
+  transform: scale(0.98);
+}
+
+/* Tablet and smaller screens */
+@media only screen and (max-width: 768px) {
+  .abacus-popup-wrapper {
+    padding: 10px;
+    border-radius: 12px;
+  }
+  
+  .abacus-drag-handle {
+    padding: 5px;
+    font-size: 11px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+  
+  #abacus {
+    padding: 10px;
+    margin-top: 6px;
+  }
+  
+  .rod {
+    width: 18px;
+    margin: 0 5px;
+  }
+  
+  .top-bead, .bottom-bead {
+    width: 24px;
+    height: 24px;
+    margin: 2px 0;
+  }
+  
+  .divider {
+    height: 3px;
+    margin: 10px 0;
+  }
+  
+  .top-bead.active {
+    transform: translateY(15px);
+  }
+  
+  .bottom-bead.active {
+    transform: translateY(-16px);
+  }
+  
+  .abacus-widget-container h2 {
+    font-size: 14px;
+    margin: 8px 0 4px 0;
+  }
+  
+  button#resetBtn {
+    padding: 5px 12px;
+    margin-top: 6px;
+    font-size: 12px;
+  }
+}
+
+/* Mobile screens */
+@media only screen and (max-width: 600px) {
+  .abacus-popup-wrapper {
+    padding: 8px;
+    border-radius: 10px;
+  }
+  
+  .abacus-drag-handle {
+    padding: 4px;
+    font-size: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  
+  #abacus {
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 8px;
+  }
+  
+  .rod {
+    width: 16px;
+    margin: 0 4px;
+  }
+  
+  .top-bead, .bottom-bead {
+    width: 20px;
+    height: 20px;
+    margin: 2px 0;
+  }
+  
+  .divider {
+    height: 3px;
+    margin: 8px 0;
+  }
+  
+  .top-bead.active {
+    transform: translateY(12px);
+  }
+  
+  .bottom-bead.active {
+    transform: translateY(-14px);
+  }
+  
+  .abacus-widget-container h2 {
+    font-size: 13px;
+    margin: 6px 0 3px 0;
+  }
+  
+  button#resetBtn {
+    padding: 4px 10px;
+    margin-top: 5px;
+    font-size: 11px;
+  }
+}
+
+/* Very small mobile screens */
+@media only screen and (max-width: 400px) {
+  .abacus-popup-wrapper {
+    padding: 6px;
+  }
+  
+  .abacus-drag-handle {
+    padding: 3px;
+    font-size: 9px;
+  }
+  
+  #abacus {
+    padding: 6px;
+  }
+  
+  .rod {
+    width: 14px;
+    margin: 0 3px;
+  }
+  
+  .top-bead, .bottom-bead {
+    width: 18px;
+    height: 18px;
+    margin: 1px 0;
+  }
+  
+  .divider {
+    height: 2px;
+    margin: 6px 0;
+  }
+  
+  .top-bead.active {
+    transform: translateY(10px);
+  }
+  
+  .bottom-bead.active {
+    transform: translateY(-12px);
+  }
+  
+  .abacus-widget-container h2 {
+    font-size: 12px;
+    margin: 5px 0 2px 0;
+  }
+  
+  button#resetBtn {
+    padding: 3px 8px;
+    margin-top: 4px;
+    font-size: 10px;
+  }
+}

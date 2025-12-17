@@ -1,0 +1,273 @@
+.h-100vh {
+    height: 100vh;
+}
+
+.input-form {
+    width: 300px;
+    padding: 12px 15px;
+    outline: none;
+    border: 1px solid #bbb;
+    border-radius: 20px;
+    margin-top: 1.8rem;
+    margin-right: 0.3rem;
+}
+
+.error-line{
+    color: red;
+    font-size: 17px;
+    margin-top: -1.5rem;
+}
+
+.error {
+    text-align: center;
+    color: red;
+    font-size: 17px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    width: 340px;
+    padding: 1rem 0.3rem;
+    border-radius: 10px;
+    background-color: rgb(216, 147, 147);
+}
+
+.error-dengare {
+    width: 100%;
+    margin-top: 0.6rem;
+    margin-bottom: 0rem;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+.justify-content-space-around {
+    justify-content: space-around;
+}
+
+.justify-content-space-between {
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.flex-direction-column {
+    flex-direction: column;
+}
+
+.justify-content-flex-start{
+    justify-content: flex-start;
+}
+
+.d-none {
+    display: none;
+}
+
+.d-block {
+    display: block;
+}
+
+.text-color {
+    color: rgb(56, 56, 56);
+}
+
+.text-error {
+    color: rgb(224, 5, 5) !important;
+}
+
+.button {
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    border: 0;
+    background-color: rgb(3, 3, 173);
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.loading-container,
+.error-container {
+    padding-top: 15rem;
+}
+
+.text-red {
+    color: #ff3131;
+}
+
+.text-purple {
+    color: #5d17eb;
+}
+
+.text-gray {
+    color: #797777;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.loader {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #fff;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.alert {
+    background-color: green;
+    color: #fff;
+    width: 350px;
+    text-align: center;
+    padding: 1rem 0.5rem;
+    border-radius: 10px;
+    position: fixed;
+    top: -250px;
+    z-index: 99999;
+    transition: 0.7s;
+}
+
+.alert-active {
+    top: 30px !important;
+}
+
+.skeleton {
+    animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.nav-mobile {
+    position: fixed;
+    width: 100%;
+    bottom: 15px;
+    display: none;
+    z-index: 99999999;
+}
+
+.nav-mobile-container {
+    background-color: #fff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    width: 96%;
+    margin: auto;
+    padding: 1.2rem 0rem;
+    border-radius: 20px;
+}
+
+.nav-mobile-container i {
+    font-size: 30px;
+    cursor: pointer;
+    color: #a4a2a2;
+    cursor: pointer;
+}
+
+.active {
+    background-color: #5d17eb;
+    color: #fff !important;
+    padding: 0.3rem;
+    border-radius: 5px;
+}
+
+/* Keyboard Style Start */
+.keyboard-container {
+    position: absolute !important;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.digit-button {
+    margin: 5px !important;
+    padding: 10px 15px !important;
+    padding-right: 30px !important;
+    width: 0 !important;
+    border: none;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-size: 25px;
+    transition: background-color 0.2s;
+}
+
+.digit-button:hover {
+    background-color: #ddd;
+}
+
+.toggle-btn {
+    margin: 5px !important;
+    padding: 10px 15px;
+    width: 80px !important;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    font-size: 22px;
+    transition: background-color 0.2s;
+}
+
+.toggle-btn:hover {
+    background-color: #0069d9;
+}
+
+.input-style {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    outline: none;
+    box-sizing: border-box;
+}
+/* Keyboard Style End */
+
+.btn-red{
+    background-color: red !important;
+    color: white !important;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-color: hsl(200, 20%, 70%);
+    }
+
+    100% {
+        background-color: hsl(200, 20%, 95%);
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .nav-mobile {
+        display: block;
+    }
+}

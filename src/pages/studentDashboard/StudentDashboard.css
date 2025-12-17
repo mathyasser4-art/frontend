@@ -1,0 +1,182 @@
+.student-dashboard-container {
+    padding: 0rem 2.2rem;
+    padding-bottom: 6.5rem;
+}
+
+.student-dashboard-body {
+    background-color: #fff;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1), 0 6px 15px 0 rgba(0, 0, 0, 0.19);
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 17px;
+}
+
+.teacher-item {
+    background-color: #5d17eb;
+    color: #fff;
+    padding: 1rem;
+    font-size: 19px;
+    font-weight: 500;
+    margin-top: 0.8rem;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.assignment-popup {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: rgba(5, 5, 5, 0.5);
+    transition: 0.5s;
+}
+
+.answer-popup-hide,
+.result-popup-hide {
+    background-color: transparent !important;
+    transition: 0.5s;
+}
+
+.assignment-popup-container {
+    position: absolute;
+    background-color: #fff;
+    width: 60%;
+    padding: 1rem;
+    border-radius: 10px;
+    top: 120px;
+    overflow-y: scroll;
+    max-height: 72vh;
+    transition: 0.7s;
+}
+
+.popup-top {
+    top: -1200px;
+    transition: 0.7s;
+}
+
+.popup-head {
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgb(181, 180, 180);
+}
+
+.popup-body {
+    padding: 0.8rem 0rem;
+}
+
+.assignment-poster img {
+    width: 250px;
+}
+
+.assignment-popup-body {
+    background-color: #fff;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1), 0 6px 15px 0 rgba(0, 0, 0, 0.10);
+    margin: 1rem 0rem;
+    padding: 1.2rem;
+    border-radius: 10px;
+}
+
+.assignment-body-container {
+    margin-top: 1rem;
+}
+
+
+.assignment-body i {
+    font-size: 22px;
+    color: gray;
+    margin-right: 0.5rem;
+}
+
+.assignment-body p {
+    font-size: 21px;
+}
+
+.assignment-body-container .assignment-body:last-child {
+    margin-left: 1rem;
+}
+
+.assignment-text pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+.text-footer p {
+    font-size: 16px;
+    line-height: 1.2rem;
+}
+
+.assignment-footer button {
+    padding: 1rem;
+    background-color: #5d17eb;
+    border: 0px;
+    color: #fff;
+    font-size: 16.5px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 992px) {
+    .assignment-popup-container {
+        width: 70%;
+    }
+}
+
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (max-width: 768px) {
+    .student-dashboard-container {
+        padding: 0rem 1.2rem;
+        padding-bottom: 6.5rem;
+    }
+
+    .assignment-popup-container {
+        width: 80%;
+    }
+
+    .assignment-poster img {
+        width: 200px;
+    }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (max-width: 600px) {
+    .student-dashboard-container {
+        padding: 0rem 1rem;
+        padding-bottom: 6.5rem;
+    }
+
+    .student-dashboard-body {
+        padding: 1rem 0.7rem;
+    }
+
+    .teacher-item {
+        padding: 1rem 0.7rem;
+    }
+
+    .assignment-popup-container {
+        width: 95%;
+    }
+
+    .assignment-poster img {
+        display: none;
+    }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (max-width: 462px) {
+    .assignment-footer button {
+        margin-top: 1rem;
+        margin-left: -0.15rem;
+    }
+
+    .assignment-text pre {
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 500;
+    }
+}

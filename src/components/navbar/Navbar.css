@@ -1,0 +1,80 @@
+.nav-container {
+  padding: 1rem 2rem;
+}
+
+.nav-container img {
+  width: 218px;
+}
+
+.nav-right-side img {
+  width: 55px !important;
+}
+
+.school-avatar{
+  width: 400px !important;
+}
+
+.nav-btn {
+  padding: 0.6rem 1.5rem;
+  font-size: 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  border-radius: 50px;
+  background: linear-gradient(-45deg, #ffa63d, #ff3d77, #338aff, #3cf0c5);
+  background-size: 600%;
+  -webkit-animation: anime 16s linear infinite;
+  animation: anime 16s linear infinite;
+}
+
+.gear{
+  color: #5d17eb;
+  margin-right: 1rem;
+  font-size: 2.5rem;
+  cursor: pointer;
+}
+
+@-webkit-keyframes anime {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes anime {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (max-width: 992px) {
+  .nav-container {
+    padding: 1rem 1.5rem;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .nav-container {
+    padding: 1rem 0.7rem;
+  }
+
+  .gear{
+    display: none;
+  }
+}

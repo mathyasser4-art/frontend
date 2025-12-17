@@ -1,0 +1,475 @@
+/* Assignment Page Styles - Updated with Question Page Improvements */
+
+/* Import Question.css styles for consistency */
+@import url('../question/Question.css');
+
+/* Override and add specific assignment styles */
+
+body {
+    background-image: url('../../img/webbackground10.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.nav-container {
+    padding: 1rem 2rem;
+}
+
+.nav-container img {
+    width: 218px;
+}
+
+.nav-right-side img {
+    width: 55px !important;
+}
+
+.nav-btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 22px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    border-radius: 50px;
+    background: linear-gradient(-45deg, #ffa63d, #ff3d77, #338aff, #3cf0c5);
+    background-size: 600%;
+    -webkit-animation: anime 16s linear infinite;
+    animation: anime 16s linear infinite;
+}
+
+@-webkit-keyframes anime {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes anime {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Assignment specific error styles */
+.assignment-error-ops {
+    min-height: 60vh;
+    padding: 2rem;
+}
+
+.assignment-error-ops img {
+    max-width: 400px;
+    margin-bottom: 2rem;
+}
+
+.assignment-error-ops p {
+    font-size: 20px;
+    color: #F875AA;
+    font-weight: 500;
+}
+
+.end-exam-error {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.error-line {
+    color: #F875AA;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Timer specific styles */
+.timer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 18px;
+    color: #9B59B6;
+    font-weight: 700;
+    margin-right: 1rem;
+}
+
+/* Abacus button styles */
+.abacus-button {
+    cursor: pointer;
+    margin-right: 0.5rem;
+}
+
+.abacus-button i {
+    font-size: 18px;
+    color: #65C6EE;
+}
+
+/* Question number correct/wrong indicators */
+.question-number p.correct-answer {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+.question-number p.wrong-answer {
+    background-color: #f44336;
+    color: white;
+    border-color: #f44336;
+}
+
+.question-end-btn button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.question-end-btn button .loader {
+    display: inline-block;
+    margin-right: 8px;
+}
+
+/* Assignment popup specific styles */
+.assignment-popup-head {
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.assignment-popup-head img {
+    width: 50px;
+    height: 50px;
+}
+
+.assignment-popup-head p {
+    font-size: 18px;
+    color: #F875AA;
+    font-weight: 500;
+}
+
+.first-ans {
+    margin-top: 1.5rem;
+    gap: 1rem;
+}
+
+.first-ans p {
+    font-size: 16px;
+    color: #3B728D;
+    font-weight: 600;
+}
+
+.answer-line {
+    font-size: 20px;
+    color: #999;
+}
+
+/* Result popup actions */
+.result-popup-actions {
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.btn-download {
+    background-color: #65C6EE !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-download:hover {
+    background-color: #4FACFE !important;
+}
+
+/* Whiteboard specific styles for assignment */
+.whiteboard-container {
+    position: relative;
+}
+
+.whiteboard-modify-assignment {
+    position: absolute;
+    top: 12px;
+    right: 150px;
+}
+
+.whiteboard-modify-assignment i {
+    font-size: 30px;
+    cursor: pointer;
+    margin: 0 0.5rem;
+    color: #4C5287;
+}
+
+.whiteboard-modify-assignment div {
+    background-color: #559367;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.img-icon {
+    color: #65C6EE !important;
+}
+
+.clear {
+    color: #F875AA !important;
+}
+
+.x-img {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    background-color: #F875AA;
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.x-img:hover {
+    background-color: #e55e9d;
+}
+
+/* Next button specific styles */
+button#nextBtn,
+.next-btn,
+.question-form-btn {
+    background: linear-gradient(-45deg, #65C6EE, #F875AA, #ffa63d);
+    background-size: 300%;
+    animation: anime 8s linear infinite;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+button#nextBtn:hover,
+.next-btn:hover,
+.question-form-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+button#nextBtn:active,
+.next-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Responsive Design for Assignment Page */
+
+/* Extra Large Screens */
+@media only screen and (min-width: 1400px) {
+    .assignment-error-ops img {
+        max-width: 500px;
+    }
+}
+
+/* Tablet Landscape and Medium Screens */
+@media only screen and (max-width: 992px) {
+    .assignment-error-ops img {
+        max-width: 350px;
+    }
+    
+    .assignment-error-ops p {
+        font-size: 18px;
+    }
+    
+    .timer {
+        font-size: 16px;
+        margin-right: 0.8rem;
+    }
+}
+
+/* Tablet Portrait */
+@media only screen and (max-width: 768px) {
+    .nav-container {
+        padding: 1rem 0.7rem;
+    }
+    
+    .nav-container img {
+        width: 160px;
+    }
+    
+    .assignment-error-ops img {
+        max-width: 300px;
+    }
+    
+    .assignment-error-ops p {
+        font-size: 17px;
+    }
+    
+    .assignment-popup-head img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .assignment-popup-head p {
+        font-size: 16px;
+    }
+    
+    .first-ans p {
+        font-size: 15px;
+    }
+    
+    .timer {
+        font-size: 15px;
+        margin-right: 0.7rem;
+    }
+    
+    .whiteboard-modify-assignment {
+        right: 130px;
+    }
+    
+    .whiteboard-modify-assignment i {
+        font-size: 26px;
+    }
+}
+
+/* Mobile Landscape and Small Tablets */
+@media only screen and (max-width: 600px) {
+    .nav-container img {
+        width: 140px;
+    }
+    
+    .nav-btn {
+        padding: 0.5rem 1.2rem;
+        font-size: 18px;
+    }
+    
+    .assignment-error-ops {
+        padding: 1.5rem 1rem;
+    }
+    
+    .assignment-error-ops img {
+        max-width: 250px;
+    }
+    
+    .assignment-error-ops p {
+        font-size: 16px;
+    }
+    
+    .assignment-popup-head {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .assignment-popup-head img {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .assignment-popup-head p {
+        font-size: 15px;
+    }
+    
+    .first-ans {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .first-ans p {
+        font-size: 14px;
+    }
+    
+    .timer {
+        font-size: 14px;
+        gap: 0.3rem;
+        margin-right: 0.6rem;
+    }
+    
+    .result-popup-actions {
+        flex-direction: column;
+    }
+    
+    .btn-download {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    button#nextBtn,
+    .next-btn {
+        font-size: 16px;
+        padding: 0.5rem 1rem;
+    }
+    
+    .whiteboard-modify-assignment {
+        right: 120px;
+    }
+    
+    .whiteboard-modify-assignment i {
+        font-size: 24px;
+        margin: 0 0.3rem;
+    }
+    
+    .x-img {
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+    }
+}
+
+/* Very Small Mobile Devices */
+@media only screen and (max-width: 400px) {
+    .nav-container {
+        padding: 0.8rem 0.5rem;
+    }
+    
+    .nav-container img {
+        width: 120px;
+    }
+    
+    .assignment-error-ops img {
+        max-width: 200px;
+    }
+    
+    .assignment-error-ops p {
+        font-size: 15px;
+    }
+    
+    .assignment-popup-head p {
+        font-size: 14px;
+    }
+    
+    .first-ans p {
+        font-size: 13px;
+    }
+    
+    .timer {
+        font-size: 13px;
+        margin-right: 0.5rem;
+    }
+    
+    button#nextBtn,
+    .next-btn {
+        font-size: 15px;
+        padding: 0.4rem 0.9rem;
+    }
+    
+    .whiteboard-modify-assignment i {
+        font-size: 22px;
+    }
+    
+    .x-img {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+    }
+}
+
+/* Landscape Orientation Adjustments for Mobile */
+@media only screen and (max-height: 500px) and (orientation: landscape) {
+    .assignment-error-ops {
+        min-height: 50vh;
+    }
+}
