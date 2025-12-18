@@ -1,6 +1,7 @@
 // API Configuration
-// Set USE_LOCAL to true for local development, false for production
-const USE_LOCAL = true;
+// Set REACT_APP_USE_LOCAL environment variable to 'true' for local development
+// In production (Vercel), this will default to false
+const USE_LOCAL = process.env.REACT_APP_USE_LOCAL === 'true';
 
 const API_CONFIG = {
   local: 'http://localhost:54112',
