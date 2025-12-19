@@ -7,11 +7,14 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+// Use environment variable for Google Client ID (fallback to your new Client ID)
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "184094875062-8dug57q2ektolutnhq8rmrvm2vl98edl.apps.googleusercontent.com";
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <GoogleOAuthProvider clientId="661373985254-t6rno5t3nb2rbih96a05buoo2jpj2h24.apps.googleusercontent.com">
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <App />
       </GoogleOAuthProvider>
     </BrowserRouter>

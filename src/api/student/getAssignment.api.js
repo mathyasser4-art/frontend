@@ -1,4 +1,6 @@
-const URL = 'http://localhost:54112/student/getAssignment'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/student/getAssignment`
 const Token = localStorage.getItem('O_authWEB')
 
 const getAssignment = (setLoadingOperation, setAllAsignment, setError, teacherID) => {

@@ -1,4 +1,6 @@
-const URL = 'http://localhost:54112/auth/login'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/auth/login`
 
 const login = (userData, setError, setLoading, navigate, showAlert) => {
     setLoading(true)

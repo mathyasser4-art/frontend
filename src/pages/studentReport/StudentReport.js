@@ -5,6 +5,7 @@ import DashboardLoading from '../../components/dashboardLoading/DashboardLoading
 import MathInput from "react-math-keyboard";
 import '../../reusable.css'
 import '../assignmentReport/AssignmentReport.css'
+import API_BASE_URL from '../../config/api.config';
 
 function StudentReport() {
   const [allAnswers, setAllAnswers] = useState([])
@@ -31,7 +32,7 @@ function StudentReport() {
       
       try {
         console.log('Fetching report for assignment:', assignmentID)
-        const response = await fetch(`http://localhost:54112/answer/getMyReport/${assignmentID}`, {
+        const response = await fetch(`${API_BASE_URL}/answer/getMyReport/${assignmentID}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

@@ -1,4 +1,6 @@
-const URL = 'http://localhost:54112/answer/checkAnswer'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/answer/checkAnswer`
 const Token = localStorage.getItem('O_authWEB')
 
 const checkAnswer = (data, nextQuestion, setAnswerError, setCheckLoading, questionID, assignmentID, openModelAnswer, openRepotAnswer, showAlert, showAlertSuccess, thisQuestion, setIsCorrect, setFirstAnswer, setSecondAnswer) => {

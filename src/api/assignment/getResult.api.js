@@ -1,4 +1,6 @@
-const URL = 'http://localhost:54112/answer/getResult'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/answer/getResult`
 const Token = localStorage.getItem('O_authWEB')
 
 const getResult = (setResult, setResultLoading, setResultError, assignmentID, openResulPopup, setTotalSummation, setLoading, setOperationError, time = "0:00") => {

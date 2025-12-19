@@ -1,4 +1,6 @@
-const URL = 'http://localhost:54112/assignment/createAssignment'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/assignment/createAssignment`
 const Token = localStorage.getItem('O_authWEB')
 
 const createAssignment = (data, setError, setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setAttempts, setExpiryData, setStartDate, setTitle, setClassesBox) => {
