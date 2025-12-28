@@ -11,7 +11,6 @@ import assignmentDetails from '../../api/student/assignmentDetails.api';
 import getResult from '../../api/assignment/getResult.api';
 import checkAnswer from '../../api/assignment/checkAnswer.api';
 import CanvasDraw from "react-canvas-draw-annotations";
-import API_BASE_URL from '../../config/api.config';
 import alerm from '../../img/alerm.PNG'
 import MyTimer from '../../components/timer/Timer';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
@@ -157,11 +156,54 @@ function Assignment() {
 
   const renderDigits = () => {
     const digits = isArabic ? arabicDigits : englishDigits;
-    return digits.map((digit, index) => (
-      <button key={index} onClick={() => handleButtonClick(digit)} className="digit-button">
-        {digit}
-      </button>
-    ));
+    
+    // Check if we're on desktop (>= 993px) or mobile
+    const isDesktop = window.innerWidth >= 993;
+    
+    if (isDesktop) {
+      // Desktop: 3-column layout (traditional)
+      // Row 1: 7,8,9; Row 2: 4,5,6; Row 3: 1,2,3; Row 4: 0,×,toggle; Row 5: next
+      return (
+        <>
+          <button onClick={() => handleButtonClick(digits[7])} className="digit-button">{digits[7]}</button>
+          <button onClick={() => handleButtonClick(digits[8])} className="digit-button">{digits[8]}</button>
+          <button onClick={() => handleButtonClick(digits[9])} className="digit-button">{digits[9]}</button>
+          
+          <button onClick={() => handleButtonClick(digits[4])} className="digit-button">{digits[4]}</button>
+          <button onClick={() => handleButtonClick(digits[5])} className="digit-button">{digits[5]}</button>
+          <button onClick={() => handleButtonClick(digits[6])} className="digit-button">{digits[6]}</button>
+          
+          <button onClick={() => handleButtonClick(digits[1])} className="digit-button">{digits[1]}</button>
+          <button onClick={() => handleButtonClick(digits[2])} className="digit-button">{digits[2]}</button>
+          <button onClick={() => handleButtonClick(digits[3])} className="digit-button">{digits[3]}</button>
+          
+          <button onClick={() => handleButtonClick(digits[0])} className="digit-button">{digits[0]}</button>
+          <button onClick={handleDelete} className='digit-button btn-red'>×</button>
+          <button onClick={toggleLanguage} className='toggle-btn'>{isArabic ? '123' : '١٢٣'}</button>
+        </>
+      );
+    } else {
+      // Mobile: 5-column layout
+      // Row 1: 0,1,2,3,4; Row 2: 5,6,7,8,9; Row 3: ×, 123, next (spans 3)
+      return (
+        <>
+          <button onClick={() => handleButtonClick(digits[0])} className="digit-button">{digits[0]}</button>
+          <button onClick={() => handleButtonClick(digits[1])} className="digit-button">{digits[1]}</button>
+          <button onClick={() => handleButtonClick(digits[2])} className="digit-button">{digits[2]}</button>
+          <button onClick={() => handleButtonClick(digits[3])} className="digit-button">{digits[3]}</button>
+          <button onClick={() => handleButtonClick(digits[4])} className="digit-button">{digits[4]}</button>
+          
+          <button onClick={() => handleButtonClick(digits[5])} className="digit-button">{digits[5]}</button>
+          <button onClick={() => handleButtonClick(digits[6])} className="digit-button">{digits[6]}</button>
+          <button onClick={() => handleButtonClick(digits[7])} className="digit-button">{digits[7]}</button>
+          <button onClick={() => handleButtonClick(digits[8])} className="digit-button">{digits[8]}</button>
+          <button onClick={() => handleButtonClick(digits[9])} className="digit-button">{digits[9]}</button>
+          
+          <button onClick={handleDelete} className='digit-button btn-red'>×</button>
+          <button onClick={toggleLanguage} className='toggle-btn'>{isArabic ? '123' : '١٢٣'}</button>
+        </>
+      );
+    }
   };
   const handleDelete = () => setAnswer(prev => prev.slice(0, -1));
 
@@ -469,7 +511,7 @@ function Assignment() {
           const Token = localStorage.getItem('O_authWEB');
           console.log('Token exists:', !!Token);
           
-          const apiUrl = `${API_BASE_URL}/answer/checkAnswer/${question._id}/${assignmentID}`;
+          const apiUrl = `http://localhost:54112/answer/checkAnswer/${question._id}/${assignmentID}`;
           console.log('API URL:', apiUrl);
           
           const response = await fetch(apiUrl, {
@@ -668,7 +710,7 @@ function Assignment() {
               {thisQuestion?.typeOfAnswer === 'Essay' ? (
                 <div className='math-keyboard'>
                   <p>Write your answer here</p>
-                  <div style={{ position: 'relative', width: '295px' }}>
+                  <div className="answer-input-container" style={{ position: 'relative', width: '100%' }}>
                     <input
                       ref={inputRef}
                       type="text"
@@ -681,9 +723,7 @@ function Assignment() {
                     {showKeyboard && (
                       <div ref={keyboardRef} className="keyboard-container">
                         {renderDigits()}
-                        <button onClick={handleDelete} className="digit-button btn-red">x</button>
-                        <button onClick={toggleLanguage} className="toggle-btn">{isArabic ? '123' : '١٢٣'}</button>
-                        <button className='question-form-btn' onClick={checkedQuestion} >{checkLoading ? <span className="loader"></span> : "next"}</button>
+                        <button className='question-form-btn keyboard-next-btn' onClick={checkedQuestion}>{checkLoading ? <span className="loader"></span> : "next"}</button>
                       </div>
                     )}
                   </div>

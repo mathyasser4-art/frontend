@@ -12,7 +12,6 @@ import checked from '../../api/question/checkedAnswer.api';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
 import '../../reusable.css';
 import './Question.css';
-import API_BASE_URL from '../../config/api.config';
 
 function Question() {
     // State for Abacus visibility
@@ -127,11 +126,53 @@ function Question() {
 
     const renderDigits = () => {
         const digits = isArabic ? arabicDigits : englishDigits;
-        return digits.map((digit, index) => (
-            <button key={index} onClick={() => handleButtonClick(digit)} className="digit-button">
-                {digit}
-            </button>
-        ));
+        
+        // Check if we're on desktop (>= 993px) or mobile
+        const isDesktop = window.innerWidth >= 993;
+        
+        if (isDesktop) {
+            // Desktop: 3-row layout with 4 columns (0-9 in order)
+            // Row 1: 0,1,2,3; Row 2: 4,5,6,7; Row 3: 8,9,×,toggle; Row 4: next (full width)
+            return (
+                <>
+                    <button onClick={() => handleButtonClick(digits[0])} className="digit-button">{digits[0]}</button>
+                    <button onClick={() => handleButtonClick(digits[1])} className="digit-button">{digits[1]}</button>
+                    <button onClick={() => handleButtonClick(digits[2])} className="digit-button">{digits[2]}</button>
+                    <button onClick={() => handleButtonClick(digits[3])} className="digit-button">{digits[3]}</button>
+                    
+                    <button onClick={() => handleButtonClick(digits[4])} className="digit-button">{digits[4]}</button>
+                    <button onClick={() => handleButtonClick(digits[5])} className="digit-button">{digits[5]}</button>
+                    <button onClick={() => handleButtonClick(digits[6])} className="digit-button">{digits[6]}</button>
+                    <button onClick={() => handleButtonClick(digits[7])} className="digit-button">{digits[7]}</button>
+                    
+                    <button onClick={() => handleButtonClick(digits[8])} className="digit-button">{digits[8]}</button>
+                    <button onClick={() => handleButtonClick(digits[9])} className="digit-button">{digits[9]}</button>
+                    <button onClick={handleDelete} className='digit-button btn-red'>×</button>
+                    <button onClick={toggleLanguage} className='toggle-btn'>{isArabic ? '123' : '١٢٣'}</button>
+                </>
+            );
+        } else {
+            // Mobile: 5-column layout
+            // Row 1: 0,1,2,3,4; Row 2: 5,6,7,8,9; Row 3: ×, 123, next (spans 3)
+            return (
+                <>
+                    <button onClick={() => handleButtonClick(digits[0])} className="digit-button">{digits[0]}</button>
+                    <button onClick={() => handleButtonClick(digits[1])} className="digit-button">{digits[1]}</button>
+                    <button onClick={() => handleButtonClick(digits[2])} className="digit-button">{digits[2]}</button>
+                    <button onClick={() => handleButtonClick(digits[3])} className="digit-button">{digits[3]}</button>
+                    <button onClick={() => handleButtonClick(digits[4])} className="digit-button">{digits[4]}</button>
+                    
+                    <button onClick={() => handleButtonClick(digits[5])} className="digit-button">{digits[5]}</button>
+                    <button onClick={() => handleButtonClick(digits[6])} className="digit-button">{digits[6]}</button>
+                    <button onClick={() => handleButtonClick(digits[7])} className="digit-button">{digits[7]}</button>
+                    <button onClick={() => handleButtonClick(digits[8])} className="digit-button">{digits[8]}</button>
+                    <button onClick={() => handleButtonClick(digits[9])} className="digit-button">{digits[9]}</button>
+                    
+                    <button onClick={handleDelete} className='digit-button btn-red'>×</button>
+                    <button onClick={toggleLanguage} className='toggle-btn'>{isArabic ? '123' : '١٢٣'}</button>
+                </>
+            );
+        }
     };
 
     const handleDelete = () => {
@@ -264,7 +305,7 @@ function Question() {
                 // Question has an answer - check it
                 try {
                     const response = await fetch(
-                        `${API_BASE_URL}/question/checkTheAnswer/${question._id}`,
+                        `http://localhost:54112/question/checkTheAnswer/${question._id}`,
                         {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -490,7 +531,7 @@ function Question() {
                             {thisQuestion?.typeOfAnswer === 'Essay' && (
                                 <div className='math-keyboard'>
                                     <p>Write your answer here</p>
-                                    <div style={{ position: 'relative', width: '295px' }}>
+                                    <div style={{ position: 'relative', width: '100%' }}>
                                         <input
                                             ref={inputRef} type='text' value={answer} onFocus={handleInputFocus} readOnly
                                             placeholder='Enter the answer' className='input-style'
@@ -498,9 +539,7 @@ function Question() {
                                         {showKeyboard && (
                                             <div ref={keyboardRef} className='keyboard-container'>
                                                 {renderDigits()}
-                                                <button onClick={handleDelete} className='digit-button btn-red'>x</button>
-                                                <button onClick={toggleLanguage} className='toggle-btn'>{isArabic ? '123' : '١٢٣'}</button>
-                                                <button className='question-form-btn' onClick={checkedQuestion}>{checkLoading ? <span className='loader'></span> : 'next'}</button>
+                                                <button className='question-form-btn keyboard-next-btn' onClick={checkedQuestion}>{checkLoading ? <span className='loader'></span> : 'next'}</button>
                                             </div>
                                         )}
                                     </div>

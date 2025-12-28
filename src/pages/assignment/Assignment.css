@@ -9,6 +9,9 @@ body {
     background-image: url('../../img/webbackground10.jpg');
     background-size: cover;
     background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100vh;
 }
 
 .nav-container {
@@ -338,6 +341,11 @@ button#nextBtn:active,
 
 /* Mobile Landscape and Small Tablets */
 @media only screen and (max-width: 600px) {
+    /* Reduce input container by 50% on mobile */
+    .answer-input-container {
+        width: 148px !important;
+    }
+    
     .nav-container img {
         width: 140px;
     }
@@ -421,6 +429,10 @@ button#nextBtn:active,
 
 /* Very Small Mobile Devices */
 @media only screen and (max-width: 400px) {
+    .answer-input-container {
+        width: 140px !important;
+    }
+    
     .nav-container {
         padding: 0.8rem 0.5rem;
     }

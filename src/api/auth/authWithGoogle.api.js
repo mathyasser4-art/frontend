@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/auth/google'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/auth/google`;
 
 const authWithGoogle = (data) => {
     fetch(`${URL}`, {

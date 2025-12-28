@@ -1,6 +1,6 @@
 import API_BASE_URL from '../../config/api.config';
 
-const URL = `${API_BASE_URL}/user/userAuthorize`
+const URL = `${API_BASE_URL}/user/userAuthorize`;
 
 const userInfo = (userToken, setLoading, setUserData) => {
     setLoading(true)

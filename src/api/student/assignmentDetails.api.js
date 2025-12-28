@@ -1,6 +1,6 @@
 import API_BASE_URL from '../../config/api.config';
 
-const URL = `${API_BASE_URL}/student/assignmentDetails`
+const URL = `${API_BASE_URL}/student/assignmentDetails`;
 const Token = localStorage.getItem('O_authWEB')
 
 const assignmentDetails = (setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate) => {

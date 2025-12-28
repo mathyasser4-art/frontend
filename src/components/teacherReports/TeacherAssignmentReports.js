@@ -4,7 +4,6 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../../reusable.css';
 import './TeacherReports.css';
-import API_BASE_URL from '../../config/api.config';
 
 function TeacherAssignmentReports() {
   const [students, setStudents] = useState([]);
@@ -19,7 +18,7 @@ function TeacherAssignmentReports() {
       try {
         console.log('Fetching student results for assignment:', assignmentID);
 
-        const response = await fetch(`${API_BASE_URL}/assignment/${assignmentID}/student-results`, {
+        const response = await fetch(`http://localhost:54112/assignment/${assignmentID}/student-results`, {
           headers: {
             authrization: 'pracYas09' + localStorage.getItem('O_authDB'),
           }

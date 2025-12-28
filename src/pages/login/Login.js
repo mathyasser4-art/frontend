@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import logo from '../../img/logo-login.png'
+import logo from '../../logo.png'
 import google from '../../img/google-icon.png'
 import login from '../../api/auth/login.api'
 import { useGoogleLogin } from '@react-oauth/google';

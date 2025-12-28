@@ -4,7 +4,6 @@ import Navbar from '../../components/navbar/Navbar'
 import QuestionType from '../questionType/QuestionType'
 import ContactUS from '../contact/ContactUS'
 import hand from '../../img/hand.png'
-import mobileBannar from '../../img/mobile-bannar.png'
 import '../../reusable.css'
 import './Home.css'
 
@@ -50,9 +49,6 @@ function Home() {
         <div className="home-title">
           <h1 className='text-purple'>WELCOME TO <img className='home-hand' src={hand} alt="" /></h1>
           <h1 className='text-red'>ABACUS HEROES</h1>
-        </div>
-        <div className="mobile-bannar">
-          <img src={mobileBannar} alt="" />
         </div>
       </div>
       <QuestionType />

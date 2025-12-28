@@ -1,6 +1,6 @@
 import API_BASE_URL from '../../config/api.config';
 
-const URL = `${API_BASE_URL}/auth/login`
+const URL = `${API_BASE_URL}/auth/login`;
 
 const login = (userData, setError, setLoading, navigate, showAlert) => {
     setLoading(true)
