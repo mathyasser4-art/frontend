@@ -3,6 +3,7 @@ import Navbar from '../../components/navbar/Navbar'
 import { Link, useParams } from 'react-router-dom'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import MathInput from "react-math-keyboard";
+import API_BASE_URL from '../../config/api.config';
 import '../../reusable.css'
 import '../assignmentReport/AssignmentReport.css'
 
@@ -31,7 +32,7 @@ function StudentReport() {
       
       try {
         console.log('Fetching report for assignment:', assignmentID)
-        const response = await fetch(`http://localhost:54112/answer/getMyReport/${assignmentID}`, {
+        const response = await fetch(`${API_BASE_URL}/answer/getMyReport/${assignmentID}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

@@ -9,6 +9,7 @@ import getQuestion from '../../api/question/getQuestion.api';
 import createAssignment from '../../api/assignment/createAssignment.api';
 import getClass from '../../api/teacher/getClass.api';
 import checked from '../../api/question/checkedAnswer.api';
+import API_BASE_URL from '../../config/api.config';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
 import '../../reusable.css';
 import './Question.css';
@@ -305,7 +306,7 @@ function Question() {
                 // Question has an answer - check it
                 try {
                     const response = await fetch(
-                        `http://localhost:54112/question/checkTheAnswer/${question._id}`,
+                        `${API_BASE_URL}/question/checkTheAnswer/${question._id}`,
                         {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },

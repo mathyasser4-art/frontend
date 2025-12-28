@@ -10,6 +10,7 @@ import NotLogin from '../../components/notLogin/NotLogin';
 import assignmentDetails from '../../api/student/assignmentDetails.api';
 import getResult from '../../api/assignment/getResult.api';
 import checkAnswer from '../../api/assignment/checkAnswer.api';
+import API_BASE_URL from '../../config/api.config';
 import CanvasDraw from "react-canvas-draw-annotations";
 import alerm from '../../img/alerm.PNG'
 import MyTimer from '../../components/timer/Timer';
@@ -511,7 +512,7 @@ function Assignment() {
           const Token = localStorage.getItem('O_authWEB');
           console.log('Token exists:', !!Token);
           
-          const apiUrl = `http://localhost:54112/answer/checkAnswer/${question._id}/${assignmentID}`;
+          const apiUrl = `${API_BASE_URL}/answer/checkAnswer/${question._id}/${assignmentID}`;
           console.log('API URL:', apiUrl);
           
           const response = await fetch(apiUrl, {
