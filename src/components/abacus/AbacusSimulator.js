@@ -6,7 +6,7 @@ const createInitialState = () => Array(5).fill({
   bottomBeadsActive: [false, false, false, false],
 });
 
-const AbacusSimulator = () => {
+const AbacusSimulator = ({ onClose }) => {
   const [rods, setRods] = useState(createInitialState());
   const [totalValue, setTotalValue] = useState(0);
   
@@ -107,6 +107,14 @@ const AbacusSimulator = () => {
         left: position ? `${position.x}px` : 0,
       }}
     >
+      <button 
+        className="abacus-close-button"
+        onClick={onClose}
+        title="Close Abacus"
+      >
+        ×
+      </button>
+      
       <div 
         className="abacus-drag-handle" 
         onMouseDown={handleMouseDown}

@@ -523,7 +523,7 @@ function Question() {
                             </div>
                         </div>
 
-                        {showAbacus && <AbacusSimulator />}
+                        {showAbacus && <AbacusSimulator onClose={() => setShowAbacus(false)} />}
 
                         <div className='question-form-body'>
                             {thisQuestion?.questionPic && <div className='d-flex question-img justify-content-center align-items-center'><img src={thisQuestion.questionPic} alt="Question visual aid" /></div>}

@@ -698,7 +698,7 @@ function Assignment() {
               </div>
             </div>
 
-            {showAbacus && <AbacusSimulator />}
+            {showAbacus && <AbacusSimulator onClose={() => setShowAbacus(false)} />}
 
             <div className="question-form-body">
               {thisQuestion?.questionPic ? (
