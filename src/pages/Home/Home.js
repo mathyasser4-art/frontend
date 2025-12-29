@@ -39,9 +39,9 @@ function Home() {
             
           </div>
           
-          <div className="home-btn">JOIN NOW
+          <Link to="/pricing" className="home-btn">JOIN NOW
             <div className="home-btn2"></div>
-          </div>
+          </Link>
         </div>
       </div>
       <div className='home-mobile'>

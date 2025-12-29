@@ -26,6 +26,7 @@ import IT from './pages/IT/IT';
 import Supervisor from './pages/supervisor/Supervisor';
 import SupervisorDashboard from './pages/supervisorDashboard/SupervisorDashboard'
 import TeacherAssignmentReports from './components/teacherReports/TeacherAssignmentReports';
+import Pricing from './pages/pricing/Pricing';
 
 
 function App() {
@@ -61,6 +62,7 @@ function App() {
       <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth ? <AssignmentReport /> : <Navigate to='/' />} />
       <Route path='/student/myReport/:assignmentID' element={isAuth ? <StudentReport /> : <Navigate to='/' />} />
       <Route path="/assignment/:assignmentID/reports" element={<TeacherAssignmentReports />} />
+      <Route path='/pricing' element={<Pricing />} />
 
     </Routes>
   )
