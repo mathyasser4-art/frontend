@@ -1,22 +1,32 @@
-// Sound effects utility for game-like interactions
+// Sound effects utility with Web Audio API for low-latency playback
 
 class SoundEffects {
   constructor() {
-    this.sounds = {
-      click: new Audio('/audio/click.mp3'),
-      correct: new Audio('/audio/correct.mp3'),
-      wrong: new Audio('/audio/wrong.mp3')
+    // Audio file paths
+    this.soundPaths = {
+      click: '/audio/click.mp3',
+      correct: '/audio/correct.mp3',
+      wrong: '/audio/wrong.mp3'
     };
     
-    // Preload all sounds - reduced volume by 40% (from 0.5 to 0.3)
-    Object.values(this.sounds).forEach(sound => {
-      sound.preload = 'auto';
-      sound.volume = 0.3; // Reduced volume by 40%
-    });
+    // AudioBuffers for instant playback
+    this.buffers = {};
+    
+    // Default volumes (reduced for less annoyance)
+    this.defaultVolumes = {
+      click: 0.15,      // Reduced from 0.3 to 0.15 (50% quieter)
+      correct: 0.2,     // Reduced from 0.3 to 0.2
+      wrong: 0.2        // Reduced from 0.3 to 0.2
+    };
 
-    // Initialize Web Audio API context for pitch shifting
+    // Initialize Web Audio API
     this.audioContext = null;
+    this.isReady = false;
     this.initAudioContext();
+    this.loadAllSounds();
+    
+    // Unlock audio on first user interaction (required for mobile)
+    this.setupAudioUnlock();
   }
 
   initAudioContext() {
@@ -24,8 +34,47 @@ class SoundEffects {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       this.audioContext = new AudioContext();
     } catch (e) {
-      console.log('Web Audio API not supported');
+      console.error('Web Audio API not supported:', e);
     }
+  }
+
+  setupAudioUnlock() {
+    // Mobile browsers require user interaction before playing audio
+    const unlockAudio = () => {
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        this.audioContext.resume().then(() => {
+          console.log('Audio context unlocked');
+        });
+      }
+      // Remove listeners after first interaction
+      document.removeEventListener('touchstart', unlockAudio);
+      document.removeEventListener('touchend', unlockAudio);
+      document.removeEventListener('click', unlockAudio);
+    };
+
+    document.addEventListener('touchstart', unlockAudio);
+    document.addEventListener('touchend', unlockAudio);
+    document.addEventListener('click', unlockAudio);
+  }
+
+  async loadAllSounds() {
+    if (!this.audioContext) return;
+
+    const loadPromises = Object.entries(this.soundPaths).map(async ([name, path]) => {
+      try {
+        const response = await fetch(path);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+        this.buffers[name] = audioBuffer;
+        console.log(`Loaded sound: ${name}`);
+      } catch (error) {
+        console.error(`Failed to load sound ${name}:`, error);
+      }
+    });
+
+    await Promise.all(loadPromises);
+    this.isReady = true;
+    console.log('All sounds loaded and ready');
   }
 
   playClick() {
@@ -42,63 +91,95 @@ class SoundEffects {
 
   // Special softer, lower-pitched sound for number/button clicks
   playNumberClick() {
-    this.playSoundWithPitch('click', 0.75, 0.15); // Much lower pitch (75%) and softer volume (15%)
+    this.playSoundWithOptions('click', { 
+      playbackRate: 0.75, 
+      volume: 0.08     // Even quieter for keyboard numbers
+    });
   }
 
   // Ending sound when exam finishes
   playEndSound() {
-    this.playSoundWithPitch('click', 0.6, 0.25); // Deep ending sound
+    this.playSoundWithOptions('click', { 
+      playbackRate: 0.6, 
+      volume: 0.15     // Reduced ending sound volume
+    });
   }
 
   // Winning/success sound when results appear
   playWinSound() {
-    this.playSound('correct'); // Use the correct sound for winning
+    this.playSound('correct');
   }
 
-  playSound(soundName) {
-    const sound = this.sounds[soundName];
-    if (sound) {
-      // Clone the audio to allow multiple simultaneous plays
-      const soundClone = sound.cloneNode();
-      soundClone.volume = sound.volume;
-      soundClone.play().catch(err => {
-        // Ignore errors (e.g., if user hasn't interacted with page yet)
-        console.log('Sound play failed:', err);
-      });
-    }
-  }
-
-  playSoundWithPitch(soundName, pitchRate = 1.0, volumeOverride = null) {
-    const sound = this.sounds[soundName];
-    if (!sound || !this.audioContext) {
-      // Fallback to normal sound if Web Audio API not available
-      this.playSound(soundName);
+  playSound(soundName, volume = null) {
+    if (!this.audioContext || !this.buffers[soundName]) {
+      console.warn(`Sound ${soundName} not ready yet`);
       return;
     }
 
     try {
-      // Clone the audio element
-      const soundClone = sound.cloneNode();
-      soundClone.volume = volumeOverride !== null ? volumeOverride : sound.volume;
-      
-      // Use playbackRate to change pitch (lower pitch = lower playbackRate)
-      soundClone.playbackRate = pitchRate;
-      soundClone.preservesPitch = false; // Ensure pitch changes with playback rate
-      
-      soundClone.play().catch(err => {
-        console.log('Sound play failed:', err);
-      });
-    } catch (err) {
-      // Fallback to normal sound
-      this.playSound(soundName);
+      // Create buffer source (one-time use)
+      const source = this.audioContext.createBufferSource();
+      source.buffer = this.buffers[soundName];
+
+      // Create gain node for volume control
+      const gainNode = this.audioContext.createGain();
+      const finalVolume = volume !== null ? volume : this.defaultVolumes[soundName];
+      gainNode.gain.value = finalVolume;
+
+      // Connect nodes: source -> gain -> destination
+      source.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      // Play immediately
+      source.start(0);
+    } catch (error) {
+      console.error(`Error playing sound ${soundName}:`, error);
+    }
+  }
+
+  playSoundWithOptions(soundName, options = {}) {
+    if (!this.audioContext || !this.buffers[soundName]) {
+      console.warn(`Sound ${soundName} not ready yet`);
+      return;
+    }
+
+    const {
+      playbackRate = 1.0,
+      volume = null
+    } = options;
+
+    try {
+      // Create buffer source
+      const source = this.audioContext.createBufferSource();
+      source.buffer = this.buffers[soundName];
+      source.playbackRate.value = playbackRate;
+
+      // Create gain node for volume control
+      const gainNode = this.audioContext.createGain();
+      const finalVolume = volume !== null ? volume : this.defaultVolumes[soundName];
+      gainNode.gain.value = finalVolume;
+
+      // Connect nodes
+      source.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      // Play immediately
+      source.start(0);
+    } catch (error) {
+      console.error(`Error playing sound ${soundName}:`, error);
     }
   }
 
   setVolume(volume) {
-    // volume should be between 0 and 1
-    Object.values(this.sounds).forEach(sound => {
-      sound.volume = volume;
+    // Update default volumes for all sounds (volume should be between 0 and 1)
+    Object.keys(this.defaultVolumes).forEach(key => {
+      this.defaultVolumes[key] = volume;
     });
+  }
+
+  // Check if audio system is ready
+  isAudioReady() {
+    return this.isReady && this.audioContext && this.audioContext.state === 'running';
   }
 }
 
