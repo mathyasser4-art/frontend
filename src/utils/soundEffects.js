@@ -12,11 +12,11 @@ class SoundEffects {
     // AudioBuffers for instant playback
     this.buffers = {};
     
-    // Default volumes (reduced for less annoyance)
+    // Default volumes (further reduced as requested)
     this.defaultVolumes = {
-      click: 0.15,      // Reduced from 0.3 to 0.15 (50% quieter)
-      correct: 0.2,     // Reduced from 0.3 to 0.2
-      wrong: 0.2        // Reduced from 0.3 to 0.2
+      click: 0.08,      // Further reduced for navigation clicks
+      correct: 0.12,    // Quieter correct sound
+      wrong: 0.12       // Quieter wrong sound
     };
 
     // Initialize Web Audio API
@@ -97,17 +97,20 @@ class SoundEffects {
     });
   }
 
-  // Ending sound when exam finishes
+  // Ending sound when exam finishes (simpler and quieter)
   playEndSound() {
     this.playSoundWithOptions('click', { 
-      playbackRate: 0.6, 
-      volume: 0.15     // Reduced ending sound volume
+      playbackRate: 0.8,   // Higher pitch for simpler sound
+      volume: 0.08         // Much quieter ending sound
     });
   }
 
-  // Winning/success sound when results appear
+  // Winning/success sound when results appear (quieter and simpler)
   playWinSound() {
-    this.playSound('correct');
+    this.playSoundWithOptions('correct', { 
+      playbackRate: 1.0,
+      volume: 0.1      // Much quieter win sound
+    });
   }
 
   playSound(soundName, volume = null) {

@@ -135,7 +135,7 @@ function Assignment() {
   };
 
   const handleButtonClick = (digit) => {
-    soundEffects.playNumberClick(); // Lower-pitched sound for numbers
+    // Removed keyboard sound as requested
     setAnswer(prev => {
       const newVal = prev + digit;
       return newVal;
@@ -211,7 +211,7 @@ function Assignment() {
     }
   };
   const handleDelete = () => {
-    soundEffects.playNumberClick();
+    // Removed keyboard sound as requested
     setAnswer(prev => prev.slice(0, -1));
   };
 
