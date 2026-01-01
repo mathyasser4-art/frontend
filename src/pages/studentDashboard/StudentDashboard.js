@@ -84,6 +84,9 @@ function StudentDashboard() {
                 <div className='assignment-popup-container popup-top'>
                     <div className="update-popup-head">
                         <p>HomeWork</p>
+                        <button onClick={closeHomeWorkList} className="popup-close-btn" aria-label="Close">
+                            <i className="fa fa-times" aria-hidden="true"></i>
+                        </button>
                     </div>
                         {loadingOperation ? <AssignmentLoading /> :
                             allAsignment?.map(item => {
