@@ -36,19 +36,19 @@ function Home() {
             <h1 className='text-red'>ABACUS HEROES</h1>
           </div>
           <div className="home-paragraph">
-            <p>Play the Abacus ..  Be a Hero !</p>
-            
+            <p>Play the Abacus .. Be a Hero !</p>
           </div>
           
-          <Link to="/pricing" className="home-btn" onClick={() => soundEffects.playClick()}>JOIN NOW
-            <div className="home-btn2"></div>
+          <Link to="/pricing" className="home-btn" onClick={() => soundEffects.playClick()}>
+            <span className="btn-text">JOIN NOW</span>
+            <span className="btn-arrow">→</span>
           </Link>
         </div>
       </div>
       <div className='home-mobile'>
         <Navbar />
         <div className="home-title">
-          <h1 className='text-purple'>WELCOME TO <img className='home-hand' src={hand} alt="" /></h1>
+          <h1 className='text-purple'>WELCOME TO</h1>
           <h1 className='text-red'>ABACUS HEROES</h1>
         </div>
       </div>

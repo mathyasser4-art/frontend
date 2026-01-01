@@ -24,266 +24,205 @@
     background-attachment: fixed;
     position: relative;
     overflow: hidden;
-}
-
-/* Add multiple floating shapes for playful background */
-.home::before {
-    position: absolute;
-    font-size: 80px;
-    top: 10%;
-    left: 5%;
-    animation: float 6s ease-in-out infinite;
-}
-
-.home::after {
-    position: absolute;
-    font-size: 60px;
-    bottom: 20%;
-    right: 8%;
-    animation: float 8s ease-in-out infinite reverse;
-}
-
-/* Add more floating elements */
-.home .floating-1 {
-    position: absolute;
-    font-size: 50px;
-    top: 60%;
-    left: 10%;
-    animation: float 7s ease-in-out infinite 1s;
-}
-
-.home .floating-2 {
-    position: absolute;
-    font-size: 45px;
-    top: 30%;
-    right: 15%;
-    animation: float 5s ease-in-out infinite 0.5s;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
-    33% { transform: translateY(-15px) rotate(5deg) scale(1.1); }
-    66% { transform: translateY(10px) rotate(-5deg) scale(0.9); }
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .home-container {
-    padding: 2.5rem 3rem 3.5rem 3rem;
+    padding: 3rem 4rem 4rem 4rem;
     position: relative;
     z-index: 2;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 250, 240, 0.92) 100%);
     margin: 2rem;
-    border-radius: 35px;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15),
-                0 5px 15px rgba(255, 107, 107, 0.1);
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+                0 8px 20px rgba(255, 107, 107, 0.1);
     backdrop-filter: blur(10px);
     border: 3px solid rgba(255, 255, 255, 0.8);
+    text-align: center;
+    max-width: 1000px;
+    animation: fadeInUp 0.8s ease-out;
 }
 
-.home-title h1 {
-    margin: 0;
-    padding: 0;
-    font-weight: 900;
-    font-size: 68px;
-    font-family: 'Spicy Sale', cursive, sans-serif;
-    letter-spacing: 4px;
-    display: inline-block;
-}
-
-/* First line: "WELCOME TO" - Soft orange/coral like logo - reduced shadows */
-.home-title h1.text-purple {
-    background: linear-gradient(to bottom, 
-        #FFD4A3 0%,     /* Light peach top */
-        #FFC491 15%,    /* Soft peach */
-        #FFB580 30%,    /* Medium coral */
-        #FFA56E 50%,    /* Coral */
-        #FF965D 70%,    /* Deep coral */
-        #E8825A 85%,    /* Bottom base */
-        #C96F4F 100%    /* Shadow */
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    /* Reduced shadows for subtler 3D effect */
-    filter: drop-shadow(0px 2px 0px rgba(255, 255, 255, 0.7))
-            drop-shadow(0px 4px 0px rgba(255, 200, 160, 0.4))
-            drop-shadow(0px 6px 0px rgba(255, 180, 140, 0.3))
-            drop-shadow(0px 10px 15px rgba(232, 130, 90, 0.2));
-}
-
-/* Second line: "ABACUS HEROES" - Soft beige/tan like logo - reduced shadows */
-.home-title h1.text-red {
-    background: linear-gradient(to bottom, 
-        #F5E6D3 0%,     /* Light cream top */
-        #EDD9C4 15%,    /* Soft beige */
-        #E5CCB5 30%,    /* Medium tan */
-        #DDBFA6 50%,    /* Tan */
-        #D5B297 70%,    /* Deep tan */
-        #C9A389 85%,    /* Bottom base */
-        #B08968 100%    /* Shadow */
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    /* Reduced shadows for subtler 3D effect */
-    filter: drop-shadow(0px 2px 0px rgba(255, 255, 255, 0.7))
-            drop-shadow(0px 4px 0px rgba(237, 217, 196, 0.4))
-            drop-shadow(0px 6px 0px rgba(229, 204, 181, 0.3))
-            drop-shadow(0px 10px 15px rgba(201, 163, 137, 0.2));
-}
-
-.home-hand {
-    width: 60px;
-    animation: bounce 3s infinite;
-    filter: drop-shadow(2px 4px 3px rgba(232, 107, 133, 0.4))
-            drop-shadow(0px 0px 10px rgba(255, 180, 195, 0.3));
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0) scale(1); }
-    25% { transform: translateY(-15px) scale(1.1); }
-    50% { transform: translateY(0) scale(1); }
-    75% { transform: translateY(-8px) scale(1.05); }
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .home-title {
-    margin-top: 1.7rem;
-    padding-top: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    animation: fadeIn 1s ease-out 0.3s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.home-title h1 {
+    margin: 0.3rem 0;
+    padding: 0;
+    font-weight: 900;
+    font-size: 72px;
+    font-family: 'Spicy Sale', cursive, sans-serif;
+    letter-spacing: 5px;
+    display: block;
+    line-height: 1.2;
+}
+
+/* First line: "WELCOME TO" - Soft orange/coral */
+.home-title h1.text-purple {
+    background: linear-gradient(to bottom, 
+        #FFD4A3 0%,
+        #FFC491 15%,
+        #FFB580 30%,
+        #FFA56E 50%,
+        #FF965D 70%,
+        #E8825A 85%,
+        #C96F4F 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0px 2px 0px rgba(255, 255, 255, 0.8))
+            drop-shadow(0px 4px 0px rgba(255, 200, 160, 0.4))
+            drop-shadow(0px 6px 0px rgba(255, 180, 140, 0.3))
+            drop-shadow(0px 10px 20px rgba(232, 130, 90, 0.25));
+}
+
+/* Second line: "ABACUS HEROES" - Soft beige/tan */
+.home-title h1.text-red {
+    background: linear-gradient(to bottom, 
+        #F5E6D3 0%,
+        #EDD9C4 15%,
+        #E5CCB5 30%,
+        #DDBFA6 50%,
+        #D5B297 70%,
+        #C9A389 85%,
+        #B08968 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0px 2px 0px rgba(255, 255, 255, 0.8))
+            drop-shadow(0px 4px 0px rgba(237, 217, 196, 0.4))
+            drop-shadow(0px 6px 0px rgba(229, 204, 181, 0.3))
+            drop-shadow(0px 10px 20px rgba(201, 163, 137, 0.25));
 }
 
 .home-paragraph {
-    margin-top: 2.5rem;
-    font-size: 36px;
+    margin-top: 2rem;
+    font-size: 38px;
     font-weight: 800;
     color: #FF6B6B;
     font-family: 'Comic Sans MS', cursive, sans-serif;
-    line-height: 1.4;
+    line-height: 1.5;
     text-shadow: 3px 3px 0px rgba(255, 230, 109, 0.6),
                  -1px -1px 0px rgba(255, 255, 255, 0.8);
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
+    animation: fadeIn 1s ease-out 0.5s both;
 }
 
 .home-paragraph p {
     margin: 0.5rem 0;
-    animation: textPop 0.5s ease-out;
-}
-
-@keyframes textPop {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-.home-footer {
-    font-weight: 800;
-    font-size: 36px;
-    margin-top: 2rem;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    color: #ff3d77;
-    text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.8);
-}
-
-.home-footer span {
-    background: linear-gradient(45deg, #FFD700, #FFA500, #FF6347);
-    padding: 8px 20px;
-    border-radius: 25px;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    display: inline-block;
-    transform: rotate(-3deg);
-    border: 4px dashed #ff6b35;
-    animation: confetti 2s ease-in-out infinite;
-}
-
-@keyframes confetti {
-    0%, 100% { transform: rotate(-3deg) translateY(0); }
-    50% { transform: rotate(-1deg) translateY(-5px); }
 }
 
 .home-btn {
-    padding: 1.3rem 3rem;
-    font-size: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 1.5rem 3.5rem;
+    font-size: 36px;
     text-align: center;
     color: white;
     border-radius: 60px;
     background: linear-gradient(135deg, #FF6B6B 0%, #FFD93D 50%, #4ECDC4 100%);
     background-size: 200% auto;
-    animation: btnGradient 3s ease infinite, wiggle 1.5s ease-in-out infinite;
-    width: 300px;
     cursor: pointer;
     margin-top: 3rem;
-    margin-bottom: 0;
     font-weight: 900;
     font-family: 'Comic Sans MS', cursive, sans-serif;
     border: 6px solid white;
-    box-shadow: 0 6px 0px #D95858, 
-                0 12px 30px rgba(255, 107, 107, 0.4),
+    box-shadow: 0 8px 0px #D95858, 
+                0 15px 35px rgba(255, 107, 107, 0.4),
                 inset 0 2px 0px rgba(255, 255, 255, 0.5);
     position: relative;
-    overflow: visible;
-    transition: all 0.3s ease;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 1s ease-out 0.7s both, subtlePulse 2s ease-in-out 2s infinite;
 }
 
-@keyframes btnGradient {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+@keyframes subtlePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.03);
+    }
+}
+
+.home-btn .btn-text {
+    position: relative;
+    z-index: 2;
+}
+
+.home-btn .btn-arrow {
+    position: relative;
+    z-index: 2;
+    font-size: 42px;
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+.home-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.3), 
+        transparent
+    );
+    transition: left 0.5s ease;
 }
 
 .home-btn:hover {
-    transform: scale(1.08) translateY(-2px);
-    box-shadow: 0 8px 0px #D95858, 
-                0 16px 35px rgba(255, 107, 107, 0.5),
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 0 10px 0px #D95858, 
+                0 20px 45px rgba(255, 107, 107, 0.5),
                 inset 0 2px 0px rgba(255, 255, 255, 0.6);
+    background-position: 100% center;
+}
+
+.home-btn:hover::before {
+    left: 100%;
+}
+
+.home-btn:hover .btn-arrow {
+    transform: translateX(8px);
 }
 
 .home-btn:active {
-    transform: scale(1.05) translateY(1px);
-    box-shadow: 0 3px 0px #D95858, 
-                0 6px 20px rgba(255, 107, 107, 0.3);
-}
-
-/* Fixed the duplicate .home-btn::before issue */
-.home-btn::before {
-    position: absolute;
-    left: 20px;
-    animation: party 1s ease-in-out infinite;
-    z-index: 1; /* Ensure emoji appears above shine effect */
-}
-
-.home-btn::after {
-    position: absolute;
-    right: 20px;
-    animation: party 1s ease-in-out infinite reverse;
-    z-index: 1; /* Ensure emoji appears above shine effect */
-}
-
-/* Added a new class for the shine effect since ::before is already used */
-.home-btn .shine-effect {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
-    transform: rotate(45deg);
-    animation: shine 2s ease-in-out infinite;
-    pointer-events: none;
-}
-
-@keyframes party {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.3) rotate(20deg); }
-}
-
-@keyframes shine {
-    0% { transform: translateX(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) rotate(45deg); }
-}
-
-@keyframes wiggle {
-    0%, 7% { transform: rotate(0); }
-    2% { transform: rotate(-5deg); }
-    4% { transform: rotate(5deg); }
-    6% { transform: rotate(0); }
+    transform: scale(1.05) translateY(2px);
+    box-shadow: 0 4px 0px #D95858, 
+                0 8px 25px rgba(255, 107, 107, 0.3);
 }
 
 .home-mobile{
@@ -292,18 +231,6 @@
 
 .mobile-bannar{
     margin-bottom: 0.6rem;
-}
-
-@keyframes anime {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
@@ -322,39 +249,45 @@
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (max-width: 768px) {
     .home-title h1 {
-        font-size: 70px;
+        font-size: 60px;
     }
     .home-container {
         margin: 1rem;
-        padding: 0rem 1.5rem;
+        padding: 2rem 1.5rem;
+    }
+    .home-paragraph {
+        font-size: 32px;
+    }
+    .home-btn {
+        font-size: 30px;
+        padding: 1.2rem 3rem;
     }
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (max-width: 600px) {
     .home-title h1 {
-        font-size: 36px;
+        font-size: 40px;
+        letter-spacing: 2px;
     }
     .home-title{
         padding-left: 0.8rem;
         margin-top: 0.5rem;
     }
-    .home-hand {
-        width: 20px;
-    }
     .home-paragraph {
-        font-size: 34px;
-    }
-    .home-footer {
-        font-size: 40px;
+        font-size: 28px;
+        margin-top: 1.5rem;
     }
     .home-btn {
         font-size: 26px;
-        width: 240px;
-        padding: 1rem 2rem;
+        padding: 1rem 2.5rem;
+        gap: 10px;
+    }
+    .home-btn .btn-arrow {
+        font-size: 32px;
     }
     .home-container {
         margin: 0.5rem;
-        padding: 0rem 1rem;
+        padding: 2rem 1rem;
     }
 }
