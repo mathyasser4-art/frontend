@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import mobileFooter from '../../img/footer-mobile.png'
+import soundEffects from '../../utils/soundEffects'
 import '../../reusable.css'
 import './ContactUS.css'
 
@@ -7,6 +8,7 @@ function ContactUS() {
     const [message, setMessage] = useState('');
 
     const send = () => {
+        soundEffects.playClick();
         if (message == '') {
             alert('You must write your message first');
             return;

@@ -1,5 +1,9 @@
 .questionType {
-    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 50%, #ff9a9e 100%);
+    background-image: url('../../img/webbackground10.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     padding: 3rem 2rem;
     position: relative;
     overflow: hidden;

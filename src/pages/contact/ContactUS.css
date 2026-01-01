@@ -1,5 +1,9 @@
 .contact {
-    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #a1c4fd 100%);
+    background-image: url('../../img/webbackground10.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     padding: 3rem 2rem;
     position: relative;
     overflow: hidden;

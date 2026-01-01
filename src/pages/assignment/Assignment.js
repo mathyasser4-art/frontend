@@ -15,6 +15,7 @@ import CanvasDraw from "react-canvas-draw-annotations";
 import alerm from '../../img/alerm.PNG'
 import MyTimer from '../../components/timer/Timer';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
+import soundEffects from '../../utils/soundEffects';
 import '../../reusable.css'
 import './Assignment.css'
 import html2canvas from 'html2canvas';
@@ -134,12 +135,16 @@ function Assignment() {
   };
 
   const handleButtonClick = (digit) => {
+    soundEffects.playNumberClick(); // Lower-pitched sound for numbers
     setAnswer(prev => {
       const newVal = prev + digit;
       return newVal;
     });
   };
-  const toggleLanguage = () => setIsArabic(prev => !prev);
+  const toggleLanguage = () => {
+    soundEffects.playClick();
+    setIsArabic(prev => !prev);
+  };
   const handleInputFocus = (e) => { e.preventDefault(); setShowKeyboard(true); };
 
   useEffect(() => {
@@ -162,23 +167,22 @@ function Assignment() {
     const isDesktop = window.innerWidth >= 993;
     
     if (isDesktop) {
-      // Desktop: 3-column layout (traditional)
-      // Row 1: 7,8,9; Row 2: 4,5,6; Row 3: 1,2,3; Row 4: 0,×,toggle; Row 5: next
+      // Desktop: 4-column layout to match other keyboards
+      // Row 1: 0,1,2,3; Row 2: 4,5,6,7; Row 3: 8,9,×,toggle; Row 4: next
       return (
         <>
-          <button onClick={() => handleButtonClick(digits[7])} className="digit-button">{digits[7]}</button>
-          <button onClick={() => handleButtonClick(digits[8])} className="digit-button">{digits[8]}</button>
-          <button onClick={() => handleButtonClick(digits[9])} className="digit-button">{digits[9]}</button>
-          
-          <button onClick={() => handleButtonClick(digits[4])} className="digit-button">{digits[4]}</button>
-          <button onClick={() => handleButtonClick(digits[5])} className="digit-button">{digits[5]}</button>
-          <button onClick={() => handleButtonClick(digits[6])} className="digit-button">{digits[6]}</button>
-          
+          <button onClick={() => handleButtonClick(digits[0])} className="digit-button">{digits[0]}</button>
           <button onClick={() => handleButtonClick(digits[1])} className="digit-button">{digits[1]}</button>
           <button onClick={() => handleButtonClick(digits[2])} className="digit-button">{digits[2]}</button>
           <button onClick={() => handleButtonClick(digits[3])} className="digit-button">{digits[3]}</button>
           
-          <button onClick={() => handleButtonClick(digits[0])} className="digit-button">{digits[0]}</button>
+          <button onClick={() => handleButtonClick(digits[4])} className="digit-button">{digits[4]}</button>
+          <button onClick={() => handleButtonClick(digits[5])} className="digit-button">{digits[5]}</button>
+          <button onClick={() => handleButtonClick(digits[6])} className="digit-button">{digits[6]}</button>
+          <button onClick={() => handleButtonClick(digits[7])} className="digit-button">{digits[7]}</button>
+          
+          <button onClick={() => handleButtonClick(digits[8])} className="digit-button">{digits[8]}</button>
+          <button onClick={() => handleButtonClick(digits[9])} className="digit-button">{digits[9]}</button>
           <button onClick={handleDelete} className='digit-button btn-red'>×</button>
           <button onClick={toggleLanguage} className='toggle-btn'>{isArabic ? '123' : '١٢٣'}</button>
         </>
@@ -206,7 +210,10 @@ function Assignment() {
       );
     }
   };
-  const handleDelete = () => setAnswer(prev => prev.slice(0, -1));
+  const handleDelete = () => {
+    soundEffects.playNumberClick();
+    setAnswer(prev => prev.slice(0, -1));
+  };
 
   useEffect(() => {
     if (!initialized.current) {
@@ -235,6 +242,7 @@ function Assignment() {
   };
 
   const takeScreenShot = () => {
+    soundEffects.playClick();
     const element = document.querySelector('.whiteboard')
     if (!element) return;
     html2canvas(element).then((canvas) => {
@@ -248,6 +256,7 @@ function Assignment() {
   }
 
   const nextQuestion = () => {
+    soundEffects.playClick();
     const activeNumber = parseInt(document.querySelector(".active-question").innerText)
     if (activeNumber !== questionData.length) {
       const newNumber = activeNumber + 1
@@ -272,6 +281,7 @@ function Assignment() {
   }
 
   const previousQuestion = () => {
+    soundEffects.playClick();
     const activeNumber = parseInt(document.querySelector(".active-question").innerText)
     if (activeNumber !== 1) {
       const newNumber = activeNumber - 1
@@ -294,6 +304,7 @@ function Assignment() {
   }
 
   const putQuestion = (e) => {
+    soundEffects.playClick();
     const numbers = document.querySelectorAll(".question-number p");
     for (let i = 0; i < numbers.length; i++) numbers[i].classList.remove('active-question')
     e.target.classList.add("active-question");
@@ -378,6 +389,7 @@ function Assignment() {
   }
 
   const openResulPopup = () => {
+    soundEffects.playWinSound();
     document.querySelector('.result-popup').classList.replace('d-none', 'd-flex')
     setTimeout(() => {
       document.querySelector('.result-popup').classList.remove('result-popup-hide')
@@ -405,6 +417,7 @@ function Assignment() {
 
   // Manual "End Exam" button
   const handleManualEndExam = () => {
+    soundEffects.playEndSound();
     setStopTimer(true);
     setShowKeyboard(false);
     
@@ -724,7 +737,7 @@ function Assignment() {
                     {showKeyboard && (
                       <div ref={keyboardRef} className="keyboard-container">
                         {renderDigits()}
-                        <button className='question-form-btn keyboard-next-btn' onClick={checkedQuestion}>{checkLoading ? <span className="loader"></span> : "next"}</button>
+                        <button className='question-form-btn keyboard-next-btn' onClick={() => { soundEffects.playClick(); checkedQuestion(); }}>{checkLoading ? <span className="loader"></span> : "next"}</button>
                       </div>
                     )}
                   </div>

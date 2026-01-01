@@ -11,6 +11,7 @@ import getClass from '../../api/teacher/getClass.api';
 import checked from '../../api/question/checkedAnswer.api';
 import API_BASE_URL from '../../config/api.config';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
+import soundEffects from '../../utils/soundEffects';
 import '../../reusable.css';
 import './Question.css';
 
@@ -181,6 +182,7 @@ function Question() {
     };
 
     const nextQuestion = () => {
+        soundEffects.playClick();
         const activeNumber = parseInt(document.querySelector('.active-question').innerText);
         if (activeNumber < questionData.length) {
             const newNumber = activeNumber + 1;
@@ -199,6 +201,7 @@ function Question() {
     };
 
     const previousQuestion = () => {
+        soundEffects.playClick();
         const activeNumber = parseInt(document.querySelector('.active-question').innerText);
         if (activeNumber > 1) {
             const newNumber = activeNumber - 1;
@@ -217,6 +220,7 @@ function Question() {
     };
 
     const putQuestion = (e) => {
+        soundEffects.playClick();
         document.querySelectorAll('.question-number p').forEach(p => p.classList.remove('active-question'));
         e.target.classList.add('active-question');
         const questionIndex = parseInt(e.target.innerText) - 1;
@@ -339,7 +343,8 @@ function Question() {
         setAnsweredQuestions(correctAnswers);
         setIsCheckingAnswers(false);
         
-        // Show the result popup
+        // Show the result popup with winning sound
+        soundEffects.playWinSound();
         const popup = document.querySelector('.result-popup');
         popup.classList.replace('d-none', 'd-flex');
         setTimeout(() => {
@@ -378,7 +383,11 @@ function Question() {
     };
 
     const addAllToPocket = () => {
-        const newQuestionList = [...questionData];
+        // Merge existing questions with new ones, filtering out duplicates
+        const existingIds = questionList.map(q => q._id);
+        const newQuestions = questionData.filter(q => !existingIds.includes(q._id));
+        const newQuestionList = [...questionList, ...newQuestions];
+        
         setQuestionList(newQuestionList);
         setPocketNumber(newQuestionList.length);
         storeAtCarton(newQuestionList);
@@ -475,11 +484,11 @@ function Question() {
 
             <nav>
                 <div className='nav-container d-flex justify-content-space-between align-items-center'>
-                    <Link to={'/'}><img src={logo} alt='Logo' /></Link>
+                    <Link to={'/'} onClick={() => soundEffects.playClick()}><img src={logo} alt='Logo' /></Link>
                     <div className='nav-right-side d-flex align-items-center'>
                         {/* Simplified dashboard links */}
-                        <Link to={`/dashboard/${role.toLowerCase()}`}><div className='gear'><i className='fa fa-graduation-cap' aria-hidden='true'></i></div></Link>
-                        {isAuth ? <Link to={'/user/info'}><img src={profileImg} alt='Profile' /></Link> : <Link to={'/auth/login'}><div className='nav-btn'>LogIn<div className='nav-btn2'></div></div></Link>}
+                        <Link to={`/dashboard/${role.toLowerCase()}`} onClick={() => soundEffects.playClick()}><div className='gear'><i className='fa fa-graduation-cap' aria-hidden='true'></i></div></Link>
+                        {isAuth ? <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img src={profileImg} alt='Profile' /></Link> : <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}><div className='nav-btn'>LogIn<div className='nav-btn2'></div></div></Link>}
                     </div>
                 </div>
             </nav>
@@ -513,11 +522,11 @@ function Question() {
                         <div className='question-form-head d-flex justify-content-space-between align-items-center'>
                             <p>Q{thisQuestionNumber}</p>
                             <div className='end-head d-flex align-items-center'>
-                                <div title="Open Abacus" className="abacus-button" onClick={() => setShowAbacus(!showAbacus)}>
+                                <div title="Open Abacus" className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
                                     <i className="fa fa-calculator" aria-hidden="true"></i>
                                 </div>
-                                {role === 'Teacher' && <i onClick={addAllToPocket} title="Add All to Pocket" className='fa fa-plus-square-o all-question-icon' aria-hidden='true'></i>}
-                                {role === 'Teacher' && <i onClick={addToPocket} title="Add to Pocket" className='fa fa-plus add-question-icon' aria-hidden='true'></i>}
+                                {role === 'Teacher' && <i onClick={() => { soundEffects.playClick(); addAllToPocket(); }} title="Add All to Pocket" className='fa fa-plus-square-o all-question-icon' aria-hidden='true'></i>}
+                                {role === 'Teacher' && <i onClick={() => { soundEffects.playClick(); addToPocket(); }} title="Add to Pocket" className='fa fa-plus add-question-icon' aria-hidden='true'></i>}
                                 <span className='vertical-line'></span>
                                 <p>{thisQuestion?.questionPoints} marks</p>
                             </div>
@@ -540,7 +549,7 @@ function Question() {
                                         {showKeyboard && (
                                             <div ref={keyboardRef} className='keyboard-container'>
                                                 {renderDigits()}
-                                                <button className='question-form-btn keyboard-next-btn' onClick={checkedQuestion}>{checkLoading ? <span className='loader'></span> : 'next'}</button>
+                                                <button className='question-form-btn keyboard-next-btn' onClick={() => { soundEffects.playClick(); checkedQuestion(); }}>{checkLoading ? <span className='loader'></span> : 'next'}</button>
                                             </div>
                                         )}
                                     </div>
@@ -596,7 +605,7 @@ function Question() {
                     </div>
 
                     <div className='question-end-btn d-flex'>
-                        <button onClick={openResulPopup} disabled={isCheckingAnswers}>
+                        <button onClick={() => { soundEffects.playEndSound(); openResulPopup(); }} disabled={isCheckingAnswers}>
                             {isCheckingAnswers ? (
                                 <>
                                     <span className='loader'></span> Checking Answers...
@@ -612,7 +621,7 @@ function Question() {
                 </div>
             )}
 
-            <div onClick={openQuestionList} className={`question-pocket d-flex justify-content-center align-items-center ${pocketNumber > 0 ? '' : 'hide-question-pocket'}`}>
+            <div onClick={() => { soundEffects.playClick(); openQuestionList(); }} className={`question-pocket d-flex justify-content-center align-items-center ${pocketNumber > 0 ? '' : 'hide-question-pocket'}`}>
                 <i className='fa fa-gift' aria-hidden='true'></i>
                 <div className='pocket-number d-flex justify-content-center align-items-center'><p>{pocketNumber}</p></div>
             </div>
@@ -630,7 +639,7 @@ function Question() {
                             <tbody><tr><td>{answeredQuestions}</td><td>{points}</td><td>{totalSummation}</td></tr></tbody>
                         </table>
                     </div>
-                    <Link to={`/Unit/${questionTypeID}/${subjectID}`}><button className='button popup-btn'>Close</button></Link>
+                    <Link to={`/Unit/${questionTypeID}/${subjectID}`} onClick={() => soundEffects.playClick()}><button className='button popup-btn'>Close</button></Link>
                 </div>
             </div>
             
@@ -639,8 +648,8 @@ function Question() {
                     <div className='d-flex align-items-center justify-content-space-between update-popup-head'>
                         <p>Review Questions</p>
                         <div className='d-flex align-items-center question-list-right-side'>
-                            <button onClick={removeAssignment}>Remove Assignment</button>
-                            <p className='question-list-close' onClick={closeQuestionList}>x</p>
+                            <button onClick={() => { soundEffects.playClick(); removeAssignment(); }}>Remove Assignment</button>
+                            <p className='question-list-close' onClick={() => { soundEffects.playClick(); closeQuestionList(); }}>x</p>
                         </div>
                     </div>
                     <div className='add-to-popup-body'>
