@@ -4,6 +4,7 @@ import Navbar from '../../components/navbar/Navbar'
 import QuestionType from '../questionType/QuestionType'
 import ContactUS from '../contact/ContactUS'
 import soundEffects from '../../utils/soundEffects'
+import hand from '../../img/hand.png'
 import '../../reusable.css'
 import './Home.css'
 
