@@ -16,7 +16,7 @@
 }
 
 .home {
-    height: 100vh;
+    min-height: 100vh;
     background-image: url('../../img/webbackground10.jpg');
     background-size: cover;
     background-position: center;
@@ -24,10 +24,7 @@
     background-attachment: fixed;
     position: relative;
     overflow: hidden;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 100px;
+    padding-bottom: 2rem;
 }
 
 .home-container {
@@ -35,7 +32,7 @@
     position: relative;
     z-index: 2;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 250, 240, 0.92) 100%);
-    margin: 1rem 2rem 2rem 2rem;
+    margin: 1rem auto 2rem auto;
     border-radius: 40px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
                 0 8px 20px rgba(255, 107, 107, 0.1);
@@ -43,6 +40,7 @@
     border: 3px solid rgba(255, 255, 255, 0.8);
     text-align: center;
     max-width: 900px;
+    width: calc(100% - 4rem);
     animation: fadeInUp 0.8s ease-out;
 }
 
