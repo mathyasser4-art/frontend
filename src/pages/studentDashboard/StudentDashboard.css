@@ -3,6 +3,324 @@
     padding-bottom: 6.5rem;
 }
 
+/* Main Menu Styles */
+.dashboard-main-menu {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.welcome-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.welcome-header h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-header .class-name {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.dashboard-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    transition: height 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.12), 0 16px 32px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-card:hover::before {
+    height: 100%;
+    opacity: 0.05;
+}
+
+/* Homework Card - Bright Orange */
+.homework-card::before {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+}
+
+.homework-card .card-icon-wrapper {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+}
+
+.homework-card .card-button {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+}
+
+/* Practice Card - Bright Blue */
+.practice-card::before {
+    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+}
+
+.practice-card .card-icon-wrapper {
+    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+}
+
+.practice-card .card-button {
+    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+}
+
+.card-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: white;
+}
+
+.dashboard-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+    color: #333;
+}
+
+.card-description {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.card-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.no-data {
+    font-size: 0.95rem;
+    color: #999;
+    font-style: italic;
+}
+
+.card-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: auto;
+}
+
+.card-button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-button:active {
+    transform: scale(0.98);
+}
+
+/* Practice Options Section Styles */
+.practice-options-section {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.practice-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.practice-option {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.practice-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    transition: height 0.3s ease;
+}
+
+.practice-option:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.12), 0 16px 32px rgba(0, 0, 0, 0.15);
+}
+
+.practice-option:hover::before {
+    height: 100%;
+    opacity: 0.05;
+}
+
+.practice-option.mental-math::before {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+}
+
+.practice-option.masterminds::before {
+    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+}
+
+.practice-option-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.practice-option h3 {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+    color: #333;
+}
+
+.practice-option p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.practice-option-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.8rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.mental-math .practice-option-btn {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+    color: white;
+}
+
+.masterminds .practice-option-btn {
+    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+    color: white;
+}
+
+.practice-option-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Homework Section Styles */
+.homework-section {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f5f5f5;
+    border: none;
+    padding: 0.8rem 1.2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #333;
+}
+
+.back-button:hover {
+    background: #e0e0e0;
+    transform: translateX(-4px);
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+}
+
 .student-dashboard-body {
     background-color: #fff;
     box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1), 0 6px 15px 0 rgba(0, 0, 0, 0.19);
@@ -11,15 +329,51 @@
     font-size: 17px;
 }
 
+.class-info {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
 .teacher-item {
-    background-color: #5d17eb;
+    background: linear-gradient(135deg, #5d17eb 0%, #7c3aed 100%);
     color: #fff;
-    padding: 1rem;
+    padding: 1.2rem;
     font-size: 19px;
     font-weight: 500;
     margin-top: 0.8rem;
     border-radius: 10px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+}
+
+.teacher-item:hover {
+    transform: translateX(8px);
+    box-shadow: 0 4px 12px rgba(93, 23, 235, 0.3);
+}
+
+.teacher-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.teacher-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.subject-name {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin: 0;
 }
 
 .assignment-popup {
@@ -158,10 +512,22 @@
     .assignment-popup-container {
         width: 70%;
     }
+    
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
 }
 
 
 /* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (max-width: 992px) {
+    .practice-options-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
 @media only screen and (max-width: 768px) {
     .student-dashboard-container {
         padding: 0rem 1.2rem;
@@ -174,6 +540,19 @@
 
     .assignment-poster img {
         width: 200px;
+    }
+    
+    .welcome-header h2 {
+        font-size: 1.6rem;
+    }
+    
+    .dashboard-card {
+        padding: 1.5rem;
+    }
+    
+    .card-icon-wrapper {
+        width: 64px;
+        height: 64px;
     }
 }
 
@@ -199,6 +578,33 @@
     .assignment-poster img {
         display: none;
     }
+    
+    .welcome-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .dashboard-card h3 {
+        font-size: 1.3rem;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .back-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .practice-option {
+        padding: 1.5rem;
+    }
+    
+    .practice-option h3 {
+        font-size: 1.5rem;
+    }
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
@@ -212,5 +618,13 @@
         font-size: 13px;
         line-height: 18px;
         font-weight: 500;
+    }
+    
+    .card-stats {
+        gap: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
     }
 }

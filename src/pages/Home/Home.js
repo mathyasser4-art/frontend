@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/navbar/Navbar'
 import QuestionType from '../questionType/QuestionType'
 import ContactUS from '../contact/ContactUS'
@@ -10,6 +10,15 @@ import './Home.css'
 
 function Home() {
   const role = localStorage.getItem('auth_role')
+  const navigate = useNavigate()
+  
+  useEffect(() => {
+    // Redirect students directly to their dashboard
+    if (role === 'Student') {
+      navigate('/dashboard/student')
+    }
+  }, [role, navigate])
+  
   return (
     <>
       <nav>
