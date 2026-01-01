@@ -737,7 +737,7 @@ function Assignment() {
                     {showKeyboard && (
                       <div ref={keyboardRef} className="keyboard-container">
                         {renderDigits()}
-                        <button className='question-form-btn keyboard-next-btn' onClick={() => { soundEffects.playClick(); checkedQuestion(); }}>{checkLoading ? <span className="loader"></span> : "next"}</button>
+                        <button className='question-form-btn keyboard-next-btn' onClick={() => { checkedQuestion(); }}>{checkLoading ? <span className="loader"></span> : "next"}</button>
                       </div>
                     )}
                   </div>
