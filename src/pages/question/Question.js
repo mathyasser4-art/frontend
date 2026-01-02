@@ -113,18 +113,29 @@ function Question() {
         setShowKeyboard(true);
     };
 
+    // Auto-show keyboard for Essay questions
+    useEffect(() => {
+        if (thisQuestion?.typeOfAnswer === 'Essay') {
+            setShowKeyboard(true);
+        } else {
+            setShowKeyboard(false);
+        }
+    }, [thisQuestion]);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (
-                inputRef.current && !inputRef.current.contains(event.target) &&
-                keyboardRef.current && !keyboardRef.current.contains(event.target)
-            ) {
+            // Close keyboard when clicking anywhere except the keyboard itself
+            if (keyboardRef.current && !keyboardRef.current.contains(event.target)) {
                 setShowKeyboard(false);
             }
         };
-        document.addEventListener('mousedown', handleClickOutside);
+        
+        if (showKeyboard) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    }, [showKeyboard]);
 
     const renderDigits = () => {
         const digits = isArabic ? arabicDigits : englishDigits;
@@ -184,6 +195,13 @@ function Question() {
     const nextQuestion = () => {
         soundEffects.playClick();
         const activeNumber = parseInt(document.querySelector('.active-question').innerText);
+        
+        // Check if this is the last question - auto-end exam
+        if (activeNumber === questionData.length) {
+            openResulPopup();
+            return;
+        }
+        
         if (activeNumber < questionData.length) {
             const newNumber = activeNumber + 1;
             document.querySelectorAll('.question-number p').forEach(p => {
@@ -283,7 +301,13 @@ function Question() {
             setError('');
             const index = questionData.findIndex(item => item._id === thisQuestion._id);
             questionData[index].questionAnswer = answer;
-            nextQuestion();
+            
+            // Check if this is the last question - auto-end exam
+            if (thisQuestionNumber === questionData.length) {
+                openResulPopup();
+            } else {
+                nextQuestion();
+            }
         } else {
             setError('There is no answer yet!!');
         }

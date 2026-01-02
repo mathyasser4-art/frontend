@@ -147,18 +147,29 @@ function Assignment() {
   };
   const handleInputFocus = (e) => { e.preventDefault(); setShowKeyboard(true); };
 
+  // Auto-show keyboard for Essay questions
+  useEffect(() => {
+    if (thisQuestion?.typeOfAnswer === 'Essay') {
+      setShowKeyboard(true);
+    } else {
+      setShowKeyboard(false);
+    }
+  }, [thisQuestion]);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        inputRef.current && !inputRef.current.contains(event.target) &&
-        keyboardRef.current && !keyboardRef.current.contains(event.target)
-      ) {
+      // Close keyboard when clicking anywhere except the keyboard itself
+      if (keyboardRef.current && !keyboardRef.current.contains(event.target)) {
         setShowKeyboard(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => { document.removeEventListener('mousedown', handleClickOutside); };
-  }, []);
+    
+    if (showKeyboard) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showKeyboard]);
 
   const renderDigits = () => {
     const digits = isArabic ? arabicDigits : englishDigits;
@@ -258,6 +269,13 @@ function Assignment() {
   const nextQuestion = () => {
     soundEffects.playClick();
     const activeNumber = parseInt(document.querySelector(".active-question").innerText)
+    
+    // Check if this is the last question - auto-end exam
+    if (activeNumber === questionData.length) {
+      handleManualEndExam();
+      return;
+    }
+    
     if (activeNumber !== questionData.length) {
       const newNumber = activeNumber + 1
       let newActive = '';
@@ -382,7 +400,13 @@ function Assignment() {
       // Just save the answer, don't check it yet
       const index = questionData.findIndex(item => item._id === thisQuestion._id);
       questionData[index].questionAnswer = answer;
-      nextQuestion();
+      
+      // Check if this is the last question - auto-end exam
+      if (thisQuestionNumber === questionData.length) {
+        handleManualEndExam();
+      } else {
+        nextQuestion();
+      }
     } else {
       setError('There is no answer yet!!')
     }
