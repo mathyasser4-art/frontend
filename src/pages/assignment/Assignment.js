@@ -147,7 +147,7 @@ function Assignment() {
   };
   const handleInputFocus = (e) => { e.preventDefault(); setShowKeyboard(true); };
 
-  // Auto-show keyboard for Essay questions
+  // Auto-show keyboard for Essay questions and keep it open
   useEffect(() => {
     if (thisQuestion?.typeOfAnswer === 'Essay') {
       setShowKeyboard(true);
@@ -155,21 +155,6 @@ function Assignment() {
       setShowKeyboard(false);
     }
   }, [thisQuestion]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Close keyboard when clicking anywhere except the keyboard itself
-      if (keyboardRef.current && !keyboardRef.current.contains(event.target)) {
-        setShowKeyboard(false);
-      }
-    };
-    
-    if (showKeyboard) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showKeyboard]);
 
   const renderDigits = () => {
     const digits = isArabic ? arabicDigits : englishDigits;
