@@ -1,7 +1,7 @@
 /* This rule positions the entire floating window */
 .abacus-popup-wrapper {
   position: fixed;
-  z-index: 1000;
+  z-index: 10000;
   padding: 12px;
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
@@ -235,125 +235,127 @@ button#resetBtn:active {
   }
 }
 
-/* Mobile screens */
+/* Mobile screens - Increased sizes */
 @media only screen and (max-width: 600px) {
   .abacus-close-button {
-    width: 26px;
-    height: 26px;
-    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    font-size: 22px;
+    top: 10px;
+    left: 10px;
+  }
+  
+  .abacus-popup-wrapper {
+    padding: 12px;
+    border-radius: 12px;
+    max-height: 85vh;
+  }
+  
+  .abacus-drag-handle {
+    padding: 6px;
+    font-size: 12px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+  
+  #abacus {
+    padding: 14px;
+    margin-top: 8px;
+    border-radius: 10px;
+  }
+  
+  .rod {
+    width: 24px;
+    margin: 0 12px;
+  }
+  
+  .top-bead, .bottom-bead {
+    width: 36px;
+    height: 36px;
+    margin: 4px 0;
+  }
+  
+  .divider {
+    height: 4px;
+    margin: 14px 0;
+  }
+  
+  .top-bead.active {
+    transform: translateY(20px);
+  }
+  
+  .bottom-bead.active {
+    transform: translateY(-22px);
+  }
+  
+  .abacus-widget-container h2 {
+    font-size: 16px;
+    margin: 10px 0 6px 0;
+  }
+  
+  button#resetBtn {
+    padding: 8px 16px;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+}
+
+/* Very small mobile screens - Increased sizes */
+@media only screen and (max-width: 400px) {
+  .abacus-close-button {
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
     top: 8px;
     left: 8px;
   }
   
   .abacus-popup-wrapper {
-    padding: 8px;
-    border-radius: 10px;
+    padding: 10px;
+    max-height: 85vh;
   }
   
   .abacus-drag-handle {
-    padding: 4px;
-    font-size: 10px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-  
-  #abacus {
-    padding: 8px;
-    margin-top: 5px;
-    border-radius: 8px;
-  }
-  
-  .rod {
-    width: 16px;
-    margin: 0 8px;
-  }
-  
-  .top-bead, .bottom-bead {
-    width: 20px;
-    height: 20px;
-    margin: 2px 0;
-  }
-  
-  .divider {
-    height: 3px;
-    margin: 8px 0;
-  }
-  
-  .top-bead.active {
-    transform: translateY(12px);
-  }
-  
-  .bottom-bead.active {
-    transform: translateY(-14px);
-  }
-  
-  .abacus-widget-container h2 {
-    font-size: 13px;
-    margin: 6px 0 3px 0;
-  }
-  
-  button#resetBtn {
-    padding: 4px 10px;
-    margin-top: 5px;
+    padding: 5px;
     font-size: 11px;
   }
-}
-
-/* Very small mobile screens */
-@media only screen and (max-width: 400px) {
-  .abacus-close-button {
-    width: 24px;
-    height: 24px;
-    font-size: 16px;
-    top: 6px;
-    left: 6px;
-  }
-  
-  .abacus-popup-wrapper {
-    padding: 6px;
-  }
-  
-  .abacus-drag-handle {
-    padding: 3px;
-    font-size: 9px;
-  }
   
   #abacus {
-    padding: 6px;
+    padding: 12px;
   }
   
   .rod {
-    width: 14px;
-    margin: 0 6px;
+    width: 20px;
+    margin: 0 10px;
   }
   
   .top-bead, .bottom-bead {
-    width: 18px;
-    height: 18px;
-    margin: 1px 0;
+    width: 32px;
+    height: 32px;
+    margin: 3px 0;
   }
   
   .divider {
-    height: 2px;
-    margin: 6px 0;
+    height: 4px;
+    margin: 12px 0;
   }
   
   .top-bead.active {
-    transform: translateY(10px);
+    transform: translateY(18px);
   }
   
   .bottom-bead.active {
-    transform: translateY(-12px);
+    transform: translateY(-20px);
   }
   
   .abacus-widget-container h2 {
-    font-size: 12px;
-    margin: 5px 0 2px 0;
+    font-size: 15px;
+    margin: 8px 0 4px 0;
   }
   
   button#resetBtn {
-    padding: 3px 8px;
-    margin-top: 4px;
-    font-size: 10px;
+    padding: 6px 14px;
+    margin-top: 6px;
+    font-size: 13px;
   }
 }
