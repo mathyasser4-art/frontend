@@ -299,6 +299,8 @@ function Question() {
     };
 
     const openResulPopup = () => {
+        // Hide keyboard when showing results
+        setShowKeyboard(false);
         // Start checking all answers (including unanswered ones)
         setIsCheckingAnswers(true);
         checkAllAnswers();
