@@ -138,8 +138,7 @@ function StudentDashboard() {
                         // Main Menu - Two Card Layout
                         <div className="dashboard-main-menu">
                             <div className="welcome-header">
-                                <h2>Welcome Back! 👋</h2>
-                                {className && <p className="class-name">Class: {className}</p>}
+                                {className && <h2 className="class-name">Welcome to {className}! 👋</h2>}
                             </div>
                             
                             <div className="dashboard-cards">

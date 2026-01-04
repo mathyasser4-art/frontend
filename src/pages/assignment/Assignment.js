@@ -801,22 +801,6 @@ function Assignment() {
             )}
           </div>
 
-          {!examCompleted && (
-            <div className="question-end-btn d-flex">
-              <button onClick={handleManualEndExam} disabled={isCheckingAnswers}>
-                {isCheckingAnswers ? (
-                  <>
-                    <span className="loader"></span> Checking Answers...
-                  </>
-                ) : resultLoading ? (
-                  <span className="loader"></span>
-                ) : (
-                  "End Exam"
-                )}
-              </button>
-            </div>
-          )}
-
           {resultError ? <div className='d-flex end-exam-error justify-content-flex-start'><p className='error-line'>You must answer at least one question first!!</p></div> : null}
           <div className="alert"> Congratulations! your answer is coreect.</div>
           <div className="alert alert-question"> Wrong!❌</div>

@@ -81,8 +81,9 @@
     line-height: 1.1;
 }
 
-/* First line: "WELCOME TO" - Soft orange/coral */
-.home-title h1.text-purple {
+/* Unified color for both "WELCOME TO" and "ABACUS HEROES" - Vibrant orange */
+.home-title h1.text-purple,
+.home-title h1.text-red {
     background: linear-gradient(to bottom, 
         #FFD4A3 0%,
         #FFC491 15%,
@@ -99,26 +100,6 @@
             drop-shadow(0px 4px 0px rgba(255, 200, 160, 0.4))
             drop-shadow(0px 6px 0px rgba(255, 180, 140, 0.3))
             drop-shadow(0px 10px 20px rgba(232, 130, 90, 0.25));
-}
-
-/* Second line: "ABACUS HEROES" - Soft beige/tan */
-.home-title h1.text-red {
-    background: linear-gradient(to bottom, 
-        #F5E6D3 0%,
-        #EDD9C4 15%,
-        #E5CCB5 30%,
-        #DDBFA6 50%,
-        #D5B297 70%,
-        #C9A389 85%,
-        #B08968 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0px 2px 0px rgba(255, 255, 255, 0.8))
-            drop-shadow(0px 4px 0px rgba(237, 217, 196, 0.4))
-            drop-shadow(0px 6px 0px rgba(229, 204, 181, 0.3))
-            drop-shadow(0px 10px 20px rgba(201, 163, 137, 0.25));
 }
 
 .home-paragraph {
