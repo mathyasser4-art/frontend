@@ -446,12 +446,14 @@ body {
     }
     
     /* Grid layout for keyboard - 4 columns, 3 rows of digits */
-    .keyboard-container {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 5px;
-        width: 100%;
-    }
+.keyboard-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    width: 100%;
+    position: relative;
+    z-index: 5;
+}
     
     /* Next button spans full width */
     .keyboard-next-btn {
@@ -909,6 +911,12 @@ input[type="radio"] {
     margin: 1rem 0rem;
     border-radius: 20px;
     position: relative;
+    z-index: 1;
+}
+
+/* Elevate the question card when keyboard is active */
+.form-body-list:has(.keyboard-container) {
+    z-index: 10;
 }
 
 .question-list-close{
