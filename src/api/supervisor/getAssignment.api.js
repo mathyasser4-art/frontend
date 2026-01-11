@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/supervisor/getAssignment'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/supervisor/getAssignment`;
 const Token = localStorage.getItem('O_authWEB')
 
 const getAssignment = (setLoadingOperation, setAllAsignment, setError, teacherID) => {

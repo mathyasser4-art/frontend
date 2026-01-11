@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/supervisor/deleteSupervisor'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/supervisor/deleteSupervisor`;
 const Token = localStorage.getItem('O_authWEB')
 
 const removeSupervisor = (supervisorID, setError, setLoadingOperation, closeRemovePopup, setAllSupervisor, setSupervisorNumber) => {

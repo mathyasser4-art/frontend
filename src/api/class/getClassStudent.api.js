@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/class/getStudent'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/class/getStudent`;
 const Token = localStorage.getItem('O_authWEB')
 
 const getClassStudent = (setStudentLoading, setClassStudent, classID, setNoStudent) => {

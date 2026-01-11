@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/teacher/addTeacher'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/teacher/addTeacher`;
 const Token = localStorage.getItem('O_authWEB')
 
 const addTeacher = (data, setError, setLoadingOperation, closeAddPopup, pageNumber, setAllTeacher, setTeacherNumber, setTotalPage) => {

@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/chapter/getChapterQuestion'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/chapter/getChapterQuestion`;
 
 const getQuestion = (setLoading, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, chapterID) => {
     setLoading(true)

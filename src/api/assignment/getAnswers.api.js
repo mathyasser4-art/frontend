@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/answer/getAnswer'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/answer/getAnswer`;
 const Token = localStorage.getItem('O_authWEB')
 
 const getAnswers = (setAllAnswers, setTime, setAssignmentData, setResult, setError, setLoading, studentID, assignmentID) => {

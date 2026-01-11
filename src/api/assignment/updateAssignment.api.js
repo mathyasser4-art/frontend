@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/assignment/updateAssignment'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/assignment/updateAssignment`;
 const Token = localStorage.getItem('O_authWEB')
 
 const updateAssignment = (data, setError, assignmentID, setAllAsignment,setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setAttempts, setExpiryData, setStartDate) => {

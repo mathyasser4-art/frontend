@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/teacher/removeTeacherFromClass'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/teacher/removeTeacherFromClass`;
 const Token = localStorage.getItem('O_authWEB')
 
 const removeTeacherFromClass = (setLoadingOperation, setError, setTeacherList, classID, teacherID, setAllClass) => {

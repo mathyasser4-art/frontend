@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/question/checkTheAnswer'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/question/checkTheAnswer`;
 
 const checked = (data, setCheckLoading, thisQuestion, questionData, thisQuestionNumber, showAlert, setQuestionData, openModelAnswer, showAlertSuccess, nextQuestion, setPoints, points, answeredQuestions, setAnsweredQuestions, setIsCorrect) => {
     setCheckLoading(true)

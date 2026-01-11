@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/supervisor/addSupervisor'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/supervisor/addSupervisor`;
 const Token = localStorage.getItem('O_authWEB')
 
 const addSupervisor = (data, setError, setLoadingOperation, closeAddPopup, setAllSupervisor, setSupervisorNumber) => {

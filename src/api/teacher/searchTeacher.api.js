@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/teacher/search'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/teacher/search`;
 const Token = localStorage.getItem('O_authWEB')
 
 const searchTeacher = (setLoading, setAllTeacher, searchKey) => {

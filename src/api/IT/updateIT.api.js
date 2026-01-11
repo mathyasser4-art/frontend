@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/it/updateIT'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/it/updateIT`;
 const Token = localStorage.getItem('O_authWEB')
 
 const updateIT = (data, setError, setLoadingOperation, closeUpdatePopup, setAllIt, setItNumber, itID) => {

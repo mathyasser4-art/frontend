@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/unit/getUnit'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/unit/getUnit`;
 
 const getUnit = (setLoading, setUnitData, questionTypeID, subjectID) => {
     setLoading(true)

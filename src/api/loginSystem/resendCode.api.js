@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/user/resendVerificationCode'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/user/resendVerificationCode`;
 
 const resendCode = (data, showAlert) => {
     fetch(`${URL}`, {

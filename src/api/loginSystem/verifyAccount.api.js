@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/user/verificationEmail'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/user/verificationEmail`;
 
 const verifyAccount = (data, setError, setLoading, navigate) => {
     setLoading(true)

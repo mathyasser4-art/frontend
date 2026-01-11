@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/assignment/deleteAssignment'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/assignment/deleteAssignment`;
 const Token = localStorage.getItem('O_authWEB')
 
 const removeAssignment = (assignmentID, setError, setLoadingOperation, closeRemovePopup, setAllAsignment) => {

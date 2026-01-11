@@ -1,4 +1,6 @@
-const URL = 'https://abacus-2ntk.onrender.com/system/getAllSystem'
+import API_BASE_URL from '../../config/api.config';
+
+const URL = `${API_BASE_URL}/system/getAllSystem`;
 
 const getSystem = (setLoading, setSystemData) => {
     setLoading(true)

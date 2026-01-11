@@ -7,6 +7,7 @@ import book from '../../img/book.png'
 import AssignmentLoading from '../../components/assignmentLoading/AssignmentLoading'
 import getAssignment from '../../api/student/getAssignment.api'
 import { NotebookPen, Brain, ChevronRight } from 'lucide-react'
+import API_BASE_URL from '../../config/api.config'
 import '../../reusable.css'
 import './StudentDashboard.css'
 
@@ -42,7 +43,7 @@ function StudentDashboard() {
                 // Create promises for all teachers
                 const promises = teacherList.map(teacher => {
                     const Token = localStorage.getItem('O_authWEB')
-                    return fetch(`https://abacus-2ntk.onrender.com/student/getAssignment/${teacher._id}`, {
+                    return fetch(`${API_BASE_URL}/student/getAssignment/${teacher._id}`, {
                         method: 'get',
                         headers: {
                             'Content-Type': 'application/json',
