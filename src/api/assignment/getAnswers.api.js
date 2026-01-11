@@ -40,7 +40,7 @@ const getAnswers = (setAllAnswers, setTime, setAssignmentData, setResult, setErr
                 setLoading(false)
                 
                 let result = 0;
-                responseJson.report.questions.map(questions => {
+                responseJson.report.questions.forEach(questions => {
                     if (questions.isCorrect) {
                         result += questions.questionPoints;
                     }
