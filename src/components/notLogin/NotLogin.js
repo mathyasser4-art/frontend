@@ -10,7 +10,7 @@ function NotLogin() {
         <Navbar />
         <div className='not-login d-flex justify-content-center align-items-center flex-direction-column'>
             <p>You cannot access this page until you are logged in</p>
-            <Link to={'/auth/login'}><div className="not-login-btn">LogIn
+            <Link to={'/auth/login'}><div className="not-login-btn">Login
                 <div className="not-login-btn2"></div>
             </div></Link>
         </div>
