@@ -639,7 +639,7 @@ function Assignment() {
           <Link to={'/'}><img src={logo} alt="" /></Link>
           <div className='nav-right-side d-flex align-items-center'>
             {role === 'Student' ? <Link to={'/dashboard/student'}><div className="gear"><i className="fa fa-graduation-cap" aria-hidden="true"></i></div></Link> : null}
-            {isAuth ? <Link to={'/user/info'}><img src={profileImg} alt="" /></Link> : <Link to={'/auth/login'}><div className="nav-btn">LogIn
+            {isAuth ? <Link to={'/user/info'}><img src={profileImg} alt="" /></Link> : <Link to={'/auth/login'}><div className="nav-btn">Login
               <div className="nav-btn2"></div>
             </div></Link>}
           </div>
