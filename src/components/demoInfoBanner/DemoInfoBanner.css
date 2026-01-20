@@ -1,0 +1,53 @@
+.demo-info-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.demo-info-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.demo-badge {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.4rem 0.875rem;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.demo-text {
+  color: white;
+  font-size: 14px;
+  margin: 0;
+  flex: 1;
+}
+
+.demo-text strong {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+@media only screen and (max-width: 600px) {
+  .demo-info-banner {
+    padding: 0.875rem 1rem;
+  }
+
+  .demo-info-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .demo-text {
+    font-size: 13px;
+  }
+}

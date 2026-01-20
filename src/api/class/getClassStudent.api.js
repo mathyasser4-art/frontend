@@ -1,9 +1,24 @@
 import API_BASE_URL from '../../config/api.config';
+import { createDemoStudents, isDemoMode } from '../../utils/createDemoData';
 
 const URL = `${API_BASE_URL}/class/getStudent`;
-const Token = localStorage.getItem('O_authWEB')
 
 const getClassStudent = (setStudentLoading, setClassStudent, classID, setNoStudent) => {
+    const Token = localStorage.getItem('O_authWEB')
+    
+    // Check if requesting demo class students
+    if (isDemoMode() && classID.startsWith('demo-class-')) {
+        setStudentLoading(true)
+        setTimeout(() => {
+            const demoStudents = createDemoStudents(classID);
+            setClassStudent(demoStudents);
+            setNoStudent(demoStudents.length === 0);
+            setStudentLoading(false)
+        }, 800); // Simulate API delay
+        return;
+    }
+
+    // Regular API call
     setStudentLoading(true)
     fetch(`${URL}/${classID}`, {
         method: 'get',

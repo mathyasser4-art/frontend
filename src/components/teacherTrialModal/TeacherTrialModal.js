@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import soundEffects from '../../utils/soundEffects';
+import { initializeDemoData } from '../../utils/createDemoData';
 import './TeacherTrialModal.css';
 
 function TeacherTrialModal({ isOpen, onClose }) {
@@ -36,6 +37,9 @@ function TeacherTrialModal({ isOpen, onClose }) {
     localStorage.setItem('O_authWEB', 'trial_token');
     localStorage.setItem('auth_role', 'Teacher');
     localStorage.setItem('isTrialMode', 'true');
+
+    // Initialize demo data (5 classes with students)
+    initializeDemoData();
 
     // Navigate to teacher dashboard
     navigate('/dashboard/teacher');

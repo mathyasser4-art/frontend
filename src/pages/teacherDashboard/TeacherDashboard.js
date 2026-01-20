@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/navbar/Navbar'
 import TrialBanner from '../../components/trialBanner/TrialBanner';
+import DemoInfoBanner from '../../components/demoInfoBanner/DemoInfoBanner';
 import { Link } from 'react-router-dom'
 import MathInput from "react-math-keyboard";
 import getAssignment from '../../api/teacher/getAssignment.api'
@@ -196,6 +197,7 @@ function TeacherDashboard() {
             </nav>
             <Navbar />
             <div className="teacher-dashboard-container">
+                {isTrialMode && <DemoInfoBanner />}
                 {loading ? <DashboardLoading /> : (error) ? <div className='d-flex justify-content-center'><div className="error">{error}</div> </div> : allAsignment?.map(item => {
                     return (
                         <div key={item._id} className="assignment-teacher-item d-flex justify-content-space-between align-items-center">
