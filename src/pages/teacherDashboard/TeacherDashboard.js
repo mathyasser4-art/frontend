@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/navbar/Navbar'
+import TrialBanner from '../../components/trialBanner/TrialBanner';
 import { Link } from 'react-router-dom'
 import MathInput from "react-math-keyboard";
 import getAssignment from '../../api/teacher/getAssignment.api'
@@ -29,6 +30,7 @@ function TeacherDashboard() {
     const [errorOperation, setErrorOperation] = useState(null)
     const [error, setError] = useState(null)
     const isAuth = localStorage.getItem('O_authWEB')
+    const isTrialMode = localStorage.getItem('isTrialMode') === 'true'
 
     useEffect(() => {
         const handleGetAssignment = () => {
@@ -179,6 +181,7 @@ function TeacherDashboard() {
 
     return (
         <>
+            {isTrialMode && <TrialBanner />}
             <nav>
                 <div className='nav-mobile'>
                     <div className='nav-mobile-container d-flex justify-content-space-around align-items-center'>

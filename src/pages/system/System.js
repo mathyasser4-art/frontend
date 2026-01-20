@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../../components/navbar/Navbar'
+import GuestBanner from '../../components/guestBanner/GuestBanner';
 import { Link, useParams } from 'react-router-dom';
 import SystemLoading from '../../components/systemLoding/SystemLoading';
-import NotLogin from '../../components/notLogin/NotLogin';
 import getSystem from '../../api/system/getSystem.api';
 import '../../reusable.css'
 import './System.css'
@@ -18,9 +18,7 @@ function System() {
         const getAllSystem = async () => {
             await getSystem(setLoading, setSystemData)
         }
-        if (isAuth) {
-            getAllSystem()
-        }
+        getAllSystem()
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     const dropdownToggle = (e) => {
@@ -66,22 +64,9 @@ function System() {
         }
     }
 
-    if (!isAuth) return (<>
-        <nav>
-            <div className='nav-mobile'>
-                <div className='nav-mobile-container d-flex justify-content-space-around align-items-center'>
-                    <Link to={'/'}><i className="fa fa-home" aria-hidden="true"></i></Link>
-                    <Link to={'/system/65a4963482dbaac16d820fc6'}><i className={`fa fa-tasks ${questionTypeID === '65a4963482dbaac16d820fc6' ? 'active' : ''}`} aria-hidden="true"></i></Link>
-                    <Link to={'/system/65a4964b82dbaac16d820fc8'}><i className={`fa fa-file-text-o ${questionTypeID === '65a4964b82dbaac16d820fc8' ? 'active' : ''}`} aria-hidden="true"></i></Link>
-                    <Link to={'/contact'}><i className="fa fa-headphones" aria-hidden="true"></i></Link>
-                    <Link to={'/user/info'}><i className="fa fa-user" aria-hidden="true"></i></Link>
-                </div>
-            </div>
-        </nav>
-        <NotLogin /></>)
-
     return (
         <>
+            {!isAuth && <GuestBanner />}
             <Navbar />
             <nav>
                 <div className='nav-mobile'>

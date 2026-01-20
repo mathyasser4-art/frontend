@@ -205,6 +205,101 @@
                 0 8px 25px rgba(255, 107, 107, 0.3);
 }
 
+.home-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin: 2rem 0 1rem 0;
+    animation: fadeIn 1s ease-out 0.9s both;
+}
+
+.home-option-card {
+    background: white;
+    border: 3px solid #e0e0e0;
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+    overflow: hidden;
+}
+
+.home-option-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.home-option-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    border-color: #FF6B6B;
+    box-shadow: 0 15px 40px rgba(255, 107, 107, 0.3);
+}
+
+.home-option-card:hover::before {
+    left: 100%;
+}
+
+.home-option-card:active {
+    transform: translateY(-4px) scale(1.02);
+}
+
+.option-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.home-option-card:hover .option-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.teacher-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.home-option-card h3 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.home-option-card p {
+    font-size: 15px;
+    color: #666;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+}
+
+.option-badge {
+    display: inline-block;
+    background: #4ECDC4;
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.trial-badge {
+    background: linear-gradient(135deg, #FFD93D 0%, #FF6B6B 100%);
+}
+
 .home-mobile{
     display: none;
 }
@@ -269,5 +364,23 @@
     .home-container {
         margin: 0.5rem;
         padding: 2rem 1rem;
+    }
+    .home-options {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin: 1.5rem 0 0.5rem 0;
+    }
+    .home-option-card {
+        padding: 1.5rem 1rem;
+    }
+    .home-option-card h3 {
+        font-size: 20px;
+    }
+    .home-option-card p {
+        font-size: 14px;
+    }
+    .option-icon {
+        width: 70px;
+        height: 70px;
     }
 }
