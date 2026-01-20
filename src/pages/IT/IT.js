@@ -23,6 +23,7 @@ function IT() {
     const [loading, setLoading] = useState(true)
     let number = 1
     const isAuth = localStorage.getItem('O_authWEB')
+    const role = localStorage.getItem('auth_role')
 
     useEffect(() => {
         const getAllIt = () => {
