@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/navbar/Navbar'
 import TrialBanner from '../../components/trialBanner/TrialBanner';
-import DemoInfoBanner from '../../components/demoInfoBanner/DemoInfoBanner';
+import UpgradePrompt from '../../components/upgradePrompt/UpgradePrompt';
 import { Link } from 'react-router-dom'
 import MathInput from "react-math-keyboard";
 import getAssignment from '../../api/teacher/getAssignment.api'
@@ -197,7 +197,6 @@ function TeacherDashboard() {
             </nav>
             <Navbar />
             <div className="teacher-dashboard-container">
-                {isTrialMode && <DemoInfoBanner />}
                 {loading ? <DashboardLoading /> : (error) ? <div className='d-flex justify-content-center'><div className="error">{error}</div> </div> : allAsignment?.map(item => {
                     return (
                         <div key={item._id} className="assignment-teacher-item d-flex justify-content-space-between align-items-center">
@@ -341,32 +340,41 @@ function TeacherDashboard() {
                             </div>
                         </div>
 
-                        <div className="select-container d-flex">
-                            <div className="select-class">
-                                <select value={classSelector} onChange={(e) => setClassSelector(e.target.value)}>
-                                    <option>Select Class</option>
-                                    {classesList?.length === 0 ? <option>There is no classes for this teacher</option> : <option>All Classes</option>}
-                                    {classesList?.map(item => {
+                        {isTrialMode ? (
+                            <UpgradePrompt 
+                                message="Upgrade to create classes and assign homework to real students"
+                                ctaText="Upgrade to Get Classes"
+                            />
+                        ) : (
+                            <>
+                                <div className="select-container d-flex">
+                                    <div className="select-class">
+                                        <select value={classSelector} onChange={(e) => setClassSelector(e.target.value)}>
+                                            <option>Select Class</option>
+                                            {classesList?.length === 0 ? <option>There is no classes for this teacher</option> : <option>All Classes</option>}
+                                            {classesList?.map(item => {
+                                                return (
+                                                    <option key={item._id}>{item.class}</option>
+                                                )
+                                            })}
+                                        </select>
+                                    </div>
+                                    <button onClick={addClassToBox}>Add</button>
+                                </div>
+                                <div className='class-selector-container d-flex flex-wrap align-items-center'>
+                                    {classesBox?.map(item => {
                                         return (
-                                            <option key={item._id}>{item.class}</option>
+                                            <div key={item._id} className="class-selector">
+                                                <p>{item.class}</p>
+                                                <div onClick={() => removeClassFromBox(item.class)}>
+                                                    <p>x</p>
+                                                </div>
+                                            </div>
                                         )
                                     })}
-                                </select>
-                            </div>
-                            <button onClick={addClassToBox}>Add</button>
-                        </div>
-                        <div className='class-selector-container d-flex flex-wrap align-items-center'>
-                            {classesBox?.map(item => {
-                                return (
-                                    <div key={item._id} className="class-selector">
-                                        <p>{item.class}</p>
-                                        <div onClick={() => removeClassFromBox(item.class)}>
-                                            <p>x</p>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
+                                </div>
+                            </>
+                        )}
                         {errorOperation ? <div className="error error-dengare">{errorOperation}</div> : null}
                     </div>
                     <div className="update-popup-footer">
