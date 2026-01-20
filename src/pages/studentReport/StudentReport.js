@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/navbar/Navbar'
+import MobileNav from '../../components/mobileNav/MobileNav'
 import { Link, useParams } from 'react-router-dom'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import MathInput from "react-math-keyboard";
@@ -100,18 +101,7 @@ function StudentReport() {
 
   return (
     <>
-      <nav>
-        <div className='nav-mobile'>
-          <div className='nav-mobile-container d-flex justify-content-space-around align-items-center'>
-            <Link to={'/'}><i className="fa fa-home" aria-hidden="true"></i></Link>
-            <Link to={'/system/65a4963482dbaac16d820fc6'}><i className="fa fa-tasks link" aria-hidden="true"></i></Link>
-            <Link to={'/system/65a4964b82dbaac16d820fc8'}><i className="fa fa-file-text-o link" aria-hidden="true"></i></Link>
-            <Link to={'/dashboard/student'}><i className="fa fa-graduation-cap active" aria-hidden="true"></i></Link>
-            <Link to={'/contact'}><i className="fa fa-headphones link" aria-hidden="true"></i></Link>
-            <Link to={'/user/info'}><i className="fa fa-user link" aria-hidden="true"></i></Link>
-          </div>
-        </div>
-      </nav>
+      <MobileNav role="Student" />
       <Navbar />
       <div className="assignment-report-container">
         {loading ? (

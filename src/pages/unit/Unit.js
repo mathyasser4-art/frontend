@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../../components/navbar/Navbar'
 import GuestBanner from '../../components/guestBanner/GuestBanner';
+import MobileNav from '../../components/mobileNav/MobileNav';
 import { Link, useParams } from 'react-router-dom';
 import SystemLoading from '../../components/systemLoding/SystemLoading';
 import getUnit from '../../api/unit/getUnit.api';
@@ -68,22 +69,7 @@ function Unit() {
         <>
             {!isAuth && <GuestBanner />}
             <Navbar />
-            <nav>
-                <div className='nav-mobile'>
-                    <div className='nav-mobile-container d-flex justify-content-space-around align-items-center'>
-                        <Link to={'/'}><i className="fa fa-home" aria-hidden="true"></i></Link>
-                        <Link to={'/system/65a4963482dbaac16d820fc6'}><i className={`fa fa-tasks ${questionTypeID === '65a4963482dbaac16d820fc6' ? 'active' : ''}`} aria-hidden="true"></i></Link>
-                        <Link to={'/system/65a4964b82dbaac16d820fc8'}><i className={`fa fa-file-text-o ${questionTypeID === '65a4964b82dbaac16d820fc8' ? 'active' : ''}`} aria-hidden="true"></i></Link>
-                        {role === 'School' ? <Link to={'/dashboard-school'}><i className="fa fa-graduation-cap" aria-hidden="true"></i></Link> : null}
-                        {role === 'Teacher' ? <Link to={'/dashboard/teacher'}><i className="fa fa-graduation-cap" aria-hidden="true"></i></Link> : null}
-                        {role === 'Student' ? <Link to={'/dashboard/student'}><i className="fa fa-graduation-cap" aria-hidden="true"></i></Link> : null}
-                        {role === 'IT' ? <Link to={'/dashboard-school'}><i className="fa fa-graduation-cap" aria-hidden="true"></i></Link> : null}
-                        {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'}><i className="fa fa-graduation-cap" aria-hidden="true"></i></Link> : null}
-                        <Link to={'/contact'}><i className="fa fa-headphones" aria-hidden="true"></i></Link>
-                        <Link to={'/user/info'}><i className="fa fa-user" aria-hidden="true"></i></Link>
-                    </div>
-                </div>
-            </nav>
+            <MobileNav role={role} />
             {loading ? <SystemLoading /> : <div className="unit-container">
                 {unitData?.map(item => {
                     return (

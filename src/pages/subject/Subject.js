@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/navbar/Navbar'
+import MobileNav from '../../components/mobileNav/MobileNav'
 import { Link } from 'react-router-dom'
 import addSubject from '../../api/subject/addSubject.api'
 import getSubject from '../../api/subject/getSubject.api'
@@ -114,19 +115,7 @@ function Subject() {
 
     return (
         <>
-            <nav>
-                <div className='nav-mobile'>
-                    <div className='nav-mobile-container d-flex justify-content-space-around align-items-center'>
-                        <Link to={'/'}><i className="fa fa-home" aria-hidden="true"></i></Link>
-                        <Link to={'/system/65a4963482dbaac16d820fc6'}><i className="fa fa-tasks link" aria-hidden="true"></i></Link>
-                        <Link to={'/system/65a4964b82dbaac16d820fc8'}><i className="fa fa-file-text-o link" aria-hidden="true"></i></Link>
-                        {role === 'IT' ? <Link to={'/dashboard-school'}><i className="fa fa-graduation-cap active" aria-hidden="true"></i></Link> : null}
-                        {role === 'School' ? <Link to={'/dashboard-school'}><i className="fa fa-graduation-cap active" aria-hidden="true"></i></Link> : null}
-                        <Link to={'/contact'}><i className="fa fa-headphones link" aria-hidden="true"></i></Link>
-                        <Link to={'/user/info'}><i className="fa fa-user link" aria-hidden="true"></i></Link>
-                    </div>
-                </div>
-            </nav>
+            <MobileNav role={role} />
             <Navbar />
             <div className="subject-container">
                 <div className="subject-header d-flex align-items-center" onClick={openAddPopup}>

@@ -157,36 +157,6 @@
     animation: skeleton-loading 1s linear infinite alternate;
 }
 
-.nav-mobile {
-    position: fixed;
-    width: 100%;
-    bottom: 15px;
-    display: none;
-    z-index: 99999999;
-}
-
-.nav-mobile-container {
-    background-color: #fff;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    width: 96%;
-    margin: auto;
-    padding: 1.2rem 0rem;
-    border-radius: 20px;
-}
-
-.nav-mobile-container i {
-    font-size: 30px;
-    cursor: pointer;
-    color: #a4a2a2;
-}
-
-.active {
-    background-color: #5d17eb;
-    color: #fff !important;
-    padding: 0.3rem;
-    border-radius: 5px;
-}
-
 /* Keyboard Style Start */
 .keyboard-container {
     position: relative;
@@ -379,11 +349,5 @@
 
     100% {
         background-color: hsl(200, 20%, 95%);
-    }
-}
-
-@media only screen and (max-width: 768px) {
-    .nav-mobile {
-        display: block;
     }
 }
