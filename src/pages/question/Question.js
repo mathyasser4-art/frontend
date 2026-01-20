@@ -497,7 +497,7 @@ function Question() {
                     <Link to={'/'} onClick={() => soundEffects.playClick()}><img src={logo} alt='Logo' /></Link>
                     <div className='nav-right-side d-flex align-items-center'>
                         {/* Simplified dashboard links */}
-                        <Link to={`/dashboard/${role.toLowerCase()}`} onClick={() => soundEffects.playClick()}><div className='gear'><i className='fa fa-graduation-cap' aria-hidden='true'></i></div></Link>
+                        {isAuth && role && <Link to={`/dashboard/${role.toLowerCase()}`} onClick={() => soundEffects.playClick()}><div className='gear'><i className='fa fa-graduation-cap' aria-hidden='true'></i></div></Link>}
                         {isAuth ? <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img src={profileImg} alt='Profile' /></Link> : <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}><div className='nav-btn'>Login<div className='nav-btn2'></div></div></Link>}
                     </div>
                 </div>
