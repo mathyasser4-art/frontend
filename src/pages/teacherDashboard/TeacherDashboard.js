@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/navbar/Navbar'
+import MobileNav from '../../components/mobileNav/MobileNav'
 import TrialBanner from '../../components/trialBanner/TrialBanner';
 import UpgradePrompt from '../../components/upgradePrompt/UpgradePrompt';
 import { Link } from 'react-router-dom'
@@ -183,18 +184,7 @@ function TeacherDashboard() {
     return (
         <>
             {isTrialMode && <TrialBanner />}
-            <nav>
-                <div className='nav-mobile'>
-                    <div className='nav-mobile-container d-flex justify-content-space-around align-items-center'>
-                        <Link to={'/'}><i className="fa fa-home" aria-hidden="true"></i></Link>
-                        <Link to={'/system/65a4963482dbaac16d820fc6'}><i className="fa fa-tasks link" aria-hidden="true"></i></Link>
-                        <Link to={'/system/65a4964b82dbaac16d820fc8'}><i className="fa fa-file-text-o link" aria-hidden="true"></i></Link>
-                        <Link to={'/dashboard/teacher'}><i className="fa fa-graduation-cap active" aria-hidden="true"></i></Link>
-                        <Link to={'/contact'}><i className="fa fa-headphones link" aria-hidden="true"></i></Link>
-                        <Link to={'/user/info'}><i className="fa fa-user link" aria-hidden="true"></i></Link>
-                    </div>
-                </div>
-            </nav>
+            <MobileNav role="Teacher" />
             <Navbar />
             <div className="teacher-dashboard-container">
                 {loading ? <DashboardLoading /> : (error) ? <div className='d-flex justify-content-center'><div className="error">{error}</div> </div> : allAsignment?.map(item => {
