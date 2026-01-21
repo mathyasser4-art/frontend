@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import QuestionType from '../questionType/QuestionType'
@@ -12,6 +13,7 @@ import '../../reusable.css'
 import './Home.css'
 
 function Home() {
+  const { t } = useTranslation()
   const role = localStorage.getItem('auth_role')
   const navigate = useNavigate()
   const [showTrialModal, setShowTrialModal] = useState(false)
@@ -30,11 +32,11 @@ function Home() {
         <Navbar />
         <div className="home-container">
           <div className="home-title">
-            <h1 className='text-purple'>WELCOME TO</h1>
-            <h1 className='text-red'>ABACUS HEROES</h1>
+            <h1 className='text-purple'>{t('home.welcomeTo')}</h1>
+            <h1 className='text-red'>{t('home.abacusHeroes')}</h1>
           </div>
           <div className="home-paragraph">
-            <p>Play the Abacus .. Be a Hero !</p>
+            <p>{t('home.tagline')}</p>
           </div>
           
           {!role && (
@@ -43,24 +45,24 @@ function Home() {
                 <div className="option-icon">
                   <GraduationCap size={48} strokeWidth={2.5} />
                 </div>
-                <h3>Practice as Student</h3>
-                <p>Start practicing questions for free</p>
-                <span className="option-badge">No login required</span>
+                <h3>{t('home.practiceAsStudent')}</h3>
+                <p>{t('home.practiceDescription')}</p>
+                <span className="option-badge">{t('home.noLoginRequired')}</span>
               </div>
 
               <div className="home-option-card" onClick={() => { soundEffects.playClick(); setShowTrialModal(true); }}>
                 <div className="option-icon teacher-icon">
                   <Presentation size={48} strokeWidth={2.5} />
                 </div>
-                <h3>Try Teacher Features</h3>
-                <p>Test all features with demo students</p>
-                <span className="option-badge trial-badge">7-Day Free Trial</span>
+                <h3>{t('home.tryTeacherFeatures')}</h3>
+                <p>{t('home.tryTeacherDescription')}</p>
+                <span className="option-badge trial-badge">{t('home.freeTrialBadge')}</span>
               </div>
             </div>
           )}
           
           <Link to="/pricing" className="home-btn" onClick={() => soundEffects.playClick()}>
-            <span className="btn-text">JOIN NOW</span>
+            <span className="btn-text">{t('home.joinNow')}</span>
             <span className="btn-arrow">→</span>
           </Link>
         </div>
@@ -70,8 +72,8 @@ function Home() {
       <div className='home-mobile'>
         <Navbar />
         <div className="home-title">
-          <h1 className='text-purple'>WELCOME TO</h1>
-          <h1 className='text-red'>ABACUS HEROES</h1>
+          <h1 className='text-purple'>{t('home.welcomeTo')}</h1>
+          <h1 className='text-red'>{t('home.abacusHeroes')}</h1>
         </div>
       </div>
       <QuestionType />

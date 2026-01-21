@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import soundEffects from '../../utils/soundEffects';
 import './MobileNav.css';
 
 function MobileNav({ role }) {
+  const { t } = useTranslation();
   const location = useLocation();
 
   const isActive = (path) => {
@@ -42,7 +44,7 @@ function MobileNav({ role }) {
           className={`nav-item ${isActive('/') ? 'active' : ''}`}
         >
           <i className="fa fa-home" aria-hidden="true"></i>
-          <span className="nav-label">Home</span>
+          <span className="nav-label">{t('mobileNav.home')}</span>
         </Link>
 
         <Link 
@@ -51,7 +53,7 @@ function MobileNav({ role }) {
           className={`nav-item ${isActive('/system/65a4963482dbaac16d820fc6') ? 'active' : ''}`}
         >
           <i className="fa fa-tasks" aria-hidden="true"></i>
-          <span className="nav-label">Worksheets</span>
+          <span className="nav-label">{t('mobileNav.worksheets')}</span>
         </Link>
 
         <Link 
@@ -60,7 +62,7 @@ function MobileNav({ role }) {
           className={`nav-item ${isActive('/system/65a4964b82dbaac16d820fc8') ? 'active' : ''}`}
         >
           <i className="fa fa-file-text-o" aria-hidden="true"></i>
-          <span className="nav-label">MasterMinds</span>
+          <span className="nav-label">{t('mobileNav.masterminds')}</span>
         </Link>
 
         {dashboardLink && (
@@ -70,7 +72,7 @@ function MobileNav({ role }) {
             className={`nav-item ${isActive(dashboardLink) ? 'active' : ''}`}
           >
             <i className="fa fa-graduation-cap" aria-hidden="true"></i>
-            <span className="nav-label">Homework</span>
+            <span className="nav-label">{t('mobileNav.homework')}</span>
           </Link>
         )}
 
@@ -80,7 +82,7 @@ function MobileNav({ role }) {
           className={`nav-item ${isActive('/contact') ? 'active' : ''}`}
         >
           <i className="fa fa-headphones" aria-hidden="true"></i>
-          <span className="nav-label">Help</span>
+          <span className="nav-label">{t('mobileNav.help')}</span>
         </Link>
 
         <Link 
@@ -89,7 +91,7 @@ function MobileNav({ role }) {
           className={`nav-item ${isActive('/user/info') ? 'active' : ''}`}
         >
           <i className="fa fa-user" aria-hidden="true"></i>
-          <span className="nav-label">Profile</span>
+          <span className="nav-label">{t('mobileNav.profile')}</span>
         </Link>
       </div>
     </nav>

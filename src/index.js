@@ -6,6 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import './i18n'; // Initialize i18n
 
 // Use environment variable for Google Client ID (fallback to your new Client ID)
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "184094875062-8dug57q2ektolutnhq8rmrvm2vl98edl.apps.googleusercontent.com";
