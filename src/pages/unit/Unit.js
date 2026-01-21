@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
 import GuestBanner from '../../components/guestBanner/GuestBanner';
 import MobileNav from '../../components/mobileNav/MobileNav';
@@ -9,11 +10,20 @@ import '../../reusable.css'
 import './Unit.css'
 
 function Unit() {
+    const { t } = useTranslation()
     const [unitData, setUnitData] = useState()
     const [loading, setLoading] = useState(true)
     const { questionTypeID, subjectID } = useParams()
     const isAuth = localStorage.getItem('O_authWEB')
     const role = localStorage.getItem('auth_role')
+    
+    // Helper function to translate unit/chapter names
+    const translateName = (name) => {
+        const translationKey = `systemNames.${name}`
+        const translated = t(translationKey)
+        // If translation exists and is different from the key, use it; otherwise use original
+        return translated !== translationKey ? translated : name
+    }
 
     useEffect(() => {
         const getAllUnit = async () => {
@@ -73,10 +83,10 @@ function Unit() {
             {loading ? <SystemLoading /> : <div className="unit-container">
                 {unitData?.map(item => {
                     return (
-                        <div key={item._id} className="unit" onClick={dropdownToggle}>{item.unitName}
+                        <div key={item._id} className="unit" onClick={dropdownToggle}>{translateName(item.unitName)}
                             {item.chapters?.map(subItem => {
                                 return (
-                                    <Link key={subItem._id} to={`/question/${subItem._id}/${questionTypeID}/${subjectID}`} className='unit-chapter'>{subItem.chapterName}</Link>
+                                    <Link key={subItem._id} to={`/question/${subItem._id}/${questionTypeID}/${subjectID}`} className='unit-chapter'>{translateName(subItem.chapterName)}</Link>
                                 )
                             })}
                         </div>

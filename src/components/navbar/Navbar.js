@@ -38,15 +38,22 @@ const Navbar = () => {
                             gap: '5px',
                             padding: '8px 12px',
                             borderRadius: '8px',
-                            transition: 'background-color 0.3s',
-                            backgroundColor: 'transparent'
+                            transition: 'all 0.3s',
+                            backgroundColor: 'rgba(138, 43, 226, 0.15)',
+                            border: '1px solid rgba(138, 43, 226, 0.3)'
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(138, 43, 226, 0.25)';
+                            e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.5)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(138, 43, 226, 0.15)';
+                            e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.3)';
+                        }}
                         title={i18n.language === 'en' ? 'التبديل إلى العربية' : 'Switch to English'}
                     >
-                        <Languages size={20} color="#fff" />
-                        <span style={{ color: '#fff', fontSize: '14px', fontWeight: '500' }}>
+                        <Languages size={20} color="#8a2be2" strokeWidth={2.5} />
+                        <span style={{ color: '#8a2be2', fontSize: '14px', fontWeight: '600' }}>
                             {i18n.language === 'en' ? 'AR' : 'EN'}
                         </span>
                     </div>

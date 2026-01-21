@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import logo from '../../logo.png';
 import avatarExam from '../../img/avatar-exam.png';
 import profileImg from '../../img/avatar-profile.png';
@@ -16,6 +17,8 @@ import '../../reusable.css';
 import './Question.css';
 
 function Question() {
+    const { t } = useTranslation();
+    
     // State for Abacus visibility
     const [showAbacus, setShowAbacus] = useState(false);
 
@@ -432,11 +435,11 @@ function Question() {
 
     const handleCreateAssignment = () => {
         if (classesBox.length === 0 || !title) {
-            setError('You must select a class and provide a title.');
+            setError(t('questionPage.mustSelectClassAndTitle'));
         } else if (startDate && !expiryData) {
-            setError('You must add the expiry date.');
+            setError(t('questionPage.mustAddExpiryDate'));
         } else if (!startDate && expiryData) {
-            setError('You must add the start date.');
+            setError(t('questionPage.mustAddStartDate'));
         } else {
             const data = {
                 questions: questionList.map(q => q._id),
@@ -453,17 +456,17 @@ function Question() {
     };
 
     const addClassToBox = () => {
-        if (!classSelector || classSelector === 'Select Class') {
-            setError('You must select a class first.');
+        if (!classSelector || classSelector === t('questionPage.selectClass')) {
+            setError(t('questionPage.mustSelectClassFirst'));
         } else {
             setError(null);
-            if (classSelector === 'All Classes') {
+            if (classSelector === t('questionPage.allClasses')) {
                 setClassesBox(classesList);
             } else if (!classesBox.some(c => c.class === classSelector)) {
                 const classToAdd = classesList.find(c => c.class === classSelector);
                 if (classToAdd) setClassesBox(prev => [...prev, classToAdd]);
             } else {
-                setError('This class is already added.');
+                setError(t('questionPage.classAlreadyAdded'));
             }
         }
     };
@@ -532,13 +535,13 @@ function Question() {
                         <div className='question-form-head d-flex justify-content-space-between align-items-center'>
                             <p>Q{thisQuestionNumber}</p>
                             <div className='end-head d-flex align-items-center'>
-                                <div title="Open Abacus" className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
+                                <div title={t('questionPage.openAbacus')} className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
                                     <i className="fa fa-calculator" aria-hidden="true"></i>
                                 </div>
-                                {role === 'Teacher' && <i onClick={() => { soundEffects.playClick(); addAllToPocket(); }} title="Add All to Pocket" className='fa fa-plus-square-o all-question-icon' aria-hidden='true'></i>}
-                                {role === 'Teacher' && <i onClick={() => { soundEffects.playClick(); addToPocket(); }} title="Add to Pocket" className='fa fa-plus add-question-icon' aria-hidden='true'></i>}
+                                {role === 'Teacher' && <i onClick={() => { soundEffects.playClick(); addAllToPocket(); }} title={t('questionPage.addAllToPocket')} className='fa fa-plus-square-o all-question-icon' aria-hidden='true'></i>}
+                                {role === 'Teacher' && <i onClick={() => { soundEffects.playClick(); addToPocket(); }} title={t('questionPage.addToPocket')} className='fa fa-plus add-question-icon' aria-hidden='true'></i>}
                                 <span className='vertical-line'></span>
-                                <p>{thisQuestion?.questionPoints} marks</p>
+                                <p>{thisQuestion?.questionPoints} {t('questionPage.marks')}</p>
                             </div>
                         </div>
 
@@ -550,16 +553,16 @@ function Question() {
 
                             {thisQuestion?.typeOfAnswer === 'Essay' && (
                                 <div className='math-keyboard'>
-                                    <p>Write your answer here</p>
+                                    <p>{t('questionPage.writeAnswerHere')}</p>
                                     <div style={{ position: 'relative', width: '100%' }}>
                                         <input
                                             ref={inputRef} type='text' value={answer} onFocus={handleInputFocus} readOnly
-                                            placeholder='Enter the answer' className='input-style'
+                                            placeholder={t('questionPage.enterAnswer')} className='input-style'
                                         />
                                         {showKeyboard && (
                                             <div ref={keyboardRef} className='keyboard-container'>
                                                 {renderDigits()}
-                                                <button className='question-form-btn keyboard-next-btn' onClick={() => { checkedQuestion(); }}>{checkLoading ? <span className='loader'></span> : 'next'}</button>
+                                                <button className='question-form-btn keyboard-next-btn' onClick={() => { checkedQuestion(); }}>{checkLoading ? <span className='loader'></span> : t('questionPage.next')}</button>
                                             </div>
                                         )}
                                     </div>
@@ -572,7 +575,7 @@ function Question() {
                         {/* MCQ Container beside question box */}
                         {thisQuestion?.typeOfAnswer === 'MCQ' && (
                             <div className='mcq-container'>
-                                <h3 className='mcq-title'>Choose your answer:</h3>
+                                <h3 className='mcq-title'>{t('questionPage.chooseAnswer')}</h3>
                                 <div className='mcq-answer-layout'>
                                     {thisQuestion.wrongAnswer?.map((item, index) => (
                                         <label key={item} className={`mcq-choice ${answer === item ? 'selected' : ''}`}>
@@ -594,7 +597,7 @@ function Question() {
                         {/* Graph Container beside question box */}
                         {thisQuestion?.typeOfAnswer === 'Graph' && (
                             <div className='mcq-container graph-container'>
-                                <h3 className='mcq-title'>Choose your answer:</h3>
+                                <h3 className='mcq-title'>{t('questionPage.chooseAnswer')}</h3>
                                 <div className='graph-answer-layout'>
                                     {thisQuestion.wrongPicAnswer?.map((item, index) => (
                                         <label key={item} className={`graph-choice ${answer === item ? 'selected' : ''}`}>
@@ -618,16 +621,16 @@ function Question() {
                         <button onClick={() => { soundEffects.playEndSound(); openResulPopup(); }} disabled={isCheckingAnswers}>
                             {isCheckingAnswers ? (
                                 <>
-                                    <span className='loader'></span> Checking Answers...
+                                    <span className='loader'></span> {t('questionPage.checkingAnswers')}
                                 </>
                             ) : (
-                                'End Exam'
+                                t('questionPage.endExam')
                             )}
                         </button>
                     </div>
 
-                    <div className='alert alert-question-error-pocket'>This question is already added to pocket.</div>
-                    <div className='alert alert-question-success-pocket'>Success! This question added to pocket.</div>
+                    <div className='alert alert-question-error-pocket'>{t('questionPage.questionAlreadyInPocket')}</div>
+                    <div className='alert alert-question-success-pocket'>{t('questionPage.questionAddedToPocket')}</div>
                 </div>
             )}
 
@@ -641,11 +644,11 @@ function Question() {
                 <div className='result-popup-container popup-top'>
                     <div className='result-popup-head'>
                         <div className='d-flex justify-content-center align-items-center'><img src={avatarExam} alt="Exam avatar" /></div>
-                        <p>Congratulations you have finished the exam</p>
+                        <p>{t('questionPage.congratulations')}</p>
                     </div>
                     <div className='result-popup-body'>
                         <table>
-                            <thead><tr><th>Answered</th><th>Result</th><th>Total</th></tr></thead>
+                            <thead><tr><th>{t('questionPage.answered')}</th><th>{t('questionPage.result')}</th><th>{t('questionPage.total')}</th></tr></thead>
                             <tbody><tr><td>{answeredQuestions}</td><td>{points}</td><td>{totalSummation}</td></tr></tbody>
                         </table>
                     </div>
@@ -656,9 +659,9 @@ function Question() {
             <div className='add-to-class-popup teacher-list-popup question-list-popup class-popup-hide d-none justify-content-center align-items-center'>
                 <div className='question-list-container teacher-list-container class-top'>
                     <div className='d-flex align-items-center justify-content-space-between update-popup-head'>
-                        <p>Review Questions</p>
+                        <p>{t('questionPage.reviewQuestions')}</p>
                         <div className='d-flex align-items-center question-list-right-side'>
-                            <button onClick={() => { soundEffects.playClick(); removeAssignment(); }}>Remove Assignment</button>
+                            <button onClick={() => { soundEffects.playClick(); removeAssignment(); }}>{t('questionPage.removeAssignment')}</button>
                             <p className='question-list-close' onClick={() => { soundEffects.playClick(); closeQuestionList(); }}>x</p>
                         </div>
                     </div>
@@ -671,26 +674,26 @@ function Question() {
                             </div>
                         ))}
                         <div className='assignment-title'>
-                            <p>Title:</p>
-                            <input type='text' value={title} onChange={e => setTitle(e.target.value)} placeholder='Assignment title (required)' />
+                            <p>{t('questionPage.title')}</p>
+                            <input type='text' value={title} onChange={e => setTitle(e.target.value)} placeholder={t('questionPage.assignmentTitlePlaceholder')} />
                         </div>
                         <div className='timer d-flex align-items-center'>
-                            <div><p>Timer (Mins):</p><input type='number' value={timer} onChange={e => setTimer(e.target.value)} placeholder='Optional' /></div>
-                            <div><p>Attempts:</p><input type='number' value={attempts} onChange={e => setAttempts(e.target.value)} placeholder='Default: 1' /></div>
+                            <div><p>{t('questionPage.timerMinutes')}</p><input type='number' value={timer} onChange={e => setTimer(e.target.value)} placeholder={t('questionPage.optional')} /></div>
+                            <div><p>{t('questionPage.attempts')}</p><input type='number' value={attempts} onChange={e => setAttempts(e.target.value)} placeholder={t('questionPage.defaultOne')} /></div>
                         </div>
                         <div className='timer date-faild d-flex align-items-center'>
-                            <div><p>Start Date:</p><input type='date' value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
-                            <div><p>Expiry Date:</p><input type='date' value={expiryData} onChange={e => setExpiryData(e.target.value)} /></div>
+                            <div><p>{t('questionPage.startDate')}</p><input type='date' value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
+                            <div><p>{t('questionPage.expiryDate')}</p><input type='date' value={expiryData} onChange={e => setExpiryData(e.target.value)} /></div>
                         </div>
                         <div className='select-container d-flex'>
                             <div className='select-class'>
                                 <select value={classSelector} onChange={e => setClassSelector(e.target.value)}>
-                                    <option>Select Class</option>
-                                    {classesList?.length === 0 ? <option>No classes available</option> : <option>All Classes</option>}
+                                    <option>{t('questionPage.selectClass')}</option>
+                                    {classesList?.length === 0 ? <option>{t('questionPage.noClassesAvailable')}</option> : <option>{t('questionPage.allClasses')}</option>}
                                     {classesList?.map(item => <option key={item._id}>{item.class}</option>)}
                                 </select>
                             </div>
-                            <button onClick={addClassToBox}>Add</button>
+                            <button onClick={addClassToBox}>{t('questionPage.add')}</button>
                         </div>
                         <div className='class-selector-container d-flex flex-wrap align-items-center'>
                             {classesBox?.map(item => (
@@ -703,8 +706,8 @@ function Question() {
                         {error && <div className='error error-dengare'>{error}</div>}
                     </div>
                     <div className='update-popup-footer'>
-                        <button className='button popup-btn' onClick={closeQuestionList}>Close</button>
-                        <button className='button popup-btn2' onClick={handleCreateAssignment}>{loadingOperation ? <span className='loader'></span> : 'Upload'}</button>
+                        <button className='button popup-btn' onClick={closeQuestionList}>{t('questionPage.close')}</button>
+                        <button className='button popup-btn2' onClick={handleCreateAssignment}>{loadingOperation ? <span className='loader'></span> : t('questionPage.upload')}</button>
                     </div>
                 </div>
             </div>
