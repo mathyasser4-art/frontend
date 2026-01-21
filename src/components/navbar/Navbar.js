@@ -35,25 +35,45 @@ const Navbar = () => {
                             marginRight: '15px',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '5px',
-                            padding: '8px 12px',
-                            borderRadius: '8px',
-                            transition: 'all 0.3s',
-                            backgroundColor: 'rgba(138, 43, 226, 0.15)',
-                            border: '1px solid rgba(138, 43, 226, 0.3)'
+                            gap: '8px',
+                            padding: '10px 16px',
+                            borderRadius: '12px',
+                            transition: 'all 0.3s ease',
+                            background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(75, 0, 130, 0.15) 100%)',
+                            border: '2px solid transparent',
+                            backgroundClip: 'padding-box',
+                            position: 'relative',
+                            overflow: 'hidden'
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = 'rgba(138, 43, 226, 0.25)';
-                            e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.5)';
+                            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(138, 43, 226, 0.2) 0%, rgba(75, 0, 130, 0.25) 100%)';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(138, 43, 226, 0.3)';
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'rgba(138, 43, 226, 0.15)';
-                            e.currentTarget.style.borderColor = 'rgba(138, 43, 226, 0.3)';
+                            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(75, 0, 130, 0.15) 100%)';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = 'none';
                         }}
                         title={i18n.language === 'en' ? 'التبديل إلى العربية' : 'Switch to English'}
                     >
-                        <Languages size={20} color="#8a2be2" strokeWidth={2.5} />
-                        <span style={{ color: '#8a2be2', fontSize: '14px', fontWeight: '600' }}>
+                        <Languages 
+                            size={22} 
+                            style={{
+                                color: '#8a2be2',
+                                filter: 'drop-shadow(0 2px 4px rgba(138, 43, 226, 0.3))'
+                            }}
+                            strokeWidth={2.5} 
+                        />
+                        <span style={{ 
+                            background: 'linear-gradient(135deg, #8a2be2 0%, #4b0082 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                            fontSize: '15px', 
+                            fontWeight: '700',
+                            letterSpacing: '0.5px'
+                        }}>
                             {i18n.language === 'en' ? 'AR' : 'EN'}
                         </span>
                     </div>

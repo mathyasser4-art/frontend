@@ -228,7 +228,29 @@
     "Level 5": "Level 5",
     "Beginner": "Beginner",
     "Intermediate": "Intermediate",
-    "Advanced": "Advanced"
+    "Advanced": "Advanced",
+    "Simple applications on numbers from 1 to 4": "Simple applications on numbers from 1 to 4",
+    "Quick application to the number 5": "Quick application to the number 5",
+    "Quick application to the number 6": "Quick application to the number 6",
+    "Quick application to the number 7": "Quick application to the number 7",
+    "Quick application to the number 8": "Quick application to the number 8",
+    "Quick application to the number 9": "Quick application to the number 9",
+    "Mixed Question from 1 to 9": "Mixed Question from 1 to 9",
+    "Harder Questions from 1 to 9": "Harder Questions from 1 to 9",
+    "Page 22": "Page 22",
+    "Page 23": "Page 23",
+    "Page 24": "Page 24",
+    "table 1": "table 1",
+    "table 2": "table 2",
+    "table 3": "table 3"
+  },
+  "academy": {
+    "chooseYourAcademy": "Choose Your Academy",
+    "freeWorksheets": "Free Worksheets",
+    "freeWorksheetsDesc": "Enhance your mental math skills with solving extra questions",
+    "masterMinds": "MasterMinds",
+    "masterMindsDesc": "Practice the book questions of master minds academy",
+    "start": "Start"
   },
   "questionPage": {
     "reviewQuestions": "Review Questions",

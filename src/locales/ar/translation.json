@@ -228,7 +228,29 @@
     "Level 5": "المستوى 5",
     "Beginner": "مبتدئ",
     "Intermediate": "متوسط",
-    "Advanced": "متقدم"
+    "Advanced": "متقدم",
+    "Simple applications on numbers from 1 to 4": "تطبيقات بسيطة على الأرقام من 1 إلى 4",
+    "Quick application to the number 5": "تطبيق سريع على الرقم 5",
+    "Quick application to the number 6": "تطبيق سريع على الرقم 6",
+    "Quick application to the number 7": "تطبيق سريع على الرقم 7",
+    "Quick application to the number 8": "تطبيق سريع على الرقم 8",
+    "Quick application to the number 9": "تطبيق سريع على الرقم 9",
+    "Mixed Question from 1 to 9": "أسئلة مختلطة من 1 إلى 9",
+    "Harder Questions from 1 to 9": "أسئلة أصعب من 1 إلى 9",
+    "Page 22": "صفحة 22",
+    "Page 23": "صفحة 23",
+    "Page 24": "صفحة 24",
+    "table 1": "جدول 1",
+    "table 2": "جدول 2",
+    "table 3": "جدول 3"
+  },
+  "academy": {
+    "chooseYourAcademy": "اختر أكاديميتك",
+    "freeWorksheets": "أوراق العمل المجانية",
+    "freeWorksheetsDesc": "عزز مهاراتك في الرياضيات الذهنية من خلال حل أسئلة إضافية",
+    "masterMinds": "ماستر مايندز",
+    "masterMindsDesc": "تدرب على أسئلة كتاب أكاديمية ماستر مايندز",
+    "start": "ابدأ"
   },
   "questionPage": {
     "reviewQuestions": "مراجعة الأسئلة",

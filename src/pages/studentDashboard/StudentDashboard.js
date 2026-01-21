@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import { Link } from 'react-router-dom'
@@ -13,6 +14,7 @@ import '../../reusable.css'
 import './StudentDashboard.css'
 
 function StudentDashboard() {
+    const { t } = useTranslation()
     const [teacherList, setTeacherList] = useState([])
     const [allAsignment, setAllAsignment] = useState([])
     const [className, setClassName] = useState('')
@@ -169,10 +171,10 @@ function StudentDashboard() {
                                     
                                     <div className="card-stats">
                                         <div className="stat-item">
-                                            <span className="stat-label">Free Worksheets</span>
+                                            <span className="stat-label">{t('academy.freeWorksheets')}</span>
                                         </div>
                                         <div className="stat-item">
-                                            <span className="stat-label">MasterMinds</span>
+                                            <span className="stat-label">{t('academy.masterMinds')}</span>
                                         </div>
                                     </div>
 
@@ -190,26 +192,26 @@ function StudentDashboard() {
                                     <i className="fa fa-arrow-left" aria-hidden="true"></i>
                                     <span>Back</span>
                                 </button>
-                                <h2>Choose Your Academy</h2>
+                                <h2>{t('academy.chooseYourAcademy')}</h2>
                             </div>
 
                             <div className="practice-options-grid">
                                 <Link to="/system/65a4963482dbaac16d820fc6" className="practice-option mental-math">
                                     <div className="practice-option-icon">⚡</div>
-                                    <h3>Free Worksheets</h3>
-                                    <p>Enhance your mental math skills with solving extra questions</p>
+                                    <h3>{t('academy.freeWorksheets')}</h3>
+                                    <p>{t('academy.freeWorksheetsDesc')}</p>
                                     <button className="practice-option-btn">
-                                        <span>Start</span>
+                                        <span>{t('academy.start')}</span>
                                         <ChevronRight size={20} />
                                     </button>
                                 </Link>
 
                                 <Link to="/system/65a4964b82dbaac16d820fc8" className="practice-option masterminds">
                                     <div className="practice-option-icon">🧠</div>
-                                    <h3>MasterMinds</h3>
-                                    <p>Practice the book questions of master minds academy</p>
+                                    <h3>{t('academy.masterMinds')}</h3>
+                                    <p>{t('academy.masterMindsDesc')}</p>
                                     <button className="practice-option-btn">
-                                        <span>Start</span>
+                                        <span>{t('academy.start')}</span>
                                         <ChevronRight size={20} />
                                     </button>
                                 </Link>
