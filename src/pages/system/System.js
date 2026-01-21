@@ -17,10 +17,10 @@ function System() {
 
     useEffect(() => {
         const getAllSystem = async () => {
-            await getSystem(setLoading, setSystemData)
+            await getSystem(setLoading, setSystemData, questionTypeID)
         }
         getAllSystem()
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [questionTypeID]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const dropdownToggle = (e) => {
         let top = 50

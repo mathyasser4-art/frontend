@@ -1,9 +1,9 @@
 import API_BASE_URL from '../../config/api.config';
 
-const URL = `${API_BASE_URL}/system/getAllSystem`;
-
-const getSystem = (setLoading, setSystemData) => {
+const getSystem = (setLoading, setSystemData, questionTypeID) => {
     setLoading(true)
+    const URL = `${API_BASE_URL}/system/getAllSystem/${questionTypeID}`;
+    
     fetch(`${URL}`, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },

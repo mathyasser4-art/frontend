@@ -51,7 +51,7 @@ function MobileNav({ role }) {
           className={`nav-item ${isActive('/system/65a4963482dbaac16d820fc6') ? 'active' : ''}`}
         >
           <i className="fa fa-tasks" aria-hidden="true"></i>
-          <span className="nav-label">Practice</span>
+          <span className="nav-label">Worksheets</span>
         </Link>
 
         <Link 
