@@ -22,6 +22,11 @@ function Question() {
     // State for Abacus visibility
     const [showAbacus, setShowAbacus] = useState(false);
 
+    // State for Flash Mode
+    const [flashMode, setFlashMode] = useState(false);
+    const [currentFlashLine, setCurrentFlashLine] = useState(0);
+    const [isFlashing, setIsFlashing] = useState(false);
+
     const [questionData, setQuestionData] = useState();
     const [thisQuestion, setThisQuestion] = useState();
     const [numberOfQuestion, setNumberOfQuestion] = useState([]);
@@ -179,6 +184,55 @@ function Question() {
     const handleDelete = () => {
         setAnswer(prev => prev.slice(0, -1));
     };
+
+    // Flash Mode Functions
+    const getQuestionLines = () => {
+        if (!thisQuestion?.question) return [];
+        return thisQuestion.question.split('\n').filter(line => line.trim());
+    };
+
+    const toggleFlashMode = () => {
+        soundEffects.playClick();
+        setFlashMode(prev => !prev);
+        setIsFlashing(false);
+        setCurrentFlashLine(0);
+    };
+
+    const startFlashing = () => {
+        soundEffects.playClick();
+        setIsFlashing(true);
+        setCurrentFlashLine(0);
+    };
+
+    // Flash Mode Animation Effect
+    useEffect(() => {
+        if (flashMode && isFlashing) {
+            const lines = getQuestionLines();
+            
+            if (currentFlashLine < lines.length) {
+                const timer = setTimeout(() => {
+                    setCurrentFlashLine(prev => prev + 1);
+                }, 1000); // Each line shows for 1 second then disappears
+                
+                return () => clearTimeout(timer);
+            } else {
+                // All lines shown, wait 1 second then reset
+                const finalTimer = setTimeout(() => {
+                    setIsFlashing(false);
+                    setCurrentFlashLine(0);
+                }, 1000);
+                
+                return () => clearTimeout(finalTimer);
+            }
+        }
+    }, [flashMode, isFlashing, currentFlashLine]);
+
+    // Reset flash mode when question changes
+    useEffect(() => {
+        setFlashMode(false);
+        setIsFlashing(false);
+        setCurrentFlashLine(0);
+    }, [thisQuestion?._id]);
 
     const nextQuestion = () => {
         soundEffects.playClick();
@@ -535,6 +589,13 @@ function Question() {
                         <div className='question-form-head d-flex justify-content-space-between align-items-center'>
                             <p>Q{thisQuestionNumber}</p>
                             <div className='end-head d-flex align-items-center'>
+                                <div 
+                                    title={t('questionPage.flashMode', 'Flash Mode')} 
+                                    className={`flash-mode-button ${flashMode ? 'flash-active' : ''}`} 
+                                    onClick={toggleFlashMode}
+                                >
+                                    <i className="fa fa-bolt" aria-hidden="true"></i>
+                                </div>
                                 <div title={t('questionPage.openAbacus')} className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
                                     <i className="fa fa-calculator" aria-hidden="true"></i>
                                 </div>
@@ -549,7 +610,26 @@ function Question() {
 
                         <div className='question-form-body'>
                             {thisQuestion?.questionPic && <div className='d-flex question-img justify-content-center align-items-center'><img src={thisQuestion.questionPic} alt="Question visual aid" /></div>}
-                            <pre>{thisQuestion?.question}</pre>
+                            
+                            {flashMode ? (
+                                <div className="flash-mode-question">
+                                    {isFlashing && currentFlashLine < getQuestionLines().length ? (
+                                        <div className="flash-line">
+                                            {getQuestionLines()[currentFlashLine]}
+                                        </div>
+                                    ) : (
+                                        <button 
+                                            className="start-flash-btn" 
+                                            onClick={startFlashing}
+                                            disabled={isFlashing}
+                                        >
+                                            {isFlashing ? t('questionPage.flashComplete', 'Complete! Click to replay') : t('questionPage.startFlash', 'Start Flash')}
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <pre>{thisQuestion?.question}</pre>
+                            )}
 
                             {thisQuestion?.typeOfAnswer === 'Essay' && (
                                 <div className='math-keyboard'>

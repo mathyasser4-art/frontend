@@ -160,6 +160,57 @@ body {
     cursor: pointer;
 }
 
+/* Flash Mode Button */
+.flash-mode-button {
+    cursor: pointer;
+    padding: 8px 12px;
+    background-color: #FF9800;
+    border-radius: 8px;
+    margin-right: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flash-mode-button:hover {
+    background-color: #F57C00;
+    transform: scale(1.05);
+}
+
+.flash-mode-button.flash-active {
+    background-color: #4CAF50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.flash-mode-button i {
+    color: #ffffff;
+    font-size: 16px;
+}
+
+/* Abacus Button Styling */
+.abacus-button {
+    cursor: pointer;
+    padding: 8px 12px;
+    background-color: #65C6EE;
+    border-radius: 8px;
+    margin-right: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.abacus-button:hover {
+    background-color: #4BB5DD;
+    transform: scale(1.05);
+}
+
+.abacus-button i {
+    color: #ffffff;
+    font-size: 16px;
+}
+
 .question-form-body {
     padding-bottom: 0.3rem;
     padding-top: 0.3rem;
@@ -187,6 +238,69 @@ body {
     color: #7935d1ff;
     margin-left: 0;
     margin-bottom: 0.5rem;
+}
+
+/* Flash Mode Styles */
+.flash-mode-question {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(101, 198, 238, 0.1) 0%, rgba(121, 53, 209, 0.1) 100%);
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
+.flash-line {
+    font-size: 80px;
+    font-weight: bold;
+    color: #7935d1ff;
+    animation: flashIn 0.3s ease-in;
+    text-align: center;
+    white-space: pre;
+    font-family: 'Spicy Sale', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    line-height: 1.2;
+}
+
+@keyframes flashIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.start-flash-btn {
+    padding: 1.2rem 2.5rem;
+    font-size: 24px;
+    background-color: #65C6EE;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(101, 198, 238, 0.3);
+}
+
+.start-flash-btn:hover:not(:disabled) {
+    background-color: #4BB5DD;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(101, 198, 238, 0.4);
+}
+
+.start-flash-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 /* MCQ CHOICES CONTAINER - BESIDE QUESTION BOX */
@@ -1331,6 +1445,20 @@ input[type="radio"] {
         font-size: 17px;
         line-height: 28px;
     }
+    
+    /* Flash Mode Tablet Responsive */
+    .flash-line {
+        font-size: 60px;
+    }
+    
+    .start-flash-btn {
+        font-size: 20px;
+        padding: 1rem 2rem;
+    }
+    
+    .flash-mode-question {
+        min-height: 250px;
+    }
 }
 
 /* Mobile Landscape and Small Tablets */
@@ -1418,6 +1546,32 @@ input[type="radio"] {
     
     .math-keyboard p {
         font-size: 11px;
+    }
+    
+    /* Flash Mode Mobile Responsive */
+    .flash-mode-button,
+    .abacus-button {
+        padding: 6px 10px;
+        margin-right: 4px;
+    }
+    
+    .flash-mode-button i,
+    .abacus-button i {
+        font-size: 14px;
+    }
+    
+    .flash-line {
+        font-size: 48px;
+    }
+    
+    .start-flash-btn {
+        font-size: 18px;
+        padding: 0.8rem 1.5rem;
+    }
+    
+    .flash-mode-question {
+        min-height: 200px;
+        padding: 1rem;
     }
 
     .floating-question {
@@ -1687,6 +1841,32 @@ input[type="radio"] {
     .math-keyboard p {
         font-size: 10px;
         margin-bottom: 6px;
+    }
+    
+    /* Flash Mode Extra Small Mobile Responsive */
+    .flash-mode-button,
+    .abacus-button {
+        padding: 5px 8px;
+        margin-right: 3px;
+    }
+    
+    .flash-mode-button i,
+    .abacus-button i {
+        font-size: 12px;
+    }
+    
+    .flash-line {
+        font-size: 36px;
+    }
+    
+    .start-flash-btn {
+        font-size: 16px;
+        padding: 0.7rem 1.2rem;
+    }
+    
+    .flash-mode-question {
+        min-height: 180px;
+        padding: 0.8rem;
     }
     
     .mcq-choice {
