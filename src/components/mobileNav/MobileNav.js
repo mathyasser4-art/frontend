@@ -9,6 +9,11 @@ function MobileNav({ role }) {
   const isActive = (path) => {
     return location.pathname === path;
   };
+  
+  // Hide navigation for students
+  if (role === 'Student') {
+    return null;
+  }
 
   const getDashboardLink = () => {
     switch (role) {
@@ -55,7 +60,7 @@ function MobileNav({ role }) {
           className={`nav-item ${isActive('/system/65a4964b82dbaac16d820fc8') ? 'active' : ''}`}
         >
           <i className="fa fa-file-text-o" aria-hidden="true"></i>
-          <span className="nav-label">Learn</span>
+          <span className="nav-label">MasterMinds</span>
         </Link>
 
         {dashboardLink && (
@@ -65,7 +70,7 @@ function MobileNav({ role }) {
             className={`nav-item ${isActive(dashboardLink) ? 'active' : ''}`}
           >
             <i className="fa fa-graduation-cap" aria-hidden="true"></i>
-            <span className="nav-label">Dashboard</span>
+            <span className="nav-label">Homework</span>
           </Link>
         )}
 

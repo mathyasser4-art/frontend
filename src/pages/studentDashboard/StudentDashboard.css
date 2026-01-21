@@ -35,7 +35,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    margin-top: 2rem;
+    margin-top: 1rem;
 }
 
 .dashboard-card {
@@ -123,6 +123,27 @@
     line-height: 1.5;
 }
 
+.homework-text,
+.practice-text {
+    font-family: 'Spicy Rice', cursive;
+    font-size: 1.8rem;
+    font-weight: 400;
+}
+
+/* Pulse animation for homework button when there are unsolved assignments */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.pulse-animation {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
 .card-stats {
     display: flex;
     gap: 1.5rem;
@@ -161,7 +182,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 1rem 1.5rem;
+    padding: 1.5rem 2rem;
     border: none;
     border-radius: 12px;
     color: white;

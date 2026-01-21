@@ -138,8 +138,6 @@ function StudentDashboard() {
                                     <div className="card-icon-wrapper">
                                         <NotebookPen size={48} strokeWidth={2} />
                                     </div>
-                                    <h3>My Homework Assignments</h3>
-                                    <p className="card-description">Complete your teacher-assigned tasks</p>
                                     
                                     <div className="card-stats">
                                         {teacherList && teacherList.length > 0 ? (
@@ -158,9 +156,8 @@ function StudentDashboard() {
                                         )}
                                     </div>
 
-                                    <button className="card-button">
-                                        <span>Go to Homework</span>
-                                        <ChevronRight size={20} />
+                                    <button className={`card-button ${unsolvedAssignments > 0 ? 'pulse-animation' : ''}`}>
+                                        <span className="homework-text">Homework</span>
                                     </button>
                                 </div>
 
@@ -169,12 +166,10 @@ function StudentDashboard() {
                                     <div className="card-icon-wrapper">
                                         <Brain size={48} strokeWidth={2} />
                                     </div>
-                                    <h3>Practice & Improve</h3>
-                                    <p className="card-description">Practice questions from all available academies</p>
                                     
                                     <div className="card-stats">
                                         <div className="stat-item">
-                                            <span className="stat-label">Mental Math</span>
+                                            <span className="stat-label">Free Worksheets</span>
                                         </div>
                                         <div className="stat-item">
                                             <span className="stat-label">MasterMinds</span>
@@ -182,8 +177,7 @@ function StudentDashboard() {
                                     </div>
 
                                     <button className="card-button">
-                                        <span>Start Practicing</span>
-                                        <ChevronRight size={20} />
+                                        <span className="practice-text">Practice</span>
                                     </button>
                                 </div>
                             </div>
@@ -202,8 +196,8 @@ function StudentDashboard() {
                             <div className="practice-options-grid">
                                 <Link to="/system/65a4963482dbaac16d820fc6" className="practice-option mental-math">
                                     <div className="practice-option-icon">⚡</div>
-                                    <h3>Mental Math</h3>
-                                    <p>Fast calculations & number games!</p>
+                                    <h3>Free Worksheets</h3>
+                                    <p>Enhance your mental math skills with solving extra questions</p>
                                     <button className="practice-option-btn">
                                         <span>Start</span>
                                         <ChevronRight size={20} />
@@ -213,7 +207,7 @@ function StudentDashboard() {
                                 <Link to="/system/65a4964b82dbaac16d820fc8" className="practice-option masterminds">
                                     <div className="practice-option-icon">🧠</div>
                                     <h3>MasterMinds</h3>
-                                    <p>Challenging puzzles & brain teasers!</p>
+                                    <p>Practice the book questions of master minds academy</p>
                                     <button className="practice-option-btn">
                                         <span>Start</span>
                                         <ChevronRight size={20} />
