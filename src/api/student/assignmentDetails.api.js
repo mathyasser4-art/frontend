@@ -3,7 +3,7 @@ import API_BASE_URL from '../../config/api.config';
 const URL = `${API_BASE_URL}/student/assignmentDetails`;
 const Token = localStorage.getItem('O_authWEB')
 
-const assignmentDetails = (setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate) => {
+const assignmentDetails = (setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode) => {
     setLoading(true)
     localStorage.removeItem("time")
     
@@ -47,6 +47,11 @@ const assignmentDetails = (setLoading, setOperationError, setQuestionData, setTh
                     setAnswer(allQuestion[0].questionAnswer);
                 if (allQuestion.length === 0)
                     setLoading(true)
+                
+                // Set force flash mode if the assignment requires it
+                if (setForceFlashMode && responseJson.assignment.forceFlashMode) {
+                    setForceFlashMode(true);
+                }
                 if (responseJson?.assignment.timer) {
                     const timer = responseJson.assignment.timer * 60
                     const time = new Date();

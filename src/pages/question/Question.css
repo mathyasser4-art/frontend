@@ -253,7 +253,7 @@ body {
 }
 
 .flash-line {
-    font-size: 80px;
+    font-size: 130px;
     font-weight: bold;
     color: #7935d1ff;
     animation: flashIn 0.3s ease-in;
@@ -262,7 +262,15 @@ body {
     font-family: 'Spicy Sale', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif;
-    line-height: 1.2;
+    line-height: 1.1;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flash-line.flash-fade-out {
+    animation: flashOut 1.5s ease-out forwards;
 }
 
 @keyframes flashIn {
@@ -276,6 +284,21 @@ body {
     100% {
         opacity: 1;
         transform: scale(1);
+    }
+}
+
+@keyframes flashOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    70% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.95);
     }
 }
 
@@ -1448,7 +1471,9 @@ input[type="radio"] {
     
     /* Flash Mode Tablet Responsive */
     .flash-line {
-        font-size: 60px;
+        font-size: 95px;
+        min-height: 120px;
+        line-height: 1;
     }
     
     .start-flash-btn {
@@ -1561,7 +1586,9 @@ input[type="radio"] {
     }
     
     .flash-line {
-        font-size: 48px;
+        font-size: 70px;
+        min-height: 90px;
+        line-height: 1;
     }
     
     .start-flash-btn {
@@ -1856,7 +1883,9 @@ input[type="radio"] {
     }
     
     .flash-line {
-        font-size: 36px;
+        font-size: 56px;
+        min-height: 70px;
+        line-height: 1;
     }
     
     .start-flash-btn {

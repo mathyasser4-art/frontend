@@ -76,6 +76,7 @@ function Question() {
     let [expiryData, setExpiryData] = useState('');
     let [title, setTitle] = useState('');
     let [answeredQuestions, setAnsweredQuestions] = useState(0);
+    const [forceFlashMode, setForceFlashMode] = useState(false);
 
     // Keyboard Variables
     const [isArabic, setIsArabic] = useState(true);
@@ -204,35 +205,38 @@ function Question() {
         setCurrentFlashLine(0);
     };
 
-    // Flash Mode Animation Effect
+    // Flash Mode Animation Effect with gap between lines
     useEffect(() => {
         if (flashMode && isFlashing) {
             const lines = getQuestionLines();
             
             if (currentFlashLine < lines.length) {
+                // Show line for 1 second, then 0.5s gap before next line
                 const timer = setTimeout(() => {
                     setCurrentFlashLine(prev => prev + 1);
-                }, 1000); // Each line shows for 1 second then disappears
+                }, 1500); // 1 second display + 0.5 second gap
                 
                 return () => clearTimeout(timer);
             } else {
-                // All lines shown, wait 1 second then reset
+                // All lines shown, wait 0.5s then restart automatically
                 const finalTimer = setTimeout(() => {
-                    setIsFlashing(false);
                     setCurrentFlashLine(0);
-                }, 1000);
+                }, 500);
                 
                 return () => clearTimeout(finalTimer);
             }
         }
     }, [flashMode, isFlashing, currentFlashLine]);
 
-    // Reset flash mode when question changes
+    // Reset flash animation when question changes, keep flash mode on
     useEffect(() => {
-        setFlashMode(false);
-        setIsFlashing(false);
-        setCurrentFlashLine(0);
-    }, [thisQuestion?._id]);
+        if (flashMode) {
+            setCurrentFlashLine(0);
+        } else {
+            setIsFlashing(false);
+            setCurrentFlashLine(0);
+        }
+    }, [thisQuestion?._id, flashMode]);
 
     const nextQuestion = () => {
         soundEffects.playClick();
@@ -503,9 +507,10 @@ function Question() {
                 startDate: startDate || undefined,
                 endDate: expiryData || undefined,
                 classes: classesBox.map(c => c._id),
-                title
+                title,
+                forceFlashMode: forceFlashMode
             };
-            createAssignment(data, setError, setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setAttempts, setExpiryData, setStartDate, setTitle, setClassesBox);
+            createAssignment(data, setError, setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setAttempts, setExpiryData, setStartDate, setTitle, setClassesBox, setForceFlashMode);
         }
     };
 
@@ -538,6 +543,7 @@ function Question() {
         setStartDate('');
         setTitle('');
         setClassesBox([]);
+        setForceFlashMode(false);
         closeQuestionList();
         localStorage.removeItem('cartona');
     };
@@ -613,18 +619,21 @@ function Question() {
                             
                             {flashMode ? (
                                 <div className="flash-mode-question">
-                                    {isFlashing && currentFlashLine < getQuestionLines().length ? (
-                                        <div className="flash-line">
-                                            {getQuestionLines()[currentFlashLine]}
-                                        </div>
-                                    ) : (
+                                    {!isFlashing ? (
                                         <button 
                                             className="start-flash-btn" 
                                             onClick={startFlashing}
-                                            disabled={isFlashing}
                                         >
-                                            {isFlashing ? t('questionPage.flashComplete', 'Complete! Click to replay') : t('questionPage.startFlash', 'Start Flash')}
+                                            {t('questionPage.start', 'Start')}
                                         </button>
+                                    ) : currentFlashLine < getQuestionLines().length ? (
+                                        <div className="flash-line flash-fade-out" key={currentFlashLine}>
+                                            {getQuestionLines()[currentFlashLine]}
+                                        </div>
+                                    ) : (
+                                        <div className="flash-line flash-fade-out" style={{opacity: 0}}>
+                                            {getQuestionLines()[0]}
+                                        </div>
                                     )}
                                 </div>
                             ) : (
@@ -741,6 +750,14 @@ function Question() {
                     <div className='d-flex align-items-center justify-content-space-between update-popup-head'>
                         <p>{t('questionPage.reviewQuestions')}</p>
                         <div className='d-flex align-items-center question-list-right-side'>
+                            <div 
+                                title={t('questionPage.forceFlashMode', 'Force Flash Mode for Students')} 
+                                className={`force-flash-toggle ${forceFlashMode ? 'force-flash-active' : ''}`}
+                                onClick={() => { soundEffects.playClick(); setForceFlashMode(!forceFlashMode); }}
+                            >
+                                <i className="fa fa-bolt" aria-hidden="true"></i>
+                                <span>{forceFlashMode ? t('questionPage.flashForced', 'Flash Forced') : t('questionPage.flashOptional', 'Flash Optional')}</span>
+                            </div>
                             <button onClick={() => { soundEffects.playClick(); removeAssignment(); }}>{t('questionPage.removeAssignment')}</button>
                             <p className='question-list-close' onClick={() => { soundEffects.playClick(); closeQuestionList(); }}>x</p>
                         </div>

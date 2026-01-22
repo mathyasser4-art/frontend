@@ -25,6 +25,12 @@ function Assignment() {
   // State for Abacus visibility
   const [showAbacus, setShowAbacus] = useState(false);
 
+  // State for Flash Mode
+  const [flashMode, setFlashMode] = useState(false);
+  const [currentFlashLine, setCurrentFlashLine] = useState(0);
+  const [isFlashing, setIsFlashing] = useState(false);
+  const [forceFlashMode, setForceFlashMode] = useState(false);
+
   const [questionData, setQuestionData] = useState()
   const [thisQuestion, setThisQuestion] = useState()
   const [numberOfQuestion, setNumberOfQuestion] = useState([])
@@ -211,17 +217,77 @@ function Assignment() {
     setAnswer(prev => prev.slice(0, -1));
   };
 
+  // Flash Mode Functions
+  const getQuestionLines = () => {
+    if (!thisQuestion?.question) return [];
+    return thisQuestion.question.split('\n').filter(line => line.trim());
+  };
+
+  const toggleFlashMode = () => {
+    soundEffects.playClick();
+    setFlashMode(prev => !prev);
+    setIsFlashing(false);
+    setCurrentFlashLine(0);
+  };
+
+  const startFlashing = () => {
+    soundEffects.playClick();
+    setIsFlashing(true);
+    setCurrentFlashLine(0);
+  };
+
+  // Flash Mode Animation Effect with gap between lines
+  useEffect(() => {
+    if (flashMode && isFlashing) {
+      const lines = getQuestionLines();
+      
+      if (currentFlashLine < lines.length) {
+        // Show line for 1 second, then 0.5s gap before next line
+        const timer = setTimeout(() => {
+          setCurrentFlashLine(prev => prev + 1);
+        }, 1500); // 1 second display + 0.5 second gap
+        
+        return () => clearTimeout(timer);
+      } else {
+        // All lines shown, wait 0.5s then restart automatically
+        const finalTimer = setTimeout(() => {
+          setCurrentFlashLine(0);
+        }, 500);
+        
+        return () => clearTimeout(finalTimer);
+      }
+    }
+  }, [flashMode, isFlashing, currentFlashLine]);
+
+  // Reset flash animation when question changes, keep flash mode on
+  useEffect(() => {
+    if (flashMode) {
+      setCurrentFlashLine(0);
+    } else {
+      setIsFlashing(false);
+      setCurrentFlashLine(0);
+    }
+  }, [thisQuestion?._id, flashMode]);
+
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true
       const handleGetQuestion = () => {
-        assignmentDetails(setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate)
+        assignmentDetails(setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode)
       }
       if (isAuth) {
         handleGetQuestion()
       }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Apply force flash mode when assignment data is loaded
+  useEffect(() => {
+    if (forceFlashMode) {
+      setFlashMode(true);
+      setIsFlashing(false);
+    }
+  }, [forceFlashMode]);
 
   const timerCount = () => { /* not used (react-timer-hook handles it) */ }
 
@@ -696,6 +762,15 @@ function Assignment() {
             <div className="question-form-head d-flex justify-content-space-between align-items-center">
               <p>Q{thisQuestionNumber}</p>
               <div className="end-head d-flex align-items-center">
+                {!forceFlashMode && (
+                  <div 
+                    title="Flash Mode" 
+                    className={`flash-mode-button ${flashMode ? 'flash-active' : ''}`} 
+                    onClick={toggleFlashMode}
+                  >
+                    <i className="fa fa-bolt" aria-hidden="true"></i>
+                  </div>
+                )}
                 <div title="Open Abacus" className="abacus-button" onClick={() => setShowAbacus(!showAbacus)}>
                   <i className="fa fa-calculator" aria-hidden="true"></i>
                 </div>
@@ -728,7 +803,29 @@ function Assignment() {
                   <img src={thisQuestion?.questionPic} alt="" />
                 </div>
               ) : null}
-              <pre>{thisQuestion?.question}</pre>
+              
+              {flashMode ? (
+                <div className="flash-mode-question">
+                  {!isFlashing ? (
+                    <button 
+                      className="start-flash-btn" 
+                      onClick={startFlashing}
+                    >
+                      Start
+                    </button>
+                  ) : currentFlashLine < getQuestionLines().length ? (
+                    <div className="flash-line flash-fade-out" key={currentFlashLine}>
+                      {getQuestionLines()[currentFlashLine]}
+                    </div>
+                  ) : (
+                    <div className="flash-line flash-fade-out" style={{opacity: 0}}>
+                      {getQuestionLines()[0]}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <pre>{thisQuestion?.question}</pre>
+              )}
 
               {thisQuestion?.typeOfAnswer === 'Essay' ? (
                 <div className='math-keyboard'>
