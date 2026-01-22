@@ -26,6 +26,7 @@ function Question() {
     const [flashMode, setFlashMode] = useState(false);
     const [currentFlashLine, setCurrentFlashLine] = useState(0);
     const [isFlashing, setIsFlashing] = useState(false);
+    const [flashSpeed, setFlashSpeed] = useState(1.0); // Default 1 second
 
     const [questionData, setQuestionData] = useState();
     const [thisQuestion, setThisQuestion] = useState();
@@ -205,28 +206,25 @@ function Question() {
         setCurrentFlashLine(0);
     };
 
-    // Flash Mode Animation Effect with gap between lines
+    // Flash Mode Animation Effect with gap between lines - STOPS after one loop
     useEffect(() => {
         if (flashMode && isFlashing) {
             const lines = getQuestionLines();
             
             if (currentFlashLine < lines.length) {
-                // Show line for 1 second, then 0.5s gap before next line
+                // Show line for selected duration, then 0.5s gap before next line
+                const displayTime = flashSpeed * 1000; // Convert to milliseconds
                 const timer = setTimeout(() => {
                     setCurrentFlashLine(prev => prev + 1);
-                }, 1500); // 1 second display + 0.5 second gap
+                }, displayTime + 500); // Display time + 0.5 second gap
                 
                 return () => clearTimeout(timer);
             } else {
-                // All lines shown, wait 0.5s then restart automatically
-                const finalTimer = setTimeout(() => {
-                    setCurrentFlashLine(0);
-                }, 500);
-                
-                return () => clearTimeout(finalTimer);
+                // All lines shown, STOP flashing (one loop only)
+                setIsFlashing(false);
             }
         }
-    }, [flashMode, isFlashing, currentFlashLine]);
+    }, [flashMode, isFlashing, currentFlashLine, flashSpeed]);
 
     // Reset flash animation when question changes, keep flash mode on
     useEffect(() => {
@@ -602,6 +600,23 @@ function Question() {
                                 >
                                     <i className="fa fa-bolt" aria-hidden="true"></i>
                                 </div>
+                                {flashMode && (
+                                    <div className='flash-speed-control'>
+                                        <label>{t('questionPage.flashSpeed')}</label>
+                                        <select 
+                                            value={flashSpeed} 
+                                            onChange={(e) => setFlashSpeed(parseFloat(e.target.value))}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <option value="0.5">0.5s</option>
+                                            <option value="1.0">1.0s</option>
+                                            <option value="1.5">1.5s</option>
+                                            <option value="2.0">2.0s</option>
+                                            <option value="2.5">2.5s</option>
+                                            <option value="3.0">3.0s</option>
+                                        </select>
+                                    </div>
+                                )}
                                 <div title={t('questionPage.openAbacus')} className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
                                     <i className="fa fa-calculator" aria-hidden="true"></i>
                                 </div>

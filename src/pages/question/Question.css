@@ -188,6 +188,43 @@ body {
     font-size: 16px;
 }
 
+/* Flash Speed Control */
+.flash-speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 12px;
+    font-size: 14px;
+}
+
+.flash-speed-control label {
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+}
+
+.flash-speed-control select {
+    padding: 6px 10px;
+    border: 2px solid #FF9800;
+    border-radius: 6px;
+    background: white;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.flash-speed-control select:hover {
+    border-color: #F57C00;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+}
+
+.flash-speed-control select:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
 /* Abacus Button Styling */
 .abacus-button {
     cursor: pointer;
