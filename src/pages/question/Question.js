@@ -27,6 +27,7 @@ function Question() {
     const [currentFlashLine, setCurrentFlashLine] = useState(0);
     const [isFlashing, setIsFlashing] = useState(false);
     const [flashSpeed, setFlashSpeed] = useState(1.0); // Default 1 second
+    const [hasFlashedOnce, setHasFlashedOnce] = useState(false); // Track if flashing has started at least once
 
     const [questionData, setQuestionData] = useState();
     const [thisQuestion, setThisQuestion] = useState();
@@ -204,6 +205,7 @@ function Question() {
         soundEffects.playClick();
         setIsFlashing(true);
         setCurrentFlashLine(0);
+        setHasFlashedOnce(true); // Mark that flashing has been initiated
     };
 
     // Flash Mode Animation Effect with gap between lines - STOPS after one loop
@@ -226,15 +228,19 @@ function Question() {
         }
     }, [flashMode, isFlashing, currentFlashLine, flashSpeed]);
 
-    // Reset flash animation when question changes, keep flash mode on
+    // Reset flash animation when question changes, auto-start if already flashed once
     useEffect(() => {
         if (flashMode) {
             setCurrentFlashLine(0);
+            // Auto-start flashing for new questions if user has already started flashing once
+            if (hasFlashedOnce) {
+                setIsFlashing(true);
+            }
         } else {
             setIsFlashing(false);
             setCurrentFlashLine(0);
         }
-    }, [thisQuestion?._id, flashMode]);
+    }, [thisQuestion?._id, flashMode, hasFlashedOnce]);
 
     const nextQuestion = () => {
         soundEffects.playClick();
@@ -634,20 +640,20 @@ function Question() {
                             
                             {flashMode ? (
                                 <div className="flash-mode-question">
-                                    {!isFlashing ? (
+                                    {!hasFlashedOnce && !isFlashing ? (
                                         <button 
                                             className="start-flash-btn" 
                                             onClick={startFlashing}
                                         >
                                             {t('questionPage.start', 'Start')}
                                         </button>
-                                    ) : currentFlashLine < getQuestionLines().length ? (
+                                    ) : isFlashing && currentFlashLine < getQuestionLines().length ? (
                                         <div className="flash-line flash-fade-out" key={currentFlashLine}>
                                             {getQuestionLines()[currentFlashLine]}
                                         </div>
                                     ) : (
                                         <div className="flash-line flash-fade-out" style={{opacity: 0}}>
-                                            {getQuestionLines()[0]}
+                                            {/* Empty space after flashing completes */}
                                         </div>
                                     )}
                                 </div>
