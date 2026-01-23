@@ -16,6 +16,7 @@ import alerm from '../../img/alerm.PNG'
 import MyTimer from '../../components/timer/Timer';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
 import soundEffects from '../../utils/soundEffects';
+import { Calculator, Languages } from 'lucide-react';
 import '../../reusable.css'
 import './Assignment.css'
 import html2canvas from 'html2canvas';
@@ -45,6 +46,7 @@ function Assignment() {
   const [isCorrect, setIsCorrect] = useState(false)
   const [stopTimer, setStopTimer] = useState(false)
   const [isCheckingAnswers, setIsCheckingAnswers] = useState(false)
+  const [showCheckingOverlay, setShowCheckingOverlay] = useState(false)
   const [totalSummation, setTotalSummation] = useState(0)
   const [answer, setAnswer] = useState('')
   const [error, setError] = useState(null)
@@ -187,8 +189,12 @@ function Assignment() {
           
           <button onClick={() => handleButtonClick(digits[8])} className="digit-button">{digits[8]}</button>
           <button onClick={() => handleButtonClick(digits[9])} className="digit-button">{digits[9]}</button>
+          
           <button onClick={handleDelete} className='digit-button btn-red'>×</button>
-          <button onClick={toggleLanguage} className='toggle-btn'>{isArabic ? '123' : '١٢٣'}</button>
+          <button onClick={toggleLanguage} className='toggle-btn modern-toggle'>
+            <Languages size={18} style={{ marginRight: '4px' }} />
+            {isArabic ? '123' : '١٢٣'}
+          </button>
         </>
       );
     } else {
@@ -209,7 +215,10 @@ function Assignment() {
           <button onClick={() => handleButtonClick(digits[9])} className="digit-button">{digits[9]}</button>
           
           <button onClick={handleDelete} className='digit-button btn-red'>×</button>
-          <button onClick={toggleLanguage} className='toggle-btn'>{isArabic ? '123' : '١٢٣'}</button>
+          <button onClick={toggleLanguage} className='toggle-btn modern-toggle'>
+            <Languages size={18} style={{ marginRight: '4px' }} />
+            {isArabic ? '123' : '١٢٣'}
+          </button>
         </>
       );
     }
@@ -540,11 +549,15 @@ function Assignment() {
     console.log('Final time:', finalTime);
     console.log('Assignment ID:', assignmentID);
     
+    // Show checking overlay
+    setShowCheckingOverlay(true);
+    
     // Safety check: if questionData is not available, just call getResult
     if (!questionData || !Array.isArray(questionData) || questionData.length === 0) {
       console.log('⚠️ WARNING: No question data available, calling getResult directly');
       console.log('questionData:', questionData);
       setIsCheckingAnswers(false);
+      setShowCheckingOverlay(false);
       setResultLoading(true);
       getResult(
         setResult, 
@@ -650,6 +663,11 @@ function Assignment() {
     setQuestionData(updatedQuestionData);
     setIsCheckingAnswers(false);
     
+    // Hide checking overlay after a brief delay
+    setTimeout(() => {
+      setShowCheckingOverlay(false);
+    }, 500);
+    
     // Now get the final result from backend
     setResultLoading(true);
     console.log('\nCalling getResult API with time:', finalTime);
@@ -709,9 +727,22 @@ function Assignment() {
           <Link to={'/'}><img src={logo} alt="" /></Link>
           <div className='nav-right-side d-flex align-items-center'>
             {role === 'Student' ? <Link to={'/dashboard/student'}><div className="gear"><i className="fa fa-graduation-cap" aria-hidden="true"></i></div></Link> : null}
-            {isAuth ? <Link to={'/user/info'}><img src={profileImg} alt="" /></Link> : <Link to={'/auth/login'}><div className="nav-btn">Login
-              <div className="nav-btn2"></div>
-            </div></Link>}
+            {isAuth ? <Link to={'/user/info'}><img src={profileImg} alt="" /></Link> : (
+              <>
+                <Link to={'/auth/register'}>
+                  <div className="nav-btn nav-btn-signup" style={{ marginRight: '15px' }}>
+                    Sign Up
+                    <div className="nav-btn2"></div>
+                  </div>
+                </Link>
+                <Link to={'/auth/login'}>
+                  <div className="nav-btn">
+                    Login
+                    <div className="nav-btn2"></div>
+                  </div>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -793,7 +824,7 @@ function Assignment() {
                   </div>
                 )}
                 <div title="Open Abacus" className="abacus-button" onClick={() => setShowAbacus(!showAbacus)}>
-                  <i className="fa fa-calculator" aria-hidden="true"></i>
+                  <Calculator size={24} strokeWidth={2.5} style={{ color: '#65C6EE' }} />
                 </div>
                 {time !== 0 && !examCompleted ? (
                   <div className="timer">
@@ -1037,6 +1068,16 @@ function Assignment() {
         ) : null}
       </div>
       {/* whiteboard end */}
+
+      {/* Checking Answers Overlay */}
+      {showCheckingOverlay && (
+        <div className="checking-overlay">
+          <div className="checking-content">
+            <div className="checking-spinner"></div>
+            <p className="checking-text">Checking your answers...</p>
+          </div>
+        </div>
+      )}
     </>
   )
 }

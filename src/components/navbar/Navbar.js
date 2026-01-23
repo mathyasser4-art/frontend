@@ -83,9 +83,22 @@ const Navbar = () => {
                     {role === 'Student' ? <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="gear"><i className="fa fa-graduation-cap" aria-hidden="true"></i></div></Link> : null}
                     {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="gear"><i className="fa fa-graduation-cap" aria-hidden="true"></i></div></Link> : null}
                     {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'} onClick={() => soundEffects.playClick()}><div className="gear"><i className="fa fa-graduation-cap" aria-hidden="true"></i></div></Link> : null}
-                    {isAuth ? role === 'School' ? <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img className='school-avatar' src={school} alt="" /></Link> : <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img src={profileImg} alt="" /></Link> : <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}><div className="nav-btn">{t('common.login')}
-                        <div className="nav-btn2"></div>
-                    </div></Link>}
+                    {isAuth ? role === 'School' ? <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img className='school-avatar' src={school} alt="" /></Link> : <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img src={profileImg} alt="" /></Link> : (
+                        <>
+                            <Link to={'/auth/register'} onClick={() => soundEffects.playClick()}>
+                                <div className="nav-btn nav-btn-signup" style={{ marginRight: '15px' }}>
+                                    {t('auth.signUp')}
+                                    <div className="nav-btn2"></div>
+                                </div>
+                            </Link>
+                            <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}>
+                                <div className="nav-btn">
+                                    {t('common.login')}
+                                    <div className="nav-btn2"></div>
+                                </div>
+                            </Link>
+                        </>
+                    )}
                     
                 </div>
             </div>

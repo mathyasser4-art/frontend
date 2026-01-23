@@ -26,6 +26,11 @@
   animation: anime 16s linear infinite;
 }
 
+.nav-btn-signup {
+  background: linear-gradient(-45deg, #4CAF50, #45a049, #2e7d32, #1b5e20);
+  background-size: 600%;
+}
+
 .gear{
   color: #5d17eb;
   margin-right: 1rem;

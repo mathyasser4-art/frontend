@@ -1,6 +1,7 @@
 {
   "common": {
     "login": "Login",
+    "signUp": "Sign Up",
     "register": "Register",
     "logout": "Logout",
     "profile": "Profile",
