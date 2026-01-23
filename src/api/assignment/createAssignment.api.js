@@ -3,7 +3,7 @@ import API_BASE_URL from '../../config/api.config';
 const URL = `${API_BASE_URL}/assignment/createAssignment`;
 const Token = localStorage.getItem('O_authWEB')
 
-const createAssignment = (data, setError, setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setAttempts, setExpiryData, setStartDate, setTitle, setClassesBox) => {
+const createAssignment = (data, setError, setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setAttempts, setExpiryData, setStartDate, setTitle, setClassesBox, setForceFlashMode) => {
     setLoadingOperation(true)
     fetch(`${URL}`, {
         method: 'post',
@@ -25,6 +25,7 @@ const createAssignment = (data, setError, setLoadingOperation, setPocketNumber, 
                 setStartDate('')
                 setTitle('')
                 setClassesBox([])
+                if (setForceFlashMode) setForceFlashMode(false)
                 closeQuestionList()
                 localStorage.removeItem('cartona')
             } else {

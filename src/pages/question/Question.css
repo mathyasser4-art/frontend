@@ -290,7 +290,7 @@ body {
 }
 
 .flash-line {
-    font-size: 130px;
+    font-size: 90px;
     font-weight: bold;
     color: #7935d1ff;
     animation: flashIn 0.3s ease-in;
@@ -336,6 +336,29 @@ body {
     100% {
         opacity: 0;
         transform: scale(0.95);
+    }
+}
+
+/* Answer Text After Flash */
+.flash-answer-text {
+    font-size: 48px;
+    font-weight: bold;
+    color: #F875AA;
+    text-align: center;
+    animation: answerPulse 1s ease-in-out infinite;
+    font-family: 'Spicy Sale', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+}
+
+@keyframes answerPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
     }
 }
 
@@ -1508,9 +1531,13 @@ input[type="radio"] {
     
     /* Flash Mode Tablet Responsive */
     .flash-line {
-        font-size: 95px;
+        font-size: 65px;
         min-height: 120px;
         line-height: 1;
+    }
+    
+    .flash-answer-text {
+        font-size: 40px;
     }
     
     .start-flash-btn {
@@ -1623,9 +1650,13 @@ input[type="radio"] {
     }
     
     .flash-line {
-        font-size: 70px;
+        font-size: 50px;
         min-height: 90px;
         line-height: 1;
+    }
+    
+    .flash-answer-text {
+        font-size: 32px;
     }
     
     .start-flash-btn {
@@ -1920,9 +1951,13 @@ input[type="radio"] {
     }
     
     .flash-line {
-        font-size: 56px;
+        font-size: 40px;
         min-height: 70px;
         line-height: 1;
+    }
+    
+    .flash-answer-text {
+        font-size: 28px;
     }
     
     .start-flash-btn {

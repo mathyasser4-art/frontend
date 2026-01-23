@@ -214,11 +214,11 @@ function Question() {
             const lines = getQuestionLines();
             
             if (currentFlashLine < lines.length) {
-                // Show line for selected duration, then 0.5s gap before next line
+                // Show line for selected duration, then 0.1s gap before next line
                 const displayTime = flashSpeed * 1000; // Convert to milliseconds
                 const timer = setTimeout(() => {
                     setCurrentFlashLine(prev => prev + 1);
-                }, displayTime + 500); // Display time + 0.5 second gap
+                }, displayTime + 100); // Display time + 0.1 second gap
                 
                 return () => clearTimeout(timer);
             } else {
@@ -652,8 +652,8 @@ function Question() {
                                             {getQuestionLines()[currentFlashLine]}
                                         </div>
                                     ) : (
-                                        <div className="flash-line flash-fade-out" style={{opacity: 0}}>
-                                            {/* Empty space after flashing completes */}
+                                        <div className="flash-answer-text">
+                                            {t('questionPage.answer', 'ANSWER')}
                                         </div>
                                     )}
                                 </div>
