@@ -17,9 +17,6 @@ import MyTimer from '../../components/timer/Timer';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
 import soundEffects from '../../utils/soundEffects';
 import { Calculator, Languages } from 'lucide-react';
-import Tour from '../../components/tour/Tour';
-import TourHelpButton from '../../components/tour/TourHelpButton';
-import { studentAssignmentTour, shouldShowTour, completeTour, resetTour } from '../../components/tour/tourConfig';
 import '../../reusable.css'
 import './Assignment.css'
 import html2canvas from 'html2canvas';
@@ -67,9 +64,6 @@ function Assignment() {
 
   // Track if exam was completed
   const [examCompleted, setExamCompleted] = useState(false)
-
-  // Tour state
-  const [showTour, setShowTour] = useState(false)
 
   // --- Start Sound Additions ---
   const audioRef = useRef(null);
@@ -307,27 +301,6 @@ function Assignment() {
       setIsFlashing(false);
     }
   }, [forceFlashMode]);
-
-  // Tour effect - Show tour on first visit
-  useEffect(() => {
-    if (!loading && isAuth && shouldShowTour('student', 'assignment')) {
-      // Delay tour start to ensure DOM is fully rendered
-      const timer = setTimeout(() => {
-        setShowTour(true);
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [loading, isAuth]);
-
-  const handleTourExit = () => {
-    setShowTour(false);
-    completeTour('student', 'assignment');
-  };
-
-  const handleRestartTour = () => {
-    resetTour('student', 'assignment');
-    setShowTour(true);
-  };
 
   const timerCount = () => { /* not used (react-timer-hook handles it) */ }
 
@@ -1105,17 +1078,6 @@ function Assignment() {
           </div>
         </div>
       )}
-
-      {/* Tour Component */}
-      <Tour
-        steps={studentAssignmentTour}
-        enabled={showTour}
-        onExit={handleTourExit}
-        tourType="student"
-      />
-
-      {/* Floating Help Button */}
-      {isAuth && !examCompleted && <TourHelpButton onClick={handleRestartTour} />}
     </>
   )
 }

@@ -10,6 +10,9 @@ import getClass from '../../api/teacher/getClass.api';
 import updateAssignment from '../../api/assignment/updateAssignment.api';
 import removeAssignment from '../../api/assignment/removeAssignment.api';
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
+import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
+import { HelpCircle } from 'lucide-react'
+import soundEffects from '../../utils/soundEffects'
 import '../../reusable.css'
 import './TeacherDashboard.css'
 
@@ -31,6 +34,7 @@ function TeacherDashboard() {
     const [loadingOperation, setLoadingOperation] = useState(false)
     const [errorOperation, setErrorOperation] = useState(null)
     const [error, setError] = useState(null)
+    const [showTutorialModal, setShowTutorialModal] = useState(false)
     const isAuth = localStorage.getItem('O_authWEB')
     const isTrialMode = localStorage.getItem('isTrialMode') === 'true'
 
@@ -186,6 +190,20 @@ function TeacherDashboard() {
             {isTrialMode && <TrialBanner />}
             <MobileNav role="Teacher" />
             <Navbar />
+            
+            {/* Floating Help Button */}
+            <button 
+                className="floating-help-btn"
+                onClick={() => {
+                    soundEffects.playClick();
+                    setShowTutorialModal(true);
+                }}
+                aria-label="Tutorial Video"
+                title="Watch Tutorial"
+            >
+                <HelpCircle size={28} strokeWidth={2.5} />
+            </button>
+
             <div className="teacher-dashboard-container">
                 {loading ? <DashboardLoading /> : (error) ? <div className='d-flex justify-content-center'><div className="error">{error}</div> </div> : allAsignment?.map(item => {
                     return (
@@ -374,6 +392,13 @@ function TeacherDashboard() {
                 </div>
             </div>
             {/*question list popup end */}
+
+            {/* Tutorial Video Modal */}
+            <TutorialVideoModal 
+                isOpen={showTutorialModal} 
+                onClose={() => setShowTutorialModal(false)}
+                role="Teacher"
+            />
         </>
     )
 }
