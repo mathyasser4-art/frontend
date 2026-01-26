@@ -805,13 +805,13 @@ function Question() {
                         </div>
                         <div className='select-container d-flex'>
                             <div className='select-class'>
-                                <select value={classSelector} onChange={e => setClassSelector(e.target.value)}>
+                                <select value={classSelector} onChange={e => setClassSelector(e.target.value)} translate="no" className="notranslate">
                                     <option>{t('questionPage.selectClass')}</option>
                                     {classesList?.length === 0 ? <option>{t('questionPage.noClassesAvailable')}</option> : <option>{t('questionPage.allClasses')}</option>}
                                     {classesList?.map(item => <option key={item._id}>{item.class}</option>)}
                                 </select>
                             </div>
-                            <button onClick={addClassToBox}>{t('questionPage.add')}</button>
+                            <button onClick={addClassToBox} translate="no" className="notranslate">{t('questionPage.add')}</button>
                         </div>
                         <div className='class-selector-container d-flex flex-wrap align-items-center'>
                             {classesBox?.map(item => (
