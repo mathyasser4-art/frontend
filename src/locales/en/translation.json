@@ -318,5 +318,28 @@
     "mustAddStartDate": "You must add the start date.",
     "classAlreadyAdded": "This class is already added.",
     "mustSelectClassFirst": "You must select a class first."
+  },
+  "tour": {
+    "skip": "Skip",
+    "previous": "Previous",
+    "next": "Next",
+    "done": "Done",
+    "startTour": "Start Tour",
+    "teacherWelcome": "Welcome to Teacher Dashboard! Let's take you on a quick tour.",
+    "teacherDashboard": "Here you can see statistics for students, classes, and assignments.",
+    "teacherCreateAssignment": "To create an assignment, start by adding questions to your pocket from the Questions page.",
+    "teacherQuestionPocket": "When you add questions, they'll appear here in the pocket. Click it to create an assignment.",
+    "teacherClassManagement": "From here you can manage classes and add students.",
+    "teacherReports": "View student performance reports and assignment results here.",
+    "teacherProfile": "Update your profile and settings from here.",
+    "studentWelcome": "Welcome to Student Dashboard! Let's take you on a quick tour.",
+    "studentDashboard": "Here you can see your assignments, grades, and progress.",
+    "studentAssignments": "This is your assignment list. Click on any assignment to start.",
+    "studentStartExam": "Click here to start the exam or assignment.",
+    "studentAbacus": "Use the virtual abacus for calculations while solving questions.",
+    "studentFlashMode": "Flash mode displays questions quickly to improve your mental calculation speed.",
+    "studentKeyboard": "Use the keyboard to enter your answers (Arabic or English digits).",
+    "studentResults": "After finishing the exam, you can view your results and download them as PDF.",
+    "helpButton": "If you need help at any time, click here to restart the tour."
   }
 }

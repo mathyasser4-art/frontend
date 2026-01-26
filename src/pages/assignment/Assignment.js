@@ -17,6 +17,9 @@ import MyTimer from '../../components/timer/Timer';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
 import soundEffects from '../../utils/soundEffects';
 import { Calculator, Languages } from 'lucide-react';
+import Tour from '../../components/tour/Tour';
+import TourHelpButton from '../../components/tour/TourHelpButton';
+import { studentAssignmentTour, shouldShowTour, completeTour, resetTour } from '../../components/tour/tourConfig';
 import '../../reusable.css'
 import './Assignment.css'
 import html2canvas from 'html2canvas';
@@ -64,6 +67,9 @@ function Assignment() {
 
   // Track if exam was completed
   const [examCompleted, setExamCompleted] = useState(false)
+
+  // Tour state
+  const [showTour, setShowTour] = useState(false)
 
   // --- Start Sound Additions ---
   const audioRef = useRef(null);
@@ -177,21 +183,21 @@ function Assignment() {
       // Row 1: 0,1,2,3; Row 2: 4,5,6,7; Row 3: 8,9,×,toggle; Row 4: next
       return (
         <>
-          <button onClick={() => handleButtonClick(digits[0])} className="digit-button notranslate" translate="no">{digits[0]}</button>
-          <button onClick={() => handleButtonClick(digits[1])} className="digit-button notranslate" translate="no">{digits[1]}</button>
-          <button onClick={() => handleButtonClick(digits[2])} className="digit-button notranslate" translate="no">{digits[2]}</button>
-          <button onClick={() => handleButtonClick(digits[3])} className="digit-button notranslate" translate="no">{digits[3]}</button>
+          <button onClick={() => handleButtonClick(digits[0])} className="digit-button">{digits[0]}</button>
+          <button onClick={() => handleButtonClick(digits[1])} className="digit-button">{digits[1]}</button>
+          <button onClick={() => handleButtonClick(digits[2])} className="digit-button">{digits[2]}</button>
+          <button onClick={() => handleButtonClick(digits[3])} className="digit-button">{digits[3]}</button>
           
-          <button onClick={() => handleButtonClick(digits[4])} className="digit-button notranslate" translate="no">{digits[4]}</button>
-          <button onClick={() => handleButtonClick(digits[5])} className="digit-button notranslate" translate="no">{digits[5]}</button>
-          <button onClick={() => handleButtonClick(digits[6])} className="digit-button notranslate" translate="no">{digits[6]}</button>
-          <button onClick={() => handleButtonClick(digits[7])} className="digit-button notranslate" translate="no">{digits[7]}</button>
+          <button onClick={() => handleButtonClick(digits[4])} className="digit-button">{digits[4]}</button>
+          <button onClick={() => handleButtonClick(digits[5])} className="digit-button">{digits[5]}</button>
+          <button onClick={() => handleButtonClick(digits[6])} className="digit-button">{digits[6]}</button>
+          <button onClick={() => handleButtonClick(digits[7])} className="digit-button">{digits[7]}</button>
           
-          <button onClick={() => handleButtonClick(digits[8])} className="digit-button notranslate" translate="no">{digits[8]}</button>
-          <button onClick={() => handleButtonClick(digits[9])} className="digit-button notranslate" translate="no">{digits[9]}</button>
+          <button onClick={() => handleButtonClick(digits[8])} className="digit-button">{digits[8]}</button>
+          <button onClick={() => handleButtonClick(digits[9])} className="digit-button">{digits[9]}</button>
           
-          <button onClick={handleDelete} className='digit-button btn-red notranslate' translate="no">×</button>
-          <button onClick={toggleLanguage} className='toggle-btn modern-toggle notranslate' translate="no">
+          <button onClick={handleDelete} className='digit-button btn-red'>×</button>
+          <button onClick={toggleLanguage} className='toggle-btn modern-toggle'>
             <Languages size={18} style={{ marginRight: '4px' }} />
             {isArabic ? '123' : '١٢٣'}
           </button>
@@ -202,20 +208,20 @@ function Assignment() {
       // Row 1: 0,1,2,3,4; Row 2: 5,6,7,8,9; Row 3: ×, 123, next (spans 3)
       return (
         <>
-          <button onClick={() => handleButtonClick(digits[0])} className="digit-button notranslate" translate="no">{digits[0]}</button>
-          <button onClick={() => handleButtonClick(digits[1])} className="digit-button notranslate" translate="no">{digits[1]}</button>
-          <button onClick={() => handleButtonClick(digits[2])} className="digit-button notranslate" translate="no">{digits[2]}</button>
-          <button onClick={() => handleButtonClick(digits[3])} className="digit-button notranslate" translate="no">{digits[3]}</button>
-          <button onClick={() => handleButtonClick(digits[4])} className="digit-button notranslate" translate="no">{digits[4]}</button>
+          <button onClick={() => handleButtonClick(digits[0])} className="digit-button">{digits[0]}</button>
+          <button onClick={() => handleButtonClick(digits[1])} className="digit-button">{digits[1]}</button>
+          <button onClick={() => handleButtonClick(digits[2])} className="digit-button">{digits[2]}</button>
+          <button onClick={() => handleButtonClick(digits[3])} className="digit-button">{digits[3]}</button>
+          <button onClick={() => handleButtonClick(digits[4])} className="digit-button">{digits[4]}</button>
           
-          <button onClick={() => handleButtonClick(digits[5])} className="digit-button notranslate" translate="no">{digits[5]}</button>
-          <button onClick={() => handleButtonClick(digits[6])} className="digit-button notranslate" translate="no">{digits[6]}</button>
-          <button onClick={() => handleButtonClick(digits[7])} className="digit-button notranslate" translate="no">{digits[7]}</button>
-          <button onClick={() => handleButtonClick(digits[8])} className="digit-button notranslate" translate="no">{digits[8]}</button>
-          <button onClick={() => handleButtonClick(digits[9])} className="digit-button notranslate" translate="no">{digits[9]}</button>
+          <button onClick={() => handleButtonClick(digits[5])} className="digit-button">{digits[5]}</button>
+          <button onClick={() => handleButtonClick(digits[6])} className="digit-button">{digits[6]}</button>
+          <button onClick={() => handleButtonClick(digits[7])} className="digit-button">{digits[7]}</button>
+          <button onClick={() => handleButtonClick(digits[8])} className="digit-button">{digits[8]}</button>
+          <button onClick={() => handleButtonClick(digits[9])} className="digit-button">{digits[9]}</button>
           
-          <button onClick={handleDelete} className='digit-button btn-red notranslate' translate="no">×</button>
-          <button onClick={toggleLanguage} className='toggle-btn modern-toggle notranslate' translate="no">
+          <button onClick={handleDelete} className='digit-button btn-red'>×</button>
+          <button onClick={toggleLanguage} className='toggle-btn modern-toggle'>
             <Languages size={18} style={{ marginRight: '4px' }} />
             {isArabic ? '123' : '١٢٣'}
           </button>
@@ -301,6 +307,27 @@ function Assignment() {
       setIsFlashing(false);
     }
   }, [forceFlashMode]);
+
+  // Tour effect - Show tour on first visit
+  useEffect(() => {
+    if (!loading && isAuth && shouldShowTour('student', 'assignment')) {
+      // Delay tour start to ensure DOM is fully rendered
+      const timer = setTimeout(() => {
+        setShowTour(true);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, isAuth]);
+
+  const handleTourExit = () => {
+    setShowTour(false);
+    completeTour('student', 'assignment');
+  };
+
+  const handleRestartTour = () => {
+    resetTour('student', 'assignment');
+    setShowTour(true);
+  };
 
   const timerCount = () => { /* not used (react-timer-hook handles it) */ }
 
@@ -895,7 +922,7 @@ function Assignment() {
                     {showKeyboard && (
                       <div ref={keyboardRef} className="keyboard-container">
                         {renderDigits()}
-                        <button className='question-form-btn keyboard-next-btn notranslate' translate="no" onClick={() => { checkedQuestion(); }}>{checkLoading ? <span className="loader"></span> : "next"}</button>
+                        <button className='question-form-btn keyboard-next-btn' onClick={() => { checkedQuestion(); }}>{checkLoading ? <span className="loader"></span> : "next"}</button>
                       </div>
                     )}
                   </div>
@@ -966,7 +993,7 @@ function Assignment() {
             <p>Model Answer</p>
             <div className="d-flex justify-content-center align-items-center"><img src={thisQuestion?.answerPic} alt="" /></div>
           </div>
-          <button className='button popup-btn notranslate' translate="no" onClick={closeModelAnswer}>Close</button>
+          <button className='button popup-btn' onClick={closeModelAnswer}>Close</button>
         </div>
       </div>
       {/* model answer popup end */}
@@ -995,7 +1022,7 @@ function Assignment() {
               )) : <span className='answer-line'>____</span>}
             </div>
           </div>
-          <button className='button popup-btn notranslate' translate="no" onClick={closeRepotAnswer}>Close</button>
+          <button className='button popup-btn' onClick={closeRepotAnswer}>Close</button>
         </div>
       </div>
       {/* assignment report popup end */}
@@ -1028,11 +1055,11 @@ function Assignment() {
             </table>
           </div>
           <div className="result-popup-actions d-flex justify-content-center gap-2 mt-3">
-            <button className='button popup-btn btn-download notranslate' translate="no" onClick={downloadPDF}>
+            <button className='button popup-btn btn-download' onClick={downloadPDF}>
               <i className="fa fa-download" aria-hidden="true"></i> Download PDF
             </button>
             <Link to={'/dashboard/student'}>
-              <button className='button popup-btn notranslate' translate="no">Close</button>
+              <button className='button popup-btn'>Close</button>
             </Link>
           </div>
         </div>
@@ -1078,6 +1105,17 @@ function Assignment() {
           </div>
         </div>
       )}
+
+      {/* Tour Component */}
+      <Tour
+        steps={studentAssignmentTour}
+        enabled={showTour}
+        onExit={handleTourExit}
+        tourType="student"
+      />
+
+      {/* Floating Help Button */}
+      {isAuth && !examCompleted && <TourHelpButton onClick={handleRestartTour} />}
     </>
   )
 }

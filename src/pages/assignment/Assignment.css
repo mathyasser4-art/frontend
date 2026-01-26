@@ -5,31 +5,6 @@
 
 /* Override and add specific assignment styles */
 
-/* Google Translate Protection - Prevents translation from breaking button interactions */
-.button, .popup-btn, button, .question-form-btn, .digit-button, .toggle-btn {
-    position: relative !important;
-    z-index: 999999 !important;
-    pointer-events: auto !important;
-}
-
-.notranslate {
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-}
-
-/* Ensure popup containers and their children remain interactive */
-.popup-container, .result-popup-container, .report-popup-container {
-    position: relative !important;
-    z-index: 999998 !important;
-    isolation: isolate;
-}
-
-.popup-container .button,
-.result-popup-container .button,
-.report-popup-container .button {
-    isolation: isolate;
-}
-
 body {
     background-image: url('../../img/webbackground10.jpg');
     background-size: cover;

@@ -10,6 +10,9 @@ import AssignmentLoading from '../../components/assignmentLoading/AssignmentLoad
 import getAssignment from '../../api/student/getAssignment.api'
 import { NotebookPen, Brain, ChevronRight } from 'lucide-react'
 import API_BASE_URL from '../../config/api.config'
+import Tour from '../../components/tour/Tour'
+import TourHelpButton from '../../components/tour/TourHelpButton'
+import { studentDashboardTour, shouldShowTour, completeTour, resetTour } from '../../components/tour/tourConfig'
 import '../../reusable.css'
 import './StudentDashboard.css'
 
@@ -25,6 +28,7 @@ function StudentDashboard() {
     const [showPracticeOptions, setShowPracticeOptions] = useState(false)
     const [totalAssignments, setTotalAssignments] = useState(0)
     const [unsolvedAssignments, setUnsolvedAssignments] = useState(0)
+    const [showTour, setShowTour] = useState(false)
     const isAuth = localStorage.getItem('O_authWEB')
 
     useEffect(() => {
@@ -84,6 +88,27 @@ function StudentDashboard() {
 
         fetchAssignmentCounts()
     }, [teacherList])
+
+    // Tour effect - Show tour on first visit
+    useEffect(() => {
+        if (!loading && isAuth && shouldShowTour('student', 'dashboard')) {
+            // Delay tour start to ensure DOM is fully rendered
+            const timer = setTimeout(() => {
+                setShowTour(true)
+            }, 1000)
+            return () => clearTimeout(timer)
+        }
+    }, [loading, isAuth])
+
+    const handleTourExit = () => {
+        setShowTour(false)
+        completeTour('student', 'dashboard')
+    }
+
+    const handleRestartTour = () => {
+        resetTour('student', 'dashboard')
+        setShowTour(true)
+    }
 
     const getAllAssignment = (teacherID) => {
         getAssignment(setLoadingOperation, setAllAsignment, setError, teacherID)
@@ -305,6 +330,17 @@ and you have (${item?.attemptsNumber} Attempts) to finshing exam.`}
                 </div>
             </div>
             {/* assignment popup end */}
+
+            {/* Tour Component */}
+            <Tour
+                steps={studentDashboardTour}
+                enabled={showTour}
+                onExit={handleTourExit}
+                tourType="student"
+            />
+
+            {/* Floating Help Button */}
+            {isAuth && <TourHelpButton onClick={handleRestartTour} />}
         </>
     )
 }
