@@ -567,6 +567,47 @@ button#nextBtn:active,
     transform: translateY(0) !important;
 }
 
+/* Mobile: Make toggle button same size as digit buttons */
+@media only screen and (max-width: 992px) {
+    .modern-toggle {
+        padding: 0 !important;
+        aspect-ratio: 1 !important;
+        font-size: 16px !important;
+        border-radius: 8px !important;
+        flex-direction: column !important;
+        gap: 2px !important;
+    }
+    
+    .modern-toggle svg {
+        width: 14px !important;
+        height: 14px !important;
+        margin-right: 0 !important;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .modern-toggle {
+        font-size: 14px !important;
+        border-radius: 6px !important;
+    }
+    
+    .modern-toggle svg {
+        width: 12px !important;
+        height: 12px !important;
+    }
+}
+
+@media only screen and (max-width: 360px) {
+    .modern-toggle {
+        font-size: 12px !important;
+    }
+    
+    .modern-toggle svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+}
+
 /* Sign Up Button */
 .nav-btn-signup {
     background: linear-gradient(-45deg, #4CAF50, #45a049, #2e7d32, #1b5e20);
