@@ -16,13 +16,6 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 localStorage.setItem('auth_role', responseJson.role)
                 localStorage.setItem('pp_name', responseJson.userName)
                 window.location.reload();
-            } else if (responseJson.isVerify === false) {
-                setLoading(false)
-                setError('')
-                showAlert()
-                setTimeout(() => {
-                    navigate(`/verify/${userData.email}`)
-                }, 3600);
             } else {
                 setError(responseJson.message)
                 setLoading(false)

@@ -70,7 +70,7 @@ function Login() {
             <div className="login-footer">
                 <p>Don't have account? <Link to={'/auth/register'}><span className='text-purple'>Sign up</span></Link></p>
             </div>
-            <div className="alert">This account is not verified! Check your email We have sent you a verification code.</div>
+
         </div>
     )
 }

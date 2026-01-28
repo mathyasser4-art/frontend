@@ -12,7 +12,16 @@ const register = (userData, setError, setLoading, navigate) => {
         .then((response) => response.json())
         .then((responseJson) => {
             if (responseJson.message === 'success') {
-                navigate(`/verify/${userData.email}`)
+                // If backend returns token directly, log the user in
+                if (responseJson.userToken) {
+                    localStorage.setItem('O_authWEB', responseJson.userToken)
+                    localStorage.setItem('auth_role', responseJson.role)
+                    localStorage.setItem('pp_name', responseJson.userName)
+                    window.location.href = '/';
+                } else {
+                    // Otherwise redirect to login page
+                    navigate('/auth/login')
+                }
             } else {
                 setError(responseJson.message)
                 setLoading(false)
