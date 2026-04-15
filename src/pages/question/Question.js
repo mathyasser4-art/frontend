@@ -19,20 +19,26 @@ import './Question.css';
 
 // ── Abacus grid helpers ───────────────────────────────────────────────────────
 
+// Accepts both lowercase (op/val) and uppercase (OP/VAL) key formats.
+// Robust: trims whitespace, handles parse errors gracefully.
 const parseGridRows = (questionText) => {
-    if (!questionText || !questionText.trim().startsWith('[')) return null;
+    if (!questionText) return null;
+    const trimmed = String(questionText).trim();
+    if (!trimmed.startsWith('[')) return null;
     try {
-        const rows = JSON.parse(questionText);
-        if (Array.isArray(rows) && rows.length > 0) {
-            const first = rows[0];
-            if (first.op !== undefined || first.OP !== undefined) return rows;
-        }
+        const rows = JSON.parse(trimmed);
+        if (!Array.isArray(rows) || rows.length === 0) return null;
+        const first = rows[0];
+        if (
+            first.op !== undefined || first.OP !== undefined ||
+            first.val !== undefined || first.VAL !== undefined
+        ) return rows;
     } catch (e) {}
     return null;
 };
 
-const getRowOp  = (row) => row.op  ?? row.OP  ?? '';
-const getRowVal = (row) => row.val ?? row.VAL ?? '';
+const getRowOp  = (row) => (row.op  !== undefined ? row.op  : (row.OP  !== undefined ? row.OP  : ''));
+const getRowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
 
 const renderQuestion = (question) => {
     const gridRows = parseGridRows(question?.question);
@@ -227,7 +233,7 @@ function Question() {
     const getQuestionLines = () => {
         if (!thisQuestion?.question) return [];
         const gridRows = parseGridRows(thisQuestion.question);
-        if (gridRows) return gridRows.map(row => `${getRowOp(row)} ${getRowVal(row)}`);
+        if (gridRows) return gridRows.map(row => `${getRowOp(row)}${getRowVal(row)}`);
         return thisQuestion.question.split('\n').filter(line => line.trim());
     };
 

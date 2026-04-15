@@ -244,52 +244,56 @@ function Assignment() {
     setAnswer(prev => prev.slice(0, -1));
   };
 
+  // ── Abacus grid helpers ──────────────────────────────────────────────────────
+
+  // Accepts both lowercase (op/val) and uppercase (OP/VAL) key formats.
+  // Uses trim() so any surrounding whitespace/newlines are ignored.
+  const parseAbacusGrid = (text) => {
+    if (!text) return null;
+    const trimmed = String(text).trim();
+    if (!trimmed.startsWith('[')) return null;
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (!Array.isArray(parsed) || parsed.length === 0) return null;
+      const first = parsed[0];
+      if (
+        first.op !== undefined || first.OP !== undefined ||
+        first.val !== undefined || first.VAL !== undefined
+      ) return parsed;
+    } catch (e) { /* fall through */ }
+    return null;
+  };
+
+  const rowOp  = (row) => (row.op  !== undefined ? row.op  : (row.OP  !== undefined ? row.OP  : ''));
+  const rowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
+
   // Flash Mode Functions
   const getQuestionLines = () => {
     if (!thisQuestion?.question) return [];
-    
-    // Check if it's a JSON grid
-    if (thisQuestion.question.startsWith('[') && thisQuestion.question.endsWith(']')) {
-        try {
-            const parsed = JSON.parse(thisQuestion.question);
-            if (Array.isArray(parsed)) {
-                return parsed.map(row => `${row.op} ${row.val}`);
-            }
-        } catch (e) {
-            console.error('Failed to parse grid JSON in getQuestionLines', e);
-        }
-    }
-    
+    const grid = parseAbacusGrid(thisQuestion.question);
+    if (grid) return grid.map(row => `${rowOp(row)} ${rowVal(row)}`);
     return thisQuestion.question.split('\n').filter(line => line.trim());
   };
 
   const renderQuestion = () => {
     if (!thisQuestion?.question) return null;
-
-    if (thisQuestion.question.startsWith('[') && thisQuestion.question.endsWith(']')) {
-        try {
-            const parsed = JSON.parse(thisQuestion.question);
-            if (Array.isArray(parsed)) {
-                return (
-                    <div className="abacus-grid-view">
-                        <table className="abacus-display-table">
-                            <tbody>
-                                {parsed.map((row, i) => (
-                                    <tr key={i}>
-                                        <td className="op-cell">{row.op ?? row.OP ?? ''}</td>
-                                        <td className="val-cell">{row.val ?? row.VAL ?? ''}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                );
-            }
-        } catch (e) {
-            return <pre>{thisQuestion.question}</pre>;
-        }
+    const grid = parseAbacusGrid(thisQuestion.question);
+    if (grid) {
+      return (
+        <div className="abacus-grid-view">
+          <table className="abacus-display-table">
+            <tbody>
+              {grid.map((row, i) => (
+                <tr key={i}>
+                  <td className="op-cell">{rowOp(row)}</td>
+                  <td className="val-cell">{rowVal(row)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
     }
-
     return <pre>{thisQuestion.question}</pre>;
   };
 
