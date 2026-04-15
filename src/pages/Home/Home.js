@@ -21,9 +21,14 @@ function Home() {
   const [showTutorialModal, setShowTutorialModal] = useState(false)
   
   useEffect(() => {
-    // Redirect students directly to their dashboard
     if (role === 'Student') {
       navigate('/dashboard/student')
+    } else if (role === 'Teacher') {
+      navigate('/dashboard/teacher')
+    } else if (role === 'School' || role === 'IT') {
+      navigate('/dashboard-school')
+    } else if (role === 'Supervisor') {
+      navigate('/dashboard/supervisor')
     }
   }, [role, navigate])
   
