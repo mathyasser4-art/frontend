@@ -276,8 +276,8 @@ function Assignment() {
                             <tbody>
                                 {parsed.map((row, i) => (
                                     <tr key={i}>
-                                        <td className="op-cell">{row.op}</td>
-                                        <td className="val-cell">{row.val}</td>
+                                        <td className="op-cell">{row.op ?? row.OP ?? ''}</td>
+                                        <td className="val-cell">{row.val ?? row.VAL ?? ''}</td>
                                     </tr>
                                 ))}
                             </tbody>

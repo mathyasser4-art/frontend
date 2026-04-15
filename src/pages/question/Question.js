@@ -17,6 +17,55 @@ import { ArrowRight, Maximize2, Minimize2 } from 'lucide-react';
 import '../../reusable.css';
 import './Question.css';
 
+// ── Abacus grid helpers ───────────────────────────────────────────────────────
+
+const parseGridRows = (questionText) => {
+    if (!questionText || !questionText.trim().startsWith('[')) return null;
+    try {
+        const rows = JSON.parse(questionText);
+        if (Array.isArray(rows) && rows.length > 0) {
+            const first = rows[0];
+            if (first.op !== undefined || first.OP !== undefined) return rows;
+        }
+    } catch (e) {}
+    return null;
+};
+
+const getRowOp  = (row) => row.op  ?? row.OP  ?? '';
+const getRowVal = (row) => row.val ?? row.VAL ?? '';
+
+const renderQuestion = (question) => {
+    const gridRows = parseGridRows(question?.question);
+    if (gridRows) {
+        return (
+            <div className="abacus-grid-view">
+                <table className="abacus-display-table">
+                    <tbody>
+                        {gridRows.map((row, i) => (
+                            <tr key={i}>
+                                <td className="op-cell">{getRowOp(row)}</td>
+                                <td className="val-cell">{getRowVal(row)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+    return <pre>{question?.question}</pre>;
+};
+
+// ── Arabic digit normaliser ───────────────────────────────────────────────────
+const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+const normalizeToWesternDigits = (str) => {
+    if (!str) return str;
+    return String(str)
+        .replace(/[٠١٢٣٤٥٦٧٨٩]/g, d => ARABIC_DIGITS.indexOf(d).toString())
+        .trim();
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function Question() {
     const { t } = useTranslation();
     
@@ -177,6 +226,8 @@ function Question() {
     // Flash Mode Functions
     const getQuestionLines = () => {
         if (!thisQuestion?.question) return [];
+        const gridRows = parseGridRows(thisQuestion.question);
+        if (gridRows) return gridRows.map(row => `${getRowOp(row)} ${getRowVal(row)}`);
         return thisQuestion.question.split('\n').filter(line => line.trim());
     };
 
@@ -369,7 +420,7 @@ function Question() {
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ questionAnswer })
+                    body: JSON.stringify({ questionAnswer: normalizeToWesternDigits(questionAnswer) })
                 }
             );
             const result = await response.json();
@@ -424,7 +475,7 @@ function Question() {
                     {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ questionAnswer: q.questionAnswer })
+                        body: JSON.stringify({ questionAnswer: normalizeToWesternDigits(q.questionAnswer) })
                     }
                 );
                 const result = await response.json();
@@ -695,7 +746,7 @@ function Question() {
                                     )}
                                 </div>
                             ) : (
-                                <pre>{thisQuestion?.question}</pre>
+                                renderQuestion(thisQuestion)
                             )}
 
                             {thisQuestion?.typeOfAnswer === 'Essay' && (
