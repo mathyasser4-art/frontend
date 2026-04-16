@@ -2,7 +2,15 @@ import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/auth/google`;
 
-const authWithGoogle = (data) => {
+const ROLE_ROUTES = {
+    School: '/dashboard-school',
+    IT: '/dashboard-school',
+    Teacher: '/dashboard/teacher',
+    Student: '/dashboard/student',
+    Supervisor: '/dashboard/supervisor',
+};
+
+const authWithGoogle = (data, navigate) => {
     fetch(`${URL}`, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
@@ -16,7 +24,13 @@ const authWithGoogle = (data) => {
                 localStorage.removeItem('teacher_trial')
                 
                 localStorage.setItem('O_authWEB', responseJson.userToken)
-                window.location.reload();
+                localStorage.setItem('auth_role', responseJson.role)
+                localStorage.setItem('pp_name', responseJson.userName)
+                if (responseJson.userID) {
+                    localStorage.setItem('pp_id', responseJson.userID)
+                }
+                const route = ROLE_ROUTES[responseJson.role] || '/'
+                navigate(route)
             } else {
                 console.log(responseJson.message)
             }

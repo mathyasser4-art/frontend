@@ -35,7 +35,7 @@ function Login() {
         onSuccess: (tokenResponse) => {
             const { access_token } = tokenResponse
             const data = { access_token }
-            authWithGoogle(data)
+            authWithGoogle(data, navigate)
         }
     });
 
