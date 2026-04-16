@@ -275,6 +275,15 @@ function Assignment() {
     return thisQuestion.question.split('\n').filter(line => line.trim());
   };
 
+  const renderQuestionLine = (line, index) => {
+    const trimmed = String(line || '').trim();
+    return (
+      <span key={`${trimmed}-${index}`} className="student-question-line">
+        {trimmed === '+' ? <span className="hidden-plus">+</span> : trimmed}
+      </span>
+    );
+  };
+
   const renderQuestion = () => {
     if (!thisQuestion?.question) return null;
     const grid = parseAbacusGrid(thisQuestion.question);
@@ -285,7 +294,9 @@ function Assignment() {
             <tbody>
               {grid.map((row, i) => (
                 <tr key={i}>
-                  <td className="op-cell">{rowOp(row)}</td>
+                  <td className="op-cell">
+                    {rowOp(row) === '+' ? <span className="hidden-plus">+</span> : rowOp(row)}
+                  </td>
                   <td className="val-cell">{rowVal(row)}</td>
                 </tr>
               ))}
@@ -294,7 +305,14 @@ function Assignment() {
         </div>
       );
     }
-    return <pre>{thisQuestion.question}</pre>;
+    return (
+      <pre className="student-question-text">
+        {thisQuestion.question
+          .split('\n')
+          .filter(line => line.trim())
+          .map((line, index) => renderQuestionLine(line, index))}
+      </pre>
+    );
   };
 
   const toggleFullscreen = () => {

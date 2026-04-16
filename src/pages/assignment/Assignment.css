@@ -908,6 +908,29 @@ button#nextBtn:active,
     transform: translateY(0);
 }
 
+.student-question-text {
+    margin: 1.5rem auto;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: 700;
+    text-align: right;
+    white-space: pre-wrap;
+}
+
+.student-question-line {
+    display: block;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.hidden-plus {
+    display: inline-block;
+    width: 1ch;
+    color: transparent !important;
+    opacity: 0 !important;
+    text-shadow: none !important;
+    background: transparent !important;
+    overflow: hidden;
+}
+
 /* Abacus Grid View Styles */
 .abacus-grid-view {
     display: flex;
@@ -932,12 +955,14 @@ button#nextBtn:active,
     font-weight: 800;
     color: #4C5287;
     text-align: center;
+    font-family: "Courier New", Courier, monospace;
 }
 
 .abacus-display-table .op-cell {
     border-right: 2px solid #eee;
     color: #667eea;
     width: 40px;
+    text-align: right;
 }
 
 .abacus-display-table .val-cell {
