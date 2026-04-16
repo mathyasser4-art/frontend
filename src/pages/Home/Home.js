@@ -21,6 +21,10 @@ function Home() {
   const [showTutorialModal, setShowTutorialModal] = useState(false)
   
   useEffect(() => {
+    const path = window.location.pathname
+
+    if (path !== '/') return
+
     if (role === 'Student') {
       navigate('/dashboard/student')
     } else if (role === 'Teacher') {
