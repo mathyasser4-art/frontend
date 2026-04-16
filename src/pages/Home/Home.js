@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
@@ -20,21 +20,6 @@ function Home() {
   const [showTrialModal, setShowTrialModal] = useState(false)
   const [showTutorialModal, setShowTutorialModal] = useState(false)
   
-  useEffect(() => {
-    const path = window.location.pathname
-
-    if (path !== '/') return
-
-    if (role === 'Student') {
-      navigate('/dashboard/student')
-    } else if (role === 'Teacher') {
-      navigate('/dashboard/teacher')
-    } else if (role === 'School' || role === 'IT') {
-      navigate('/dashboard-school')
-    } else if (role === 'Supervisor') {
-      navigate('/dashboard/supervisor')
-    }
-  }, [role, navigate])
   
   return (
     <>
