@@ -32,6 +32,8 @@ import Pricing from './pages/pricing/Pricing';
 
 function App() {
   const isAuth = localStorage.getItem('O_authWEB')
+  const role = localStorage.getItem('auth_role')
+
   useEffect(() => {
     localStorage.removeItem('cartona')
   }, [])
@@ -49,19 +51,19 @@ function App() {
       <Route path='/user/info' element={<User />} />
       <Route path='/contact' element={<ContactMobile />} />
       <Route path='/question/:chapterID/:questionTypeID/:subjectID' element={<Question />} />
-      <Route path='/dashboard-school' element={isAuth ? <DashboardSchool /> : <Navigate to='/' />} />
-      <Route path='/dashboard-school/student' element={isAuth ? <Student /> : <Navigate to='/' />} />
-      <Route path='/dashboard-school/class' element={isAuth ? <Class /> : <Navigate to='/' />} />
-      <Route path='/dashboard-school/subject' element={isAuth ? <Subject /> : <Navigate to='/' />} />
-      <Route path='/dashboard-school/teacher' element={isAuth ? <Teacher /> : <Navigate to='/' />} />
-      <Route path='/dashboard-school/it' element={isAuth ? <IT /> : <Navigate to='/' />} />
-      <Route path='/dashboard-school/supervisor' element={isAuth ? <Supervisor /> : <Navigate to='/' />} />
-      <Route path='/dashboard/student' element={isAuth ? <StudentDashboard /> : <Navigate to='/' />} />
-      <Route path='/student/assignment/:assignmentID' element={isAuth ? <Assignment /> : <Navigate to='/' />} />
-      <Route path='/dashboard/teacher' element={isAuth ? <TeacherDashboard /> : <Navigate to='/' />} />
-      <Route path='/dashboard/supervisor' element={isAuth ? <SupervisorDashboard /> : <Navigate to='/' />} />
-      <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth ? <AssignmentReport /> : <Navigate to='/' />} />
-      <Route path='/student/myReport/:assignmentID' element={isAuth ? <StudentReport /> : <Navigate to='/' />} />
+      <Route path='/dashboard-school' element={isAuth && (role === 'School' || role === 'IT') ? <DashboardSchool /> : <Navigate to='/' />} />
+      <Route path='/dashboard-school/student' element={isAuth && (role === 'School' || role === 'IT') ? <Student /> : <Navigate to='/' />} />
+      <Route path='/dashboard-school/class' element={isAuth && (role === 'School' || role === 'IT') ? <Class /> : <Navigate to='/' />} />
+      <Route path='/dashboard-school/subject' element={isAuth && (role === 'School' || role === 'IT') ? <Subject /> : <Navigate to='/' />} />
+      <Route path='/dashboard-school/teacher' element={isAuth && (role === 'School' || role === 'IT') ? <Teacher /> : <Navigate to='/' />} />
+      <Route path='/dashboard-school/it' element={isAuth && (role === 'School' || role === 'IT') ? <IT /> : <Navigate to='/' />} />
+      <Route path='/dashboard-school/supervisor' element={isAuth && (role === 'School' || role === 'IT') ? <Supervisor /> : <Navigate to='/' />} />
+      <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/' />} />
+      <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/' />} />
+      <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/' />} />
+      <Route path='/dashboard/supervisor' element={isAuth && role === 'Supervisor' ? <SupervisorDashboard /> : <Navigate to='/' />} />
+      <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth && role === 'Teacher' ? <AssignmentReport /> : <Navigate to='/' />} />
+      <Route path='/student/myReport/:assignmentID' element={isAuth && role === 'Student' ? <StudentReport /> : <Navigate to='/' />} />
       <Route path="/assignment/:assignmentID/reports" element={<TeacherAssignmentReports />} />
       <Route path="/teacher/student/:studentID/history" element={isAuth ? <StudentHistory /> : <Navigate to='/' />} />
       <Route path='/pricing' element={<Pricing />} />
