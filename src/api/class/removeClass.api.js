@@ -1,15 +1,15 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/class/removeClass`;
-const Token = localStorage.getItem('O_authWEB')
 
 const removeClass = (classID, setError, setLoadingOperation, closeRemovePopup, setAllClass) => {
+    const token = localStorage.getItem('O_authWEB')
     setLoadingOperation(true)
     fetch(`${URL}/${classID}`, {
         method: 'delete',
         headers: {
             'Content-Type': 'application/json',
-            'authrization': `pracYas09${Token}`
+            'authrization': `pracYas09${token}`
         },
     })
         .then((response) => response.json())

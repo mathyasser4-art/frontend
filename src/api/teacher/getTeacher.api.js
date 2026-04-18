@@ -1,15 +1,15 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/teacher/getTeachers`;
-const Token = localStorage.getItem('O_authWEB')
 
 const getTeacher = (setLoading, setAllTeacher, pageNumber, setTeacherNumber, setTotalPage) => {
+    const token = localStorage.getItem('O_authWEB')
     setLoading(true)
     fetch(`${URL}/${pageNumber}`, {
         method: 'get',
         headers: {
             'Content-Type': 'application/json',
-            'authrization': `pracYas09${Token}`
+            'authrization': `pracYas09${token}`
         },
     })
         .then((response) => response.json())

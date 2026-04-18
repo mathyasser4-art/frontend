@@ -27,13 +27,19 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                     localStorage.setItem('pp_id', responseJson.userID);
                 }
                 const route = ROLE_ROUTES[responseJson.role] || '/';
-                navigate(route);
+                window.location.href = route;
             } else {
                 setError(responseJson.message);
+                if (typeof showAlert === 'function') {
+                    showAlert();
+                }
             }
         })
         .catch((error) => {
             setError(error.message);
+            if (typeof showAlert === 'function') {
+                showAlert();
+            }
         })
         .finally(() => {
             setLoading(false);
