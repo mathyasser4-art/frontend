@@ -900,33 +900,32 @@ function Assignment() {
       <audio ref={audioRefWrong} src="/audio/wrong.mp3" preload="auto" />
       {/* --- End Sound Additions --- */}
 
-      {/* Conditionally render nav only on desktop */}
-      {!isMobile && (
-        <nav>
-          <div className='nav-container d-flex justify-content-space-between align-items-center'>
-            <Link to={'/'}><img src={logo} alt="" /></Link>
-            <div className='nav-right-side d-flex align-items-center'>
-              {role === 'Student' ? <Link to={'/dashboard/student'}><div className="gear"><i className="fa fa-graduation-cap" aria-hidden="true"></i></div></Link> : null}
-              {isAuth ? <Link to={'/user/info'}><img src={profileImg} alt="" /></Link> : (
-                <>
-                  <Link to={'/auth/register'}>
-                    <div className="nav-btn nav-btn-signup" style={{ marginRight: '15px' }}>
-                      Sign Up
-                      <div className="nav-btn2"></div>
-                    </div>
-                  </Link>
-                  <Link to={'/auth/login'}>
-                    <div className="nav-btn">
-                      Login
-                      <div className="nav-btn2"></div>
-                    </div>
-                  </Link>
-                </>
-              )}
-            </div>
+      {/* Navbar - Hidden in fullscreen */}
+      <nav className={isFullscreen ? 'fullscreen-navbar-hidden' : ''}>
+        <div className='nav-container d-flex justify-content-space-between align-items-center'>
+          <Link to={'/'}><img src={logo} alt="" /></Link>
+          <div className='nav-right-side d-flex align-items-center'>
+            {role === 'Student' ? <Link to={'/dashboard/student'}><div className="gear"><i className="fa fa-graduation-cap" aria-hidden="true"></i></div></Link> : null}
+            {isAuth ? <Link to={'/user/info'}><img src={profileImg} alt="" /></Link> : (
+              <>
+                <Link to={'/auth/register'}>
+                  <div className="nav-btn nav-btn-signup" style={{ marginRight: '15px' }}>
+                    Sign Up
+                    <div className="nav-btn2"></div>
+                  </div>
+                </Link>
+                <Link to={'/auth/login'}>
+                  <div className="nav-btn">
+                    Login
+                    <div className="nav-btn2"></div>
+                  </div>
+                </Link>
+              </>
+            )}
           </div>
-        </nav>
-      )}
+        </div>
+      </nav>
+
 
       {loading ? <QuestionLoading /> : operationError ?
         <div className='assignment-error-ops d-flex justify-content-center flex-direction-column align-items-center'>
