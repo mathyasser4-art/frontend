@@ -27,7 +27,7 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                     localStorage.setItem('pp_id', responseJson.userID);
                 }
                 const route = ROLE_ROUTES[responseJson.role] || '/';
-                window.location.href = route;
+                window.location.href = '/';
             } else {
                 setError(responseJson.message);
                 if (typeof showAlert === 'function') {
