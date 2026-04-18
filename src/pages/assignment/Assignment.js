@@ -98,10 +98,11 @@ function Assignment() {
   }, []);
   // --- End Sound Additions ---
 
-  // Keep desktop layout, custom navbar hiding for student fullscreen
+// Detect mobile for fullscreen mode
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(false); // Keep desktop layout
+      const mobileWidth = window.innerWidth <= 992;
+      setIsMobile(mobileWidth);
     };
     
     checkMobile();
@@ -941,9 +942,9 @@ function Assignment() {
             </div>
           ) : null}
         </div> :
-        <div className={`question-container ${isFullscreen ? 'fullscreen-student-focus' : ''} d-flex justify-content-center flex-direction-column align-items-center`}>
+        <div className={`question-container ${isFullscreen ? (isMobile ? 'mobile-fullscreen' : 'desktop-fullscreen') : ''} d-flex justify-content-center flex-direction-column align-items-center`}>
           {/* Question numbers - Hidden in fullscreen */}
-          {!isFullscreen && !isMobile && (
+          {!isFullscreen && (
             <div className="question-number d-flex">
               {numberOfQuestion.length !== 0 ? (() => {
                 const q0 = questionData[0];
@@ -983,6 +984,7 @@ function Assignment() {
               })}
             </div>
           )}
+
 
 
           {/* Question Numbers - Hide on mobile */}
