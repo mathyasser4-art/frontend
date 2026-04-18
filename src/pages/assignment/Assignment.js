@@ -1333,7 +1333,7 @@ function Assignment() {
               <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
             </div>
             <h3>Exit Assignment?</h3>
-            <p>Are you sure you want to leave? If you exit now, no score will be recorded and you may not be able to restart this assignment.</p>
+            <p>Are you sure you want to leave?</p>
             <div className="exit-dialog-actions">
               <button className="exit-dialog-btn cancel-btn" onClick={cancelExit}>
                 Stay
