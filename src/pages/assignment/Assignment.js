@@ -98,11 +98,10 @@ function Assignment() {
   }, []);
   // --- End Sound Additions ---
 
-  // Detect mobile/tablet devices - DISABLED fullscreen mode
+  // Keep desktop layout, custom navbar hiding for student fullscreen
   useEffect(() => {
     const checkMobile = () => {
-      // Enable mobile fullscreen mode (hides navbar for student focus)
-      setIsMobile(true);
+      setIsMobile(false); // Keep desktop layout
     };
     
     checkMobile();
@@ -943,18 +942,49 @@ function Assignment() {
             </div>
           ) : null}
         </div> :
-        <div className={`question-container ${isMobile ? 'mobile-fullscreen' : ''} d-flex justify-content-center flex-direction-column align-items-center`}>
-          {/* Mobile Header - Only show on mobile */}
-          {isMobile && (
-            <div className="mobile-assignment-header">
-              <button className="mobile-exit-btn" onClick={handleExitAttempt} aria-label="Exit Assignment">
-                <i className="fa fa-times" aria-hidden="true"></i>
-              </button>
-              <div className="mobile-header-info">
-                <span className="mobile-question-indicator">Q{thisQuestionNumber}/{questionData?.length || 0}</span>
-              </div>
+        <div className={`question-container ${isFullscreen ? 'fullscreen-student-focus' : ''} d-flex justify-content-center flex-direction-column align-items-center`}>
+          {/* Question numbers - Hidden in fullscreen */}
+          {!isFullscreen && !isMobile && (
+            <div className="question-number d-flex">
+              {numberOfQuestion.length !== 0 ? (() => {
+                const q0 = questionData[0];
+                const q0Correct = q0?.correct === true;
+                const q0Wrong = q0?.correct === false;
+                const q0IsActive = thisQuestionNumber === 1;
+                const q0HasAnswer = !q0IsActive && !q0Correct && !q0Wrong && !!q0?.questionAnswer;
+                return (
+                  <p 
+                    className={`${q0IsActive ? 'active-question' : ''} ${q0HasAnswer ? 'has-answer' : ''}`} 
+                    onClick={putQuestion}
+                  >
+                    1
+                  </p>
+                );
+              })() : null}
+              {numberOfQuestion?.map((item, index) => {
+                if (item !== 1) {
+                  const question = questionData[item - 1];
+                  const isActive = thisQuestionNumber === item;
+                  const hasAnswer = !isActive && !!question?.questionAnswer;
+                  
+                  return (
+                    <p 
+                      key={item} 
+                      className={`
+                        ${isActive ? 'active-question' : ''}
+                        ${hasAnswer ? 'has-answer' : ''} 
+                      `.trim()} 
+                      onClick={putQuestion}
+                    >
+                      {item}
+                    </p>
+                  );
+                }
+                return null;
+              })}
             </div>
           )}
+
 
           {/* Question Numbers - Hide on mobile */}
           {!isMobile && (
