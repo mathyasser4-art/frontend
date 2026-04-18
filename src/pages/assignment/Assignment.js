@@ -101,8 +101,8 @@ function Assignment() {
   // Detect mobile/tablet devices - DISABLED fullscreen mode
   useEffect(() => {
     const checkMobile = () => {
-      // Set to false to disable mobile fullscreen mode
-      setIsMobile(false);
+      // Enable mobile fullscreen mode (hides navbar for student focus)
+      setIsMobile(true);
     };
     
     checkMobile();
@@ -310,6 +310,17 @@ function Assignment() {
     const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  // Auto-enter fullscreen when student enters assignment
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!document.fullscreenElement) {
+        toggleFullscreen();
+      }
+    }, 100); // Small delay to ensure DOM ready
+
+    return () => clearTimeout(timer);
   }, []);
 
   const toggleFlashMode = () => {
