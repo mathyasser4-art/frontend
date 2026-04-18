@@ -217,14 +217,10 @@ function TeacherAssignmentReports() {
             </p>
             <p style="margin: 10px 0 0 0; font-size: 16px; color: #666;">Points Earned</p>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div style="display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 200px; margin: 0 auto;">
             <div style="background-color: rgba(255,255,255,0.95); border-radius: 8px; padding: 15px;">
               <p style="margin: 0; font-size: 36px; font-weight: bold; color: #28a745;">${student.percentage}%</p>
               <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">Percentage</p>
-            </div>
-            <div style="background-color: rgba(255,255,255,0.95); border-radius: 8px; padding: 15px;">
-              <p style="margin: 0; font-size: 36px; font-weight: bold; color: #007bff;">${gradeLetter}</p>
-              <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">Grade</p>
             </div>
           </div>
         </div>
@@ -234,18 +230,14 @@ function TeacherAssignmentReports() {
           <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
             <tbody>
               <tr style="background-color: #f8f9fa;">
-                <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; color: #555; width: 50%;">Questions Answered</td>
-                <td style="padding: 12px; border: 1px solid #ddd; text-align: center; color: #000;">${student.answeredQuestions || 0} of ${student.totalQuestions || assignment?.totalQuestions || 'N/A'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; color: #555;">Total Possible Points</td>
+                <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; color: #555; width: 50%;">Total Possible Points</td>
                 <td style="padding: 12px; border: 1px solid #ddd; text-align: center; color: #000;">${student.totalPossible}</td>
               </tr>
-              <tr style="background-color: #f8f9fa;">
+              <tr>
                 <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; color: #555;">Points Earned</td>
                 <td style="padding: 12px; border: 1px solid #ddd; text-align: center; color: #28a745; font-weight: 600;">${student.score}</td>
               </tr>
-              <tr>
+              <tr style="background-color: #f8f9fa;">
                 <td style="padding: 12px; border: 1px solid #ddd; font-weight: 600; color: #555;">Time Duration</td>
                 <td style="padding: 12px; border: 1px solid #ddd; text-align: center; color: #000; font-weight: 600;">${student.timeSpent || '0:00'}</td>
               </tr>
@@ -412,9 +404,6 @@ function TeacherAssignmentReports() {
         combinedPDF.setFontSize(20);
         combinedPDF.text(`${student.percentage}%`, 140, 75);
 
-        combinedPDF.setFontSize(18);
-        combinedPDF.text(`Grade: ${gradeLetter}`, 165, 75);
-
         // Details table
         const startY = 95;
         combinedPDF.setFontSize(10);
@@ -426,12 +415,10 @@ function TeacherAssignmentReports() {
         combinedPDF.text('Value', 165, startY + 6, { align: 'right' });
 
         const results = [
-          ['Questions Answered', `${student.answeredQuestions || 0} of ${student.totalQuestions || assignment?.totalQuestions || 'N/A'}`],
           ['Points Earned', student.score.toString()],
           ['Total Possible Points', student.totalPossible.toString()],
           ['Time Duration', student.timeSpent || '0:00'],
-          ['Percentage Score', `${student.percentage}%`],
-          ['Letter Grade', gradeLetter]
+          ['Percentage Score', `${student.percentage}%`]
         ];
 
         let yPos = startY + 8;
@@ -668,11 +655,9 @@ function TeacherAssignmentReports() {
                   <div className="student-stats">
                     <span><strong>Final Mark:</strong> {student.score}/{student.totalPossible}</span>
                     <span><strong>Percentage:</strong> {student.percentage}%</span>
-                    <span><strong>Grade:</strong> {getGradeLetter(student.percentage)}</span>
                   </div>
                   <div className="student-stats" style={{ marginTop: '8px' }}>
                     <span><strong>Time:</strong> {student.timeSpent || '0:00'}</span>
-                    <span><strong>Questions:</strong> {student.answeredQuestions || 0} of {student.totalQuestions || assignment?.totalQuestions || 'N/A'}</span>
                   </div>
                   <div className="completion-date" style={{ marginTop: '8px' }}>
                     ✓ Completed: {formatDateTime(student.completedAt)}

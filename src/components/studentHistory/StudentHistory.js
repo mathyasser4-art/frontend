@@ -301,12 +301,6 @@ function StudentHistory() {
 
                       <div className="assignment-details-row">
                         <div className="detail-item">
-                          <span className="detail-label">Questions:</span>
-                          <span className="detail-value">
-                            {assignment.answeredQuestions || 0} / {assignment.totalQuestions || 'N/A'}
-                          </span>
-                        </div>
-                        <div className="detail-item">
                           <span className="detail-label">Points:</span>
                           <span className="detail-value">
                             {assignment.score} / {assignment.totalPossible}
@@ -319,9 +313,6 @@ function StudentHistory() {
                       <div className="score-circle" style={{ borderColor: gradeColor }}>
                         <div className="percentage" style={{ color: gradeColor }}>
                           {assignment.percentage}%
-                        </div>
-                        <div className="grade-letter" style={{ color: gradeColor }}>
-                          {gradeLetter}
                         </div>
                       </div>
                       
