@@ -15,7 +15,7 @@ import alerm from '../../img/alerm.PNG'
 import MyTimer from '../../components/timer/Timer';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
 import soundEffects from '../../utils/soundEffects';
-import { Calculator, CircleCheck, ArrowRight, Maximize2, Minimize2 } from 'lucide-react';
+import { Calculator, CircleCheck, ArrowRight, Maximize2, Minimize2, X } from 'lucide-react';
 import '../../reusable.css'
 import './Assignment.css'
 import html2canvas from 'html2canvas';
@@ -881,9 +881,8 @@ function Assignment() {
   };
 
   const confirmExit = () => {
-    soundEffects.playClick();
     setShowExitDialog(false);
-    navigate('/dashboard/student');
+    handleManualEndExam();
   };
 
   const cancelExit = () => {
@@ -1034,6 +1033,16 @@ function Assignment() {
             <div className="question-form-head d-flex justify-content-space-between align-items-center">
               <p>Q{thisQuestionNumber}</p>
               <div className="end-head d-flex align-items-center">
+                {isMobile && isFullscreen && !examCompleted && !showCheckingOverlay && (
+                  <button
+                    type="button"
+                    title="End Assignment"
+                    className="mobile-end-assignment-btn"
+                    onClick={handleExitAttempt}
+                  >
+                    <X size={18} color="#fff" />
+                  </button>
+                )}
                 <div
                   title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
                   className="fullscreen-button"
@@ -1334,14 +1343,14 @@ function Assignment() {
             <div className="exit-dialog-icon">
               <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
             </div>
-            <h3>Exit Assignment?</h3>
-            <p>Are you sure you want to leave?</p>
+            <h3>End Assignment?</h3>
+            <p>If you end now, your current result will be saved with the time you used.</p>
             <div className="exit-dialog-actions">
               <button className="exit-dialog-btn cancel-btn" onClick={cancelExit}>
                 Stay
               </button>
               <button className="exit-dialog-btn confirm-btn" onClick={confirmExit}>
-                Exit
+                End
               </button>
             </div>
           </div>

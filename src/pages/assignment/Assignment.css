@@ -717,6 +717,30 @@ button#nextBtn:active,
     overflow-y: auto;
 }
 
+.mobile-end-assignment-btn {
+    width: 42px;
+    height: 42px;
+    margin-right: 0.65rem;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f875aa 0%, #ea4c89 100%);
+    box-shadow: 0 8px 18px rgba(248, 117, 170, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.mobile-end-assignment-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 20px rgba(248, 117, 170, 0.45);
+}
+
+.mobile-end-assignment-btn:active {
+    transform: scale(0.95);
+}
+
 /* Mobile Assignment Header */
 .mobile-assignment-header {
     position: sticky;
@@ -895,12 +919,12 @@ button#nextBtn:active,
 }
 
 .confirm-btn {
-    background-color: #e0e0e0;
+    background-color: #bdbdbd;
     color: #333;
 }
 
 .confirm-btn:hover {
-    background-color: #d0d0d0;
+    background-color: #a8a8a8;
     transform: translateY(-2px);
 }
 
