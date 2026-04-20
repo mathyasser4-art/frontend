@@ -717,14 +717,13 @@ button#nextBtn:active,
     overflow-y: auto;
 }
 
-.mobile-end-assignment-btn {
+.end-assignment-btn,
+.worksheet-print-btn {
     width: 42px;
     height: 42px;
     margin-right: 0.65rem;
     border: none;
     border-radius: 50%;
-    background: linear-gradient(135deg, #f875aa 0%, #ea4c89 100%);
-    box-shadow: 0 8px 18px rgba(248, 117, 170, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -732,13 +731,65 @@ button#nextBtn:active,
     transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
-.mobile-end-assignment-btn:hover {
-    transform: scale(1.06);
-    box-shadow: 0 10px 20px rgba(248, 117, 170, 0.45);
+.end-assignment-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #c62828 100%);
+    box-shadow: 0 8px 18px rgba(239, 68, 68, 0.35);
 }
 
-.mobile-end-assignment-btn:active {
+.end-assignment-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 20px rgba(239, 68, 68, 0.45);
+}
+
+.end-assignment-btn:active {
     transform: scale(0.95);
+}
+
+.worksheet-print-btn {
+    background: linear-gradient(135deg, #4b5563 0%, #1f2937 100%);
+    box-shadow: 0 8px 18px rgba(31, 41, 55, 0.28);
+}
+
+.worksheet-print-btn:hover:not(:disabled) {
+    transform: scale(1.06);
+    box-shadow: 0 10px 20px rgba(31, 41, 55, 0.4);
+}
+
+.worksheet-print-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.worksheet-print-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.question-progress-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 92px;
+    padding: 0.45rem 0.95rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #fff7d6 0%, #ffe08a 100%);
+    color: #7a5a00 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.02em;
+    box-shadow: 0 6px 16px rgba(255, 193, 7, 0.22);
+}
+
+.desktop-fullscreen .question-form-head,
+.mobile-fullscreen .question-form-head {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+}
+
+.desktop-fullscreen .question-progress-label,
+.mobile-fullscreen .question-progress-label {
+    margin-right: 0.75rem;
 }
 
 /* Mobile Assignment Header */
@@ -930,6 +981,35 @@ button#nextBtn:active,
 
 .confirm-btn:active {
     transform: translateY(0);
+}
+
+@media only screen and (max-width: 768px) {
+    .question-progress-label {
+        min-width: 82px;
+        padding: 0.4rem 0.75rem;
+        font-size: 15px !important;
+    }
+
+    .end-assignment-btn,
+    .worksheet-print-btn {
+        width: 38px;
+        height: 38px;
+        margin-right: 0.45rem;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .question-progress-label {
+        min-width: 74px;
+        font-size: 14px !important;
+    }
+
+    .end-assignment-btn,
+    .worksheet-print-btn {
+        width: 34px;
+        height: 34px;
+        margin-right: 0.35rem;
+    }
 }
 
 /* Abacus Grid View Styles */

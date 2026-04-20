@@ -59,6 +59,27 @@
   color: #fff;
 }
 
+.mastermind-nav-item .nav-label {
+  font-family: Georgia, 'Times New Roman', serif;
+  color: #d4af37;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.mastermind-nav-item.active .nav-label {
+  color: #ffe08a;
+}
+
+.mastermind-nav-item i {
+  color: #caa64a;
+}
+
+.mastermind-nav-item.active i {
+  color: #ffe08a;
+}
+
 .nav-item:hover {
   background-color: #f0f0f0;
 }
@@ -86,6 +107,10 @@
   .nav-label {
     font-size: 10px;
   }
+
+  .mastermind-nav-item .nav-label {
+    font-size: 9px;
+  }
 }
 
 @media only screen and (max-width: 400px) {
@@ -100,6 +125,10 @@
 
   .nav-label {
     font-size: 9px;
+  }
+
+  .mastermind-nav-item .nav-label {
+    font-size: 8px;
   }
 
   .nav-mobile-container {

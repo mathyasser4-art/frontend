@@ -135,7 +135,7 @@
 }
 
 .questionType-option.mastermind {
-    background: linear-gradient(135deg, #4ECDC4, #45B7D1);
+    background: linear-gradient(135deg, #6b4f1d, #d4af37 55%, #f6e27a 100%);
 }
 
 .option-emoji {
@@ -152,6 +152,18 @@
     color: white;
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
     margin: 0;
+}
+
+.questionType-option.mastermind .option-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    color: #fff1a8;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(59, 42, 0, 0.45);
+}
+
+.questionType-option.mastermind .option-description {
+    color: rgba(255, 248, 220, 0.92);
 }
 
 .option-description {

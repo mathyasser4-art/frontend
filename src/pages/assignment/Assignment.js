@@ -15,7 +15,7 @@ import alerm from '../../img/alerm.PNG'
 import MyTimer from '../../components/timer/Timer';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
 import soundEffects from '../../utils/soundEffects';
-import { Calculator, CircleCheck, ArrowRight, Maximize2, Minimize2, X } from 'lucide-react';
+import { Calculator, CircleCheck, ArrowRight, Maximize2, Minimize2, X, Printer } from 'lucide-react';
 import '../../reusable.css'
 import './Assignment.css'
 import html2canvas from 'html2canvas';
@@ -186,6 +186,84 @@ function Assignment() {
     });
   };
 
+  const buildWorksheetLines = (question, index, pdf, maxWidth) => {
+    const rawLines = [`Q${index + 1}`];
+
+    const grid = parseAbacusGrid(question?.question);
+    if (grid) {
+      rawLines.push(...grid.map(row => `${rowOp(row)} ${rowVal(row)}`.trim()));
+    } else if (question?.question) {
+      rawLines.push(...String(question.question).split('\n').filter(line => line.trim()));
+    }
+
+    if (question?.typeOfAnswer === 'MCQ' && Array.isArray(question?.wrongAnswer)) {
+      rawLines.push('Options:');
+      question.wrongAnswer.forEach((choice, choiceIndex) => {
+        rawLines.push(`${String.fromCharCode(65 + choiceIndex)}. ${choice}`);
+      });
+    }
+
+    if (question?.typeOfAnswer === 'Graph') {
+      rawLines.push('Choose the correct graph option.');
+    }
+
+    if (question?.questionPic) {
+      rawLines.push('[This question includes an image in the app view.]');
+    }
+
+    return rawLines.flatMap(line => pdf.splitTextToSize(String(line), maxWidth));
+  };
+
+  const downloadWorksheetPDF = () => {
+    if (!Array.isArray(questionData) || questionData.length === 0) return;
+
+    soundEffects.playClick();
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const marginX = 14;
+    const maxWidth = pageWidth - (marginX * 2);
+    let y = 18;
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(18);
+    pdf.setTextColor(44, 62, 80);
+    pdf.text('Assignment Worksheet', marginX, y);
+    y += 8;
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(11);
+    pdf.setTextColor(110, 110, 110);
+    pdf.text(`Questions: ${questionData.length}`, marginX, y);
+    y += 6;
+    pdf.text(`Assignment ID: ${assignmentID}`, marginX, y);
+    y += 10;
+
+    questionData.forEach((question, index) => {
+      const lines = buildWorksheetLines(question, index, pdf, maxWidth - 4);
+      const blockHeight = (lines.length * 6) + 10;
+
+      if (y + blockHeight > pageHeight - 14) {
+        pdf.addPage();
+        y = 18;
+      }
+
+      pdf.setDrawColor(224, 224, 224);
+      pdf.roundedRect(marginX - 4, y - 5, maxWidth + 8, blockHeight, 4, 4);
+
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(11);
+      pdf.setTextColor(55, 65, 81);
+      pdf.text(lines, marginX, y);
+
+      y += blockHeight + 4;
+    });
+
+    const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    pdf.save(`assignment-worksheet-${assignmentID}-${timestamp}.pdf`);
+  };
+
   const handleButtonClick = (digit) => {
     // Removed keyboard sound as requested
     setAnswer(prev => {
@@ -266,6 +344,10 @@ function Assignment() {
 
   const rowOp  = (row) => (row.op  !== undefined ? row.op  : (row.OP  !== undefined ? row.OP  : ''));
   const rowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
+  const totalQuestionCount = questionData?.length || 0;
+  const currentQuestionLabel = totalQuestionCount
+    ? `Q${thisQuestionNumber}/${totalQuestionCount}`
+    : `Q${thisQuestionNumber || 0}`;
 
   // Flash Mode Functions
   const getQuestionLines = () => {
@@ -942,8 +1024,8 @@ function Assignment() {
           ) : null}
         </div> :
         <div className={`question-container ${isFullscreen ? (isMobile ? 'mobile-fullscreen' : 'desktop-fullscreen') : ''} d-flex justify-content-center flex-direction-column align-items-center`}>
-          {/* Question numbers - Hidden in fullscreen */}
-          {!isFullscreen && (
+          {/* Question numbers - desktop only, hidden in fullscreen */}
+          {!isFullscreen && !isMobile && (
             <div className="question-number d-flex">
               {numberOfQuestion.length !== 0 ? (() => {
                 const q0 = questionData[0];
@@ -960,51 +1042,7 @@ function Assignment() {
                   </p>
                 );
               })() : null}
-              {numberOfQuestion?.map((item, index) => {
-                if (item !== 1) {
-                  const question = questionData[item - 1];
-                  const isActive = thisQuestionNumber === item;
-                  const hasAnswer = !isActive && !!question?.questionAnswer;
-                  
-                  return (
-                    <p 
-                      key={item} 
-                      className={`
-                        ${isActive ? 'active-question' : ''}
-                        ${hasAnswer ? 'has-answer' : ''} 
-                      `.trim()} 
-                      onClick={putQuestion}
-                    >
-                      {item}
-                    </p>
-                  );
-                }
-                return null;
-              })}
-            </div>
-          )}
-
-
-
-          {/* Question Numbers - Hide on mobile */}
-          {!isMobile && (
-            <div className="question-number d-flex">
-              {numberOfQuestion.length !== 0 ? (() => {
-                const q0 = questionData[0];
-                const q0Correct = q0?.correct === true;
-                const q0Wrong = q0?.correct === false;
-                const q0IsActive = thisQuestionNumber === 1;
-                const q0HasAnswer = !q0IsActive && !q0Correct && !q0Wrong && !!q0?.questionAnswer;
-                return (
-                  <p 
-                    className={`${q0IsActive ? 'active-question' : ''} ${q0HasAnswer ? 'has-answer' : ''}`} 
-                    onClick={putQuestion}
-                  >
-                    1
-                  </p>
-                );
-              })() : null}
-              {numberOfQuestion?.map((item, index) => {
+              {numberOfQuestion?.map((item) => {
                 if (item !== 1) {
                   const question = questionData[item - 1];
                   const isActive = thisQuestionNumber === item;
@@ -1031,18 +1069,27 @@ function Assignment() {
           <div className="question-content-wrapper d-flex">
             <div className="question-form">
             <div className="question-form-head d-flex justify-content-space-between align-items-center">
-              <p>Q{thisQuestionNumber}</p>
+              <p className="question-progress-label">{currentQuestionLabel}</p>
               <div className="end-head d-flex align-items-center">
-                {isMobile && isFullscreen && !examCompleted && !showCheckingOverlay && (
+                {isFullscreen && !examCompleted && !showCheckingOverlay && (
                   <button
                     type="button"
                     title="End Assignment"
-                    className="mobile-end-assignment-btn"
+                    className="end-assignment-btn"
                     onClick={handleExitAttempt}
                   >
                     <X size={18} color="#fff" />
                   </button>
                 )}
+                <button
+                  type="button"
+                  title="Download Worksheet PDF"
+                  className="worksheet-print-btn"
+                  onClick={downloadWorksheetPDF}
+                  disabled={!questionData?.length}
+                >
+                  <Printer size={18} color="#fff" />
+                </button>
                 <div
                   title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
                   className="fullscreen-button"

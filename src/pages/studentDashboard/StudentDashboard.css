@@ -257,7 +257,7 @@
 }
 
 .practice-option.masterminds::before {
-    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+    background: linear-gradient(135deg, #caa64a 0%, #f6e27a 50%, #b8891f 100%);
 }
 
 .practice-option-icon {
@@ -300,8 +300,18 @@
 }
 
 .masterminds .practice-option-btn {
-    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
-    color: white;
+    background: linear-gradient(135deg, #caa64a 0%, #f6e27a 50%, #b8891f 100%);
+    color: #3b2a00;
+}
+
+.practice-option.masterminds h3,
+.practice-card .card-stats .stat-item:last-child .stat-label {
+    font-family: Georgia, 'Times New Roman', serif;
+    color: #d4af37;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .practice-option-btn:hover {
