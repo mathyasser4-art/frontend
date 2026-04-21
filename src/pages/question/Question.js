@@ -13,9 +13,10 @@ import checked from '../../api/question/checkedAnswer.api';
 import API_BASE_URL from '../../config/api.config';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
 import soundEffects from '../../utils/soundEffects';
-import { ArrowRight, Maximize2, Minimize2 } from 'lucide-react';
+import { ArrowRight, Maximize2, Minimize2, Printer } from 'lucide-react';
 import '../../reusable.css';
 import './Question.css';
+import jsPDF from 'jspdf';
 
 // ── Abacus grid helpers ───────────────────────────────────────────────────────
 
@@ -59,6 +60,35 @@ const renderQuestion = (question) => {
         );
     }
     return <pre>{question?.question}</pre>;
+};
+
+// Helper functions for PDF worksheet generation
+const buildWorksheetLines = (question, index, pdf, maxWidth) => {
+    const rawLines = [`Q${index + 1}`];
+
+    const grid = parseGridRows(question?.question);
+    if (grid) {
+        rawLines.push(...grid.map(row => `${getRowOp(row)} ${getRowVal(row)}`.trim()));
+    } else if (question?.question) {
+        rawLines.push(...String(question.question).split('\n').filter(line => line.trim()));
+    }
+
+    if (question?.typeOfAnswer === 'MCQ' && Array.isArray(question?.wrongAnswer)) {
+        rawLines.push('Options:');
+        question.wrongAnswer.forEach((choice, choiceIndex) => {
+            rawLines.push(`${String.fromCharCode(65 + choiceIndex)}. ${choice}`);
+        });
+    }
+
+    if (question?.typeOfAnswer === 'Graph') {
+        rawLines.push('Choose the correct graph option.');
+    }
+
+    if (question?.questionPic) {
+        rawLines.push('[This question includes an image in the app view.]');
+    }
+
+    return rawLines.flatMap(line => pdf.splitTextToSize(String(line), maxWidth));
 };
 
 // ── Arabic digit normaliser ───────────────────────────────────────────────────
@@ -151,6 +181,57 @@ function Question() {
     const { chapterID, questionTypeID, subjectID } = useParams();
     const isAuth = localStorage.getItem('O_authWEB');
     const role = localStorage.getItem('auth_role');
+
+    // PDF download function for worksheet
+    const downloadWorksheetPDF = () => {
+        if (!Array.isArray(questionData) || questionData.length === 0) return;
+
+        soundEffects.playClick();
+
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const marginX = 14;
+        const maxWidth = pageWidth - (marginX * 2);
+        let y = 18;
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(18);
+        pdf.setTextColor(44, 62, 80);
+        pdf.text('Question Worksheet', marginX, y);
+        y += 8;
+
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(11);
+        pdf.setTextColor(110, 110, 110);
+        pdf.text(`Questions: ${questionData.length}`, marginX, y);
+        y += 6;
+        pdf.text(`Chapter ID: ${chapterID}`, marginX, y);
+        y += 10;
+
+        questionData.forEach((question, index) => {
+            const lines = buildWorksheetLines(question, index, pdf, maxWidth - 4);
+            const blockHeight = (lines.length * 6) + 10;
+
+            if (y + blockHeight > pageHeight - 14) {
+                pdf.addPage();
+                y = 18;
+            }
+
+            pdf.setDrawColor(224, 224, 224);
+            pdf.roundedRect(marginX - 4, y - 5, maxWidth + 8, blockHeight, 4, 4);
+
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(11);
+            pdf.setTextColor(55, 65, 81);
+            pdf.text(lines, marginX, y);
+
+            y += blockHeight + 4;
+        });
+
+        const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        pdf.save(`question-worksheet-${chapterID}-${timestamp}.pdf`);
+    };
 
     useEffect(() => {
         const handleGetQuestion = () => {
@@ -688,6 +769,15 @@ function Question() {
                         <div className='question-form-head d-flex justify-content-space-between align-items-center'>
                             <p>Q{thisQuestionNumber}</p>
                             <div className='end-head d-flex align-items-center'>
+                                <button
+                                    type="button"
+                                    title={t('questionPage.downloadWorksheet', 'Download Worksheet PDF')}
+                                    className="worksheet-print-btn"
+                                    onClick={downloadWorksheetPDF}
+                                    disabled={!questionData?.length}
+                                >
+                                    <Printer size={18} color="#fff" />
+                                </button>
                                 <div
                                     title={isFullscreen ? t('questionPage.exitFullscreen', 'Exit Fullscreen') : t('questionPage.fullscreen', 'Fullscreen')}
                                     className="fullscreen-button"
