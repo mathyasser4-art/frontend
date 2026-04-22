@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import QuestionType from '../questionType/QuestionType'
-import ContactUS from '../contact/ContactUS'
+
 import TeacherTrialModal from '../../components/teacherTrialModal/TeacherTrialModal'
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
 import soundEffects from '../../utils/soundEffects'
@@ -90,7 +90,7 @@ function Home() {
         </div>
       </div>
       <QuestionType />
-      <ContactUS />
+
     </>
   )
 }

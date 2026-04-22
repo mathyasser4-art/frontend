@@ -154,12 +154,14 @@
     margin: 0;
 }
 
-.questionType-option.mastermind .option-title {
-    font-family: Georgia, 'Times New Roman', serif;
-    color: #fff1a8;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    text-shadow: 0 2px 10px rgba(59, 42, 0, 0.45);
+.option-title {
+    font-size: 32px;
+    font-weight: 600;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color: #D4AF37;
+    text-transform: capitalize;
+    text-shadow: 0 2px 8px rgba(212, 175, 55, 0.5);
+    margin: 0;
 }
 
 .questionType-option.mastermind .option-description {
