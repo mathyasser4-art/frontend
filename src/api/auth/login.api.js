@@ -20,6 +20,10 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
         .then((response) => response.json())
         .then((responseJson) => {
             if (responseJson.message === 'success') {
+                // Clear any trial data when logging in with a real account
+                localStorage.removeItem('isTrialMode')
+                localStorage.removeItem('teacher_trial')
+
                 localStorage.setItem('O_authWEB', responseJson.userToken);
                 localStorage.setItem('auth_role', responseJson.role);
                 localStorage.setItem('pp_name', responseJson.userName);
