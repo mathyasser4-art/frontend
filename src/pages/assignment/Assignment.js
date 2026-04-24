@@ -73,6 +73,10 @@ function Assignment() {
   const [totalAttempts, setTotalAttempts] = useState(null)
   const [remainingAttempts, setRemainingAttempts] = useState(null)
 
+  // Resume dialog state
+  const [showResumeDialog, setShowResumeDialog] = useState(false)
+  const [savedProgressData, setSavedProgressData] = useState(null)
+
   // --- Start Sound Additions ---
   const audioRef = useRef(null);
   const audioRefCorrect = useRef(null);
@@ -128,6 +132,79 @@ function Assignment() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [examCompleted]);
+
+  // ============================================================
+  // PHONE SHUTDOWN RECOVERY: Auto-save progress to localStorage
+  // ============================================================
+  useEffect(() => {
+    if (!questionData || examCompleted) return;
+
+    const progress = {
+      assignmentID,
+      questionData,
+      thisQuestionNumber,
+      answer,
+      timestamp: Date.now(),
+      totalTime,
+      time: time?.toISOString?.() || null
+    };
+
+    try {
+      localStorage.setItem(`assignment_progress_${assignmentID}`, JSON.stringify(progress));
+    } catch (e) {
+      console.warn('Failed to save assignment progress:', e);
+    }
+  }, [questionData, thisQuestionNumber, answer, examCompleted, assignmentID, time, totalTime]);
+
+  // ============================================================
+  // PHONE SHUTDOWN RECOVERY: Detect app background/kill
+  // ============================================================
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && !examCompleted) {
+        // Aggressively save current state when app is backgrounded
+        if (questionData) {
+          const progress = {
+            assignmentID,
+            questionData,
+            thisQuestionNumber,
+            answer,
+            timestamp: Date.now(),
+            totalTime,
+            time: time?.toISOString?.() || null
+          };
+          try {
+            localStorage.setItem(`assignment_progress_${assignmentID}`, JSON.stringify(progress));
+          } catch (e) {
+            console.warn('Failed to save progress on visibility change:', e);
+          }
+        }
+      }
+    };
+
+    const handlePageHide = (e) => {
+      if (!examCompleted && questionData) {
+        // Use sendBeacon for reliable submission on page close
+        const hasAnswers = questionData.some(q => q.questionAnswer && q.questionAnswer !== '');
+        if (hasAnswers && navigator.sendBeacon) {
+          const data = JSON.stringify({
+            assignmentID,
+            time: timeSpent || '0:00',
+            answeredCount: questionData.filter(q => q.questionAnswer).length
+          });
+          navigator.sendBeacon(`${API_BASE_URL}/answer/emergencySubmit`, new Blob([data], { type: 'application/json' }));
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', handlePageHide);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', handlePageHide);
+    };
+  }, [examCompleted, questionData, thisQuestionNumber, answer, assignmentID, time, totalTime, timeSpent]);
 
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -468,7 +545,11 @@ function Assignment() {
         assignmentDetails(setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode, setCurrentAttempt, setTotalAttempts, setRemainingAttempts, setFlashSpeed)
       }
       if (isAuth) {
-        handleGetQuestion()
+        // Check for saved progress FIRST before loading fresh data
+        const hasSaved = checkForSavedProgress();
+        if (!hasSaved) {
+          handleGetQuestion();
+        }
       }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -515,6 +596,77 @@ function Assignment() {
   }, [forceFlashMode, thisQuestion, flashSpeed, flashMode]);
 
   const timerCount = () => { /* not used (react-timer-hook handles it) */ }
+
+  // ============================================================
+  // PHONE SHUTDOWN RECOVERY: Resume / Discard helpers
+  // ============================================================
+  const checkForSavedProgress = () => {
+    try {
+      const saved = localStorage.getItem(`assignment_progress_${assignmentID}`);
+      if (saved) {
+        const progress = JSON.parse(saved);
+        const isRecent = Date.now() - progress.timestamp < 24 * 60 * 60 * 1000;
+        if (isRecent && progress.questionData && progress.questionData.length > 0) {
+          setSavedProgressData(progress);
+          setShowResumeDialog(true);
+          return true;
+        } else {
+          // Stale progress, clear it
+          localStorage.removeItem(`assignment_progress_${assignmentID}`);
+        }
+      }
+    } catch (e) {
+      console.warn('Error checking saved progress:', e);
+    }
+    return false;
+  };
+
+  const resumeProgress = () => {
+    if (!savedProgressData) return;
+    soundEffects.playClick();
+
+    const progress = savedProgressData;
+    setQuestionData(progress.questionData);
+    setThisQuestion(progress.questionData[progress.thisQuestionNumber - 1]);
+    setNumberOfQuestion(progress.questionData.map((_, i) => i + 1));
+    setThisQuestionNumber(progress.thisQuestionNumber);
+    setAnswer(progress.answer || '');
+    setTotalTime(progress.totalTime || 0);
+
+    // Restore timer from saved remaining time
+    if (progress.time) {
+      const savedTime = new Date(progress.time);
+      const now = new Date();
+      if (savedTime > now) {
+        setTime(savedTime);
+      } else {
+        // Timer expired while away — auto-submit immediately
+        setTimeSpent(`${progress.totalTime || 0}:00`);
+        setExamCompleted(true);
+        setIsCheckingAnswers(true);
+        checkAllAnswers(`${progress.totalTime || 0}:00`);
+      }
+    }
+
+    setShowResumeDialog(false);
+    setSavedProgressData(null);
+  };
+
+  const discardProgress = () => {
+    soundEffects.playClick();
+    localStorage.removeItem(`assignment_progress_${assignmentID}`);
+    setShowResumeDialog(false);
+    setSavedProgressData(null);
+  };
+
+  const clearSavedProgress = () => {
+    try {
+      localStorage.removeItem(`assignment_progress_${assignmentID}`);
+      localStorage.removeItem(`timer_remaining_${assignmentID}`);
+    } catch (e) {
+      console.warn('Failed to clear saved progress:', e);
+    }
+  };
 
   const base64ToFile = (url) => {
     let arr = url.split(',');
@@ -754,6 +906,9 @@ function Assignment() {
     const finalTime = mmssFromTimer || '0:00';
     setTimeSpent(finalTime);
     setExamCompleted(true);
+    
+    // Clear saved progress on completion
+    clearSavedProgress();
     
     console.log('handleGetResult - Received time from timer:', mmssFromTimer);
     console.log('handleGetResult - Final time to save:', finalTime);
@@ -1379,6 +1534,30 @@ function Assignment() {
           <div className="checking-content">
             <div className="checking-spinner"></div>
             <p className="checking-text">Wait.. checking the answers. Do not close!</p>
+          </div>
+        </div>
+      )}
+
+      {/* Resume Assignment Dialog */}
+      {showResumeDialog && (
+        <div className="exit-dialog-overlay">
+          <div className="exit-dialog">
+            <div className="exit-dialog-icon">
+              <i className="fa fa-history" aria-hidden="true"></i>
+            </div>
+            <h3>Resume Assignment?</h3>
+            <p>You have unsaved progress on this assignment.</p>
+            <p style={{fontWeight: '600', marginTop: '8px'}}>
+              Question {savedProgressData?.thisQuestionNumber} of {savedProgressData?.questionData?.length}
+            </p>
+            <div className="exit-dialog-actions">
+              <button className="exit-dialog-btn cancel-btn" onClick={discardProgress}>
+                Start Fresh
+              </button>
+              <button className="exit-dialog-btn confirm-btn" onClick={resumeProgress}>
+                Resume
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -65,6 +65,26 @@ function MyTimer({ expiryTimestamp, handleGetResult, totalTime, stopTimer }) {
     hasStoredTimeRef.current = false;
   }, []);
 
+  // ============================================================
+  // PHONE SHUTDOWN RECOVERY: Save remaining time periodically
+  // ============================================================
+  useEffect(() => {
+    if (!isRunning) return;
+    
+    const interval = setInterval(() => {
+      const remainingSeconds = (minutes * 60) + seconds;
+      try {
+        // Store remaining time for potential recovery
+        // Use a generic key that the parent can read
+        localStorage.setItem('timer_remaining_seconds', remainingSeconds.toString());
+      } catch (e) {
+        // Ignore localStorage errors
+      }
+    }, 5000); // Save every 5 seconds
+    
+    return () => clearInterval(interval);
+  }, [minutes, seconds, isRunning]);
+
   return (
     <>
       <span className='time_item'>{minutes}</span>:
