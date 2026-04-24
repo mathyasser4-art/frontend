@@ -5,7 +5,12 @@ const Token = localStorage.getItem('O_authWEB')
 
 const assignmentDetails = (setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode, setCurrentAttempt, setTotalAttempts, setRemainingAttempts, setFlashSpeed) => {
     setLoading(true)
-    localStorage.removeItem("time")
+    // Only remove legacy time key if no saved progress exists for this assignment
+    // (preserves backward compatibility while supporting phone-shutdown recovery)
+    const hasSavedProgress = localStorage.getItem(`assignment_progress_${assignmentID}`);
+    if (!hasSavedProgress) {
+        localStorage.removeItem("time");
+    }
     
     console.log('Fetching assignment details for:', assignmentID)
     console.log('Navigate function available:', !!navigate)
