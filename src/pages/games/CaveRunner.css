@@ -130,6 +130,15 @@
   animation: scroll 3s linear infinite;
 }
 
+/* Frozen State (waiting for answer) */
+.frozen .cave-back,
+.frozen .cave-mid,
+.frozen .cave-front,
+.frozen .ground,
+.frozen .character.running {
+  animation-play-state: paused !important;
+}
+
 @keyframes scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }

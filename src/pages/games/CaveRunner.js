@@ -17,6 +17,8 @@ const CaveRunner = () => {
   const [lives, setLives] = useState(3);
   const [isJumping, setIsJumping] = useState(false);
   const isJumpingRef = useRef(false);
+  const [isWaitingForAnswer, setIsWaitingForAnswer] = useState(false);
+  const isWaitingRef = useRef(false);
   const [obstaclePos, setObstaclePos] = useState(100); // percentage 100 to 0
   const [speed, setSpeed] = useState(1); // obstacle speed
   
@@ -62,6 +64,8 @@ const CaveRunner = () => {
     setLives(3);
     setSpeed(0.8);
     setObstaclePos(100);
+    setIsWaitingForAnswer(false);
+    isWaitingRef.current = false;
     generateQuestion();
     soundEffects.playClick();
   };
@@ -80,6 +84,8 @@ const CaveRunner = () => {
       soundEffects.playJump();
       setIsJumping(true);
       isJumpingRef.current = true;
+      setIsWaitingForAnswer(false);
+      isWaitingRef.current = false;
       
       // Add score and reset obstacle after jump finishes
       setTimeout(() => {
@@ -98,9 +104,6 @@ const CaveRunner = () => {
         const newLives = l - 1;
         if (newLives <= 0) {
           handleGameOver();
-        } else {
-          // Reset obstacle position to give player another chance
-          setObstaclePos(100);
         }
         return newLives;
       });
@@ -118,12 +121,15 @@ const CaveRunner = () => {
       lastTime = time;
 
       setObstaclePos(pos => {
+        if (isWaitingRef.current) return pos; // Game is frozen waiting for answer
+
         const newPos = pos - (speed * (deltaTime / 16));
         
-        // Collision detection (roughly between 10% and 20% on the screen)
-        if (newPos <= 20 && newPos >= 10 && !isJumpingRef.current) {
-          handleGameOver();
-          return 100;
+        // Stop moving when reaching the player (25%) to wait for answer
+        if (newPos <= 25 && !isJumpingRef.current) {
+          setIsWaitingForAnswer(true);
+          isWaitingRef.current = true;
+          return 25; // Hold at 25%
         }
         
         return newPos;
@@ -169,7 +175,7 @@ const CaveRunner = () => {
           )}
         </div>
 
-        <div className={`game-area ${gameState === 'playing' ? 'moving' : ''}`}>
+        <div className={`game-area ${gameState === 'playing' ? 'moving' : ''} ${isWaitingForAnswer ? 'frozen' : ''}`}>
           {/* Background Layers */}
           <div className="bg-layer cave-back"></div>
           <div className="bg-layer cave-mid"></div>
