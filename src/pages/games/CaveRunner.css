@@ -154,7 +154,10 @@
   z-index: 10;
   filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
   transform-origin: bottom center;
-  transform: scaleX(-1);
+}
+
+.character img {
+  mix-blend-mode: multiply;
 }
 
 .character.running {
@@ -166,15 +169,15 @@
 }
 
 @keyframes run {
-  0% { transform: scaleX(-1) translateY(0) rotate(-5deg); }
-  100% { transform: scaleX(-1) translateY(-10px) rotate(5deg); }
+  0% { transform: translateY(0) rotate(-5deg); }
+  100% { transform: translateY(-10px) rotate(5deg); }
 }
 
 @keyframes jump {
-  0% { transform: scaleX(-1) translateY(0) rotate(0); }
-  40% { transform: scaleX(-1) translateY(-150px) rotate(-180deg); }
-  60% { transform: scaleX(-1) translateY(-150px) rotate(-180deg); }
-  100% { transform: scaleX(-1) translateY(0) rotate(-360deg); }
+  0% { transform: translateY(0) rotate(0); }
+  40% { transform: translateY(-150px) rotate(-180deg); }
+  60% { transform: translateY(-150px) rotate(-180deg); }
+  100% { transform: translateY(0) rotate(-360deg); }
 }
 
 /* Obstacle */
@@ -354,10 +357,32 @@
 
 @media (max-width: 768px) {
   .game-area {
-    height: 300px;
+    height: 380px;
+  }
+  .logo-box h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .logo-box p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  .instructions {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .instructions p {
+    font-size: 0.9rem;
+  }
+  .start-btn {
+    padding: 0.75rem 2rem;
+    font-size: 1.2rem;
   }
   .character {
     font-size: 3rem;
+  }
+  .character img {
+    width: 70px !important;
   }
   .rock {
     font-size: 2.5rem;

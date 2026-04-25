@@ -6,6 +6,8 @@ import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
 import cuteDog from '../../img/cute_dog_runner.png';
+import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api';
+import { Loader2 } from 'lucide-react';
 
 import './CaveRunner.css';
 
@@ -28,10 +30,44 @@ const CaveRunner = () => {
   const [question, setQuestion] = useState({ num1: 0, num2: 0, op: '+' });
   const [options, setOptions] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState(0);
+  const [customQuestions, setCustomQuestions] = useState(null);
+  const [difficulty, setDifficulty] = useState('0');
 
   const gameLoopRef = useRef(null);
 
-  const generateQuestion = () => {
+  const generateQuestion = (customQ = null) => {
+    const qArray = customQ !== null ? customQ : customQuestions;
+    
+    if (qArray && qArray.length > 0) {
+      const randomIndex = Math.floor(Math.random() * qArray.length);
+      const q = qArray[randomIndex];
+      
+      let parsedAnswer = 0;
+      if (q.typeOfAnswer === 'MCQ' && q.correctAnswer) {
+        parsedAnswer = parseInt(q.correctAnswer);
+      } else if (q.typeOfAnswer === 'Essay' && q.answer && q.answer.length > 0) {
+        parsedAnswer = parseInt(q.answer[0]);
+      } else if (q.correctAnswer !== undefined) {
+        parsedAnswer = parseInt(q.correctAnswer);
+      } else if (q.answer !== undefined) {
+        parsedAnswer = parseInt(Array.isArray(q.answer) ? q.answer[0] : q.answer);
+      }
+
+      setQuestion({ text: q.question || q.questionText || q.text || `${q.num1} ${q.op} ${q.num2} = ?` });
+      setCorrectAnswer(parsedAnswer);
+
+      // Generate fake options for Cave Runner
+      let opts = [parsedAnswer];
+      while (opts.length < 3) {
+        const wrongOpt = parsedAnswer + (Math.floor(Math.random() * 9) - 4);
+        if (wrongOpt !== parsedAnswer && !opts.includes(wrongOpt)) {
+          opts.push(wrongOpt);
+        }
+      }
+      setOptions(opts.sort(() => Math.random() - 0.5));
+      return;
+    }
+
     const isAddition = Math.random() > 0.5;
     let num1, num2, answer;
 
@@ -45,7 +81,7 @@ const CaveRunner = () => {
       answer = num1 - num2;
     }
 
-    setQuestion({ num1, num2, op: isAddition ? '+' : '-' });
+    setQuestion({ text: `${num1} ${isAddition ? '+' : '-'} ${num2} = ?` });
     setCorrectAnswer(answer);
 
     // Generate options
@@ -60,7 +96,14 @@ const CaveRunner = () => {
     setOptions(opts.sort(() => Math.random() - 0.5));
   };
 
-  const startGame = () => {
+  const startGame = async (selectedLevel) => {
+    soundEffects.playClick();
+    setDifficulty(selectedLevel);
+    setGameState('loading');
+
+    const questions = await getGameQuestionsByLevel(selectedLevel);
+    setCustomQuestions(questions);
+
     setGameState('playing');
     setScore(0);
     setLives(3);
@@ -68,8 +111,7 @@ const CaveRunner = () => {
     setObstaclePos(100);
     setIsWaitingForAnswer(false);
     isWaitingRef.current = false;
-    generateQuestion();
-    soundEffects.playClick();
+    generateQuestion(questions);
   };
 
   const handleGameOver = useCallback(() => {
@@ -199,10 +241,19 @@ const CaveRunner = () => {
                 <p>Solve the math problem before the rock hits you!</p>
                 <p>Select the correct answer to JUMP.</p>
               </div>
-              <button className="start-btn" onClick={startGame}>
-                <Play fill="currentColor" size={24} />
-                START GAME
-              </button>
+              <div className="difficulty-buttons" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <button className="start-btn" onClick={() => startGame('0')}>Level 0</button>
+                <button className="start-btn" onClick={() => startGame('1')}>Level 1</button>
+                <button className="start-btn" onClick={() => startGame('2')}>Level 2</button>
+                <button className="start-btn" style={{background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)'}} onClick={() => startGame('3')}>Level 3</button>
+              </div>
+            </div>
+          )}
+
+          {gameState === 'loading' && (
+            <div className="menu-overlay" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <Loader2 size={48} className="spin-animation" color="#10b981" />
+              <h3 style={{ marginTop: '1rem', color: 'white' }}>Loading Questions...</h3>
             </div>
           )}
 
@@ -211,7 +262,7 @@ const CaveRunner = () => {
               <ShieldAlert size={64} color="#ef4444" className="mb-4" />
               <h1>Game Over!</h1>
               <p className="final-score">Final Score: {score}</p>
-              <button className="start-btn restart" onClick={startGame}>
+              <button className="start-btn restart" onClick={() => startGame(difficulty)}>
                 <RotateCcw size={24} />
                 PLAY AGAIN
               </button>
@@ -231,7 +282,7 @@ const CaveRunner = () => {
                 style={{ left: `${obstaclePos}%` }}
               >
                 <div className="math-question-bubble">
-                  {question.num1} {question.op} {question.num2} = ?
+                  {question.text}
                 </div>
                 <div className="rock">🪨</div>
               </div>
