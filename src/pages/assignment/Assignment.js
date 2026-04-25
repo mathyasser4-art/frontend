@@ -146,7 +146,13 @@ function Assignment() {
       answer,
       timestamp: Date.now(),
       totalTime,
-      time: time?.toISOString?.() || null
+      time: time?.toISOString?.() || null,
+      totalSummation,
+      forceFlashMode,
+      flashSpeed,
+      currentAttempt,
+      totalAttempts,
+      remainingAttempts
     };
 
     try {
@@ -154,7 +160,7 @@ function Assignment() {
     } catch (e) {
       console.warn('Failed to save assignment progress:', e);
     }
-  }, [questionData, thisQuestionNumber, answer, examCompleted, assignmentID, time, totalTime]);
+  }, [questionData, thisQuestionNumber, answer, examCompleted, assignmentID, time, totalTime, totalSummation, forceFlashMode, flashSpeed, currentAttempt, totalAttempts, remainingAttempts]);
 
   // ============================================================
   // PHONE SHUTDOWN RECOVERY: Detect app background/kill
@@ -171,7 +177,13 @@ function Assignment() {
             answer,
             timestamp: Date.now(),
             totalTime,
-            time: time?.toISOString?.() || null
+            time: time?.toISOString?.() || null,
+            totalSummation,
+            forceFlashMode,
+            flashSpeed,
+            currentAttempt,
+            totalAttempts,
+            remainingAttempts
           };
           try {
             localStorage.setItem(`assignment_progress_${assignmentID}`, JSON.stringify(progress));
@@ -537,13 +549,14 @@ function Assignment() {
     }
   }, [thisQuestion?._id, flashMode, hasFlashedOnce, forceFlashMode]);
 
+  const handleGetQuestion = () => {
+    console.log('📡 Fetching assignment details for assignment ID:', assignmentID);
+    assignmentDetails(setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode, setCurrentAttempt, setTotalAttempts, setRemainingAttempts, setFlashSpeed)
+  }
+
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true
-      const handleGetQuestion = () => {
-        console.log('📡 Fetching assignment details for assignment ID:', assignmentID);
-        assignmentDetails(setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode, setCurrentAttempt, setTotalAttempts, setRemainingAttempts, setFlashSpeed)
-      }
       if (isAuth) {
         // Check for saved progress FIRST before loading fresh data
         const hasSaved = checkForSavedProgress();
@@ -633,6 +646,13 @@ function Assignment() {
     setAnswer(progress.answer || '');
     setTotalTime(progress.totalTime || 0);
 
+    if (progress.totalSummation !== undefined) setTotalSummation(progress.totalSummation);
+    if (progress.forceFlashMode !== undefined) setForceFlashMode(progress.forceFlashMode);
+    if (progress.flashSpeed !== undefined) setFlashSpeed(progress.flashSpeed);
+    if (progress.currentAttempt !== undefined) setCurrentAttempt(progress.currentAttempt);
+    if (progress.totalAttempts !== undefined) setTotalAttempts(progress.totalAttempts);
+    if (progress.remainingAttempts !== undefined) setRemainingAttempts(progress.remainingAttempts);
+
     // Restore timer from saved remaining time
     if (progress.time) {
       const savedTime = new Date(progress.time);
@@ -650,6 +670,7 @@ function Assignment() {
 
     setShowResumeDialog(false);
     setSavedProgressData(null);
+    setLoading(false);
   };
 
   const discardProgress = () => {
@@ -657,6 +678,7 @@ function Assignment() {
     localStorage.removeItem(`assignment_progress_${assignmentID}`);
     setShowResumeDialog(false);
     setSavedProgressData(null);
+    handleGetQuestion();
   };
 
   const clearSavedProgress = () => {
