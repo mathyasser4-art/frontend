@@ -28,6 +28,7 @@ import SupervisorDashboard from './pages/supervisorDashboard/SupervisorDashboard
 import TeacherAssignmentReports from './components/teacherReports/TeacherAssignmentReports';
 import StudentHistory from './components/studentHistory/StudentHistory';
 import Pricing from './pages/pricing/Pricing';
+import MathRacer from './pages/games/MathRacer';
 
 
 function App() {
@@ -65,8 +66,9 @@ function App() {
       <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth && role === 'Teacher' ? <AssignmentReport /> : <Navigate to='/' />} />
       <Route path='/student/myReport/:assignmentID' element={isAuth && role === 'Student' ? <StudentReport /> : <Navigate to='/' />} />
       <Route path="/assignment/:assignmentID/reports" element={<TeacherAssignmentReports />} />
-      <Route path="/teacher/student/:studentID/history" element={isAuth ? <StudentHistory /> : <Navigate to='/' />} />
+      <Route path='/teacher/student/:studentID/history' element={isAuth ? <StudentHistory /> : <Navigate to='/' />} />
       <Route path='/pricing' element={<Pricing />} />
+      <Route path='/student/games/math-racer' element={isAuth && role === 'Student' ? <MathRacer /> : <Navigate to='/' />} />
 
     </Routes>
   )

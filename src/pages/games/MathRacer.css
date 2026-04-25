@@ -1,0 +1,378 @@
+.math-racer-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 80px); /* Assuming navbar is ~80px */
+  display: flex;
+  flex-direction: column;
+}
+
+.racer-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.racer-header h2 {
+  font-size: 2.5rem;
+  color: #1e293b;
+  margin: 0;
+  font-weight: 800;
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.back-button:hover {
+  background: #f8fafc;
+  color: #1e293b;
+  transform: translateX(-4px);
+}
+
+/* Menu State */
+.racer-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: #fff;
+  border-radius: 24px;
+  padding: 4rem 2rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.racer-logo {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.racer-menu h3 {
+  font-size: 2rem;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.racer-menu p {
+  color: #64748b;
+  font-size: 1.1rem;
+  max-width: 500px;
+  margin-bottom: 3rem;
+}
+
+.difficulty-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.diff-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.diff-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+}
+
+.diff-btn.easy { background: linear-gradient(135deg, #4ade80, #16a34a); }
+.diff-btn.medium { background: linear-gradient(135deg, #fbbf24, #d97706); }
+.diff-btn.hard { background: linear-gradient(135deg, #f87171, #dc2626); }
+
+/* Gameplay State */
+.racer-gameplay {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.game-stats {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  background: #1e293b;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.stat-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-box span {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The Track */
+.track-container {
+  flex: 1;
+  min-height: 200px;
+  background: #475569;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 10px 30px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+.road {
+  width: 100%;
+  height: 120px;
+  position: relative;
+}
+
+.road-lines {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 8px;
+  transform: translateY(-50%);
+  background-image: linear-gradient(to right, #fbbf24 50%, transparent 50%);
+  background-size: 60px 100%;
+  animation: moveRoad 1s linear infinite;
+}
+
+@keyframes moveRoad {
+  0% { background-position: 0 0; }
+  100% { background-position: -60px 0; }
+}
+
+.player-car {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 4rem;
+  transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+  filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
+}
+
+.player-car.accelerating {
+  animation: bumpForward 0.2s ease-out;
+}
+
+.player-car.stalling {
+  animation: shakeCar 0.3s ease-in-out;
+  filter: grayscale(1) brightness(0.5);
+}
+
+@keyframes bumpForward {
+  0% { transform: translateY(-50%) scale(1); }
+  50% { transform: translateY(-50%) scale(1.1) translateX(10px); }
+  100% { transform: translateY(-50%) scale(1); }
+}
+
+@keyframes shakeCar {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  25% { transform: translateY(-50%) translateX(-5px); }
+  75% { transform: translateY(-50%) translateX(5px); }
+}
+
+/* Problem Input Area */
+.problem-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  background: white;
+  padding: 3rem;
+  border-radius: 24px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.problem-container.correct {
+  background: #f0fdf4;
+  border: 2px solid #4ade80;
+}
+
+.problem-container.wrong {
+  background: #fef2f2;
+  border: 2px solid #f87171;
+  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.problem-text {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: 2px;
+}
+
+.answer-input {
+  font-size: 3rem;
+  font-weight: 800;
+  text-align: center;
+  width: 200px;
+  padding: 1rem;
+  border: 3px solid #cbd5e1;
+  border-radius: 16px;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.answer-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.problem-container.correct .answer-input { border-color: #4ade80; color: #16a34a; }
+.problem-container.wrong .answer-input { border-color: #f87171; color: #dc2626; }
+
+/* Game Over State */
+.racer-gameover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: #fff;
+  border-radius: 24px;
+  padding: 4rem 2rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  text-align: center;
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.racer-gameover h2 {
+  font-size: 3rem;
+  color: #1e293b;
+  margin-bottom: 2rem;
+}
+
+.final-score {
+  background: #fffbeb;
+  border: 2px solid #fcd34d;
+  border-radius: 24px;
+  padding: 3rem 4rem;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.final-score h3 {
+  font-size: 5rem;
+  font-weight: 900;
+  color: #d97706;
+  margin: 1rem 0 0.5rem;
+}
+
+.final-score p {
+  font-size: 1.2rem;
+  color: #92400e;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.gameover-actions {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.play-again-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2.5rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.play-again-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+}
+
+.menu-btn {
+  padding: 1rem 2.5rem;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.menu-btn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+@media (max-width: 768px) {
+  .math-racer-container { padding: 1rem; }
+  .racer-header h2 { font-size: 2rem; }
+  .difficulty-buttons { flex-direction: column; width: 100%; max-width: 300px; }
+  .diff-btn { width: 100%; justify-content: center; }
+  .problem-text { font-size: 2.5rem; }
+  .answer-input { font-size: 2.5rem; width: 150px; }
+  .gameover-actions { flex-direction: column; width: 100%; max-width: 300px; }
+  .play-again-btn, .menu-btn { width: 100%; justify-content: center; }
+}

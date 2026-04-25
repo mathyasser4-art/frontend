@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import getClass from '../../api/student/getClass.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import boyPointing from '../../img/boy-pointing.svg'
@@ -10,7 +10,7 @@ import AssignmentLoading from '../../components/assignmentLoading/AssignmentLoad
 import getAssignment from '../../api/student/getAssignment.api'
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
 import AttemptHistory from '../../components/attemptHistory/AttemptHistory'
-import { NotebookPen, Brain, ChevronRight, HelpCircle, History, CircleCheck } from 'lucide-react'
+import { NotebookPen, Brain, ChevronRight, HelpCircle, History, CircleCheck, Gamepad2 } from 'lucide-react'
 import API_BASE_URL from '../../config/api.config'
 import soundEffects from '../../utils/soundEffects'
 import '../../reusable.css'
@@ -18,6 +18,7 @@ import './StudentDashboard.css'
 
 function StudentDashboard() {
     const { t } = useTranslation()
+    const navigate = useNavigate()
     const [teacherList, setTeacherList] = useState([])
     const [allAsignment, setAllAsignment] = useState([])
     const [className, setClassName] = useState('')
@@ -200,6 +201,24 @@ function StudentDashboard() {
 
                                     <button className="card-button">
                                         <span className="practice-text">Practice</span>
+                                    </button>
+                                </div>
+
+                                {/* Arcade Card - Purple/Pink */}
+                                <div onClick={() => navigate('/student/games/math-racer')} className="dashboard-card game-card">
+                                    <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #d946ef 100%)' }}>
+                                        <Gamepad2 size={48} strokeWidth={2} color="#fff" />
+                                    </div>
+                                    
+                                    <div className="card-stats">
+                                        <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
+                                            <span className="stat-label">Math Racer</span>
+                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Mental Math Speed Game</span>
+                                        </div>
+                                    </div>
+
+                                    <button className="card-button" style={{ background: 'rgba(217, 70, 239, 0.1)', color: '#d946ef' }}>
+                                        <span className="game-text" style={{ fontWeight: '700' }}>Play Arcade</span>
                                     </button>
                                 </div>
                             </div>
