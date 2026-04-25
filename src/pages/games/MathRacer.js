@@ -110,6 +110,7 @@ function MathRacer() {
   };
 
   const endGame = () => {
+    soundEffects.stopMotorSound();
     soundEffects.playEndSound();
     setGameState('gameover');
     clearInterval(timerRef.current);
@@ -118,6 +119,8 @@ function MathRacer() {
   // Main Game Loop (Timer & Bots)
   useEffect(() => {
     if (gameState === 'playing') {
+      soundEffects.startMotorSound();
+      
       // 1-second timer
       timerRef.current = setInterval(() => {
         setTimeLeft((prev) => {
@@ -146,6 +149,7 @@ function MathRacer() {
       return () => {
         clearInterval(timerRef.current);
         clearInterval(botInterval);
+        soundEffects.stopMotorSound();
       };
     }
   }, [gameState]);
