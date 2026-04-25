@@ -1,0 +1,341 @@
+.image-puzzle-page {
+  min-height: 100vh;
+  background-color: #f0fdf4;
+  font-family: 'Outfit', sans-serif;
+  padding-bottom: 2rem;
+}
+
+.puzzle-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  border: 2px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+}
+
+.stat-pill {
+  background: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #059669;
+  border: 2px solid #34d399;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.game-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+}
+
+.controls-sidebar {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 24px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.control-group h3 {
+  color: #1e293b;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.image-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.image-btn {
+  background: none;
+  border: 3px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  aspect-ratio: 1;
+  transition: all 0.2s ease;
+}
+
+.image-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-btn:hover {
+  transform: scale(1.05);
+}
+
+.image-btn.active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.difficulty-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.diff-btn {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  padding: 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.diff-btn:hover {
+  background: #f1f5f9;
+}
+
+.diff-btn.active {
+  background: #e0e7ff;
+  border-color: #6366f1;
+  color: #4f46e5;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+}
+
+.preview-btn {
+  background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%);
+  box-shadow: 0 4px 15px rgba(217, 70, 239, 0.3);
+}
+
+.preview-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(217, 70, 239, 0.4);
+}
+
+.preview-btn:active {
+  transform: translateY(2px);
+}
+
+.restart-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.restart-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.board-area {
+  background: white;
+  padding: 2rem;
+  border-radius: 32px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 500px;
+}
+
+.puzzle-board {
+  display: grid;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1;
+  gap: 2px;
+  background: #e2e8f0;
+  border: 4px solid #cbd5e1;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.puzzle-piece {
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s, border 0.1s;
+}
+
+.puzzle-piece:hover {
+  opacity: 0.9;
+  z-index: 10;
+}
+
+.puzzle-piece.selected {
+  transform: scale(0.95);
+  border: 3px solid #ef4444;
+  border-radius: 8px;
+  z-index: 20;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 30;
+}
+
+.victory-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.trophy-icon {
+  color: #fbbf24;
+  margin-bottom: 1rem;
+  animation: bounce 2s infinite;
+}
+
+.victory-overlay h2 {
+  font-size: 3rem;
+  color: #16a34a;
+  margin-bottom: 0.5rem;
+}
+
+.victory-overlay p {
+  font-size: 1.5rem;
+  color: #475569;
+  margin-bottom: 2rem;
+}
+
+.play-again-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.play-again-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 25px rgba(16, 185, 129, 0.5);
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@media (max-width: 992px) {
+  .game-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .controls-sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .action-buttons {
+    flex-direction: row;
+    width: 100%;
+  }
+  
+  .action-btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .controls-sidebar {
+    flex-direction: column;
+  }
+  .action-buttons {
+    flex-direction: column;
+  }
+  .victory-overlay h2 {
+    font-size: 2rem;
+  }
+  .victory-overlay p {
+    font-size: 1.2rem;
+  }
+}

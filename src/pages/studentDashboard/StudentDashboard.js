@@ -10,7 +10,7 @@ import AssignmentLoading from '../../components/assignmentLoading/AssignmentLoad
 import getAssignment from '../../api/student/getAssignment.api'
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
 import AttemptHistory from '../../components/attemptHistory/AttemptHistory'
-import { NotebookPen, Brain, ChevronRight, HelpCircle, History, CircleCheck, Gamepad2 } from 'lucide-react'
+import { NotebookPen, Brain, ChevronRight, HelpCircle, History, CircleCheck, Gamepad2, Image as ImageIcon, FastForward } from 'lucide-react'
 import API_BASE_URL from '../../config/api.config'
 import soundEffects from '../../utils/soundEffects'
 import '../../reusable.css'
@@ -255,6 +255,42 @@ function StudentDashboard() {
 
                                     <button className="card-button" style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#4f46e5' }}>
                                         <span className="game-text" style={{ fontWeight: '700' }}>Crack Code</span>
+                                    </button>
+                                </div>
+
+                                {/* Image Puzzle Card - Yellow/Orange */}
+                                <div onClick={() => navigate('/student/games/image-puzzle')} className="dashboard-card game-card">
+                                    <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)' }}>
+                                        <ImageIcon size={48} strokeWidth={2} color="#fff" />
+                                    </div>
+                                    
+                                    <div className="card-stats">
+                                        <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
+                                            <span className="stat-label">Image Puzzle</span>
+                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Jigsaw & Shapes</span>
+                                        </div>
+                                    </div>
+
+                                    <button className="card-button" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#ea580c' }}>
+                                        <span className="game-text" style={{ fontWeight: '700' }}>Solve Puzzle</span>
+                                    </button>
+                                </div>
+
+                                {/* Cave Runner Card - Blue/Cyan */}
+                                <div onClick={() => navigate('/student/games/cave-runner')} className="dashboard-card game-card">
+                                    <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)' }}>
+                                        <FastForward size={48} strokeWidth={2} color="#fff" />
+                                    </div>
+                                    
+                                    <div className="card-stats">
+                                        <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
+                                            <span className="stat-label">Cave Runner</span>
+                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Math Adventure</span>
+                                        </div>
+                                    </div>
+
+                                    <button className="card-button" style={{ background: 'rgba(14, 165, 233, 0.1)', color: '#0284c7' }}>
+                                        <span className="game-text" style={{ fontWeight: '700' }}>Run Now</span>
                                     </button>
                                 </div>
                             </div>
