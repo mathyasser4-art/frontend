@@ -78,8 +78,10 @@ function Assignment() {
   const [savedProgressData, setSavedProgressData] = useState(null)
 
 
-  const isAuth = localStorage.getItem('O_authWEB')
-  const role = localStorage.getItem('auth_role')
+  const isAuth = localStorage.getItem('O_authWEB');
+  const role = localStorage.getItem('auth_role');
+  const userID = localStorage.getItem('pp_id') || 'unknown';
+  const progressKey = `assignment_progress_${assignmentID}_${userID}`;
   const initialized = useRef(false);
   const [time, setTime] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
@@ -166,7 +168,7 @@ function Assignment() {
     };
 
     try {
-      localStorage.setItem(`assignment_progress_${assignmentID}`, JSON.stringify(progress));
+      localStorage.setItem(progressKey, JSON.stringify(progress));
     } catch (e) {
       console.warn('Failed to save assignment progress:', e);
     }
@@ -196,7 +198,7 @@ function Assignment() {
             remainingAttempts
           };
           try {
-            localStorage.setItem(`assignment_progress_${assignmentID}`, JSON.stringify(progress));
+            localStorage.setItem(progressKey, JSON.stringify(progress));
           } catch (e) {
             console.warn('Failed to save progress on visibility change:', e);
           }
@@ -617,7 +619,7 @@ function Assignment() {
   // ============================================================
   const checkForSavedProgress = () => {
     try {
-      const saved = localStorage.getItem(`assignment_progress_${assignmentID}`);
+      const saved = localStorage.getItem(progressKey);
       if (saved) {
         const progress = JSON.parse(saved);
         const isRecent = Date.now() - progress.timestamp < 24 * 60 * 60 * 1000;
@@ -627,7 +629,7 @@ function Assignment() {
           return true;
         } else {
           // Stale progress, clear it
-          localStorage.removeItem(`assignment_progress_${assignmentID}`);
+          localStorage.removeItem(progressKey);
         }
       }
     } catch (e) {
@@ -677,7 +679,7 @@ function Assignment() {
 
   const discardProgress = () => {
     soundEffects.playClick();
-    localStorage.removeItem(`assignment_progress_${assignmentID}`);
+    localStorage.removeItem(progressKey);
     setShowResumeDialog(false);
     setSavedProgressData(null);
     handleGetQuestion();
@@ -685,7 +687,7 @@ function Assignment() {
 
   const clearSavedProgress = () => {
     try {
-      localStorage.removeItem(`assignment_progress_${assignmentID}`);
+      localStorage.removeItem(progressKey);
       localStorage.removeItem(`timer_remaining_${assignmentID}`);
     } catch (e) {
       console.warn('Failed to clear saved progress:', e);
@@ -1250,7 +1252,7 @@ function Assignment() {
             <div className="question-form-head d-flex justify-content-space-between align-items-center">
               <p className="question-progress-label">{currentQuestionLabel}</p>
               <div className="end-head d-flex align-items-center">
-                {isFullscreen && !examCompleted && !showCheckingOverlay && (
+                {!examCompleted && !showCheckingOverlay && (
                   <button
                     type="button"
                     title="End Assignment"
@@ -1565,7 +1567,18 @@ function Assignment() {
       {/* Resume Assignment Dialog */}
       {showResumeDialog && (
         <div className="exit-dialog-overlay">
-          <div className="exit-dialog">
+          <div className="exit-dialog" style={{ position: 'relative' }}>
+            <button
+              onClick={() => {
+                soundEffects.playClick();
+                navigate(role === 'School' || role === 'IT' ? '/dashboard-school' : `/dashboard/${role?.toLowerCase() || 'student'}`);
+              }}
+              className="end-assignment-btn"
+              style={{ position: 'absolute', top: '15px', right: '15px', width: '32px', height: '32px', margin: 0, padding: 0 }}
+              title="Back to Dashboard"
+            >
+              <X size={16} color="#fff" />
+            </button>
             <div className="exit-dialog-icon">
               <i className="fa fa-history" aria-hidden="true"></i>
             </div>
