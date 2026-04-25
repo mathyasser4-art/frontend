@@ -77,6 +77,16 @@ function Assignment() {
   const [showResumeDialog, setShowResumeDialog] = useState(false)
   const [savedProgressData, setSavedProgressData] = useState(null)
 
+
+  const isAuth = localStorage.getItem('O_authWEB')
+  const role = localStorage.getItem('auth_role')
+  const initialized = useRef(false);
+  const [time, setTime] = useState(0);
+  const [totalTime, setTotalTime] = useState(0);
+  const navigate = useNavigate()
+  const mf = useRef();
+  let modify = useRef();
+
   // --- Start Sound Additions ---
   const audioRef = useRef(null);
   const audioRefCorrect = useRef(null);
@@ -230,14 +240,6 @@ function Assignment() {
   const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 
   
-  const isAuth = localStorage.getItem('O_authWEB')
-  const role = localStorage.getItem('auth_role')
-  const initialized = useRef(false);
-  const [time, setTime] = useState(0);
-  const [totalTime, setTotalTime] = useState(0);
-  const navigate = useNavigate()
-  const mf = useRef();
-  let modify = useRef();
 
   // NEW: PDF download function
   const downloadPDF = () => {
