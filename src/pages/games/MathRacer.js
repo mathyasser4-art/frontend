@@ -65,12 +65,22 @@ function MathRacer() {
     if (qArray && qArray.length > 0) {
       const randomIndex = Math.floor(Math.random() * qArray.length);
       const q = qArray[randomIndex];
-      // Expecting backend question format like { questionText: "5 + 5", correctAnswer: 10 }
-      // Or similar. We will adapt if we know the exact format.
-      // Assuming a generic { text: "...", answer: ... } structure
+      
+      // Parse answer depending on if it's MCQ (correctAnswer) or Essay/Completion (answer array)
+      let parsedAnswer = 0;
+      if (q.typeOfAnswer === 'MCQ' && q.correctAnswer) {
+        parsedAnswer = parseInt(q.correctAnswer);
+      } else if (q.typeOfAnswer === 'Essay' && q.answer && q.answer.length > 0) {
+        parsedAnswer = parseInt(q.answer[0]);
+      } else if (q.correctAnswer !== undefined) {
+        parsedAnswer = parseInt(q.correctAnswer);
+      } else if (q.answer !== undefined) {
+        parsedAnswer = parseInt(Array.isArray(q.answer) ? q.answer[0] : q.answer);
+      }
+
       setCurrentProblem({
-        text: q.questionText || q.text || `${q.num1} ${q.op} ${q.num2} = ?`,
-        answer: q.correctAnswer !== undefined ? q.correctAnswer : q.answer
+        text: q.question || q.questionText || q.text || `${q.num1} ${q.op} ${q.num2} = ?`,
+        answer: parsedAnswer
       });
       setInputValue('');
       return;
