@@ -239,6 +239,24 @@ function StudentDashboard() {
                                         <span className="game-text" style={{ fontWeight: '700' }}>Play Maze</span>
                                     </button>
                                 </div>
+
+                                {/* Pattern Puzzle Card - Blue/Indigo */}
+                                <div onClick={() => navigate('/student/games/pattern-puzzle')} className="dashboard-card game-card">
+                                    <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' }}>
+                                        <Brain size={48} strokeWidth={2} color="#fff" />
+                                    </div>
+                                    
+                                    <div className="card-stats">
+                                        <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
+                                            <span className="stat-label">Pattern Puzzle</span>
+                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Logic & Sequences</span>
+                                        </div>
+                                    </div>
+
+                                    <button className="card-button" style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#4f46e5' }}>
+                                        <span className="game-text" style={{ fontWeight: '700' }}>Crack Code</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ) : showPracticeOptions ? (

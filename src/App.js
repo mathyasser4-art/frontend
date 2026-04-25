@@ -30,6 +30,7 @@ import StudentHistory from './components/studentHistory/StudentHistory';
 import Pricing from './pages/pricing/Pricing';
 import MathRacer from './pages/games/MathRacer';
 import MazeGame from './pages/games/MazeGame';
+import PatternPuzzle from './pages/games/PatternPuzzle';
 
 
 function App() {
@@ -71,6 +72,7 @@ function App() {
       <Route path='/pricing' element={<Pricing />} />
       <Route path='/student/games/math-racer' element={isAuth && role === 'Student' ? <MathRacer /> : <Navigate to='/' />} />
       <Route path='/student/games/maze' element={isAuth && role === 'Student' ? <MazeGame /> : <Navigate to='/' />} />
+      <Route path='/student/games/pattern-puzzle' element={isAuth && role === 'Student' ? <PatternPuzzle /> : <Navigate to='/' />} />
 
     </Routes>
   )

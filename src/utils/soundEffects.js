@@ -184,58 +184,6 @@ class SoundEffects {
   isAudioReady() {
     return this.isReady && this.audioContext && this.audioContext.state === 'running';
   }
-
-  startMotorSound() {
-    if (!this.audioContext || this.motorOscillator) return;
-    try {
-      this.motorOscillator = this.audioContext.createOscillator();
-      this.motorGain = this.audioContext.createGain();
-      
-      this.motorOscillator.type = 'sawtooth';
-      this.motorOscillator.frequency.value = 55; // Low engine hum
-      
-      // Modulate volume slightly for a rumbling engine feel
-      this.lfo = this.audioContext.createOscillator();
-      this.lfo.type = 'sine';
-      this.lfo.frequency.value = 10;
-      
-      this.lfoGain = this.audioContext.createGain();
-      this.lfoGain.gain.value = 0.01;
-      this.lfo.connect(this.lfoGain);
-      this.lfoGain.connect(this.motorGain.gain);
-      
-      this.motorGain.gain.value = 0.02; // Very quiet base volume
-      
-      this.motorOscillator.connect(this.motorGain);
-      this.motorGain.connect(this.audioContext.destination);
-      
-      this.motorOscillator.start();
-      this.lfo.start();
-    } catch (e) {
-      console.error('Error starting motor sound:', e);
-    }
-  }
-
-  stopMotorSound() {
-    if (this.motorOscillator) {
-      try {
-        this.motorOscillator.stop();
-        this.motorOscillator.disconnect();
-        this.motorGain.disconnect();
-        if (this.lfo) {
-          this.lfo.stop();
-          this.lfo.disconnect();
-          this.lfoGain.disconnect();
-        }
-      } catch (e) {
-        console.error('Error stopping motor sound:', e);
-      }
-      this.motorOscillator = null;
-      this.motorGain = null;
-      this.lfo = null;
-      this.lfoGain = null;
-    }
-  }
 }
 
 // Create and export a single instance

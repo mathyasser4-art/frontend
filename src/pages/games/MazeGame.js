@@ -21,9 +21,9 @@ const INITIAL_MAZE = [
 ];
 
 const INITIAL_DOORS = [
-  { x: 2, y: 2, problem: '7 + 5', answer: 12, isOpen: false },
-  { x: 3, y: 6, problem: '15 - 8', answer: 7, isOpen: false }, // Trap door leading to dead end
-  { x: 8, y: 6, problem: '9 * 3', answer: 27, isOpen: false }
+  { x: 2, y: 2, problem: '17 + 8', answer: 25, isOpen: false },
+  { x: 3, y: 6, problem: '24 - 9', answer: 15, isOpen: false }, // Trap door leading to dead end
+  { x: 8, y: 6, problem: '18 + 14', answer: 32, isOpen: false }
 ];
 
 function MazeGame() {
