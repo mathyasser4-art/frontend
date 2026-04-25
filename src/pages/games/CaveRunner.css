@@ -145,6 +145,7 @@
   z-index: 10;
   filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
   transform-origin: bottom center;
+  transform: scaleX(-1);
 }
 
 .character.running {
@@ -156,15 +157,15 @@
 }
 
 @keyframes run {
-  0% { transform: translateY(0) rotate(-5deg); }
-  100% { transform: translateY(-10px) rotate(5deg); }
+  0% { transform: scaleX(-1) translateY(0) rotate(-5deg); }
+  100% { transform: scaleX(-1) translateY(-10px) rotate(5deg); }
 }
 
 @keyframes jump {
-  0% { transform: translateY(0) rotate(0); }
-  40% { transform: translateY(-150px) rotate(180deg); }
-  60% { transform: translateY(-150px) rotate(180deg); }
-  100% { transform: translateY(0) rotate(360deg); }
+  0% { transform: scaleX(-1) translateY(0) rotate(0); }
+  40% { transform: scaleX(-1) translateY(-150px) rotate(-180deg); }
+  60% { transform: scaleX(-1) translateY(-150px) rotate(-180deg); }
+  100% { transform: scaleX(-1) translateY(0) rotate(-360deg); }
 }
 
 /* Obstacle */

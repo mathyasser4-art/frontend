@@ -211,7 +211,7 @@ function MathRacer() {
   const getVisualPosition = (distance) => {
     // Player is always anchored at ~20% visually. We scale the relative distance.
     const relative = distance - playerDistance;
-    const visual = 20 + (relative * 1.5);
+    const visual = 20 + (relative * 0.6); // Reduced from 1.5 for a smaller visual effect
     return Math.max(-20, Math.min(90, visual));
   };
 

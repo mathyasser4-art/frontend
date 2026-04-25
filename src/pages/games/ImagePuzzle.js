@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, RefreshCw, Trophy, Sparkles, Image as ImageIcon } from 'lucide-react';
+import Confetti from 'react-confetti';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
@@ -137,6 +138,16 @@ const ImagePuzzle = () => {
         </div>
 
         <div className="game-content">
+          {isCompleted && (
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false}
+              numberOfPieces={500}
+              gravity={0.15}
+              style={{ zIndex: 100, position: 'fixed', top: 0, left: 0 }}
+            />
+          )}
           {/* Controls Sidebar */}
           <div className="controls-sidebar">
             <div className="control-group">

@@ -16,6 +16,7 @@ const CaveRunner = () => {
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [isJumping, setIsJumping] = useState(false);
+  const isJumpingRef = useRef(false);
   const [obstaclePos, setObstaclePos] = useState(100); // percentage 100 to 0
   const [speed, setSpeed] = useState(1); // obstacle speed
   
@@ -78,10 +79,12 @@ const CaveRunner = () => {
       // Correct! Jump!
       soundEffects.playJump();
       setIsJumping(true);
+      isJumpingRef.current = true;
       
       // Add score and reset obstacle after jump finishes
       setTimeout(() => {
         setIsJumping(false);
+        isJumpingRef.current = false;
         setScore(s => s + 10);
         setSpeed(s => Math.min(s + 0.05, 2.5)); // Increase speed slightly
         setObstaclePos(100);
@@ -114,19 +117,17 @@ const CaveRunner = () => {
       const deltaTime = time - lastTime;
       lastTime = time;
 
-      if (!isJumping) {
-        setObstaclePos(pos => {
-          const newPos = pos - (speed * (deltaTime / 16));
-          
-          // Collision detection (roughly between 10% and 20% on the screen)
-          if (newPos <= 20 && newPos >= 10 && !isJumping) {
-            handleGameOver();
-            return 100;
-          }
-          
-          return newPos;
-        });
-      }
+      setObstaclePos(pos => {
+        const newPos = pos - (speed * (deltaTime / 16));
+        
+        // Collision detection (roughly between 10% and 20% on the screen)
+        if (newPos <= 20 && newPos >= 10 && !isJumpingRef.current) {
+          handleGameOver();
+          return 100;
+        }
+        
+        return newPos;
+      });
 
       gameLoopRef.current = requestAnimationFrame(loop);
     };
