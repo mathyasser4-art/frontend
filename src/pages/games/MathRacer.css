@@ -2,7 +2,7 @@
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  min-height: calc(100vh - 80px); /* Assuming navbar is ~80px */
+  min-height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
 }
@@ -60,10 +60,16 @@
 }
 
 .racer-logo {
-  font-size: 5rem;
   margin-bottom: 1rem;
   animation: float 3s ease-in-out infinite;
+  display: flex;
+  justify-content: center;
 }
+.racer-logo .car-wrapper {
+  transform: scale(2);
+  margin: 40px;
+}
+.racer-logo .car-label { display: none; }
 
 @keyframes float {
   0% { transform: translateY(0px); }
@@ -80,8 +86,9 @@
 .racer-menu p {
   color: #64748b;
   font-size: 1.1rem;
-  max-width: 500px;
+  max-width: 550px;
   margin-bottom: 3rem;
+  line-height: 1.6;
 }
 
 .difficulty-buttons {
@@ -119,13 +126,13 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .game-stats {
   display: flex;
   justify-content: space-between;
-  padding: 1.5rem 2rem;
+  padding: 1.2rem 2rem;
   background: #1e293b;
   border-radius: 20px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -138,79 +145,146 @@
 }
 
 .stat-box span {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: white;
   font-variant-numeric: tabular-nums;
 }
 
-/* The Track */
+/* The Infinite Parallax Track */
 .track-container {
   flex: 1;
-  min-height: 200px;
-  background: #475569;
-  border-radius: 24px;
+  min-height: 350px;
   position: relative;
   overflow: hidden;
+  border-radius: 24px;
   box-shadow: inset 0 10px 30px rgba(0,0,0,0.3);
   display: flex;
-  align-items: center;
-  padding: 0 2rem;
+  flex-direction: column;
+  background: #E0F6FF; /* Sky fallback */
 }
 
+/* Sky gradient */
+.sky-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+  z-index: 1;
+}
+
+/* Mountains */
+.mountains-bg {
+  position: absolute;
+  top: 15%; left: 0; width: 200%; height: 35%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='100'%3E%3Cpath d='M0 100 L100 20 L200 100 L300 40 L400 100 Z' fill='%2394a3b8'/%3E%3Cpath d='M50 60 L100 20 L150 60 Z' fill='%23cbd5e1'/%3E%3Cpath d='M250 70 L300 40 L350 70 Z' fill='%23cbd5e1'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 400px 100%;
+  z-index: 2;
+}
+
+/* Trees */
+.trees-bg {
+  position: absolute;
+  top: 35%; left: 0; width: 200%; height: 15%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'%3E%3Cpath d='M50 100 L50 70 M20 70 L50 20 L80 70 Z' stroke='%23654321' stroke-width='4' fill='%23228B22'/%3E%3Cpath d='M35 70 L50 40 L65 70 Z' fill='%232E8B57'/%3E%3Cpath d='M150 100 L150 60 M120 60 L150 10 L180 60 Z' stroke='%23654321' stroke-width='4' fill='%231f7a1f'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 200px 100%;
+  z-index: 3;
+}
+
+/* The Road */
 .road {
-  width: 100%;
-  height: 120px;
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 50%;
+  background: #475569;
+  display: flex;
+  flex-direction: column;
+  z-index: 4;
+  border-top: 4px solid #16a34a; /* Grass edge */
+}
+
+.lane {
   position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
-.road-lines {
+.player-lane {
+  background: rgba(0,0,0,0.1);
+}
+
+.lane-marker {
   position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 8px;
-  transform: translateY(-50%);
-  background-image: linear-gradient(to right, #fbbf24 50%, transparent 50%);
-  background-size: 60px 100%;
-  animation: moveRoad 1s linear infinite;
+  bottom: 0; left: 0; width: 200%; height: 3px;
+  background-image: linear-gradient(90deg, rgba(255,255,255,0.6) 50%, transparent 50%);
+  background-size: 80px 100%;
 }
 
-@keyframes moveRoad {
-  0% { background-position: 0 0; }
-  100% { background-position: -60px 0; }
+/* Animation triggers */
+.is-moving .mountains-bg { animation: scrollLeft 30s linear infinite; }
+.is-moving .trees-bg { animation: scrollLeft 10s linear infinite; }
+.is-moving .lane-marker { animation: scrollLeft 0.5s linear infinite; }
+.is-moving .exhaust-smoke { animation: puff 0.5s ease-out infinite; }
+
+@keyframes scrollLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); } /* Since width is 200%, -50% shifts it exactly one viewport, allowing perfect loop if background repeats */
 }
 
-.player-car {
+/* Cars */
+.racer-car {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 4rem;
   transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 10;
-  filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
 }
 
-.player-car.accelerating {
-  animation: bumpForward 0.2s ease-out;
+.car-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(-5px); /* Center in lane */
 }
 
-.player-car.stalling {
-  animation: shakeCar 0.3s ease-in-out;
-  filter: grayscale(1) brightness(0.5);
+.car-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: white;
+  background: rgba(0,0,0,0.6);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+
+@keyframes puff {
+  0% { opacity: 0.8; transform: scale(1) translateX(0); }
+  100% { opacity: 0; transform: scale(2) translateX(-10px); }
+}
+
+.delay-1 { animation-delay: 0.25s !important; }
+
+/* Player Feedback Animations */
+.racer-car.accelerating .car-wrapper {
+  animation: bumpForward 0.3s ease-out;
+}
+
+.racer-car.stalling .car-wrapper {
+  animation: shakeCar 0.4s ease-in-out;
+  filter: grayscale(1) brightness(0.6);
 }
 
 @keyframes bumpForward {
-  0% { transform: translateY(-50%) scale(1); }
-  50% { transform: translateY(-50%) scale(1.1) translateX(10px); }
-  100% { transform: translateY(-50%) scale(1); }
+  0% { transform: translateY(-5px) scale(1); }
+  50% { transform: translateY(-5px) scale(1.1) translateX(15px); }
+  100% { transform: translateY(-5px) scale(1); }
 }
 
 @keyframes shakeCar {
-  0%, 100% { transform: translateY(-50%) translateX(0); }
-  25% { transform: translateY(-50%) translateX(-5px); }
-  75% { transform: translateY(-50%) translateX(5px); }
+  0%, 100% { transform: translateY(-5px) translateX(0); }
+  25% { transform: translateY(-5px) translateX(-8px); }
+  75% { transform: translateY(-5px) translateX(8px); }
 }
+
 
 /* Problem Input Area */
 .problem-container {
@@ -219,7 +293,7 @@
   align-items: center;
   gap: 1.5rem;
   background: white;
-  padding: 3rem;
+  padding: 2.5rem;
   border-radius: 24px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.05);
   transition: all 0.2s ease;
@@ -255,7 +329,7 @@
   font-weight: 800;
   text-align: center;
   width: 200px;
-  padding: 1rem;
+  padding: 0.8rem;
   border: 3px solid #cbd5e1;
   border-radius: 16px;
   color: #0f172a;
@@ -270,6 +344,7 @@
 
 .problem-container.correct .answer-input { border-color: #4ade80; color: #16a34a; }
 .problem-container.wrong .answer-input { border-color: #f87171; color: #dc2626; }
+
 
 /* Game Over State */
 .racer-gameover {
@@ -297,30 +372,52 @@
   margin-bottom: 2rem;
 }
 
-.final-score {
-  background: #fffbeb;
-  border: 2px solid #fcd34d;
-  border-radius: 24px;
-  padding: 3rem 4rem;
+.results-podium {
+  display: flex;
+  gap: 2rem;
   margin-bottom: 3rem;
+}
+
+.final-placement, .final-score {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 2rem 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+.final-placement {
+  background: #ecfdf5;
+  border-color: #34d399;
+}
+
+.final-score {
+  background: #fffbeb;
+  border-color: #fcd34d;
+}
+
+.final-placement h3 {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #059669;
+  margin: 1rem 0 0.5rem;
+}
+
 .final-score h3 {
-  font-size: 5rem;
+  font-size: 3rem;
   font-weight: 900;
   color: #d97706;
   margin: 1rem 0 0.5rem;
 }
 
-.final-score p {
-  font-size: 1.2rem;
-  color: #92400e;
-  font-weight: 600;
+.results-podium p {
+  font-size: 1.1rem;
+  color: #64748b;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
 .gameover-actions {
@@ -373,6 +470,8 @@
   .diff-btn { width: 100%; justify-content: center; }
   .problem-text { font-size: 2.5rem; }
   .answer-input { font-size: 2.5rem; width: 150px; }
+  .results-podium { flex-direction: column; gap: 1rem; }
+  .final-placement, .final-score { padding: 1.5rem; }
   .gameover-actions { flex-direction: column; width: 100%; max-width: 300px; }
   .play-again-btn, .menu-btn { width: 100%; justify-content: center; }
 }
