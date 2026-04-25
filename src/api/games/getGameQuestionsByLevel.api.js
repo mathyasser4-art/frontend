@@ -3,7 +3,7 @@ import API_BASE_URL from '../../config/api.config';
 const getGameQuestionsByLevel = async (level) => {
     try {
         // Construct the expected backend endpoint for fetching questions by level
-        const URL = `${API_BASE_URL}/questions/level/${level}`;
+        const URL = `${API_BASE_URL}/question/level/${level}`;
         
         const response = await fetch(URL, {
             method: 'GET',
