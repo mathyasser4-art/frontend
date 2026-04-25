@@ -221,6 +221,24 @@ function StudentDashboard() {
                                         <span className="game-text" style={{ fontWeight: '700' }}>Play Arcade</span>
                                     </button>
                                 </div>
+
+                                {/* Maze Game Card - Green */}
+                                <div onClick={() => navigate('/student/games/maze')} className="dashboard-card game-card">
+                                    <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
+                                        <Gamepad2 size={48} strokeWidth={2} color="#fff" />
+                                    </div>
+                                    
+                                    <div className="card-stats">
+                                        <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
+                                            <span className="stat-label">Math Maze</span>
+                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Navigate & Solve</span>
+                                        </div>
+                                    </div>
+
+                                    <button className="card-button" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#059669' }}>
+                                        <span className="game-text" style={{ fontWeight: '700' }}>Play Maze</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ) : showPracticeOptions ? (

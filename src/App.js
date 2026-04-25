@@ -29,6 +29,7 @@ import TeacherAssignmentReports from './components/teacherReports/TeacherAssignm
 import StudentHistory from './components/studentHistory/StudentHistory';
 import Pricing from './pages/pricing/Pricing';
 import MathRacer from './pages/games/MathRacer';
+import MazeGame from './pages/games/MazeGame';
 
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
       <Route path='/teacher/student/:studentID/history' element={isAuth ? <StudentHistory /> : <Navigate to='/' />} />
       <Route path='/pricing' element={<Pricing />} />
       <Route path='/student/games/math-racer' element={isAuth && role === 'Student' ? <MathRacer /> : <Navigate to='/' />} />
+      <Route path='/student/games/maze' element={isAuth && role === 'Student' ? <MazeGame /> : <Navigate to='/' />} />
 
     </Routes>
   )

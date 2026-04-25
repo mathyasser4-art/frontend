@@ -22,12 +22,12 @@ const CarSVG = ({ color, name }) => (
       <circle cx="80" cy="35" r="3" fill="#cbd5e1"/>
       
       {/* Body */}
-      <path d="M 5,28 L 5,18 L 25,18 L 45,5 L 75,5 L 85,18 L 95,18 L 95,28 Z" fill={color} />
+      <path d="M 5,28 L 5,18 L 15,18 L 25,5 L 55,5 L 75,18 L 95,18 L 95,28 Z" fill={color} />
       {/* Spoiler */}
-      <path d="M 5,18 L 15,10 L 15,15 Z" fill="#1e293b" />
+      <path d="M 5,18 L 10,10 L 15,15 Z" fill="#1e293b" />
       {/* Windows */}
-      <path d="M 32,18 L 47,7 L 58,7 L 58,18 Z" fill="#94a3b8" />
-      <path d="M 61,18 L 61,7 L 72,7 L 82,18 Z" fill="#94a3b8" />
+      <path d="M 18,18 L 27,7 L 38,7 L 38,18 Z" fill="#94a3b8" />
+      <path d="M 41,18 L 41,7 L 53,7 L 68,18 Z" fill="#94a3b8" />
       {/* Lights */}
       <rect x="92" y="20" width="3" height="4" fill="#fbbf24" />
       <rect x="5" y="20" width="2" height="4" fill="#ef4444" />
@@ -47,10 +47,10 @@ function MathRacer() {
   const [inputValue, setInputValue] = useState('');
   const [feedback, setFeedback] = useState(null); // 'correct', 'wrong', null
   
-  // Race Positions (0 to 90%)
-  const [playerPosition, setPlayerPosition] = useState(0);
-  const [bot1Position, setBot1Position] = useState(0);
-  const [bot2Position, setBot2Position] = useState(0);
+  // Race Distances
+  const [playerDistance, setPlayerDistance] = useState(0);
+  const [bot1Distance, setBot1Distance] = useState(0);
+  const [bot2Distance, setBot2Distance] = useState(0);
   
   const inputRef = useRef(null);
   const timerRef = useRef(null);
@@ -101,15 +101,16 @@ function MathRacer() {
     setDifficulty(selectedDifficulty);
     setScore(0);
     setTimeLeft(60);
-    setPlayerPosition(0);
-    setBot1Position(0);
-    setBot2Position(0);
+    setPlayerDistance(0);
+    setBot1Distance(0);
+    setBot2Distance(0);
     setGameState('playing');
     setFeedback(null);
     generateProblem(selectedDifficulty);
   };
 
   const endGame = () => {
+    soundEffects.playEndSound();
     setGameState('gameover');
     clearInterval(timerRef.current);
   };
@@ -130,15 +131,13 @@ function MathRacer() {
       
       // Bot movement (10 times per second for smooth animation)
       const botInterval = setInterval(() => {
-        setBot1Position(prev => {
-          if (prev >= 90) return 90;
-          // Target 90% in ~50 seconds => 90 / 500 = 0.18 per tick
-          return prev + (Math.random() * 0.12 + 0.12);
+        setBot1Distance(prev => {
+          const speed = difficulty === 'easy' ? 0.15 : difficulty === 'medium' ? 0.22 : 0.28;
+          return prev + speed + (Math.random() * 0.05);
         });
-        setBot2Position(prev => {
-          if (prev >= 90) return 90;
-          // Target 90% in ~55 seconds => 90 / 550 = 0.16 per tick
-          return prev + (Math.random() * 0.15 + 0.08); 
+        setBot2Distance(prev => {
+          const speed = difficulty === 'easy' ? 0.18 : difficulty === 'medium' ? 0.25 : 0.32;
+          return prev + speed + (Math.random() * 0.05);
         });
       }, 100);
       
@@ -170,6 +169,7 @@ function MathRacer() {
     if (parseInt(val) === currentProblem.answer) {
       handleCorrectAnswer();
     } else if (val.length >= currentProblem.answer.toString().length && parseInt(val) !== currentProblem.answer) {
+      soundEffects.playWrong();
       setFeedback('wrong');
     } else {
       setFeedback(null);
@@ -181,6 +181,7 @@ function MathRacer() {
       if (parseInt(inputValue) === currentProblem.answer) {
         handleCorrectAnswer();
       } else {
+        soundEffects.playWrong();
         setFeedback('wrong');
         setInputValue('');
       }
@@ -188,10 +189,9 @@ function MathRacer() {
   };
 
   const handleCorrectAnswer = () => {
+    soundEffects.playCorrect();
     setScore(prev => prev + 10);
-    // Move player based on difficulty
-    const jump = difficulty === 'easy' ? 4 : difficulty === 'medium' ? 6 : 8;
-    setPlayerPosition(prev => Math.min(prev + jump, 90));
+    setPlayerDistance(prev => prev + 10);
     setFeedback('correct');
     
     setTimeout(() => {
@@ -203,9 +203,16 @@ function MathRacer() {
   // Determine Placement
   const getPlacement = () => {
     let place = 1;
-    if (bot1Position > playerPosition) place++;
-    if (bot2Position > playerPosition) place++;
+    if (bot1Distance > playerDistance) place++;
+    if (bot2Distance > playerDistance) place++;
     return place;
+  };
+
+  const getVisualPosition = (distance) => {
+    // Player is always anchored at ~20% visually. We scale the relative distance.
+    const relative = distance - playerDistance;
+    const visual = 20 + (relative * 1.5);
+    return Math.max(-20, Math.min(90, visual));
   };
 
   return (
@@ -271,20 +278,20 @@ function MathRacer() {
                 {/* Lane 1: Bot 1 */}
                 <div className="lane">
                   <div className="lane-marker"></div>
-                  <div className="racer-car" style={{ left: `${bot1Position}%` }}>
+                  <div className="racer-car" style={{ left: `${getVisualPosition(bot1Distance)}%` }}>
                     <CarSVG color="#f43f5e" name="Bot 1" />
                   </div>
                 </div>
                 {/* Lane 2: Player */}
                 <div className="lane player-lane">
                   <div className="lane-marker"></div>
-                  <div className={`racer-car ${feedback === 'correct' ? 'accelerating' : ''} ${feedback === 'wrong' ? 'stalling' : ''}`} style={{ left: `${playerPosition}%`, zIndex: 10 }}>
+                  <div className={`racer-car ${feedback === 'correct' ? 'accelerating' : ''} ${feedback === 'wrong' ? 'stalling' : ''}`} style={{ left: `${getVisualPosition(playerDistance)}%`, zIndex: 10 }}>
                     <CarSVG color="#3b82f6" name="You" />
                   </div>
                 </div>
                 {/* Lane 3: Bot 2 */}
                 <div className="lane">
-                  <div className="racer-car" style={{ left: `${bot2Position}%` }}>
+                  <div className="racer-car" style={{ left: `${getVisualPosition(bot2Distance)}%` }}>
                     <CarSVG color="#8b5cf6" name="Bot 2" />
                   </div>
                 </div>
