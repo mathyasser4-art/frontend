@@ -5,6 +5,7 @@ import { ArrowLeft, Play, RotateCcw, Heart, ShieldAlert, Award } from 'lucide-re
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
+import cuteDog from '../../img/cute_dog_runner.png';
 
 import './CaveRunner.css';
 
@@ -19,6 +20,7 @@ const CaveRunner = () => {
   const isJumpingRef = useRef(false);
   const [isWaitingForAnswer, setIsWaitingForAnswer] = useState(false);
   const isWaitingRef = useRef(false);
+  const [shake, setShake] = useState(false);
   const [obstaclePos, setObstaclePos] = useState(100); // percentage 100 to 0
   const [speed, setSpeed] = useState(1); // obstacle speed
   
@@ -34,12 +36,12 @@ const CaveRunner = () => {
     let num1, num2, answer;
 
     if (isAddition) {
-      num1 = Math.floor(Math.random() * 10) + 1;
-      num2 = Math.floor(Math.random() * 10) + 1;
+      num1 = Math.floor(Math.random() * 5) + 1;
+      num2 = Math.floor(Math.random() * 5) + 1;
       answer = num1 + num2;
     } else {
-      num1 = Math.floor(Math.random() * 15) + 5;
-      num2 = Math.floor(Math.random() * num1) + 1; // ensure no negative answers
+      num1 = Math.floor(Math.random() * 6) + 4; // 4 to 9
+      num2 = Math.floor(Math.random() * num1) + 1; 
       answer = num1 - num2;
     }
 
@@ -100,6 +102,9 @@ const CaveRunner = () => {
     } else {
       // Wrong!
       soundEffects.playError();
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      
       setLives(l => {
         const newLives = l - 1;
         if (newLives <= 0) {
@@ -217,12 +222,12 @@ const CaveRunner = () => {
             <>
               {/* Character */}
               <div className={`character ${isJumping ? 'jumping' : 'running'}`}>
-                🏃‍♂️
+                <img src={cuteDog} alt="cute runner" style={{ width: '100px' }} />
               </div>
 
               {/* Obstacle with Math Question */}
               <div 
-                className="obstacle-container"
+                className={`obstacle-container ${shake ? 'shake-animation' : ''}`}
                 style={{ left: `${obstaclePos}%` }}
               >
                 <div className="math-question-bubble">
