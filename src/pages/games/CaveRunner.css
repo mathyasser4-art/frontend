@@ -156,9 +156,6 @@
   transform-origin: bottom center;
 }
 
-.character img {
-  mix-blend-mode: multiply;
-}
 
 .character.running {
   animation: run 0.5s infinite alternate ease-in-out;
@@ -190,10 +187,12 @@
   z-index: 5;
 }
 
-.rock {
-  font-size: 3rem;
-  line-height: 1;
-  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+.rock-shape {
+  width: 60px;
+  height: 50px;
+  background: #64748b;
+  border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
+  box-shadow: inset -5px -5px 10px rgba(0,0,0,0.5), inset 5px 5px 10px rgba(255,255,255,0.2);
 }
 
 .math-question-bubble {
@@ -381,11 +380,9 @@
   .character {
     font-size: 3rem;
   }
-  .character img {
-    width: 70px !important;
-  }
-  .rock {
-    font-size: 2.5rem;
+  .rock-shape {
+    width: 45px;
+    height: 38px;
   }
   .answer-btn {
     font-size: 2rem;

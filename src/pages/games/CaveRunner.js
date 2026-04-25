@@ -5,7 +5,6 @@ import { ArrowLeft, Play, RotateCcw, Heart, ShieldAlert, Award } from 'lucide-re
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
-import cuteDog from '../../img/cute_dog_runner.png';
 import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api';
 import { Loader2 } from 'lucide-react';
 
@@ -125,7 +124,7 @@ const CaveRunner = () => {
 
     if (selectedAns === correctAnswer) {
       // Correct! Jump!
-      soundEffects.playJump();
+      soundEffects.playClick();
       setIsJumping(true);
       isJumpingRef.current = true;
       setIsWaitingForAnswer(false);
@@ -139,11 +138,11 @@ const CaveRunner = () => {
         setSpeed(s => Math.min(s + 0.05, 2.5)); // Increase speed slightly
         setObstaclePos(100);
         generateQuestion();
-        soundEffects.playSuccess();
+        soundEffects.playWinSound();
       }, 800); // Match CSS jump animation duration
     } else {
       // Wrong!
-      soundEffects.playError();
+      soundEffects.playWrong();
       setShake(true);
       setTimeout(() => setShake(false), 500);
       
@@ -273,7 +272,7 @@ const CaveRunner = () => {
             <>
               {/* Character */}
               <div className={`character ${isJumping ? 'jumping' : 'running'}`}>
-                <img src={cuteDog} alt="cute runner" style={{ width: '100px' }} />
+                🦊
               </div>
 
               {/* Obstacle with Math Question */}
@@ -284,7 +283,7 @@ const CaveRunner = () => {
                 <div className="math-question-bubble">
                   {question.text}
                 </div>
-                <div className="rock">🪨</div>
+                <div className="rock-shape"></div>
               </div>
             </>
           )}
