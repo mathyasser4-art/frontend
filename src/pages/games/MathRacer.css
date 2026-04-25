@@ -227,6 +227,18 @@
 .is-moving .lane-marker { animation: scrollLeft 0.5s linear infinite; }
 .is-moving .exhaust-smoke { animation: puff 0.5s ease-out infinite; }
 
+.stalling {
+  animation: stall 0.5s ease;
+}
+
+.spin-animation {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
 @keyframes scrollLeft {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); } /* Since width is 200%, -50% shifts it exactly one viewport, allowing perfect loop if background repeats */

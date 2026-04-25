@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
-import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal } from 'lucide-react';
+import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api';
+import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal, Loader2 } from 'lucide-react';
 import './MathRacer.css';
 
 const CarSVG = ({ color, name }) => (
@@ -44,6 +45,7 @@ function MathRacer() {
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [currentProblem, setCurrentProblem] = useState({ text: '', answer: 0 });
+  const [customQuestions, setCustomQuestions] = useState(null); // Array of questions from backend
   const [inputValue, setInputValue] = useState('');
   const [feedback, setFeedback] = useState(null); // 'correct', 'wrong', null
   
@@ -55,18 +57,36 @@ function MathRacer() {
   const inputRef = useRef(null);
   const timerRef = useRef(null);
 
-  // Generate a random problem based on difficulty
-  const generateProblem = (diff) => {
+  // Generate a random problem based on difficulty, or use custom questions
+  const generateProblem = (diff, customQ = null) => {
+    const qArray = customQ !== null ? customQ : customQuestions;
+    
+    // If we have custom questions, pick a random one
+    if (qArray && qArray.length > 0) {
+      const randomIndex = Math.floor(Math.random() * qArray.length);
+      const q = qArray[randomIndex];
+      // Expecting backend question format like { questionText: "5 + 5", correctAnswer: 10 }
+      // Or similar. We will adapt if we know the exact format.
+      // Assuming a generic { text: "...", answer: ... } structure
+      setCurrentProblem({
+        text: q.questionText || q.text || `${q.num1} ${q.op} ${q.num2} = ?`,
+        answer: q.correctAnswer !== undefined ? q.correctAnswer : q.answer
+      });
+      setInputValue('');
+      return;
+    }
+
+    // Fallback Auto-generation
     let num1, num2, operator, answer;
     
-    if (diff === 'easy') {
+    if (diff === '0' || diff === 'easy') {
       operator = Math.random() > 0.5 ? '+' : '-';
       num1 = Math.floor(Math.random() * 9) + 1;
       num2 = Math.floor(Math.random() * 9) + 1;
       if (operator === '-' && num1 < num2) {
         let temp = num1; num1 = num2; num2 = temp;
       }
-    } else if (diff === 'medium') {
+    } else if (diff === '1' || diff === 'medium') {
       operator = Math.random() > 0.5 ? '+' : '-';
       num1 = Math.floor(Math.random() * 90) + 10;
       num2 = Math.floor(Math.random() * 90) + 10;
@@ -96,9 +116,15 @@ function MathRacer() {
     setInputValue('');
   };
 
-  const startGame = (selectedDifficulty) => {
+  const startGame = async (selectedLevel) => {
     soundEffects.playClick();
-    setDifficulty(selectedDifficulty);
+    setDifficulty(selectedLevel);
+    setGameState('loading');
+    
+    // Attempt to fetch custom questions for the selected level
+    const questions = await getGameQuestionsByLevel(selectedLevel);
+    setCustomQuestions(questions);
+
     setScore(0);
     setTimeLeft(60);
     setPlayerDistance(0);
@@ -106,7 +132,7 @@ function MathRacer() {
     setBot2Distance(0);
     setGameState('playing');
     setFeedback(null);
-    generateProblem(selectedDifficulty);
+    generateProblem(selectedLevel, questions);
   };
 
   const endGame = () => {
@@ -238,16 +264,26 @@ function MathRacer() {
             <p>Compete against AI racers on the endless highway. Solve math problems correctly to accelerate your car and take 1st place!</p>
             
             <div className="difficulty-buttons">
-              <button className="diff-btn easy" onClick={() => startGame('easy')}>
-                <Star size={18} /> Easy (1-Digit)
+              <button className="diff-btn easy" onClick={() => startGame('0')}>
+                Level 0
               </button>
-              <button className="diff-btn medium" onClick={() => startGame('medium')}>
-                <Star size={18} /> <Star size={18} /> Medium (2-Digit)
+              <button className="diff-btn medium" onClick={() => startGame('1')}>
+                Level 1
               </button>
-              <button className="diff-btn hard" onClick={() => startGame('hard')}>
-                <Star size={18} /> <Star size={18} /> <Star size={18} /> Hard (Mixed)
+              <button className="diff-btn hard" onClick={() => startGame('2')}>
+                Level 2
+              </button>
+              <button className="diff-btn hard" style={{background: '#4f46e5'}} onClick={() => startGame('3')}>
+                Level 3
               </button>
             </div>
+          </div>
+        )}
+
+        {gameState === 'loading' && (
+          <div className="racer-menu" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+             <Loader2 size={48} className="spin-animation" color="#3b82f6" />
+             <h3 style={{marginTop: '1rem'}}>Loading Questions...</h3>
           </div>
         )}
 
