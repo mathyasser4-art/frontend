@@ -1,0 +1,201 @@
+.archery-page {
+  min-height: 100vh;
+  background-color: #0f172a;
+  font-family: 'Outfit', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.archery-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.archery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  background: #1e293b;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 2px solid #475569;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f8fafc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background: #334155;
+  border-color: #94a3b8;
+}
+
+.timer-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #f8fafc;
+  background: #334155;
+  padding: 0.5rem 1.5rem;
+  border-radius: 12px;
+  border: 2px solid #475569;
+}
+
+.timer-box.warning {
+  color: #f87171;
+  border-color: #ef4444;
+  animation: pulse 1s infinite;
+}
+
+.game-viewport {
+  position: relative;
+  flex: 1;
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  border: 4px solid #334155;
+}
+
+.archery-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
+}
+
+/* Math Lock Overlay */
+.math-lock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.math-lock-content {
+  background: white;
+  padding: 3rem;
+  border-radius: 24px;
+  text-align: center;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.math-lock-content h2 {
+  font-size: 2rem;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.math-lock-content p {
+  color: #64748b;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.lock-problem {
+  font-size: 4rem;
+  font-weight: 900;
+  color: #3b82f6;
+  margin-bottom: 2rem;
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 16px;
+}
+
+.lock-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.lock-option-btn {
+  background: white;
+  border: 3px solid #cbd5e1;
+  padding: 1.5rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e293b;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lock-option-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  transform: translateY(-2px);
+}
+
+.lock-option-btn:active {
+  transform: translateY(2px);
+}
+
+.lock-feedback {
+  margin-top: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  height: 2rem;
+}
+
+.lock-feedback.wrong { color: #ef4444; }
+.lock-feedback.correct { color: #22c55e; }
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Menu State */
+.archery-menu {
+  background: white;
+  padding: 4rem 2rem;
+  border-radius: 24px;
+  text-align: center;
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.archery-menu h1 {
+  font-size: 3rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.difficulty-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
