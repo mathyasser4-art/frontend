@@ -72,12 +72,12 @@ function App() {
       <Route path="/assignment/:assignmentID/reports" element={<TeacherAssignmentReports />} />
       <Route path='/teacher/student/:studentID/history' element={isAuth ? <StudentHistory /> : <Navigate to='/' />} />
       <Route path='/pricing' element={<Pricing />} />
-      <Route path='/student/games/math-racer' element={isAuth && role === 'Student' ? <MathRacer /> : <Navigate to='/' />} />
-      <Route path='/student/games/maze' element={isAuth && role === 'Student' ? <MazeGame /> : <Navigate to='/' />} />
-      <Route path='/student/games/pattern-puzzle' element={isAuth && role === 'Student' ? <PatternPuzzle /> : <Navigate to='/' />} />
-      <Route path='/student/games/image-puzzle' element={isAuth && role === 'Student' ? <ImagePuzzle /> : <Navigate to='/' />} />
-      <Route path='/student/games/cave-runner' element={isAuth && role === 'Student' ? <CaveRunner /> : <Navigate to='/' />} />
-      <Route path='/student/games-menu' element={isAuth && role === 'Student' ? <GamesMenu /> : <Navigate to='/' />} />
+      <Route path='/student/games/math-racer' element={<MathRacer />} />
+      <Route path='/student/games/maze' element={<MazeGame />} />
+      <Route path='/student/games/pattern-puzzle' element={<PatternPuzzle />} />
+      <Route path='/student/games/image-puzzle' element={<ImagePuzzle />} />
+      <Route path='/student/games/cave-runner' element={<CaveRunner />} />
+      <Route path='/student/games-menu' element={<GamesMenu />} />
 
     </Routes>
   )

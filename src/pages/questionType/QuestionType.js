@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Circle } from 'lucide-react'
+import { CheckCircle2, Circle, Gamepad2 } from 'lucide-react'
 import soundEffects from '../../utils/soundEffects'
 import '../../reusable.css'
 import './QuestionType.css'
@@ -31,6 +31,14 @@ function QuestionType() {
             </div>
             <h3 className="option-title">{t('academy.masterMinds')}</h3>
             <p className="option-description">{t('academy.masterMindsDesc')}</p>
+          </Link>
+
+          <Link to={'/student/games-menu'} className="questionType-option" onClick={() => soundEffects.playClick()}>
+            <div className="option-icon-wrapper">
+              <Gamepad2 size={64} strokeWidth={2} className="mcq-icon" />
+            </div>
+            <h3 className="option-title">Arcade Games</h3>
+            <p className="option-description">Play interactive educational math games</p>
           </Link>
         </div>
       </div>
