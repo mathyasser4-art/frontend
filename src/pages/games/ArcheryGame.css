@@ -97,50 +97,52 @@
 
 .math-lock-content {
   background: white;
-  padding: 3rem;
+  padding: 1.5rem 2rem;
   border-radius: 24px;
   text-align: center;
   max-width: 600px;
   width: 90%;
+  max-height: 95%;
+  overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
   animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .math-lock-content h2 {
-  font-size: 2rem;
+  font-size: 1.8rem;
   color: #1e293b;
   margin-bottom: 0.5rem;
 }
 
 .math-lock-content p {
   color: #64748b;
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
 .lock-problem {
   font-size: 2rem;
   font-weight: 800;
   color: #3b82f6;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   background: #f1f5f9;
   padding: 1rem;
   border-radius: 16px;
-  max-height: 150px;
+  max-height: 120px;
   overflow-y: auto;
 }
 
 .lock-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .lock-option-btn {
   background: white;
   border: 3px solid #cbd5e1;
-  padding: 1.5rem;
-  font-size: 2rem;
+  padding: 1rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #1e293b;
   border-radius: 16px;
