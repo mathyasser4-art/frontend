@@ -119,13 +119,15 @@
 }
 
 .lock-problem {
-  font-size: 4rem;
-  font-weight: 900;
+  font-size: 2rem;
+  font-weight: 800;
   color: #3b82f6;
   margin-bottom: 2rem;
   background: #f1f5f9;
   padding: 1rem;
   border-radius: 16px;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .lock-options {

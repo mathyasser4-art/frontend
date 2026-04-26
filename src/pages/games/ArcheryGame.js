@@ -7,7 +7,8 @@ import soundEffects from '../../utils/soundEffects';
 import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api';
 import './ArcheryGame.css';
 
-const PLAY_TIME_SECONDS = 60;
+const PLAY_TIME_SECONDS = 30;
+const QUESTIONS_TO_UNLOCK = 3;
 const IFRAME_URL = "https://play.famobi.com/archery-world-tour";
 
 const ArcheryGame = () => {
@@ -19,6 +20,7 @@ const ArcheryGame = () => {
   const [question, setQuestion] = useState(null);
   const [customQuestions, setCustomQuestions] = useState(null);
   const [feedback, setFeedback] = useState(null);
+  const [solvedCount, setSolvedCount] = useState(0);
   
   const timerRef = useRef(null);
 
@@ -75,6 +77,7 @@ const ArcheryGame = () => {
   const startGame = async (level) => {
     soundEffects.playClick();
     setDifficulty(level);
+    setSolvedCount(0);
     setGameState('locked'); // Lock immediately to require a question to start
     setCustomQuestions(null);
   };
@@ -111,8 +114,15 @@ const ArcheryGame = () => {
       soundEffects.playCorrect();
       setFeedback('correct');
       setTimeout(() => {
-        setGameState('playing');
-        setTimeLeft(PLAY_TIME_SECONDS);
+        const newCount = solvedCount + 1;
+        if (newCount >= QUESTIONS_TO_UNLOCK) {
+          setGameState('playing');
+          setTimeLeft(PLAY_TIME_SECONDS);
+          setSolvedCount(0);
+        } else {
+          setSolvedCount(newCount);
+          fetchQuestion();
+        }
         setFeedback(null);
       }, 1000);
     } else {
@@ -150,7 +160,7 @@ const ArcheryGame = () => {
             <h1>Archery World Tour 🎯</h1>
             <p>Test your aim in this classic archery game!</p>
             <p style={{color: '#64748b', marginTop: '1rem'}}>
-              <strong>How it works:</strong> You must solve a math question to unlock the game. Every correct answer gives you <strong>60 seconds</strong> of playtime!
+              <strong>How it works:</strong> You must solve <strong>3 math questions</strong> to unlock the game. After that, you get <strong>30 seconds</strong> of playtime!
             </p>
             
             <div className="difficulty-buttons">
@@ -185,8 +195,12 @@ const ArcheryGame = () => {
               <div className="math-lock-overlay">
                 <div className="math-lock-content">
                   <Lock size={48} color="#f59e0b" style={{marginBottom: '1rem'}} />
-                  <h2>Time's Up! Game Locked.</h2>
-                  <p>Answer the question correctly to earn 60 more seconds of playtime!</p>
+                  <h2>Unlock the Game</h2>
+                  <p>Answer <strong>{QUESTIONS_TO_UNLOCK - solvedCount} more</strong> questions correctly to earn 30 seconds of playtime!</p>
+                  
+                  <div style={{ background: '#e2e8f0', borderRadius: '999px', height: '12px', width: '100%', marginBottom: '2rem', overflow: 'hidden' }}>
+                    <div style={{ background: '#3b82f6', height: '100%', width: `${(solvedCount / QUESTIONS_TO_UNLOCK) * 100}%`, transition: 'width 0.3s ease' }}></div>
+                  </div>
                   
                   <div className="lock-problem">{question.text}</div>
                   
