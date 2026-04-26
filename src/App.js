@@ -88,7 +88,7 @@ function App() {
       <Route path='/student/games-menu' element={<GamesMenu />} />
 
       </Routes>
-      <LiveChatWidget />
+      {(!role || role === 'Student') && <LiveChatWidget />}
     </>
   )
 }

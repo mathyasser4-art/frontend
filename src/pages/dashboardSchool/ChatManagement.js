@@ -20,7 +20,8 @@ const ChatManagement = () => {
       const response = await fetch(`${API_BASE_URL}/chat/admin/all`);
       const data = await response.json();
       if (data.message === 'success') {
-        setChats(data.chats);
+        const activeChats = data.chats.filter(c => c.messages && c.messages.length > 0);
+        setChats(activeChats);
         
         // If a chat is selected, update it with fresh data
         if (selectedChat) {

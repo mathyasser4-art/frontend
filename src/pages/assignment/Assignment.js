@@ -980,6 +980,9 @@ function Assignment() {
     setTimeSpent(elapsedTime);
     setExamCompleted(true);
     
+    // Clear saved progress on manual end
+    clearSavedProgress();
+    
     // Start checking all answers
     setIsCheckingAnswers(true);
     checkAllAnswers(elapsedTime);

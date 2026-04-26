@@ -8,7 +8,7 @@ import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api
 import './ArcheryGame.css';
 
 const QUESTIONS_TO_UNLOCK = 3;
-const IFRAME_URL = "https://play.famobi.com/archery-world-tour";
+const IFRAME_URL = "https://powergameshub.com/embed/archery-world-tour";
 
 const ArcheryGame = () => {
   const navigate = useNavigate();
@@ -107,7 +107,10 @@ const ArcheryGame = () => {
     } else {
       soundEffects.playWrong();
       setFeedback('wrong');
-      setTimeout(() => setFeedback(null), 1000);
+      setTimeout(() => {
+        setFeedback(null);
+        fetchQuestion();
+      }, 1000);
     }
   };
 
@@ -154,13 +157,15 @@ const ArcheryGame = () => {
           <div className="game-viewport">
             
             {/* The External Game via iframe */}
-            <iframe 
-              src={IFRAME_URL}
-              className="archery-iframe"
-              title="Archery World Tour"
-              scrolling="no"
-              allow="autoplay; fullscreen"
-            />
+            {gameState === 'playing' && (
+              <iframe 
+                src={IFRAME_URL}
+                className="archery-iframe"
+                title="Archery World Tour"
+                scrolling="no"
+                allow="autoplay; fullscreen"
+              />
+            )}
 
             {/* The Math Lock Overlay */}
             {gameState === 'locked' && question && (
