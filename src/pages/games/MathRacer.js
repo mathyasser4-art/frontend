@@ -43,7 +43,7 @@ function MathRacer() {
   const [gameState, setGameState] = useState('menu'); // 'menu', 'playing', 'gameover'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy', 'medium', 'hard'
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const [currentProblem, setCurrentProblem] = useState({ text: '', answer: 0 });
   const [customQuestions, setCustomQuestions] = useState(null); // Array of questions from backend
   const [inputValue, setInputValue] = useState('');
@@ -53,6 +53,8 @@ function MathRacer() {
   const [playerDistance, setPlayerDistance] = useState(0);
   const [bot1Distance, setBot1Distance] = useState(0);
   const [bot2Distance, setBot2Distance] = useState(0);
+  
+  const RACE_LENGTH = 1000;
   
   const inputRef = useRef(null);
   const timerRef = useRef(null);
@@ -136,7 +138,7 @@ function MathRacer() {
     setCustomQuestions(questions);
 
     setScore(0);
-    setTimeLeft(60);
+    setTimeElapsed(0);
     setPlayerDistance(0);
     setBot1Distance(0);
     setBot2Distance(0);
@@ -154,26 +156,26 @@ function MathRacer() {
   // Main Game Loop (Timer & Bots)
   useEffect(() => {
     if (gameState === 'playing') {
-      // 1-second timer
+      // 1-second timer (Elapsed time)
       timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            endGame();
-            return 0;
-          }
-          return prev - 1;
-        });
+        setTimeElapsed((prev) => prev + 1);
       }, 1000);
       
-      // Bot movement (10 times per second for smooth animation)
+      // Bot movement & Win Check (10 times per second)
       const botInterval = setInterval(() => {
         setBot1Distance(prev => {
-          const speed = difficulty === 'easy' ? 0.15 : difficulty === 'medium' ? 0.22 : 0.28;
-          return prev + speed + (Math.random() * 0.05);
+          const newDist = prev + (difficulty === 'easy' ? 0.3 : difficulty === 'medium' ? 0.4 : 0.5) + (Math.random() * 0.1);
+          if (newDist >= RACE_LENGTH) endGame();
+          return newDist;
         });
         setBot2Distance(prev => {
-          const speed = difficulty === 'easy' ? 0.18 : difficulty === 'medium' ? 0.25 : 0.32;
-          return prev + speed + (Math.random() * 0.05);
+          const newDist = prev + (difficulty === 'easy' ? 0.35 : difficulty === 'medium' ? 0.45 : 0.55) + (Math.random() * 0.1);
+          if (newDist >= RACE_LENGTH) endGame();
+          return newDist;
+        });
+        setPlayerDistance(prev => {
+          if (prev >= RACE_LENGTH) endGame();
+          return prev;
         });
       }, 100);
       
@@ -227,7 +229,10 @@ function MathRacer() {
   const handleCorrectAnswer = () => {
     soundEffects.playCorrect();
     setScore(prev => prev + 10);
-    setPlayerDistance(prev => prev + 10);
+    setPlayerDistance(prev => {
+      const jumpDist = difficulty === 'easy' ? 50 : difficulty === 'medium' ? 40 : 30;
+      return prev + jumpDist;
+    });
     setFeedback('correct');
     
     setTimeout(() => {
@@ -247,8 +252,14 @@ function MathRacer() {
   const getVisualPosition = (distance) => {
     // Player is always anchored at ~20% visually. We scale the relative distance.
     const relative = distance - playerDistance;
-    const visual = 20 + (relative * 0.6); // Reduced from 1.5 for a smaller visual effect
+    const visual = 20 + (relative * 0.6); 
     return Math.max(-20, Math.min(90, visual));
+  };
+
+  const getFinishLineVisualPosition = () => {
+    const relative = RACE_LENGTH - playerDistance;
+    const visual = 20 + (relative * 0.6); 
+    return visual;
   };
 
   return (
@@ -301,8 +312,8 @@ function MathRacer() {
           <div className="racer-gameplay">
             <div className="game-stats">
               <div className="stat-box timer-box">
-                <Timer size={24} color={timeLeft <= 10 ? '#ef4444' : '#fff'} />
-                <span style={{ color: timeLeft <= 10 ? '#ef4444' : '#fff' }}>{timeLeft}s</span>
+                <Timer size={24} color="#fff" />
+                <span style={{ color: '#fff' }}>{timeElapsed}s</span>
               </div>
               <div className="stat-box placement-box">
                 <Medal size={24} color="#10b981" />
@@ -321,6 +332,9 @@ function MathRacer() {
               <div className="trees-bg"></div>
               
               <div className="road">
+                {/* Finish Line */}
+                <div className="finish-line" style={{ left: `${getFinishLineVisualPosition()}%` }}></div>
+                
                 {/* Lane 1: Bot 1 */}
                 <div className="lane">
                   <div className="lane-marker"></div>
@@ -363,7 +377,7 @@ function MathRacer() {
 
         {gameState === 'gameover' && (
           <div className="racer-gameover">
-            <h2>Time's Up! 🏁</h2>
+            <h2>Race Finished! 🏁</h2>
             
             <div className="results-podium">
               <div className="final-placement">

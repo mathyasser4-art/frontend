@@ -102,10 +102,10 @@
 
 .cave-front {
   bottom: 50px;
-  height: 40%;
-  background: repeating-linear-gradient(90deg, #22c55e 0px, #22c55e 50px, #16a34a 50px, #16a34a 100px);
-  mask-image: linear-gradient(to top, black 30%, transparent 60%);
-  -webkit-mask-image: linear-gradient(to top, black 30%, transparent 60%);
+  height: 80px;
+  background-image: radial-gradient(circle at 50% 100%, #22c55e 45%, transparent 46%);
+  background-size: 150px 160px;
+  background-repeat: repeat-x;
 }
 
 .moving .cave-back { animation: scroll 60s linear infinite; }
@@ -117,7 +117,6 @@
   bottom: 0; left: 0; width: 100%; height: 50px;
   display: flex;
   z-index: 2;
-  overflow: hidden;
 }
 
 .ground-segment {
@@ -175,7 +174,7 @@
   position: absolute;
   bottom: 50px;
   left: 15%;
-  font-size: 3.5rem;
+  font-size: 4rem;
   line-height: 1;
   z-index: 10;
   filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));

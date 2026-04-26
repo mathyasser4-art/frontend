@@ -419,7 +419,7 @@ const CaveRunner = () => {
 
               {/* Character */}
               <div className={`character ${isJumping ? 'jumping' : ''} ${isFalling ? 'falling' : ''} ${!isJumping && !isFalling ? 'running' : ''}`}>
-                🦔
+                🐇
               </div>
 
               {/* Coins */}
