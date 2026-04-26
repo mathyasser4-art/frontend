@@ -10,7 +10,7 @@ import { Loader2 } from 'lucide-react';
 
 import './CaveRunner.css';
 
-const CaveRunner = () => {
+const BunnyRun = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -337,6 +337,16 @@ const CaveRunner = () => {
           {/* Background Layers */}
           <div className="bg-layer cave-back"></div>
           <div className="bg-layer cave-mid"></div>
+          <div className="bg-layer scenery-layer">
+            <span className="scenery-item" style={{left: '10%'}}>🌲</span>
+            <span className="scenery-item" style={{left: '35%'}}>🌻</span>
+            <span className="scenery-item" style={{left: '60%'}}>🌲</span>
+            <span className="scenery-item" style={{left: '85%'}}>🌼</span>
+            <span className="scenery-item" style={{left: '110%'}}>🌲</span>
+            <span className="scenery-item" style={{left: '135%'}}>🌻</span>
+            <span className="scenery-item" style={{left: '160%'}}>🌲</span>
+            <span className="scenery-item" style={{left: '185%'}}>🌼</span>
+          </div>
           <div className="bg-layer cave-front"></div>
           
           {/* Ground */}
@@ -358,7 +368,7 @@ const CaveRunner = () => {
           {gameState === 'menu' && (
             <div className="menu-overlay">
               <div className="logo-box">
-                <h1>Cave Runner</h1>
+                <h1>Bunny Run</h1>
                 <p>Run, calculate, and jump!</p>
               </div>
               <div className="instructions">
@@ -398,7 +408,7 @@ const CaveRunner = () => {
               {/* Math Panel (Appears every 10 seconds) */}
               {isWaitingForAnswer && (
                 <div className="math-panel">
-                  <div className="math-panel-header">Earn Bonus Coins</div>
+                  <div className="math-panel-header">Earn Bonus Carrots!</div>
                   <div className="math-question">{question.text}</div>
                   <div className="math-options">
                     {options.map((opt, i) => (
@@ -422,9 +432,9 @@ const CaveRunner = () => {
                 🐇
               </div>
 
-              {/* Coins */}
+              {/* Carrots */}
               {coins.map(coin => !coin.collected && (
-                <div key={coin.id} className="coin" style={{ left: `${coin.pos}%` }}></div>
+                <div key={coin.id} className="carrot-item" style={{ left: `${coin.pos}%` }}>🥕</div>
               ))}
             </>
           )}
@@ -434,4 +444,4 @@ const CaveRunner = () => {
   );
 };
 
-export default CaveRunner;
+export default BunnyRun;

@@ -110,8 +110,8 @@ function MazeGame() {
     const questions = await getGameQuestionsByLevel(level);
     setCustomQuestions(questions);
     
-    // Determine size
-    const size = level === '0' ? 6 : level === '1' ? 8 : level === '2' ? 10 : 12;
+    // Determine size - Increased significantly for more branching paths and brain teaser effect!
+    const size = level === '0' ? 10 : level === '1' ? 14 : level === '2' ? 18 : 22;
     const newGrid = generateMaze(size, size);
     
     // Place random doors

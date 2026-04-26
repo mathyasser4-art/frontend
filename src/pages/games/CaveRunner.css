@@ -110,7 +110,21 @@
 
 .moving .cave-back { animation: scroll 60s linear infinite; }
 .moving .cave-mid { animation: scroll 30s linear infinite; }
+.moving .scenery-layer { animation: scroll 20s linear infinite; }
 .moving .cave-front { animation: scroll 15s linear infinite; }
+
+.scenery-layer {
+  bottom: 50px;
+  height: 60px;
+  z-index: 1;
+}
+
+.scenery-item {
+  position: absolute;
+  bottom: 0;
+  font-size: 3rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
 
 .ground-container {
   position: absolute;
@@ -281,28 +295,19 @@
   cursor: not-allowed;
 }
 
-/* Coins */
-.coin {
+/* Carrots */
+.carrot-item {
   position: absolute;
   bottom: 60px;
-  width: 30px;
-  height: 30px;
-  background: radial-gradient(circle at 30% 30%, #fde047 0%, #eab308 50%, #ca8a04 100%);
-  border-radius: 50%;
-  border: 2px solid #a16207;
-  box-shadow: inset 0 0 5px rgba(255,255,255,0.8), 0 2px 5px rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #a16207;
-  font-weight: 900;
-  font-size: 1.2rem;
+  font-size: 2.5rem;
   z-index: 5;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+  animation: bounce 1s infinite alternate ease-in-out;
 }
 
-.coin::before {
-  content: '$';
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
 }
 
 /* Menus */
