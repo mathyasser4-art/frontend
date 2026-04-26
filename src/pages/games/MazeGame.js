@@ -63,6 +63,14 @@ const generateMaze = (width, height) => {
   // Set goal
   grid[height - 1][width - 1].isGoal = true;
   
+  // Force start cell to have two open routes (right and down) to create a branch right away!
+  if (width > 1 && height > 1) {
+    grid[0][0].walls.right = false;
+    grid[0][1].walls.left = false;
+    grid[0][0].walls.bottom = false;
+    grid[1][0].walls.top = false;
+  }
+  
   return grid;
 };
 
@@ -172,13 +180,16 @@ function MazeGame() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (gameState !== 'playing') return;
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        e.preventDefault();
+      }
       if (e.key === 'ArrowUp') handleMove(0, -1);
       if (e.key === 'ArrowDown') handleMove(0, 1);
       if (e.key === 'ArrowLeft') handleMove(-1, 0);
       if (e.key === 'ArrowRight') handleMove(1, 0);
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown, { passive: false });
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleMove, gameState]);
 

@@ -204,93 +204,21 @@ function StudentDashboard() {
                                     </button>
                                 </div>
 
-                                {/* Arcade Card - Purple/Pink */}
-                                <div onClick={() => navigate('/student/games/math-racer')} className="dashboard-card game-card">
+                                {/* Arcade Room Card - Purple/Pink */}
+                                <div onClick={() => navigate('/student/games-menu')} className="dashboard-card game-card">
                                     <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #d946ef 100%)' }}>
                                         <Gamepad2 size={48} strokeWidth={2} color="#fff" />
                                     </div>
                                     
                                     <div className="card-stats">
                                         <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
-                                            <span className="stat-label">Math Racer</span>
-                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Mental Math Speed Game</span>
+                                            <span className="stat-label">Arcade Room</span>
+                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Play 5 Educational Games!</span>
                                         </div>
                                     </div>
 
                                     <button className="card-button" style={{ background: 'rgba(217, 70, 239, 0.1)', color: '#d946ef' }}>
-                                        <span className="game-text" style={{ fontWeight: '700' }}>Play Arcade</span>
-                                    </button>
-                                </div>
-
-                                {/* Maze Game Card - Green */}
-                                <div onClick={() => navigate('/student/games/maze')} className="dashboard-card game-card">
-                                    <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
-                                        <Gamepad2 size={48} strokeWidth={2} color="#fff" />
-                                    </div>
-                                    
-                                    <div className="card-stats">
-                                        <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
-                                            <span className="stat-label">Math Maze</span>
-                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Navigate & Solve</span>
-                                        </div>
-                                    </div>
-
-                                    <button className="card-button" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#059669' }}>
-                                        <span className="game-text" style={{ fontWeight: '700' }}>Play Maze</span>
-                                    </button>
-                                </div>
-
-                                {/* Pattern Puzzle Card - Blue/Indigo */}
-                                <div onClick={() => navigate('/student/games/pattern-puzzle')} className="dashboard-card game-card">
-                                    <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' }}>
-                                        <Brain size={48} strokeWidth={2} color="#fff" />
-                                    </div>
-                                    
-                                    <div className="card-stats">
-                                        <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
-                                            <span className="stat-label">Pattern Puzzle</span>
-                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Logic & Sequences</span>
-                                        </div>
-                                    </div>
-
-                                    <button className="card-button" style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#4f46e5' }}>
-                                        <span className="game-text" style={{ fontWeight: '700' }}>Crack Code</span>
-                                    </button>
-                                </div>
-
-                                {/* Image Puzzle Card - Yellow/Orange */}
-                                <div onClick={() => navigate('/student/games/image-puzzle')} className="dashboard-card game-card">
-                                    <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)' }}>
-                                        <ImageIcon size={48} strokeWidth={2} color="#fff" />
-                                    </div>
-                                    
-                                    <div className="card-stats">
-                                        <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
-                                            <span className="stat-label">Image Puzzle</span>
-                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Jigsaw & Shapes</span>
-                                        </div>
-                                    </div>
-
-                                    <button className="card-button" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#ea580c' }}>
-                                        <span className="game-text" style={{ fontWeight: '700' }}>Solve Puzzle</span>
-                                    </button>
-                                </div>
-
-                                {/* Cave Runner Card - Blue/Cyan */}
-                                <div onClick={() => navigate('/student/games/cave-runner')} className="dashboard-card game-card">
-                                    <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)' }}>
-                                        <FastForward size={48} strokeWidth={2} color="#fff" />
-                                    </div>
-                                    
-                                    <div className="card-stats">
-                                        <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
-                                            <span className="stat-label">Cave Runner</span>
-                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Math Adventure</span>
-                                        </div>
-                                    </div>
-
-                                    <button className="card-button" style={{ background: 'rgba(14, 165, 233, 0.1)', color: '#0284c7' }}>
-                                        <span className="game-text" style={{ fontWeight: '700' }}>Run Now</span>
+                                        <span className="game-text" style={{ fontWeight: '700' }}>Enter Arcade</span>
                                     </button>
                                 </div>
                             </div>

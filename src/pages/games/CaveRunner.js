@@ -16,7 +16,7 @@ const BunnyRun = () => {
 
   const [gameState, setGameState] = useState('menu'); // menu, playing, gameover
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(3);
+  const [lives, setLives] = useState(5);
   const [isJumping, setIsJumping] = useState(false);
   const isJumpingRef = useRef(false);
   const [isFalling, setIsFalling] = useState(false);
@@ -130,7 +130,7 @@ const BunnyRun = () => {
 
     setGameState('playing');
     setScore(0);
-    setLives(3);
+    setLives(5);
     setSpeed(1.2);
     setObstaclePos(120);
     setObstacleType('gap');
@@ -314,7 +314,7 @@ const BunnyRun = () => {
           {gameState === 'playing' && (
             <div className="hud">
               <div className="lives">
-                {[...Array(3)].map((_, i) => (
+                {[...Array(5)].map((_, i) => (
                   <Heart 
                     key={i} 
                     size={28} 

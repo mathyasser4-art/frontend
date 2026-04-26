@@ -33,7 +33,7 @@ import MazeGame from './pages/games/MazeGame';
 import PatternPuzzle from './pages/games/PatternPuzzle';
 import ImagePuzzle from './pages/games/ImagePuzzle';
 import CaveRunner from './pages/games/CaveRunner';
-
+import GamesMenu from './pages/studentDashboard/GamesMenu';
 
 function App() {
   const isAuth = localStorage.getItem('O_authWEB')
@@ -77,6 +77,7 @@ function App() {
       <Route path='/student/games/pattern-puzzle' element={isAuth && role === 'Student' ? <PatternPuzzle /> : <Navigate to='/' />} />
       <Route path='/student/games/image-puzzle' element={isAuth && role === 'Student' ? <ImagePuzzle /> : <Navigate to='/' />} />
       <Route path='/student/games/cave-runner' element={isAuth && role === 'Student' ? <CaveRunner /> : <Navigate to='/' />} />
+      <Route path='/student/games-menu' element={isAuth && role === 'Student' ? <GamesMenu /> : <Navigate to='/' />} />
 
     </Routes>
   )
