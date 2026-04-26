@@ -340,7 +340,7 @@ const CaveRunner = () => {
           <div className="bg-layer cave-front"></div>
           
           {/* Ground */}
-          <div className="ground-container" style={{ position: 'relative' }}>
+          <div className="ground-container">
             {obstacleType === 'gap' ? (
               <>
                 <div className="ground-segment" style={{ position: 'absolute', left: 0, width: `${Math.max(0, obstaclePos)}%` }}></div>

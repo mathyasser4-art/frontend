@@ -54,7 +54,7 @@ function MathRacer() {
   const [bot1Distance, setBot1Distance] = useState(0);
   const [bot2Distance, setBot2Distance] = useState(0);
   
-  const RACE_LENGTH = 1000;
+  const RACE_LENGTH = 200;
   
   const inputRef = useRef(null);
   const timerRef = useRef(null);
@@ -164,12 +164,12 @@ function MathRacer() {
       // Bot movement & Win Check (10 times per second)
       const botInterval = setInterval(() => {
         setBot1Distance(prev => {
-          const newDist = prev + (difficulty === 'easy' ? 0.3 : difficulty === 'medium' ? 0.4 : 0.5) + (Math.random() * 0.1);
+          const newDist = prev + (difficulty === 'easy' ? 0.15 : difficulty === 'medium' ? 0.22 : 0.28) + (Math.random() * 0.05);
           if (newDist >= RACE_LENGTH) endGame();
           return newDist;
         });
         setBot2Distance(prev => {
-          const newDist = prev + (difficulty === 'easy' ? 0.35 : difficulty === 'medium' ? 0.45 : 0.55) + (Math.random() * 0.1);
+          const newDist = prev + (difficulty === 'easy' ? 0.18 : difficulty === 'medium' ? 0.25 : 0.32) + (Math.random() * 0.05);
           if (newDist >= RACE_LENGTH) endGame();
           return newDist;
         });
@@ -230,7 +230,7 @@ function MathRacer() {
     soundEffects.playCorrect();
     setScore(prev => prev + 10);
     setPlayerDistance(prev => {
-      const jumpDist = difficulty === 'easy' ? 50 : difficulty === 'medium' ? 40 : 30;
+      const jumpDist = difficulty === 'easy' ? 15 : difficulty === 'medium' ? 12 : 10;
       return prev + jumpDist;
     });
     setFeedback('correct');
