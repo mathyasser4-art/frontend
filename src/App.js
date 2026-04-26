@@ -34,6 +34,8 @@ import PatternPuzzle from './pages/games/PatternPuzzle';
 import ImagePuzzle from './pages/games/ImagePuzzle';
 import CaveRunner from './pages/games/CaveRunner';
 import GamesMenu from './pages/studentDashboard/GamesMenu';
+import LiveChatWidget from './components/liveChat/LiveChatWidget';
+import ChatManagement from './pages/dashboardSchool/ChatManagement';
 
 function App() {
   const isAuth = localStorage.getItem('O_authWEB')
@@ -43,8 +45,9 @@ function App() {
     localStorage.removeItem('cartona')
   }, [])
   return (
-    <Routes>
-      <Route path='/' element={<Home />} />
+    <>
+      <Routes>
+        <Route path='/' element={<Home />} />
       <Route path='/auth/login' element={isAuth ? <Navigate to='/' /> : <Login />} />
       <Route path='/auth/register' element={isAuth ? <Navigate to='/' /> : <Register />} />
       <Route path='/verify/:email' element={isAuth ? <Navigate to='/' /> : <VerifyAccount />} />
@@ -63,6 +66,7 @@ function App() {
       <Route path='/dashboard-school/teacher' element={isAuth && (role === 'School' || role === 'IT') ? <Teacher /> : <Navigate to='/' />} />
       <Route path='/dashboard-school/it' element={isAuth && (role === 'School' || role === 'IT') ? <IT /> : <Navigate to='/' />} />
       <Route path='/dashboard-school/supervisor' element={isAuth && (role === 'School' || role === 'IT') ? <Supervisor /> : <Navigate to='/' />} />
+      <Route path='/dashboard-school/chats' element={isAuth && (role === 'School' || role === 'IT') ? <ChatManagement /> : <Navigate to='/' />} />
       <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/' />} />
       <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/' />} />
       <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/' />} />
@@ -79,7 +83,9 @@ function App() {
       <Route path='/student/games/cave-runner' element={<CaveRunner />} />
       <Route path='/student/games-menu' element={<GamesMenu />} />
 
-    </Routes>
+      </Routes>
+      <LiveChatWidget />
+    </>
   )
 }
 

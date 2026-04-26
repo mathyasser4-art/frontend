@@ -1,8 +1,9 @@
-﻿import React from 'react'
+import React from 'react'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import TeachersList from '../../components/teachersList/TeachersList'
 import { Link } from 'react-router-dom'
+import { MessageCircle } from 'lucide-react'
 import student from '../../img/student-bannar.png'
 import teacher from '../../img/teacher-bannar.png'
 import subject from '../../img/subject-bannar.PNG'
@@ -32,6 +33,18 @@ function DashboardSchool() {
                         <Link to={'/dashboard-school/supervisor'}><img src={sopreviser} alt="" /></Link>
                         <Link to={'/dashboard-school/class'}><img src={classes} alt="" /></Link>
                         {role === 'IT' ? <img src={IT} alt="" /> : <Link to={'/dashboard-school/it'}><img src={IT} alt="" /></Link>}
+                        <Link to={'/dashboard-school/chats'} style={{ textDecoration: 'none' }}>
+                            <div style={{
+                                width: '250px', height: '120px', margin: '10px', 
+                                background: 'linear-gradient(135deg, #0ea5e9, #2563eb)', 
+                                borderRadius: '15px', display: 'flex', flexDirection: 'column', 
+                                alignItems: 'center', justifyContent: 'center', color: 'white',
+                                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                            }}>
+                                <MessageCircle size={40} />
+                                <h3 style={{ margin: '10px 0 0 0', fontFamily: 'sans-serif' }}>Live Chats</h3>
+                            </div>
+                        </Link>
                     </div>
                 </div>
                 <TeachersList />
