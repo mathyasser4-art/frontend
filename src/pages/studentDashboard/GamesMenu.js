@@ -112,6 +112,22 @@ const GamesMenu = () => {
             </div>
           </div>
 
+          {/* Penalty Kick */}
+          <div className="game-card-full" onClick={() => navigate('/student/games/penalty-kick')}>
+            <div className="game-thumbnail thumb-penalty" style={{ background: '#4ade80', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', height: '40%', border: '4px solid white', borderBottom: 'none' }}></div>
+              <div style={{ fontSize: '3rem', zIndex: 2, marginBottom: '20px' }}>🧤</div>
+              <div style={{ fontSize: '2rem', position: 'absolute', bottom: '10px' }}>⚽</div>
+            </div>
+            <div className="game-card-body">
+              <h3>Penalty Kick</h3>
+              <p>Answer math questions correctly to outsmart the goalkeeper and score goals!</p>
+              <button className="play-now-btn">
+                <Play size={20} fill="currentColor" /> Play Now
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

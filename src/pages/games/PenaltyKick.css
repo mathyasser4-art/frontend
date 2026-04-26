@@ -1,0 +1,244 @@
+.penalty-page {
+  min-height: 100vh;
+  background-color: #f0fdf4;
+  font-family: 'Outfit', sans-serif;
+  padding-bottom: 2rem;
+}
+
+.penalty-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  border: 2px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
+}
+
+.stats-bar {
+  display: flex;
+  gap: 1rem;
+}
+
+.stat-pill {
+  background: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.stat-pill.goals { color: #16a34a; border: 2px solid #34d399; }
+.stat-pill.saves { color: #ef4444; border: 2px solid #f87171; }
+
+.game-area {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  background: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 40%, #4ade80 40%, #22c55e 100%);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+  border: 8px solid white;
+}
+
+/* Grass Pattern */
+.game-area::before {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px);
+  z-index: 1;
+}
+
+/* Goal Net */
+.goal-net {
+  position: absolute;
+  top: 20%;
+  left: 15%;
+  right: 15%;
+  height: 40%;
+  border: 12px solid #f8fafc;
+  border-bottom: none;
+  background-image: 
+    linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0.3)), 
+    linear-gradient(-45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0.3));
+  background-size: 20px 20px;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.target-zone {
+  border: 2px dashed transparent;
+  cursor: crosshair;
+  transition: background 0.2s, border 0.2s;
+  z-index: 10;
+}
+
+.target-zone.active:hover {
+  background: rgba(250, 204, 21, 0.3);
+  border-color: #facc15;
+}
+
+/* Keeper */
+.keeper {
+  position: absolute;
+  bottom: 40%;
+  left: 50%;
+  width: 120px;
+  height: 120px;
+  transform: translateX(-50%);
+  z-index: 3;
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.keeper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Ball */
+.ball {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  margin-left: -30px;
+  z-index: 4;
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.ball img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.5s linear;
+}
+
+/* Kick Animation Classes */
+.ball.kicking img {
+  transform: rotate(720deg) scale(0.5);
+}
+
+/* Keeper Dives */
+.keeper.dive-top-left { transform: translate(-150px, -80px) rotate(-45deg); }
+.keeper.dive-top-center { transform: translate(-50%, -100px); }
+.keeper.dive-top-right { transform: translate(150px, -80px) rotate(45deg); }
+.keeper.dive-bottom-left { transform: translate(-150px, 0) rotate(-70deg); }
+.keeper.dive-bottom-center { transform: translate(-50%, 0); }
+.keeper.dive-bottom-right { transform: translate(150px, 0) rotate(70deg); }
+
+/* Math Question Overlay */
+.math-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.question-box {
+  background: white;
+  padding: 3rem;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  max-width: 500px;
+  width: 90%;
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.question-box h2 {
+  font-size: 3.5rem;
+  color: #1e293b;
+  margin: 0 0 2rem 0;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.option-btn {
+  background: #f8fafc;
+  border: 3px solid #e2e8f0;
+  padding: 1.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3b82f6;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.option-btn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.feedback-overlay {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 4rem;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  z-index: 30;
+  animation: slideDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.feedback-overlay.goal { color: #4ade80; }
+.feedback-overlay.save { color: #f87171; }
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translate(-50%, -50px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}

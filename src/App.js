@@ -33,6 +33,7 @@ import MazeGame from './pages/games/MazeGame';
 import PatternPuzzle from './pages/games/PatternPuzzle';
 import ImagePuzzle from './pages/games/ImagePuzzle';
 import CaveRunner from './pages/games/CaveRunner';
+import PenaltyKick from './pages/games/PenaltyKick';
 import GamesMenu from './pages/studentDashboard/GamesMenu';
 import LiveChatWidget from './components/liveChat/LiveChatWidget';
 import ChatManagement from './pages/dashboardSchool/ChatManagement';
@@ -81,6 +82,7 @@ function App() {
       <Route path='/student/games/pattern-puzzle' element={<PatternPuzzle />} />
       <Route path='/student/games/image-puzzle' element={<ImagePuzzle />} />
       <Route path='/student/games/cave-runner' element={<CaveRunner />} />
+      <Route path='/student/games/penalty-kick' element={<PenaltyKick />} />
       <Route path='/student/games-menu' element={<GamesMenu />} />
 
       </Routes>

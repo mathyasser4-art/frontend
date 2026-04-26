@@ -142,7 +142,8 @@ const ImagePuzzle = () => {
   };
 
   const checkWin = (currentPieces) => {
-    const solved = currentPieces.every(p => p.currentPos === p.correctPos);
+    // A piece is in the correct spot if its id (which represents correctPos) matches its current array index!
+    const solved = currentPieces.every((p, index) => p.id === index);
     if (solved) {
       setIsCompleted(true);
       soundEffects.playSuccess();
