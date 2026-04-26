@@ -11,6 +11,9 @@ import soundEffects from '../../utils/soundEffects';
 import cuteSpaceCat from '../../img/cute_space_cat.png';
 import cuteDinosaur from '../../img/cute_dinosaur.png';
 import cuteOcean from '../../img/cute_ocean.png';
+import cuteRobot from '../../img/cute_robot.png';
+import magicalForest from '../../img/magical_forest.png';
+import cartoonCar from '../../img/cartoon_car.png';
 
 import './ImagePuzzle.css';
 
@@ -18,6 +21,9 @@ const PUZZLE_IMAGES = [
   { id: 'cat', src: cuteSpaceCat, name: 'Space Cat' },
   { id: 'dino', src: cuteDinosaur, name: 'Party Dino' },
   { id: 'ocean', src: cuteOcean, name: 'Ocean Friends' },
+  { id: 'robot', src: cuteRobot, name: 'Cute Robot' },
+  { id: 'forest', src: magicalForest, name: 'Magical Forest' },
+  { id: 'car', src: cartoonCar, name: 'Cartoon Car' },
 ];
 
 const GRID_SIZES = [
@@ -33,7 +39,8 @@ const ImagePuzzle = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [gridSize, setGridSize] = useState(3);
   const [pieces, setPieces] = useState([]);
-  const [selectedPieceIndex, setSelectedPieceIndex] = useState(null);
+  const [draggedPieceIndex, setDraggedPieceIndex] = useState(null);
+  const [dragOverPieceIndex, setDragOverPieceIndex] = useState(null);
   const [moves, setMoves] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -67,7 +74,8 @@ const ImagePuzzle = () => {
     setPieces(shuffled);
     setMoves(0);
     setIsCompleted(false);
-    setSelectedPieceIndex(null);
+    setDraggedPieceIndex(null);
+    setDragOverPieceIndex(null);
     setShowPreview(false);
   };
 
@@ -75,36 +83,62 @@ const ImagePuzzle = () => {
     initPuzzle();
   }, [selectedImageIndex, gridSize]);
 
-  const handlePieceClick = (index) => {
-    if (isCompleted || showPreview) return;
-
-    if (selectedPieceIndex === null) {
-      // Select first piece
-      setSelectedPieceIndex(index);
-      soundEffects.playClick();
-    } else {
-      // Swap pieces
-      if (selectedPieceIndex !== index) {
-        const newPieces = [...pieces];
-        
-        // Swap in the array
-        const temp = newPieces[selectedPieceIndex];
-        newPieces[selectedPieceIndex] = newPieces[index];
-        newPieces[index] = temp;
-
-        // Update currentPos
-        newPieces[selectedPieceIndex].currentPos = selectedPieceIndex;
-        newPieces[index].currentPos = index;
-
-        setPieces(newPieces);
-        setMoves(m => m + 1);
-        soundEffects.playJump();
-
-        // Check for win
-        checkWin(newPieces);
-      }
-      setSelectedPieceIndex(null);
+  const handleDragStart = (e, index) => {
+    if (isCompleted || showPreview) {
+      e.preventDefault();
+      return;
     }
+    setDraggedPieceIndex(index);
+    // Needed for Firefox
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', index);
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    if (draggedPieceIndex === null || draggedPieceIndex === index || isCompleted || showPreview) return;
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDragEnter = (e, index) => {
+    e.preventDefault();
+    if (draggedPieceIndex !== null && draggedPieceIndex !== index && !isCompleted && !showPreview) {
+      setDragOverPieceIndex(index);
+    }
+  };
+
+  const handleDragLeave = (e, index) => {
+    if (dragOverPieceIndex === index) {
+      setDragOverPieceIndex(null);
+    }
+  };
+
+  const handleDrop = (e, index) => {
+    e.preventDefault();
+    setDragOverPieceIndex(null);
+
+    if (draggedPieceIndex === null || draggedPieceIndex === index || isCompleted || showPreview) {
+      setDraggedPieceIndex(null);
+      return;
+    }
+
+    const newPieces = [...pieces];
+    
+    // Swap in the array
+    const temp = newPieces[draggedPieceIndex];
+    newPieces[draggedPieceIndex] = newPieces[index];
+    newPieces[index] = temp;
+
+    // Update currentPos
+    newPieces[draggedPieceIndex].currentPos = draggedPieceIndex;
+    newPieces[index].currentPos = index;
+
+    setPieces(newPieces);
+    setMoves(m => m + 1);
+    soundEffects.playJump();
+
+    setDraggedPieceIndex(null);
+    checkWin(newPieces);
   };
 
   const checkWin = (currentPieces) => {
@@ -236,8 +270,13 @@ const ImagePuzzle = () => {
                   return (
                     <div
                       key={piece.id}
-                      className={`puzzle-piece ${selectedPieceIndex === index ? 'selected' : ''}`}
-                      onClick={() => handlePieceClick(index)}
+                      draggable={!isCompleted && !showPreview}
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragEnter={(e) => handleDragEnter(e, index)}
+                      onDragLeave={(e) => handleDragLeave(e, index)}
+                      onDrop={(e) => handleDrop(e, index)}
+                      className={`puzzle-piece ${draggedPieceIndex === index ? 'dragging' : ''} ${dragOverPieceIndex === index ? 'drag-over' : ''}`}
                       style={{
                         backgroundImage: `url(${currentImage.src})`,
                         backgroundSize: `${gridSize * 100}% ${gridSize * 100}%`,
