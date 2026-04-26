@@ -15,49 +15,37 @@
   flex: 1;
 }
 
-.maze-grid {
+/* Algorithmic Maze Board */
+.maze-grid.algorithmic {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
-  gap: 4px;
-  background: #1e293b;
-  padding: 8px;
-  border-radius: 16px;
+  background: white;
+  border: 6px solid #1e293b;
+  padding: 0;
+  gap: 0;
+  border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   aspect-ratio: 1;
 }
 
 .maze-cell {
-  background: #f8fafc;
-  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
   position: relative;
-  transition: all 0.2s;
+  transition: background 0.2s;
+  box-sizing: border-box;
 }
 
-.maze-cell.type-1 {
-  background: #f8fafc; /* Matches regular cells so walls are invisible */
-}
-
-.maze-cell.type-2 {
-  background: #fef08a;
-}
-
-.maze-cell.type-3 {
-  background: #ecfdf5;
-}
-
-.maze-cell.door-open {
-  background: #f8fafc;
-}
+/* The actual maze walls */
+.maze-cell.wall-t { border-top: 3px solid #1e293b; }
+.maze-cell.wall-r { border-right: 3px solid #1e293b; }
+.maze-cell.wall-b { border-bottom: 3px solid #1e293b; }
+.maze-cell.wall-l { border-left: 3px solid #1e293b; }
 
 .player-avatar {
-  font-size: 1.8rem;
+  font-size: clamp(1rem, 4vw, 2.5rem);
   animation: bounce 1s infinite;
   z-index: 10;
 }
@@ -68,7 +56,7 @@
 }
 
 .door-icon, .goal-icon {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 4vw, 2.5rem);
 }
 
 /* Mobile Controls */
@@ -89,7 +77,7 @@
 
 .d-row {
   display: flex;
-  gap: 3rem;
+  gap: 4rem;
 }
 
 .d-btn {
@@ -97,27 +85,81 @@
   color: white;
   border: none;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 2rem;
   cursor: pointer;
-  box-shadow: 0 4px 0 #2563eb;
+  box-shadow: 0 6px 0 #2563eb;
   transition: all 0.1s;
 }
 
 .d-btn:active {
-  transform: translateY(4px);
+  transform: translateY(6px);
   box-shadow: 0 0 0 #2563eb;
 }
 
-.maze-instructions {
+/* Menus */
+.maze-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: white;
+  border-radius: 24px;
+  padding: 4rem 2rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
   text-align: center;
-  color: #64748b;
-  font-weight: 500;
 }
+
+.maze-menu h1 {
+  font-size: 3rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.maze-menu p {
+  color: #64748b;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.maze-menu .subtitle {
+  margin-bottom: 3rem;
+}
+
+.difficulty-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.diff-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.diff-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+}
+
+.diff-btn.easy { background: linear-gradient(135deg, #4ade80, #16a34a); }
+.diff-btn.medium { background: linear-gradient(135deg, #fbbf24, #d97706); }
+.diff-btn.hard { background: linear-gradient(135deg, #f87171, #dc2626); }
 
 /* Modals */
 .door-modal-overlay {
@@ -203,10 +245,26 @@
 
 .mt-4 { margin-top: 1.5rem; }
 
+.play-again-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .maze-container { padding: 1rem; }
   .maze-board-container { gap: 1rem; }
-  .d-btn { width: 50px; height: 50px; }
+  .d-btn { width: 60px; height: 60px; }
+  .d-row { gap: 2rem; }
   .door-problem { font-size: 2.5rem; }
   .door-input-group input { font-size: 1.5rem; }
+  .maze-menu { padding: 2rem 1rem; }
 }
