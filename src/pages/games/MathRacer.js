@@ -63,9 +63,8 @@ function MathRacer() {
   const [difficulty, setDifficulty] = useState('easy'); // 'easy', 'medium', 'hard'
   const [score, setScore] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [currentProblem, setCurrentProblem] = useState({ text: '', answer: 0 });
+  const [currentProblem, setCurrentProblem] = useState({ text: '', answer: 0, options: [] });
   const [customQuestions, setCustomQuestions] = useState(null); // Array of questions from backend
-  const [inputValue, setInputValue] = useState('');
   const [feedback, setFeedback] = useState(null); // 'correct', 'wrong', null
   
   // Race Distances
@@ -99,11 +98,19 @@ function MathRacer() {
         parsedAnswer = parseInt(Array.isArray(q.answer) ? q.answer[0] : q.answer);
       }
 
+      let options = [parsedAnswer];
+      // Generate 3 fake options if we don't have enough
+      while (options.length < 4) {
+        const fake = parsedAnswer + Math.floor(Math.random() * 10) - 5;
+        if (!options.includes(fake) && fake > 0) options.push(fake);
+      }
+      options.sort(() => Math.random() - 0.5);
+
       setCurrentProblem({
         text: q.question || q.questionText || q.text || `${q.num1} ${q.op} ${q.num2} = ?`,
-        answer: parsedAnswer
+        answer: parsedAnswer,
+        options
       });
-      setInputValue('');
       return;
     }
 
@@ -143,8 +150,14 @@ function MathRacer() {
     if (operator === '-') answer = num1 - num2;
     if (operator === '*') answer = num1 * num2;
 
-    setCurrentProblem({ text: `${num1} ${operator} ${num2} = ?`, answer });
-    setInputValue('');
+    let options = [answer];
+    while (options.length < 4) {
+      const fake = answer + Math.floor(Math.random() * 10) - 5;
+      if (!options.includes(fake) && fake >= 0) options.push(fake);
+    }
+    options.sort(() => Math.random() - 0.5);
+
+    setCurrentProblem({ text: `${num1} ${operator} ${num2} = ?`, answer, options });
   };
 
   const startGame = async (selectedLevel) => {
@@ -207,41 +220,18 @@ function MathRacer() {
     }
   }, [gameState]);
 
-  // Keep input focused
+  // No longer need to keep input focused since we use buttons
   useEffect(() => {
-    const handleGlobalClick = () => {
-      if (gameState === 'playing' && inputRef.current) {
-        inputRef.current.focus();
-      }
-    };
-    document.addEventListener('click', handleGlobalClick);
-    return () => document.removeEventListener('click', handleGlobalClick);
+    // Empty effect to replace the old one
   }, [gameState]);
 
-  const handleInputChange = (e) => {
-    const val = e.target.value;
-    if (!/^-?\d*$/.test(val)) return;
-    setInputValue(val);
-
-    if (parseInt(val) === currentProblem.answer) {
+  const handleOptionClick = (selectedOpt) => {
+    if (selectedOpt === currentProblem.answer) {
       handleCorrectAnswer();
-    } else if (val.length >= currentProblem.answer.toString().length && parseInt(val) !== currentProblem.answer) {
+    } else {
       soundEffects.playWrong();
       setFeedback('wrong');
-    } else {
-      setFeedback(null);
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      if (parseInt(inputValue) === currentProblem.answer) {
-        handleCorrectAnswer();
-      } else {
-        soundEffects.playWrong();
-        setFeedback('wrong');
-        setInputValue('');
-      }
+      setTimeout(() => setFeedback(null), 800);
     }
   };
 
@@ -388,17 +378,17 @@ function MathRacer() {
 
             <div className={`problem-container ${feedback}`}>
               <div className="problem-text">{currentProblem.text}</div>
-              <input
-                ref={inputRef}
-                type="text"
-                className="answer-input"
-                value={inputValue}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                placeholder="?"
-                autoFocus
-                autoComplete="off"
-              />
+              <div className="math-racer-options">
+                {currentProblem.options && currentProblem.options.map((opt, i) => (
+                  <button 
+                    key={i} 
+                    className="racer-option-btn"
+                    onClick={() => handleOptionClick(opt)}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}

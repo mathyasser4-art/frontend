@@ -15,18 +15,73 @@
   flex: 1;
 }
 
+/* Maze World Layout */
+.maze-world {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 900px;
+}
+
+.maze-character-left {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.maze-character-left img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.maze-goal-right {
+  width: 100px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: -20px;
+}
+
+.acorn-pile {
+  font-size: 3rem;
+  line-height: 1;
+}
+
 /* Algorithmic Maze Board */
 .maze-grid.algorithmic {
   display: grid;
   background: white;
-  border: 6px solid #1e293b;
+  border: 10px solid #000;
   padding: 0;
   gap: 0;
-  border-radius: 8px;
+  border-radius: 24px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  width: 100%;
-  max-width: 600px;
+  flex: 1;
+  max-width: 500px;
   aspect-ratio: 1;
+  position: relative;
+}
+
+.entry-arrow {
+  position: absolute;
+  top: 5%;
+  left: -40px;
+  color: #ef4444;
+  font-size: 2.5rem;
+  font-weight: 900;
+}
+
+.exit-arrow {
+  position: absolute;
+  bottom: -40px;
+  right: 5%;
+  color: #22c55e;
+  font-size: 2.5rem;
+  font-weight: 900;
 }
 
 .maze-cell {
@@ -39,10 +94,10 @@
 }
 
 /* The actual maze walls */
-.maze-cell.wall-t { border-top: 3px solid #1e293b; }
-.maze-cell.wall-r { border-right: 3px solid #1e293b; }
-.maze-cell.wall-b { border-bottom: 3px solid #1e293b; }
-.maze-cell.wall-l { border-left: 3px solid #1e293b; }
+.maze-cell.wall-t { border-top: 6px solid #000; }
+.maze-cell.wall-r { border-right: 6px solid #000; }
+.maze-cell.wall-b { border-bottom: 6px solid #000; }
+.maze-cell.wall-l { border-left: 6px solid #000; }
 
 .player-avatar {
   font-size: clamp(0.8rem, 2.5vw, 1.5rem);
@@ -263,6 +318,9 @@
 @media (max-width: 768px) {
   .maze-container { padding: 1rem; }
   .maze-board-container { gap: 1rem; }
+  .maze-world { flex-direction: column; align-items: center; }
+  .maze-character-left { width: 100px; margin-bottom: 1rem; }
+  .maze-goal-right { margin-top: 1rem; }
   .d-btn { width: 60px; height: 60px; }
   .d-row { gap: 2rem; }
   .door-problem { font-size: 2.5rem; }

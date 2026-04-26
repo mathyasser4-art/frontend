@@ -5,6 +5,7 @@ import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
 import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api';
 import { ChevronLeft, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RefreshCcw, Loader2 } from 'lucide-react';
+import squirrelImg from '../../img/maze_squirrel.png';
 import './MazeGame.css';
 
 const generateMaze = (width, height) => {
@@ -118,8 +119,8 @@ function MazeGame() {
     const questions = await getGameQuestionsByLevel(level);
     setCustomQuestions(questions);
     
-    // Determine size - Increased significantly for more branching paths and brain teaser effect!
-    const size = level === '0' ? 10 : level === '1' ? 14 : level === '2' ? 18 : 22;
+    // Determine size - Match the provided image (much simpler layout)
+    const size = level === '0' ? 5 : level === '1' ? 7 : level === '2' ? 9 : 11;
     const newGrid = generateMaze(size, size);
     
     // Place random doors
@@ -256,31 +257,46 @@ function MazeGame() {
 
         { (gameState === 'playing' || gameState === 'door-modal' || gameState === 'won') && grid.length > 0 && (
           <div className="maze-board-container">
-            <div 
-              className="maze-grid algorithmic" 
-              style={{ 
-                gridTemplateColumns: `repeat(${grid[0].length}, 1fr)`,
-                gridTemplateRows: `repeat(${grid.length}, 1fr)`
-              }}
-            >
-              {grid.map((row, y) => (
-                row.map((cell, x) => {
-                  const isPlayer = playerPos.x === x && playerPos.y === y;
-                  const classes = [];
-                  if (cell.walls.top) classes.push('wall-t');
-                  if (cell.walls.right) classes.push('wall-r');
-                  if (cell.walls.bottom) classes.push('wall-b');
-                  if (cell.walls.left) classes.push('wall-l');
-                  
-                  return (
-                    <div key={`${x}-${y}`} className={`maze-cell ${classes.join(' ')}`}>
-                      {isPlayer && <div className="player-avatar">🐿️</div>}
-                      {cell.isDoor && !cell.doorData.isOpen && !isPlayer && <div className="door-icon">🔒</div>}
-                      {cell.isGoal && !isPlayer && <div className="goal-icon">🌰</div>}
-                    </div>
-                  );
-                })
-              ))}
+            <div className="maze-world">
+              {/* Squirrel character on the left */}
+              <div className="maze-character-left">
+                <img src={squirrelImg} alt="Squirrel" />
+              </div>
+              
+              {/* The actual Maze */}
+              <div className="maze-grid algorithmic" 
+                style={{ 
+                  gridTemplateColumns: `repeat(${grid[0].length}, 1fr)`,
+                  gridTemplateRows: `repeat(${grid.length}, 1fr)`
+                }}
+              >
+                {/* Entry and Exit arrows */}
+                <div className="entry-arrow">➔</div>
+                <div className="exit-arrow">⬇</div>
+
+                {grid.map((row, y) => (
+                  row.map((cell, x) => {
+                    const isPlayer = playerPos.x === x && playerPos.y === y;
+                    const classes = [];
+                    if (cell.walls.top) classes.push('wall-t');
+                    if (cell.walls.right) classes.push('wall-r');
+                    if (cell.walls.bottom) classes.push('wall-b');
+                    if (cell.walls.left) classes.push('wall-l');
+                    
+                    return (
+                      <div key={`${x}-${y}`} className={`maze-cell ${classes.join(' ')}`}>
+                        {isPlayer && <div className="player-avatar">🐿️</div>}
+                        {cell.isDoor && !cell.doorData.isOpen && !isPlayer && <div className="door-icon">🔒</div>}
+                      </div>
+                    );
+                  })
+                ))}
+              </div>
+
+              {/* Acorns at bottom right */}
+              <div className="maze-goal-right">
+                <div className="acorn-pile">🌰🌰🌰</div>
+              </div>
             </div>
             
             <div className="maze-controls">

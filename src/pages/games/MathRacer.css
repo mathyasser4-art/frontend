@@ -414,22 +414,34 @@
   letter-spacing: 2px;
 }
 
-.answer-input {
-  font-size: 3rem;
-  font-weight: 800;
-  text-align: center;
-  width: 200px;
-  padding: 0.8rem;
-  border: 3px solid #cbd5e1;
-  border-radius: 16px;
-  color: #0f172a;
-  outline: none;
-  transition: border-color 0.2s ease;
+.math-racer-options {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }
 
-.answer-input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+.racer-option-btn {
+  background: white;
+  border: 3px solid #cbd5e1;
+  padding: 10px 20px;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e293b;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.1s;
+  min-width: 80px;
+}
+
+.racer-option-btn:hover {
+  background: #f1f5f9;
+  transform: translateY(-2px);
+  border-color: #94a3b8;
+}
+
+.racer-option-btn:active {
+  transform: translateY(2px);
+  background: #e2e8f0;
 }
 
 .problem-container.correct .answer-input { border-color: #4ade80; color: #16a34a; }
