@@ -24,6 +24,7 @@ const CaveRunner = () => {
   const [isWaitingForAnswer, setIsWaitingForAnswer] = useState(false);
   const isWaitingRef = useRef(false);
   const [obstaclePos, setObstaclePos] = useState(120); // percentage 120 to -GAP_WIDTH
+  const [obstacleType, setObstacleType] = useState('gap'); // 'gap' or 'rock'
   const [speed, setSpeed] = useState(1); // game speed
 
   const GAP_WIDTH = 20;
@@ -131,6 +132,7 @@ const CaveRunner = () => {
     setLives(3);
     setSpeed(1.2);
     setObstaclePos(120);
+    setObstacleType('gap');
     setIsWaitingForAnswer(false);
     isWaitingRef.current = false;
     setIsFalling(false);
@@ -221,12 +223,23 @@ const CaveRunner = () => {
 
         let newPos = pos - (speed * (deltaTime / 16));
         
-        // Check collision with the gap
-        // Player is at ~15% to 20%
-        // Gap is from newPos to newPos + GAP_WIDTH (20)
-        // If the gap starts before 15 and ends after 15, player is over it.
-        if (newPos <= 15 && (newPos + GAP_WIDTH) >= 20 && !isJumpingRef.current && !isFallingRef.current) {
-          // Hit the gap! Fall down!
+        // Check collision based on obstacle type
+        let hitObstacle = false;
+        
+        if (obstacleType === 'gap') {
+          // Gap is from newPos to newPos + GAP_WIDTH (20)
+          if (newPos <= 15 && (newPos + GAP_WIDTH) >= 20 && !isJumpingRef.current && !isFallingRef.current) {
+            hitObstacle = true;
+          }
+        } else if (obstacleType === 'rock') {
+          // Rock is at newPos. Width is approx 5%.
+          if (newPos <= 18 && newPos >= 12 && !isJumpingRef.current && !isFallingRef.current) {
+            hitObstacle = true;
+          }
+        }
+
+        if (hitObstacle) {
+          // Hit the obstacle! Fall down / trip!
           soundEffects.playWrong();
           setIsFalling(true);
           isFallingRef.current = true;
@@ -239,20 +252,22 @@ const CaveRunner = () => {
               } else {
                 setIsFalling(false);
                 isFallingRef.current = false;
-                setObstaclePos(120); // Reset gap far away
+                setObstaclePos(120); // Reset obstacle far away
+                setObstacleType(Math.random() > 0.5 ? 'gap' : 'rock');
                 spawnCoins();
               }
               return newLives;
             });
           }, 600);
           
-          return pos; // Stop moving gap during fall
+          return pos; // Stop moving obstacle during fall
         }
         
-        // Loop gap infinitely
+        // Loop obstacle infinitely
         if (newPos < -GAP_WIDTH) {
-           newPos = 120 + Math.random() * 50; // Random distance before next gap
-           spawnCoins(); // Spawn new coins with the new gap
+           newPos = 120 + Math.random() * 50; // Random distance before next obstacle
+           setObstacleType(Math.random() > 0.5 ? 'gap' : 'rock');
+           spawnCoins(); // Spawn new coins with the new obstacle
         }
         
         return newPos;
@@ -326,9 +341,18 @@ const CaveRunner = () => {
           
           {/* Ground */}
           <div className="ground-container" style={{ position: 'relative' }}>
-            <div className="ground-segment" style={{ position: 'absolute', left: 0, width: `${Math.max(0, obstaclePos)}%` }}></div>
-            <div className="gap-segment" style={{ position: 'absolute', left: `${obstaclePos}%`, width: `${GAP_WIDTH}%` }}></div>
-            <div className="ground-segment" style={{ position: 'absolute', left: `${obstaclePos + GAP_WIDTH}%`, right: 0 }}></div>
+            {obstacleType === 'gap' ? (
+              <>
+                <div className="ground-segment" style={{ position: 'absolute', left: 0, width: `${Math.max(0, obstaclePos)}%` }}></div>
+                <div className="gap-segment" style={{ position: 'absolute', left: `${obstaclePos}%`, width: `${GAP_WIDTH}%` }}></div>
+                <div className="ground-segment" style={{ position: 'absolute', left: `${obstaclePos + GAP_WIDTH}%`, right: 0 }}></div>
+              </>
+            ) : (
+              <>
+                <div className="ground-segment" style={{ position: 'absolute', left: 0, right: 0 }}></div>
+                <div className="cartoony-rock" style={{ left: `${obstaclePos}%` }}></div>
+              </>
+            )}
           </div>
 
           {gameState === 'menu' && (
@@ -395,7 +419,7 @@ const CaveRunner = () => {
 
               {/* Character */}
               <div className={`character ${isJumping ? 'jumping' : ''} ${isFalling ? 'falling' : ''} ${!isJumping && !isFalling ? 'running' : ''}`}>
-                🏃‍♂️
+                🦔
               </div>
 
               {/* Coins */}

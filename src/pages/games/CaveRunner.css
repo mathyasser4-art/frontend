@@ -78,7 +78,7 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* Parallax Backgrounds */
+/* Parallax Backgrounds - Cartoony Theme */
 .bg-layer {
   position: absolute;
   top: 0;
@@ -89,26 +89,23 @@
   background-size: 50% 100%;
 }
 
-.cave-back {
-  background-image: repeating-linear-gradient(90deg, 
-    transparent 0%, transparent 40%, rgba(255,255,255,0.05) 45%, transparent 50%);
-}
+.cave-back { background: linear-gradient(to bottom, #87CEEB, #E0F6FF); } /* Sky */
 
 .cave-mid {
   bottom: 40px;
-  height: 60%;
-  background-image: radial-gradient(circle at 50% 100%, #1e293b 0%, transparent 60%);
-  background-size: 300px 100%;
+  height: 80%;
+  background-image: radial-gradient(circle at 50% 50%, white 20%, transparent 21%), radial-gradient(circle at 30% 50%, white 15%, transparent 16%), radial-gradient(circle at 70% 50%, white 15%, transparent 16%);
+  background-size: 200px 100px;
+  background-position: 0 50px, 0 50px, 0 50px;
+  opacity: 0.8;
 }
 
 .cave-front {
-  /* Simple stalagmites pattern */
-  bottom: 40px;
+  bottom: 50px;
   height: 40%;
-  background: 
-    linear-gradient(45deg, #0f172a 25%, transparent 25%) -50px 0,
-    linear-gradient(-45deg, #0f172a 25%, transparent 25%) -50px 0;
-  background-size: 100px 100%;
+  background: repeating-linear-gradient(90deg, #22c55e 0px, #22c55e 50px, #16a34a 50px, #16a34a 100px);
+  mask-image: linear-gradient(to top, black 30%, transparent 60%);
+  -webkit-mask-image: linear-gradient(to top, black 30%, transparent 60%);
 }
 
 .moving .cave-back { animation: scroll 60s linear infinite; }
@@ -120,22 +117,38 @@
   bottom: 0; left: 0; width: 100%; height: 50px;
   display: flex;
   z-index: 2;
+  overflow: hidden;
 }
 
 .ground-segment {
   height: 100%;
-  background: #334155;
-  border-top: 6px solid #475569;
+  background: #8b5a2b; /* Dirt brown */
+  border-top: 10px solid #4ade80; /* Bright grass green */
+  position: relative;
 }
 
 .moving .ground-segment {
-  background: repeating-linear-gradient(45deg, #334155, #334155 20px, #1e293b 20px, #1e293b 40px);
+  background-image: radial-gradient(circle at 50% 50%, #654321 10%, transparent 11%);
+  background-size: 20px 20px;
   animation: scrollGround 3s linear infinite;
 }
 
 .gap-segment {
   height: 100%;
-  background: transparent;
+  background: #0ea5e9; /* Blue water in the gap */
+  box-shadow: inset 0 5px 10px rgba(0,0,0,0.3);
+}
+
+.cartoony-rock {
+  position: absolute;
+  bottom: 50px;
+  width: 40px;
+  height: 35px;
+  background: #94a3b8;
+  border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
+  border: 3px solid #475569;
+  box-shadow: inset -5px -5px 0px rgba(0,0,0,0.2);
+  z-index: 5;
 }
 
 /* Frozen State (waiting for answer) */
@@ -165,7 +178,7 @@
   font-size: 3.5rem;
   line-height: 1;
   z-index: 10;
-  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
   transform-origin: bottom center;
 }
 
@@ -195,7 +208,7 @@
 
 @keyframes fall {
   0% { transform: translateY(0) rotate(0); opacity: 1; }
-  100% { transform: translateY(200px) rotate(90deg); opacity: 0; }
+  100% { transform: translateY(100px) rotate(90deg); opacity: 0; }
 }
 
 /* Math Panel */
