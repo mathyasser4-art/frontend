@@ -83,11 +83,11 @@ const assignmentDetails = (setLoading, setOperationError, setQuestionData, setTh
                     setRemainingAttempts(responseJson.assignment.remainingAttempts);
                 }
                 
-                if (responseJson?.assignment.timer) {
-                    const timer = responseJson.assignment.timer * 60
+                if (responseJson?.assignment.timer && parseInt(responseJson.assignment.timer) > 0) {
+                    const timer = parseInt(responseJson.assignment.timer) * 60
                     const time = new Date();
                     time.setSeconds(time.getSeconds() + timer); // Timer in minutes
-                    setTotalTime(responseJson.assignment.timer)
+                    setTotalTime(parseInt(responseJson.assignment.timer))
                     setTimeout(() => {
                         timerCount()
                         setTime(time)
