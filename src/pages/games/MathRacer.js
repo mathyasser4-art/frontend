@@ -7,33 +7,52 @@ import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api
 import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal, Loader2 } from 'lucide-react';
 import './MathRacer.css';
 
-const CarSVG = ({ color, name }) => (
+const F1CarSVG = ({ color, name, isBoosting }) => (
   <div className="car-wrapper">
     <div className="car-label">{name}</div>
-    <svg viewBox="0 0 100 40" width="90" height="36" xmlns="http://www.w3.org/2000/svg">
-      {/* Exhaust Smoke (Animated in CSS) */}
-      <circle className="exhaust-smoke" cx="-5" cy="25" r="4" fill="#cbd5e1" opacity="0" />
-      <circle className="exhaust-smoke delay-1" cx="-15" cy="22" r="6" fill="#cbd5e1" opacity="0" />
+    <svg viewBox="0 0 130 40" width="110" height="34" xmlns="http://www.w3.org/2000/svg">
+      {/* Fiery Boost Effect */}
+      <path 
+        className={`boost-flame ${isBoosting ? 'active' : ''}`} 
+        d="M 15,25 Q -5,15 5,25 Q -10,35 15,25 Z" 
+        fill="#f97316" 
+        style={{ opacity: isBoosting ? 1 : 0, transition: 'opacity 0.2s', transformOrigin: '20px 25px' }}
+      />
+      <path 
+        className={`boost-flame-inner ${isBoosting ? 'active' : ''}`} 
+        d="M 15,25 Q 5,20 10,25 Q 0,30 15,25 Z" 
+        fill="#fbbf24" 
+        style={{ opacity: isBoosting ? 1 : 0, transition: 'opacity 0.2s', transformOrigin: '20px 25px' }}
+      />
       
-      {/* Tires */}
-      <circle cx="20" cy="35" r="8" fill="#1e293b"/>
-      <circle cx="80" cy="35" r="8" fill="#1e293b"/>
-      {/* Rims */}
-      <circle cx="20" cy="35" r="3" fill="#cbd5e1"/>
-      <circle cx="80" cy="35" r="3" fill="#cbd5e1"/>
+      {/* Front Wing */}
+      <path d="M 105,28 L 125,28 L 125,24 L 105,24 Z" fill="#1e293b" />
+      <path d="M 115,24 L 115,20 L 100,20 L 100,24 Z" fill={color} />
       
-      {/* Body */}
-      <path d="M 5,28 L 5,18 L 15,18 L 25,5 L 55,5 L 75,18 L 95,18 L 95,28 Z" fill={color} />
-      {/* Spoiler */}
-      <path d="M 5,18 L 10,10 L 15,15 Z" fill="#1e293b" />
-      {/* Windows */}
-      <path d="M 18,18 L 27,7 L 38,7 L 38,18 Z" fill="#94a3b8" />
-      <path d="M 41,18 L 41,7 L 53,7 L 68,18 Z" fill="#94a3b8" />
-      {/* Lights */}
-      <rect x="92" y="20" width="3" height="4" fill="#fbbf24" />
-      <rect x="5" y="20" width="2" height="4" fill="#ef4444" />
-      {/* Details */}
-      <rect x="0" y="24" width="8" height="3" fill="#64748b" />
+      {/* Main Body */}
+      <path d="M 20,25 L 105,25 L 110,28 L 20,28 Z" fill="#334155" /> {/* Underfloor */}
+      <path d="M 25,25 L 45,14 L 75,14 L 95,25 Z" fill={color} /> {/* Engine Cover & Nose */}
+      <path d="M 95,25 L 115,25 Z" stroke={color} strokeWidth="4" />
+      
+      {/* Rear Wing */}
+      <path d="M 10,12 L 30,12 L 30,22 L 10,22 Z" fill={color} />
+      <path d="M 10,8 L 30,8 L 30,12 L 10,12 Z" fill="#1e293b" />
+      <path d="M 15,8 L 15,25" stroke="#1e293b" strokeWidth="2" />
+      <path d="M 25,8 L 25,25" stroke="#1e293b" strokeWidth="2" />
+
+      {/* Cockpit & Driver */}
+      <path d="M 50,14 C 50,8 70,8 70,14 Z" fill="#0f172a" />
+      <circle cx="62" cy="10" r="5" fill="#facc15" /> {/* Driver Helmet */}
+
+      {/* Wheels */}
+      {/* Front Wheel */}
+      <circle cx="95" cy="28" r="11" fill="#0f172a"/>
+      <circle cx="95" cy="28" r="5" fill="#94a3b8"/>
+      <circle cx="95" cy="28" r="2" fill="#ef4444"/>
+      {/* Rear Wheel */}
+      <circle cx="35" cy="28" r="13" fill="#0f172a"/>
+      <circle cx="35" cy="28" r="6" fill="#94a3b8"/>
+      <circle cx="35" cy="28" r="2" fill="#ef4444"/>
     </svg>
   </div>
 );
@@ -279,7 +298,7 @@ function MathRacer() {
         {gameState === 'menu' && (
           <div className="racer-menu">
             <div className="racer-logo">
-              <CarSVG color="#3b82f6" name="" />
+              <F1CarSVG color="#3b82f6" name="" />
             </div>
             <h3>Select Difficulty to Race!</h3>
             <p>Compete against AI racers on the endless highway. Solve math problems correctly to accelerate your car and take 1st place!</p>
@@ -333,26 +352,35 @@ function MathRacer() {
               
               <div className="road">
                 {/* Finish Line */}
-                <div className="finish-line" style={{ left: `${getFinishLineVisualPosition()}%` }}></div>
+                <div className="finish-line-container" style={{ left: `${getFinishLineVisualPosition()}%` }}>
+                  <div className="finish-pole left-pole">
+                    <div className="finish-flag">🏁</div>
+                  </div>
+                  <div className="finish-banner">FINISH LINE</div>
+                  <div className="finish-pole right-pole">
+                    <div className="finish-flag">🏁</div>
+                  </div>
+                  <div className="finish-line-checkered"></div>
+                </div>
                 
                 {/* Lane 1: Bot 1 */}
                 <div className="lane">
                   <div className="lane-marker"></div>
-                  <div className="racer-car" style={{ left: `${getVisualPosition(bot1Distance)}%` }}>
-                    <CarSVG color="#f43f5e" name="Bot 1" />
+                  <div className="racer-car bot-car" style={{ left: `${getVisualPosition(bot1Distance)}%` }}>
+                    <F1CarSVG color="#f43f5e" name="Bot 1" />
                   </div>
                 </div>
                 {/* Lane 2: Player */}
                 <div className="lane player-lane">
                   <div className="lane-marker"></div>
-                  <div className={`racer-car ${feedback === 'correct' ? 'accelerating' : ''} ${feedback === 'wrong' ? 'stalling' : ''}`} style={{ left: `${getVisualPosition(playerDistance)}%`, zIndex: 10 }}>
-                    <CarSVG color="#3b82f6" name="You" />
+                  <div className={`racer-car player-car ${feedback === 'correct' ? 'accelerating' : ''} ${feedback === 'wrong' ? 'stalling' : ''}`} style={{ left: `${getVisualPosition(playerDistance)}%` }}>
+                    <F1CarSVG color="#3b82f6" name="You" isBoosting={feedback === 'correct'} />
                   </div>
                 </div>
                 {/* Lane 3: Bot 2 */}
                 <div className="lane">
-                  <div className="racer-car" style={{ left: `${getVisualPosition(bot2Distance)}%` }}>
-                    <CarSVG color="#8b5cf6" name="Bot 2" />
+                  <div className="racer-car bot-car" style={{ left: `${getVisualPosition(bot2Distance)}%` }}>
+                    <F1CarSVG color="#8b5cf6" name="Bot 2" />
                   </div>
                 </div>
               </div>

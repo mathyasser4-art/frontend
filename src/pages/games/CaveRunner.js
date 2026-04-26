@@ -24,7 +24,8 @@ const BunnyRun = () => {
   const [isWaitingForAnswer, setIsWaitingForAnswer] = useState(false);
   const isWaitingRef = useRef(false);
   const [obstaclePos, setObstaclePos] = useState(120); // percentage 120 to -GAP_WIDTH
-  const [obstacleType, setObstacleType] = useState('gap'); // 'gap' or 'rock'
+  const OBSTACLE_TYPES = ['gap', 'rock', 'pine_tree', 'fire'];
+  const [obstacleType, setObstacleType] = useState('gap'); // 'gap' or 'rock' or 'pine_tree' or 'fire'
   const [speed, setSpeed] = useState(1); // game speed
 
   const GAP_WIDTH = 20;
@@ -231,8 +232,8 @@ const BunnyRun = () => {
           if (newPos <= 15 && (newPos + GAP_WIDTH) >= 20 && !isJumpingRef.current && !isFallingRef.current) {
             hitObstacle = true;
           }
-        } else if (obstacleType === 'rock') {
-          // Rock is at newPos. Width is approx 5%.
+        } else {
+          // Rock, Pine Tree, Fire is at newPos. Width is approx 5-10%.
           if (newPos <= 18 && newPos >= 12 && !isJumpingRef.current && !isFallingRef.current) {
             hitObstacle = true;
           }
@@ -253,7 +254,7 @@ const BunnyRun = () => {
                 setIsFalling(false);
                 isFallingRef.current = false;
                 setObstaclePos(120); // Reset obstacle far away
-                setObstacleType(Math.random() > 0.5 ? 'gap' : 'rock');
+                setObstacleType(OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)]);
                 spawnCoins();
               }
               return newLives;
@@ -334,19 +335,17 @@ const BunnyRun = () => {
           className={`game-area ${gameState === 'playing' && !isWaitingForAnswer && !isFalling ? 'moving' : ''} ${isWaitingForAnswer ? 'frozen' : ''}`}
           onClick={jump}
         >
+          {/* Sky Elements */}
+          <div className="sun"></div>
+          
+          <div className="cloud-layer">
+            <div className="cloud3d" style={{ top: '20px', left: '10%' }}></div>
+            <div className="cloud3d" style={{ top: '50px', left: '40%', transform: 'scale(0.8)' }}></div>
+            <div className="cloud3d" style={{ top: '10px', left: '70%', transform: 'scale(1.2)' }}></div>
+          </div>
+          
           {/* Background Layers */}
           <div className="bg-layer cave-back"></div>
-          <div className="bg-layer cave-mid"></div>
-          <div className="bg-layer scenery-layer">
-            <span className="scenery-item" style={{left: '10%'}}>🌲</span>
-            <span className="scenery-item" style={{left: '35%'}}>🌻</span>
-            <span className="scenery-item" style={{left: '60%'}}>🌲</span>
-            <span className="scenery-item" style={{left: '85%'}}>🌼</span>
-            <span className="scenery-item" style={{left: '110%'}}>🌲</span>
-            <span className="scenery-item" style={{left: '135%'}}>🌻</span>
-            <span className="scenery-item" style={{left: '160%'}}>🌲</span>
-            <span className="scenery-item" style={{left: '185%'}}>🌼</span>
-          </div>
           <div className="bg-layer cave-front"></div>
           
           {/* Ground */}
@@ -360,7 +359,9 @@ const BunnyRun = () => {
             ) : (
               <>
                 <div className="ground-segment" style={{ position: 'absolute', left: 0, right: 0 }}></div>
-                <div className="cartoony-rock" style={{ left: `${obstaclePos}%` }}></div>
+                {obstacleType === 'rock' && <div className="cartoony-rock" style={{ left: `${obstaclePos}%` }}></div>}
+                {obstacleType === 'pine_tree' && <div className="obstacle-emoji pine-tree" style={{ left: `${obstaclePos}%` }}>🌲</div>}
+                {obstacleType === 'fire' && <div className="obstacle-emoji fire" style={{ left: `${obstaclePos}%` }}>🔥</div>}
               </>
             )}
           </div>

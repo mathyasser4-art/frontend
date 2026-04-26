@@ -110,20 +110,67 @@
 
 .moving .cave-back { animation: scroll 60s linear infinite; }
 .moving .cave-mid { animation: scroll 30s linear infinite; }
-.moving .scenery-layer { animation: scroll 20s linear infinite; }
 .moving .cave-front { animation: scroll 15s linear infinite; }
+.moving .cloud-layer { animation: scroll 40s linear infinite; }
 
-.scenery-layer {
-  bottom: 50px;
-  height: 60px;
+/* Sky Elements */
+.sun {
+  position: absolute;
+  top: 30px;
+  right: 15%;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle at 30% 30%, #fffde7 0%, #fde047 30%, #eab308 80%, #ca8a04 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 40px #fde047, inset -5px -5px 15px rgba(0,0,0,0.1);
+  animation: pulseSun 4s infinite alternate;
   z-index: 1;
 }
 
-.scenery-item {
+@keyframes pulseSun {
+  0% { box-shadow: 0 0 30px #fde047, inset -5px -5px 15px rgba(0,0,0,0.1); transform: scale(1); }
+  100% { box-shadow: 0 0 60px #fde047, inset -5px -5px 15px rgba(0,0,0,0.1); transform: scale(1.05); }
+}
+
+.cloud-layer {
   position: absolute;
-  bottom: 0;
-  font-size: 3rem;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  top: 0; left: 0; width: 200%; height: 150px;
+  z-index: 1;
+}
+
+.cloud3d {
+  position: absolute;
+  width: 100px;
+  height: 40px;
+  background: #ffffff;
+  border-radius: 50px;
+  box-shadow: 
+    0 10px 20px rgba(0,0,0,0.1), 
+    inset 0 -10px 15px rgba(0,0,0,0.05);
+}
+
+.cloud3d::before {
+  content: '';
+  position: absolute;
+  top: -25px;
+  left: 15px;
+  width: 50px;
+  height: 50px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: inset 5px 5px 10px rgba(255,255,255,0.8);
+}
+
+.cloud3d::after {
+  content: '';
+  position: absolute;
+  top: -15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: inset -5px 5px 10px rgba(255,255,255,0.8);
 }
 
 .ground-container {
@@ -162,6 +209,15 @@
   border: 3px solid #475569;
   box-shadow: inset -5px -5px 0px rgba(0,0,0,0.2);
   z-index: 5;
+}
+
+.obstacle-emoji {
+  position: absolute;
+  bottom: 50px;
+  font-size: 3.5rem;
+  z-index: 5;
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+  line-height: 1;
 }
 
 /* Frozen State (waiting for answer) */
