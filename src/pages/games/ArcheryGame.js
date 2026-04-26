@@ -36,10 +36,17 @@ const ArcheryGame = () => {
         else if (q.correctAnswer !== undefined) parsedAnswer = parseInt(q.correctAnswer);
         else if (q.answer !== undefined) parsedAnswer = parseInt(Array.isArray(q.answer) ? q.answer[0] : q.answer);
         
+        if (isNaN(parsedAnswer)) parsedAnswer = Math.floor(Math.random() * 20) + 1;
+
         let options = [parsedAnswer];
-        while(options.length < 4) {
+        let loopCount = 0;
+        while(options.length < 4 && loopCount < 50) {
+          loopCount++;
           const fake = parsedAnswer + Math.floor(Math.random() * 10) - 5;
           if (!options.includes(fake) && fake >= 0) options.push(fake);
+        }
+        while(options.length < 4) {
+          options.push(Math.floor(Math.random() * 100));
         }
         options.sort(() => Math.random() - 0.5);
         

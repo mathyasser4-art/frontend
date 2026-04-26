@@ -98,11 +98,18 @@ function MathRacer() {
         parsedAnswer = parseInt(Array.isArray(q.answer) ? q.answer[0] : q.answer);
       }
 
+      if (isNaN(parsedAnswer)) parsedAnswer = Math.floor(Math.random() * 20) + 1;
+
       let options = [parsedAnswer];
+      let loopCount = 0;
       // Generate 3 fake options if we don't have enough
-      while (options.length < 4) {
+      while (options.length < 4 && loopCount < 50) {
+        loopCount++;
         const fake = parsedAnswer + Math.floor(Math.random() * 10) - 5;
         if (!options.includes(fake) && fake > 0) options.push(fake);
+      }
+      while (options.length < 4) {
+        options.push(Math.floor(Math.random() * 100));
       }
       options.sort(() => Math.random() - 0.5);
 
@@ -151,9 +158,14 @@ function MathRacer() {
     if (operator === '*') answer = num1 * num2;
 
     let options = [answer];
-    while (options.length < 4) {
+    let loopCount = 0;
+    while (options.length < 4 && loopCount < 50) {
+      loopCount++;
       const fake = answer + Math.floor(Math.random() * 10) - 5;
       if (!options.includes(fake) && fake >= 0) options.push(fake);
+    }
+    while(options.length < 4) {
+      options.push(Math.floor(Math.random() * 100));
     }
     options.sort(() => Math.random() - 0.5);
 
