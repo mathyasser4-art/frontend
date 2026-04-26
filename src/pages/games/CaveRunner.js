@@ -23,10 +23,14 @@ const CaveRunner = () => {
   const isFallingRef = useRef(false);
   const [isWaitingForAnswer, setIsWaitingForAnswer] = useState(false);
   const isWaitingRef = useRef(false);
-  const [obstaclePos, setObstaclePos] = useState(100); // percentage 100 to 0
+  const [obstaclePos, setObstaclePos] = useState(120); // percentage 120 to -GAP_WIDTH
   const [speed, setSpeed] = useState(1); // game speed
 
   const GAP_WIDTH = 20;
+  
+  // Timed Question State
+  const timeSinceLastQuestionRef = useRef(0);
+  const QUESTION_INTERVAL = 10000; // 10 seconds
   
   // Math Question State
   const [question, setQuestion] = useState({ num1: 0, num2: 0, op: '+' });
@@ -126,11 +130,14 @@ const CaveRunner = () => {
     setScore(0);
     setLives(3);
     setSpeed(1.2);
-    setObstaclePos(100);
+    setObstaclePos(120);
     setIsWaitingForAnswer(false);
     isWaitingRef.current = false;
     setIsFalling(false);
     isFallingRef.current = false;
+    isJumpingRef.current = false;
+    setIsJumping(false);
+    timeSinceLastQuestionRef.current = 0;
     spawnCoins();
     generateQuestion(questions);
   };
@@ -141,52 +148,52 @@ const CaveRunner = () => {
     if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
   }, []);
 
+  const jump = useCallback(() => {
+    if (gameState !== 'playing' || isJumpingRef.current || isFallingRef.current || isWaitingRef.current) return;
+    
+    soundEffects.playClick();
+    setIsJumping(true);
+    isJumpingRef.current = true;
+    
+    setTimeout(() => {
+      setIsJumping(false);
+      isJumpingRef.current = false;
+    }, 800); // jump animation duration
+  }, [gameState]);
+
+  // Listen for spacebar
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        jump();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [jump]);
+
   const handleAnswer = (selectedAns) => {
-    if (gameState !== 'playing' || isJumping || isFalling) return;
+    if (gameState !== 'playing') return;
 
     if (selectedAns === correctAnswer) {
-      // Correct! Jump!
-      soundEffects.playClick();
-      setIsJumping(true);
-      isJumpingRef.current = true;
-      setIsWaitingForAnswer(false);
-      isWaitingRef.current = false;
-      
-      // Add score and reset obstacle after jump finishes
-      setTimeout(() => {
-        setIsJumping(false);
-        isJumpingRef.current = false;
-        setScore(s => s + 50);
-        setSpeed(s => Math.min(s + 0.15, 3.5)); // Increase speed dynamically
-        setObstaclePos(120);
-        spawnCoins();
-        generateQuestion();
-        soundEffects.playWinSound();
-      }, 800); // Match CSS jump animation duration
+      soundEffects.playWinSound();
+      setScore(s => s + 50);
+      setSpeed(s => Math.min(s + 0.15, 3.5)); // Increase speed dynamically
     } else {
-      // Wrong! Fall!
       soundEffects.playWrong();
-      setIsWaitingForAnswer(false);
-      isWaitingRef.current = false;
-      setIsFalling(true);
-      isFallingRef.current = true;
-      
-      setTimeout(() => {
-        setLives(l => {
-          const newLives = l - 1;
-          if (newLives <= 0) {
-            handleGameOver();
-          } else {
-            setIsFalling(false);
-            isFallingRef.current = false;
-            setObstaclePos(100);
-            spawnCoins();
-            generateQuestion(); // Generate a new question after death
-          }
-          return newLives;
-        });
-      }, 600);
+      setLives(l => {
+        const newLives = l - 1;
+        if (newLives <= 0) handleGameOver();
+        return newLives;
+      });
     }
+
+    // Unfreeze and reset question timer
+    setIsWaitingForAnswer(false);
+    isWaitingRef.current = false;
+    timeSinceLastQuestionRef.current = 0;
+    generateQuestion();
   };
 
   // Game Loop
@@ -199,16 +206,53 @@ const CaveRunner = () => {
       const deltaTime = time - lastTime;
       lastTime = time;
 
+      if (!isWaitingRef.current && !isFallingRef.current) {
+        timeSinceLastQuestionRef.current += deltaTime;
+
+        // Check if it's time to ask a question
+        if (timeSinceLastQuestionRef.current >= QUESTION_INTERVAL) {
+          setIsWaitingForAnswer(true);
+          isWaitingRef.current = true;
+        }
+      }
+
       setObstaclePos(pos => {
         if (isWaitingRef.current || isFallingRef.current) return pos;
 
-        const newPos = pos - (speed * (deltaTime / 16));
+        let newPos = pos - (speed * (deltaTime / 16));
         
-        // Stop moving when cliff reaches the player (15%)
-        if (newPos <= 15 && !isJumpingRef.current && !isFallingRef.current) {
-          setIsWaitingForAnswer(true);
-          isWaitingRef.current = true;
-          return 15; // Hold at 15%
+        // Check collision with the gap
+        // Player is at ~15% to 20%
+        // Gap is from newPos to newPos + GAP_WIDTH (20)
+        // If the gap starts before 15 and ends after 15, player is over it.
+        if (newPos <= 15 && (newPos + GAP_WIDTH) >= 20 && !isJumpingRef.current && !isFallingRef.current) {
+          // Hit the gap! Fall down!
+          soundEffects.playWrong();
+          setIsFalling(true);
+          isFallingRef.current = true;
+          
+          setTimeout(() => {
+            setLives(l => {
+              const newLives = l - 1;
+              if (newLives <= 0) {
+                handleGameOver();
+              } else {
+                setIsFalling(false);
+                isFallingRef.current = false;
+                setObstaclePos(120); // Reset gap far away
+                spawnCoins();
+              }
+              return newLives;
+            });
+          }, 600);
+          
+          return pos; // Stop moving gap during fall
+        }
+        
+        // Loop gap infinitely
+        if (newPos < -GAP_WIDTH) {
+           newPos = 120 + Math.random() * 50; // Random distance before next gap
+           spawnCoins(); // Spawn new coins with the new gap
         }
         
         return newPos;
@@ -221,8 +265,8 @@ const CaveRunner = () => {
         return prevCoins.map(c => {
           if (c.collected) return c;
           const newCoinPos = c.pos - (speed * (deltaTime / 16));
-          // Collect if it hits the player (approx 15%)
-          if (newCoinPos <= 18 && newCoinPos >= 12 && !isFallingRef.current) {
+          // Collect if it hits the player
+          if (newCoinPos <= 20 && newCoinPos >= 10 && !isFallingRef.current) {
              soundEffects.playNumberClick();
              setScore(s => s + 10);
              return { ...c, pos: newCoinPos, collected: true };
@@ -237,7 +281,7 @@ const CaveRunner = () => {
     gameLoopRef.current = requestAnimationFrame(loop);
 
     return () => cancelAnimationFrame(gameLoopRef.current);
-  }, [gameState, speed, isJumping, isFalling, handleGameOver]);
+  }, [gameState, speed, handleGameOver, spawnCoins]);
 
   return (
     <div className="cave-runner-page">
@@ -271,7 +315,10 @@ const CaveRunner = () => {
           )}
         </div>
 
-        <div className={`game-area ${gameState === 'playing' ? 'moving' : ''} ${isWaitingForAnswer ? 'frozen' : ''}`}>
+        <div 
+          className={`game-area ${gameState === 'playing' && !isWaitingForAnswer && !isFalling ? 'moving' : ''} ${isWaitingForAnswer ? 'frozen' : ''}`}
+          onClick={jump}
+        >
           {/* Background Layers */}
           <div className="bg-layer cave-back"></div>
           <div className="bg-layer cave-mid"></div>
@@ -324,23 +371,27 @@ const CaveRunner = () => {
 
           {gameState === 'playing' && (
             <>
-              {/* Math Panel (Replaces old buttons) */}
-              <div className="math-panel">
-                <div className="math-panel-header">Earn Bonus Coins</div>
-                <div className="math-question">{question.text}</div>
-                <div className="math-options">
-                  {options.map((opt, i) => (
-                    <button 
-                      key={i} 
-                      className="math-opt-btn"
-                      onClick={() => handleAnswer(opt)}
-                      disabled={isJumping || isFalling || !isWaitingForAnswer}
-                    >
-                      {opt}
-                    </button>
-                  ))}
+              {/* Math Panel (Appears every 10 seconds) */}
+              {isWaitingForAnswer && (
+                <div className="math-panel">
+                  <div className="math-panel-header">Earn Bonus Coins</div>
+                  <div className="math-question">{question.text}</div>
+                  <div className="math-options">
+                    {options.map((opt, i) => (
+                      <button 
+                        key={i} 
+                        className="math-opt-btn"
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevent jumping
+                          handleAnswer(opt);
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Character */}
               <div className={`character ${isJumping ? 'jumping' : ''} ${isFalling ? 'falling' : ''} ${!isJumping && !isFalling ? 'running' : ''}`}>
@@ -349,9 +400,7 @@ const CaveRunner = () => {
 
               {/* Coins */}
               {coins.map(coin => !coin.collected && (
-                <div key={coin.id} className="coin" style={{ left: `${coin.pos}%` }}>
-                  🪙
-                </div>
+                <div key={coin.id} className="coin" style={{ left: `${coin.pos}%` }}></div>
               ))}
             </>
           )}
