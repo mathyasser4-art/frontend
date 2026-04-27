@@ -1328,7 +1328,7 @@ function Assignment() {
                     <span>Completed: {timeSpent}</span>
                   </div>
                 ) : (
-                  <div className="timer">Loading timer...</div>
+                  <div className="timer">{totalTime === 0 ? "No time limit" : "Loading timer..."}</div>
                 )}
               </div>
             </div>
