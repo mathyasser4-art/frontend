@@ -1,0 +1,54 @@
+.highway-page {
+  min-height: 100vh;
+  background-color: #0f172a;
+  font-family: 'Outfit', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.highway-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.highway-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  background: #1e293b;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.highway-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
+}
+
+/* Menu State */
+.highway-menu {
+  background: white;
+  padding: 4rem 2rem;
+  border-radius: 24px;
+  text-align: center;
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.highway-menu h1 {
+  font-size: 3rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+/* Reuse the other classes from ArcheryGame.css by keeping their names, but they are already global if we just import them!
+Wait, if I import HighwayRiderGame.css, it will just define these. I can reuse the lock-problem, lock-options, etc. */

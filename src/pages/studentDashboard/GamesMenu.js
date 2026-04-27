@@ -141,6 +141,19 @@ const GamesMenu = () => {
             </div>
           </div>
 
+          {/* Highway Rider Extreme */}
+          <div className="game-card-full" onClick={() => navigate('/student/games/highway-rider')}>
+            <div className="game-thumbnail thumb-highway" style={{ background: 'url(https://games.famobi.com/asset/highway-rider-extreme/teaser) center/cover', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            </div>
+            <div className="game-card-body">
+              <h3>Highway Rider Extreme</h3>
+              <p>Solve 3 math questions to unlock the road! Put on a helmet and race down the highway.</p>
+              <button className="play-now-btn">
+                <Play size={20} fill="currentColor" /> Play Now
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
