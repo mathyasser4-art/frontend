@@ -151,6 +151,12 @@ function Assignment() {
   useEffect(() => {
     if (!questionData || examCompleted) return;
 
+    let remainingSecs = null;
+    if (time) {
+      const now = new Date();
+      remainingSecs = Math.max(0, Math.floor((time.getTime() - now.getTime()) / 1000));
+    }
+
     const progress = {
       assignmentID,
       questionData,
@@ -159,6 +165,7 @@ function Assignment() {
       timestamp: Date.now(),
       totalTime,
       time: time?.toISOString?.() || null,
+      remainingSeconds: remainingSecs,
       totalSummation,
       forceFlashMode,
       flashSpeed,
@@ -182,6 +189,12 @@ function Assignment() {
       if (document.visibilityState === 'hidden' && !examCompleted) {
         // Aggressively save current state when app is backgrounded
         if (questionData) {
+          let remainingSecs = null;
+          if (time) {
+            const now = new Date();
+            remainingSecs = Math.max(0, Math.floor((time.getTime() - now.getTime()) / 1000));
+          }
+
           const progress = {
             assignmentID,
             questionData,
@@ -190,6 +203,7 @@ function Assignment() {
             timestamp: Date.now(),
             totalTime,
             time: time?.toISOString?.() || null,
+            remainingSeconds: remainingSecs,
             totalSummation,
             forceFlashMode,
             flashSpeed,
@@ -657,8 +671,21 @@ function Assignment() {
     if (progress.totalAttempts !== undefined) setTotalAttempts(progress.totalAttempts);
     if (progress.remainingAttempts !== undefined) setRemainingAttempts(progress.remainingAttempts);
 
-    // Restore timer from saved remaining time
-    if (progress.time) {
+    // Restore timer by pausing it!
+    if (progress.remainingSeconds !== undefined && progress.remainingSeconds !== null) {
+      if (progress.remainingSeconds > 0) {
+        const newTime = new Date();
+        newTime.setSeconds(newTime.getSeconds() + progress.remainingSeconds);
+        setTime(newTime);
+      } else {
+        // Timer expired
+        setTimeSpent(`${progress.totalTime || 0}:00`);
+        setExamCompleted(true);
+        setIsCheckingAnswers(true);
+        checkAllAnswers(`${progress.totalTime || 0}:00`);
+      }
+    } else if (progress.time) {
+      // Fallback to old absolute time logic for backward compatibility
       const savedTime = new Date(progress.time);
       const now = new Date();
       if (savedTime > now) {
