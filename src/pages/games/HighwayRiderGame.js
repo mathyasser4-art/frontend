@@ -23,7 +23,7 @@ const HighwayRiderGame = () => {
 
   const fetchQuestion = useCallback(async () => {
     try {
-      const qs = customQuestions || await getGameQuestionsByLevel(difficulty === 'easy' ? 0 : difficulty === 'medium' ? 1 : 2);
+      const qs = customQuestions || await getGameQuestionsByLevel(difficulty);
       if (!customQuestions) setCustomQuestions(qs);
       
       if (qs && qs.length > 0) {
@@ -136,14 +136,17 @@ const HighwayRiderGame = () => {
             </p>
             
             <div className="difficulty-buttons">
-              <button className="diff-btn easy" onClick={() => startGame('easy')} style={{background: '#4ade80', padding: '1rem 2rem', borderRadius: '16px', border: 'none', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer'}}>
+              <button className="diff-btn easy" onClick={() => startGame('0')} style={{background: '#4ade80', padding: '1rem 2rem', borderRadius: '16px', border: 'none', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer'}}>
                 Level 0
               </button>
-              <button className="diff-btn medium" onClick={() => startGame('medium')} style={{background: '#fbbf24', padding: '1rem 2rem', borderRadius: '16px', border: 'none', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer'}}>
+              <button className="diff-btn medium" onClick={() => startGame('1')} style={{background: '#fbbf24', padding: '1rem 2rem', borderRadius: '16px', border: 'none', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer'}}>
                 Level 1
               </button>
-              <button className="diff-btn hard" onClick={() => startGame('hard')} style={{background: '#f87171', padding: '1rem 2rem', borderRadius: '16px', border: 'none', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer'}}>
+              <button className="diff-btn hard" onClick={() => startGame('2')} style={{background: '#f87171', padding: '1rem 2rem', borderRadius: '16px', border: 'none', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer'}}>
                 Level 2
+              </button>
+              <button className="diff-btn" onClick={() => startGame('3')} style={{background: '#4f46e5', padding: '1rem 2rem', borderRadius: '16px', border: 'none', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer'}}>
+                Level 3
               </button>
             </div>
           </div>

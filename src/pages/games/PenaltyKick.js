@@ -19,7 +19,8 @@ const ZONES = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-cen
 
 const PenaltyKick = () => {
   const navigate = useNavigate();
-  const [gameState, setGameState] = useState('question'); // question, aiming, kicking, result
+  const [gameState, setGameState] = useState('menu'); // menu, question, aiming, kicking, result
+  const [difficulty, setDifficulty] = useState('0');
   const [question, setQuestion] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
   const [keeperDive, setKeeperDive] = useState('');
@@ -27,9 +28,9 @@ const PenaltyKick = () => {
   
   const [stats, setStats] = useState({ goals: 0, saves: 0 });
 
-  const fetchQuestion = useCallback(async () => {
+  const fetchQuestion = useCallback(async (level) => {
     try {
-      const qs = await getGameQuestionsByLevel(1);
+      const qs = await getGameQuestionsByLevel(level !== undefined ? level : difficulty);
       if (qs && qs.length > 0) {
         const q = qs[Math.floor(Math.random() * qs.length)];
         
@@ -63,9 +64,11 @@ const PenaltyKick = () => {
     setQuestion({ text: `${num1} + ${num2} = ?`, answer: ans, options });
   };
 
-  useEffect(() => {
-    fetchQuestion();
-  }, [fetchQuestion]);
+  const startGame = (level) => {
+    setDifficulty(level);
+    setGameState('question');
+    fetchQuestion(level);
+  };
 
   const handleAnswer = (selectedAns) => {
     const correct = selectedAns === question.answer;
@@ -156,6 +159,21 @@ const PenaltyKick = () => {
         </div>
 
         <div className="game-area">
+          
+          {gameState === 'menu' && (
+            <div className="math-overlay">
+              <div className="question-box" style={{textAlign: 'center'}}>
+                <h2>Penalty Kick</h2>
+                <p style={{marginBottom: '2rem'}}>Select a difficulty level to start playing!</p>
+                <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap'}}>
+                  <button className="option-btn" style={{background: '#4ade80'}} onClick={() => startGame('0')}>Level 0</button>
+                  <button className="option-btn" style={{background: '#fbbf24'}} onClick={() => startGame('1')}>Level 1</button>
+                  <button className="option-btn" style={{background: '#f87171'}} onClick={() => startGame('2')}>Level 2</button>
+                  <button className="option-btn" style={{background: '#4f46e5'}} onClick={() => startGame('3')}>Level 3</button>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Goal Net clickable zones */}
           <div className="goal-net">
