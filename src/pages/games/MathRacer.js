@@ -3,8 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
-import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api';
-import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal, Loader2 } from 'lucide-react';
+import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal } from 'lucide-react';
 import './MathRacer.css';
 
 const F1CarSVG = ({ color, name, isBoosting }) => (
@@ -64,7 +63,6 @@ function MathRacer() {
   const [score, setScore] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [currentProblem, setCurrentProblem] = useState({ text: '', answer: 0, options: [] });
-  const [customQuestions, setCustomQuestions] = useState(null); // Array of questions from backend
   const [feedback, setFeedback] = useState(null); // 'correct', 'wrong', null
   
   // Race Distances
@@ -77,53 +75,11 @@ function MathRacer() {
   const inputRef = useRef(null);
   const timerRef = useRef(null);
 
-  // Generate a random problem based on difficulty, or use custom questions
-  const generateProblem = (diff, customQ = null) => {
-    const qArray = customQ !== null ? customQ : customQuestions;
-    
-    // If we have custom questions, pick a random one
-    if (qArray && qArray.length > 0) {
-      const randomIndex = Math.floor(Math.random() * qArray.length);
-      const q = qArray[randomIndex];
-      
-      // Parse answer depending on if it's MCQ (correctAnswer) or Essay/Completion (answer array)
-      let parsedAnswer = 0;
-      if (q.typeOfAnswer === 'MCQ' && q.correctAnswer) {
-        parsedAnswer = parseInt(q.correctAnswer);
-      } else if (q.typeOfAnswer === 'Essay' && q.answer && q.answer.length > 0) {
-        parsedAnswer = parseInt(q.answer[0]);
-      } else if (q.correctAnswer !== undefined) {
-        parsedAnswer = parseInt(q.correctAnswer);
-      } else if (q.answer !== undefined) {
-        parsedAnswer = parseInt(Array.isArray(q.answer) ? q.answer[0] : q.answer);
-      }
-
-      if (isNaN(parsedAnswer)) parsedAnswer = Math.floor(Math.random() * 20) + 1;
-
-      let options = [parsedAnswer];
-      let loopCount = 0;
-      // Generate 3 fake options if we don't have enough
-      while (options.length < 4 && loopCount < 50) {
-        loopCount++;
-        const fake = parsedAnswer + Math.floor(Math.random() * 10) - 5;
-        if (!options.includes(fake) && fake > 0) options.push(fake);
-      }
-      while (options.length < 4) {
-        options.push(Math.floor(Math.random() * 100));
-      }
-      options.sort(() => Math.random() - 0.5);
-
-      setCurrentProblem({
-        text: q.question || q.questionText || q.text || `${q.num1} ${q.op} ${q.num2} = ?`,
-        answer: parsedAnswer,
-        options
-      });
-      return;
-    }
-
-    // Fallback Auto-generation
+  // Generate a random addition/subtraction MCQ problem (always consistent).
+  const generateProblem = (diff) => {
     let num1, num2, operator, answer;
     
+    // Keep levels mapped to tighter/wider ranges.
     if (diff === '0' || diff === 'easy') {
       operator = Math.random() > 0.5 ? '+' : '-';
       num1 = Math.floor(Math.random() * 9) + 1;
@@ -139,23 +95,16 @@ function MathRacer() {
         let temp = num1; num1 = num2; num2 = temp;
       }
     } else {
-      const ops = ['+', '-', '*'];
-      operator = ops[Math.floor(Math.random() * ops.length)];
-      if (operator === '*') {
-        num1 = Math.floor(Math.random() * 12) + 2;
-        num2 = Math.floor(Math.random() * 12) + 2;
-      } else {
-        num1 = Math.floor(Math.random() * 99) + 10;
-        num2 = Math.floor(Math.random() * 99) + 10;
-        if (operator === '-' && num1 < num2) {
-          let temp = num1; num1 = num2; num2 = temp;
-        }
+      operator = Math.random() > 0.5 ? '+' : '-';
+      num1 = Math.floor(Math.random() * 900) + 100;
+      num2 = Math.floor(Math.random() * 900) + 100;
+      if (operator === '-' && num1 < num2) {
+        let temp = num1; num1 = num2; num2 = temp;
       }
     }
 
     if (operator === '+') answer = num1 + num2;
     if (operator === '-') answer = num1 - num2;
-    if (operator === '*') answer = num1 * num2;
 
     let options = [answer];
     let loopCount = 0;
@@ -172,14 +121,9 @@ function MathRacer() {
     setCurrentProblem({ text: `${num1} ${operator} ${num2} = ?`, answer, options });
   };
 
-  const startGame = async (selectedLevel) => {
+  const startGame = (selectedLevel) => {
     soundEffects.playClick();
     setDifficulty(selectedLevel);
-    setGameState('loading');
-    
-    // Attempt to fetch custom questions for the selected level
-    const questions = await getGameQuestionsByLevel(selectedLevel);
-    setCustomQuestions(questions);
 
     setScore(0);
     setTimeElapsed(0);
@@ -188,7 +132,7 @@ function MathRacer() {
     setBot2Distance(0);
     setGameState('playing');
     setFeedback(null);
-    generateProblem(selectedLevel, questions);
+    generateProblem(selectedLevel);
   };
 
   const endGame = () => {
@@ -319,13 +263,6 @@ function MathRacer() {
                 Level 3
               </button>
             </div>
-          </div>
-        )}
-
-        {gameState === 'loading' && (
-          <div className="racer-menu" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-             <Loader2 size={48} className="spin-animation" color="#3b82f6" />
-             <h3 style={{marginTop: '1rem'}}>Loading Questions...</h3>
           </div>
         )}
 
