@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
-import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api';
 import { ChevronLeft, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RefreshCcw, Loader2 } from 'lucide-react';
 import squirrelImg from '../../img/maze_squirrel.png';
+import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './MazeGame.css';
 
 const generateMaze = (width, height) => {
@@ -75,27 +75,9 @@ const generateMaze = (width, height) => {
   return grid;
 };
 
-const generateQuestion = (customQuestions) => {
-  if (customQuestions && customQuestions.length > 0) {
-    const q = customQuestions[Math.floor(Math.random() * customQuestions.length)];
-    let parsedAnswer = 0;
-    if (q.typeOfAnswer === 'MCQ' && q.correctAnswer) parsedAnswer = parseInt(q.correctAnswer);
-    else if (q.typeOfAnswer === 'Essay' && q.answer && q.answer.length > 0) parsedAnswer = parseInt(q.answer[0]);
-    else if (q.correctAnswer !== undefined) parsedAnswer = parseInt(q.correctAnswer);
-    else if (q.answer !== undefined) parsedAnswer = parseInt(Array.isArray(q.answer) ? q.answer[0] : q.answer);
-    
-    return {
-      text: q.question || q.questionText || q.text || `${q.num1} ${q.op} ${q.num2} = ?`,
-      answer: parsedAnswer
-    };
-  }
-
-  // Fallback
-  const isAddition = Math.random() > 0.5;
-  const num1 = Math.floor(Math.random() * 20) + 1;
-  const num2 = Math.floor(Math.random() * 20) + 1;
-  if (isAddition) return { text: `${num1} + ${num2} = ?`, answer: num1 + num2 };
-  else return { text: `${Math.max(num1, num2)} - ${Math.min(num1, num2)} = ?`, answer: Math.abs(num1 - num2) };
+const generateQuestion = (level) => {
+  const q = generateArithmeticMcq(level, 4);
+  return { text: q.text, answer: q.answer };
 };
 
 function MazeGame() {
@@ -104,7 +86,6 @@ function MazeGame() {
   const [grid, setGrid] = useState([]);
   const [playerPos, setPlayerPos] = useState({ x: 0, y: 0 });
   const [difficulty, setDifficulty] = useState('0');
-  const [customQuestions, setCustomQuestions] = useState(null);
   
   // Door Modal
   const [currentDoor, setCurrentDoor] = useState(null);
@@ -115,9 +96,6 @@ function MazeGame() {
     soundEffects.playClick();
     setDifficulty(level);
     setGameState('loading');
-    
-    const questions = await getGameQuestionsByLevel(level);
-    setCustomQuestions(questions);
     
     // Determine size - Match the provided image (much simpler layout)
     const size = level === '0' ? 5 : level === '1' ? 7 : level === '2' ? 9 : 11;
@@ -134,7 +112,7 @@ function MazeGame() {
        
        if (!newGrid[ry][rx].isDoor) {
          newGrid[ry][rx].isDoor = true;
-         newGrid[ry][rx].doorData = { ...generateQuestion(questions), isOpen: false, x: rx, y: ry };
+        newGrid[ry][rx].doorData = { ...generateQuestion(level), isOpen: false, x: rx, y: ry };
          doorsPlaced++;
        }
     }

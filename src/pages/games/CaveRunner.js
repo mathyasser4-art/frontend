@@ -5,8 +5,7 @@ import { ArrowLeft, Play, RotateCcw, Heart, ShieldAlert, Award } from 'lucide-re
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
-import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api';
-import { Loader2 } from 'lucide-react';
+import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 
 import './CaveRunner.css';
 
@@ -38,7 +37,6 @@ const BunnyRun = () => {
   const [question, setQuestion] = useState({ num1: 0, num2: 0, op: '+' });
   const [options, setOptions] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState(0);
-  const [customQuestions, setCustomQuestions] = useState(null);
   const [difficulty, setDifficulty] = useState('0');
 
   // Coins State
@@ -59,75 +57,16 @@ const BunnyRun = () => {
     setCoins(newCoins);
   }, []);
 
-  const generateQuestion = (customQ = null) => {
-    const qArray = customQ !== null ? customQ : customQuestions;
-    
-    if (qArray && qArray.length > 0) {
-      const randomIndex = Math.floor(Math.random() * qArray.length);
-      const q = qArray[randomIndex];
-      
-      let parsedAnswer = 0;
-      if (q.typeOfAnswer === 'MCQ' && q.correctAnswer) {
-        parsedAnswer = parseInt(q.correctAnswer);
-      } else if (q.typeOfAnswer === 'Essay' && q.answer && q.answer.length > 0) {
-        parsedAnswer = parseInt(q.answer[0]);
-      } else if (q.correctAnswer !== undefined) {
-        parsedAnswer = parseInt(q.correctAnswer);
-      } else if (q.answer !== undefined) {
-        parsedAnswer = parseInt(Array.isArray(q.answer) ? q.answer[0] : q.answer);
-      }
-
-      setQuestion({ text: q.question || q.questionText || q.text || `${q.num1} ${q.op} ${q.num2} = ?` });
-      setCorrectAnswer(parsedAnswer);
-
-      // Generate fake options for Cave Runner
-      let opts = [parsedAnswer];
-      while (opts.length < 3) {
-        const wrongOpt = parsedAnswer + (Math.floor(Math.random() * 9) - 4);
-        if (wrongOpt !== parsedAnswer && !opts.includes(wrongOpt)) {
-          opts.push(wrongOpt);
-        }
-      }
-      setOptions(opts.sort(() => Math.random() - 0.5));
-      return;
-    }
-
-    const isAddition = Math.random() > 0.5;
-    let num1, num2, answer;
-
-    if (isAddition) {
-      num1 = Math.floor(Math.random() * 5) + 1;
-      num2 = Math.floor(Math.random() * 5) + 1;
-      answer = num1 + num2;
-    } else {
-      num1 = Math.floor(Math.random() * 6) + 4; // 4 to 9
-      num2 = Math.floor(Math.random() * num1) + 1; 
-      answer = num1 - num2;
-    }
-
-    setQuestion({ text: `${num1} ${isAddition ? '+' : '-'} ${num2} = ?` });
-    setCorrectAnswer(answer);
-
-    // Generate options
-    let opts = [answer];
-    while (opts.length < 3) {
-      const wrongAnswer = answer + (Math.floor(Math.random() * 9) - 4);
-      if (wrongAnswer !== answer && wrongAnswer >= 0 && !opts.includes(wrongAnswer)) {
-        opts.push(wrongAnswer);
-      }
-    }
-    // Shuffle options
-    setOptions(opts.sort(() => Math.random() - 0.5));
+  const generateQuestion = (level = difficulty) => {
+    const q = generateArithmeticMcq(level, 3);
+    setQuestion({ text: q.text });
+    setCorrectAnswer(q.answer);
+    setOptions(q.options);
   };
 
   const startGame = async (selectedLevel) => {
     soundEffects.playClick();
     setDifficulty(selectedLevel);
-    setGameState('loading');
-
-    const questions = await getGameQuestionsByLevel(selectedLevel);
-    setCustomQuestions(questions);
-
     setGameState('playing');
     setScore(0);
     setLives(5);
@@ -142,7 +81,7 @@ const BunnyRun = () => {
     setIsJumping(false);
     timeSinceLastQuestionRef.current = 0;
     spawnCoins();
-    generateQuestion(questions);
+    generateQuestion(selectedLevel);
   };
 
   const handleGameOver = useCallback(() => {
@@ -196,7 +135,7 @@ const BunnyRun = () => {
     setIsWaitingForAnswer(false);
     isWaitingRef.current = false;
     timeSinceLastQuestionRef.current = 0;
-    generateQuestion();
+    generateQuestion(difficulty);
   };
 
   // Game Loop
@@ -382,13 +321,6 @@ const BunnyRun = () => {
                 <button className="start-btn" onClick={() => startGame('2')}>Level 2</button>
                 <button className="start-btn" style={{background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)'}} onClick={() => startGame('3')}>Level 3</button>
               </div>
-            </div>
-          )}
-
-          {gameState === 'loading' && (
-            <div className="menu-overlay" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <Loader2 size={48} className="spin-animation" color="#10b981" />
-              <h3 style={{ marginTop: '1rem', color: 'white' }}>Loading Questions...</h3>
             </div>
           )}
 

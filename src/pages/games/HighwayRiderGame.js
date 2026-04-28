@@ -4,7 +4,7 @@ import { ArrowLeft, Lock } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
-import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api';
+import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './HighwayRiderGame.css';
 import './ArcheryGame.css'; // Reuse the lock UI styles
 
@@ -17,66 +17,19 @@ const HighwayRiderGame = () => {
   const [difficulty, setDifficulty] = useState('easy');
   
   const [question, setQuestion] = useState(null);
-  const [customQuestions, setCustomQuestions] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [solvedCount, setSolvedCount] = useState(0);
 
   const fetchQuestion = useCallback(async () => {
-    try {
-      const qs = customQuestions || await getGameQuestionsByLevel(difficulty);
-      if (!customQuestions) setCustomQuestions(qs);
-      
-      if (qs && qs.length > 0) {
-        const q = qs[Math.floor(Math.random() * qs.length)];
-        
-        let parsedAnswer = 0;
-        if (q.typeOfAnswer === 'MCQ' && q.correctAnswer) parsedAnswer = parseInt(q.correctAnswer);
-        else if (q.typeOfAnswer === 'Essay' && q.answer && q.answer.length > 0) parsedAnswer = parseInt(q.answer[0]);
-        else if (q.correctAnswer !== undefined) parsedAnswer = parseInt(q.correctAnswer);
-        else if (q.answer !== undefined) parsedAnswer = parseInt(Array.isArray(q.answer) ? q.answer[0] : q.answer);
-        
-        if (isNaN(parsedAnswer)) parsedAnswer = Math.floor(Math.random() * 20) + 1;
-
-        let options = [parsedAnswer];
-        let loopCount = 0;
-        while(options.length < 4 && loopCount < 50) {
-          loopCount++;
-          const fake = parsedAnswer + Math.floor(Math.random() * 10) - 5;
-          if (!options.includes(fake) && fake >= 0) options.push(fake);
-        }
-        while(options.length < 4) {
-          options.push(Math.floor(Math.random() * 100));
-        }
-        options.sort(() => Math.random() - 0.5);
-        
-        setQuestion({ text: q.questionText || q.question || q.text || `${q.num1} ${q.op} ${q.num2} = ?`, answer: parsedAnswer, options });
-      } else {
-        generateFallbackQuestion();
-      }
-    } catch (error) {
-      generateFallbackQuestion();
-    }
-  }, [difficulty, customQuestions]);
-
-  const generateFallbackQuestion = () => {
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    const ans = num1 + num2;
-    let options = [ans];
-    while(options.length < 4) {
-      const fake = ans + Math.floor(Math.random() * 10) - 5;
-      if (!options.includes(fake) && fake > 0) options.push(fake);
-    }
-    options.sort(() => Math.random() - 0.5);
-    setQuestion({ text: `${num1} + ${num2} = ?`, answer: ans, options });
-  };
+    const q = generateArithmeticMcq(difficulty, 4);
+    setQuestion({ text: q.text, answer: q.answer, options: q.options });
+  }, [difficulty]);
 
   const startGame = async (level) => {
     soundEffects.playClick();
     setDifficulty(level);
     setSolvedCount(0);
     setGameState('locked'); // Lock immediately to require a question to start
-    setCustomQuestions(null);
   };
 
   // Lock the game when entering 'locked' state and generate question

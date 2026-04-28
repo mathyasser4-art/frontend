@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
-import getGameQuestionsByLevel from '../../api/games/getGameQuestionsByLevel.api';
+import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './PenaltyKick.css';
 
 // Import images
@@ -28,41 +28,10 @@ const PenaltyKick = () => {
   
   const [stats, setStats] = useState({ goals: 0, saves: 0 });
 
-  const fetchQuestion = useCallback(async (level) => {
-    try {
-      const qs = await getGameQuestionsByLevel(level !== undefined ? level : difficulty);
-      if (qs && qs.length > 0) {
-        const q = qs[Math.floor(Math.random() * qs.length)];
-        
-        // Generate options
-        let options = [q.correctAnswer];
-        while(options.length < 4) {
-          const fake = q.correctAnswer + Math.floor(Math.random() * 10) - 5;
-          if (!options.includes(fake) && fake > 0) options.push(fake);
-        }
-        options.sort(() => Math.random() - 0.5);
-        
-        setQuestion({ text: q.questionText, answer: q.correctAnswer, options });
-      } else {
-        generateFallbackQuestion();
-      }
-    } catch (error) {
-      generateFallbackQuestion();
-    }
-  }, []);
-
-  const generateFallbackQuestion = () => {
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    const ans = num1 + num2;
-    let options = [ans];
-    while(options.length < 4) {
-      const fake = ans + Math.floor(Math.random() * 10) - 5;
-      if (!options.includes(fake) && fake > 0) options.push(fake);
-    }
-    options.sort(() => Math.random() - 0.5);
-    setQuestion({ text: `${num1} + ${num2} = ?`, answer: ans, options });
-  };
+  const fetchQuestion = useCallback((level) => {
+    const q = generateArithmeticMcq(level !== undefined ? level : difficulty, 4);
+    setQuestion({ text: q.text, answer: q.answer, options: q.options });
+  }, [difficulty]);
 
   const startGame = (level) => {
     setDifficulty(level);
