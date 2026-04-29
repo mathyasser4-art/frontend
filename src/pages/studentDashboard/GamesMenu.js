@@ -128,13 +128,14 @@ const GamesMenu = () => {
             </div>
           </div>
 
-          {/* Archery Game */}
+          {/* Battle Racing Stars Game */}
           <div className="game-card-full" onClick={() => navigate('/student/games/archery')}>
-            <div className="game-thumbnail thumb-archery" style={{ background: 'url(https://games.famobi.com/asset/archery-world-tour/teaser) center/cover', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="game-thumbnail thumb-archery" style={{ background: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{fontSize: '4rem'}}>🏎️</span>
             </div>
             <div className="game-card-body">
-              <h3>Archery World Tour</h3>
-              <p>Solve math questions to earn playtime! Grab a bow and put your archery skills to the test!</p>
+              <h3>Battle Racing Stars</h3>
+              <p>Solve math questions to earn playtime! Race against opponents in this fun multiplayer game!</p>
               <button className="play-now-btn">
                 <Play size={20} fill="currentColor" /> Play Now
               </button>

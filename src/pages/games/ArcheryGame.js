@@ -8,7 +8,7 @@ import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './ArcheryGame.css';
 
 const QUESTIONS_TO_UNLOCK = 3;
-const IFRAME_URL = window.location ? "https://html5.gamedistribution.com/b8cf1cc516e14f4b8e7cb3119cdfcec6/?gd_sdk_referrer_url=" + window.location.href : "https://html5.gamedistribution.com/b8cf1cc516e14f4b8e7cb3119cdfcec6/";
+const IFRAME_URL = "https://html5.gamedistribution.com/b8cf1cc516e14f4b8e7cb3119cdfcec6/?gd_sdk_referrer_url=https://gamedistribution.com/games/battle-racing-stars/";
 
 const ArcheryGame = () => {
   const navigate = useNavigate();
