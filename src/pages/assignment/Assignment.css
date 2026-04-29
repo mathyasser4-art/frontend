@@ -751,8 +751,8 @@ button#nextBtn:active,
 }
 
 .worksheet-print-btn {
-    background: linear-gradient(135deg, #4b5563 0%, #1f2937 100%);
-    box-shadow: 0 8px 18px rgba(31, 41, 55, 0.28);
+    background: linear-gradient(135deg, #FF6B9D, #FFA07A);
+    box-shadow: 0 8px 18px rgba(255, 107, 157, 0.35);
 }
 
 .worksheet-print-btn:hover:not(:disabled),

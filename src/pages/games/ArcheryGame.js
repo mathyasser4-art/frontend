@@ -8,7 +8,7 @@ import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './ArcheryGame.css';
 
 const QUESTIONS_TO_UNLOCK = 3;
-const IFRAME_URL = "https://powergameshub.com/embed/archery-world-tour";
+const IFRAME_URL = window.location ? "https://html5.gamedistribution.com/b8cf1cc516e14f4b8e7cb3119cdfcec6/?gd_sdk_referrer_url=" + window.location.href : "https://html5.gamedistribution.com/b8cf1cc516e14f4b8e7cb3119cdfcec6/";
 
 const ArcheryGame = () => {
   const navigate = useNavigate();
@@ -85,8 +85,8 @@ const ArcheryGame = () => {
         {/* Main Menu */}
         {gameState === 'menu' && (
           <div className="archery-menu">
-            <h1>Archery World Tour 🎯</h1>
-            <p>Test your aim in this classic archery game!</p>
+            <h1>Battle Racing Stars 🏎️</h1>
+            <p>Race against others in this fun multiplayer game!</p>
             <p style={{color: '#64748b', marginTop: '1rem'}}>
               <strong>How it works:</strong> You must solve <strong>3 math questions</strong> to completely unlock the game and play forever!
             </p>
@@ -117,7 +117,7 @@ const ArcheryGame = () => {
               <iframe 
                 src={IFRAME_URL}
                 className="archery-iframe"
-                title="Archery World Tour"
+                title="Battle Racing Stars"
                 scrolling="no"
                 allow="autoplay; fullscreen"
               />

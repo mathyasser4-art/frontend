@@ -162,7 +162,8 @@ body {
 .fullscreen-button {
     cursor: pointer;
     padding: 8px 12px;
-    background-color: #4C5287;
+    background: linear-gradient(135deg, #4FACFE, #00F2FE);
+    box-shadow: 0 4px 10px rgba(79, 172, 254, 0.35);
     border-radius: 8px;
     margin-right: 8px;
     transition: all 0.3s ease;
@@ -172,8 +173,8 @@ body {
 }
 
 .fullscreen-button:hover {
-    background-color: #3a4070;
     transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(79, 172, 254, 0.45);
 }
 
 @media only screen and (max-width: 600px) {
@@ -187,7 +188,8 @@ body {
 .flash-mode-button {
     cursor: pointer;
     padding: 8px 12px;
-    background-color: #FF9800;
+    background: linear-gradient(135deg, #FA709A, #FEE140);
+    box-shadow: 0 4px 10px rgba(250, 112, 154, 0.35);
     border-radius: 8px;
     margin-right: 8px;
     transition: all 0.3s ease;
@@ -197,13 +199,13 @@ body {
 }
 
 .flash-mode-button:hover {
-    background-color: #F57C00;
     transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(250, 112, 154, 0.45);
 }
 
 .flash-mode-button.flash-active {
-    background-color: #4CAF50;
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    background: linear-gradient(135deg, #43E97B, #38F9D7);
+    box-shadow: 0 4px 10px rgba(67, 233, 123, 0.45);
 }
 
 .flash-mode-button i {
@@ -252,7 +254,8 @@ body {
 .abacus-button {
     cursor: pointer;
     padding: 8px 12px;
-    background-color: #65C6EE;
+    background: linear-gradient(135deg, #43E97B, #38F9D7);
+    box-shadow: 0 4px 10px rgba(67, 233, 123, 0.35);
     border-radius: 8px;
     margin-right: 8px;
     transition: all 0.3s ease;
@@ -262,11 +265,58 @@ body {
 }
 
 .abacus-button:hover {
-    background-color: #4BB5DD;
     transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(67, 233, 123, 0.45);
 }
 
 .abacus-button i {
+    color: #ffffff;
+    font-size: 16px;
+}
+
+/* Pocket Button Styling */
+.pocket-button {
+    cursor: pointer;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #b088f9, #da9ff9);
+    box-shadow: 0 4px 10px rgba(176, 136, 249, 0.35);
+    border-radius: 8px;
+    margin-right: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pocket-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(176, 136, 249, 0.45);
+}
+
+.pocket-button i {
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.pocket-all-button {
+    cursor: pointer;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #8E2DE2, #4A00E0);
+    box-shadow: 0 4px 10px rgba(142, 45, 226, 0.35);
+    border-radius: 8px;
+    margin-right: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pocket-all-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(142, 45, 226, 0.45);
+}
+
+.pocket-all-button i {
     color: #ffffff;
     font-size: 16px;
 }

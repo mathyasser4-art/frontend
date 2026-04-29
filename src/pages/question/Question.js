@@ -812,8 +812,24 @@ function Question() {
                                 <div title={t('questionPage.openAbacus')} className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
                                     <i className="fa fa-calculator" aria-hidden="true"></i>
                                 </div>
-                                {role === 'Teacher' && <i onClick={() => { soundEffects.playClick(); addAllToPocket(); }} title={t('questionPage.addAllToPocket')} className='fa fa-plus-square-o all-question-icon' aria-hidden='true'></i>}
-                                {role === 'Teacher' && <i onClick={() => { soundEffects.playClick(); addToPocket(); }} title={t('questionPage.addToPocket')} className='fa fa-plus add-question-icon' aria-hidden='true'></i>}
+                                {role === 'Teacher' && (
+                                    <div 
+                                        title={t('questionPage.addAllToPocket')} 
+                                        className="pocket-all-button" 
+                                        onClick={() => { soundEffects.playClick(); addAllToPocket(); }}
+                                    >
+                                        <i className="fa fa-plus-square-o" aria-hidden="true"></i>
+                                    </div>
+                                )}
+                                {role === 'Teacher' && (
+                                    <div 
+                                        title={t('questionPage.addToPocket')} 
+                                        className="pocket-button" 
+                                        onClick={() => { soundEffects.playClick(); addToPocket(); }}
+                                    >
+                                        <i className="fa fa-plus" aria-hidden="true"></i>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

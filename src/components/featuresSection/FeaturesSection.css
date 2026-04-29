@@ -138,10 +138,16 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    background: linear-gradient(135deg, #4b5563 0%, #1f2937 100%);
     box-shadow: 0 8px 18px rgba(31, 41, 55, 0.28);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.icon-printer { background: linear-gradient(135deg, #FF6B9D, #FFA07A); }
+.icon-fullscreen { background: linear-gradient(135deg, #4FACFE, #00F2FE); }
+.icon-flash { background: linear-gradient(135deg, #FA709A, #FEE140); }
+.icon-abacus { background: linear-gradient(135deg, #43E97B, #38F9D7); }
+.icon-pocket { background: linear-gradient(135deg, #b088f9, #da9ff9); }
+.icon-pocket-all { background: linear-gradient(135deg, #8E2DE2, #4A00E0); }
 
 .feature-item:hover .icon-3d-wrapper {
     transform: scale(1.1);

@@ -33,7 +33,7 @@ function FeaturesSection() {
         <div className="features-grid">
           {/* Printer */}
           <div className="feature-item">
-            <div className="icon-3d-wrapper">
+            <div className="icon-3d-wrapper icon-printer">
               <Printer size={24} color="#fff" />
             </div>
             <div className="feature-item-text">
@@ -44,7 +44,7 @@ function FeaturesSection() {
 
           {/* Fullscreen */}
           <div className="feature-item">
-            <div className="icon-3d-wrapper">
+            <div className="icon-3d-wrapper icon-fullscreen">
               <Maximize2 size={20} color="#fff" />
             </div>
             <div className="feature-item-text">
@@ -55,7 +55,7 @@ function FeaturesSection() {
 
           {/* Flash Mode */}
           <div className="feature-item">
-            <div className="icon-3d-wrapper">
+            <div className="icon-3d-wrapper icon-flash">
               <i className="fa fa-bolt" style={{color: '#fff', fontSize: '20px'}}></i>
             </div>
             <div className="feature-item-text">
@@ -66,7 +66,7 @@ function FeaturesSection() {
 
           {/* Virtual Abacus */}
           <div className="feature-item">
-            <div className="icon-3d-wrapper">
+            <div className="icon-3d-wrapper icon-abacus">
               <i className="fa fa-calculator" style={{color: '#fff', fontSize: '18px'}}></i>
             </div>
             <div className="feature-item-text">
@@ -77,7 +77,7 @@ function FeaturesSection() {
 
           {/* Add to Pocket */}
           <div className="feature-item">
-            <div className="icon-3d-wrapper">
+            <div className="icon-3d-wrapper icon-pocket">
               <i className="fa fa-plus" style={{color: '#fff', fontSize: '20px'}}></i>
             </div>
             <div className="feature-item-text">
@@ -88,7 +88,7 @@ function FeaturesSection() {
 
           {/* Add All to Pocket */}
           <div className="feature-item">
-            <div className="icon-3d-wrapper">
+            <div className="icon-3d-wrapper icon-pocket-all">
               <i className="fa fa-plus-square-o" style={{color: '#fff', fontSize: '22px'}}></i>
             </div>
             <div className="feature-item-text">
