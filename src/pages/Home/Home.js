@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import QuestionType from '../questionType/QuestionType'
+import FeaturesSection from '../../components/featuresSection/FeaturesSection'
 
 import TeacherTrialModal from '../../components/teacherTrialModal/TeacherTrialModal'
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
@@ -90,6 +91,7 @@ function Home() {
         </div>
       </div>
       <QuestionType />
+      <FeaturesSection />
 
     </>
   )

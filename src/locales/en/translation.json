@@ -42,6 +42,29 @@
     "freeTrialBadge": "7-Day Free Trial",
     "joinNow": "JOIN NOW"
   },
+  "featuresSection": {
+    "title": "Discover Platform Features",
+    "subtitle": "Everything you need to manage your students and enhance their skills",
+    "teacherHomeworkTitle": "Assign Online Homework",
+    "teacherHomeworkDesc": "Teachers can easily assign online homework to their students when subscribed to a teacher-student account.",
+    "toolsTitle": "Interactive Tools",
+    "iconPrinterTitle": "Download Worksheet",
+    "iconPrinterDesc": "Print the current worksheet as a PDF for offline practice.",
+    "iconFullscreenTitle": "Fullscreen Mode",
+    "iconFullscreenDesc": "Expand the questions to full screen for better focus and visibility.",
+    "iconFlashTitle": "Flash Mode",
+    "iconFlashDesc": "Enable flash mode to display questions sequentially, enhancing mental arithmetic speed.",
+    "iconAbacusTitle": "Virtual Abacus",
+    "iconAbacusDesc": "Open a virtual abacus simulator to explain visually and help solve questions.",
+    "iconAddPocketTitle": "Add to Pocket",
+    "iconAddPocketDesc": "Add a specific question to your pocket to send it as homework to your students.",
+    "iconAddAllPocketTitle": "Add All to Pocket",
+    "iconAddAllPocketDesc": "Add all questions in the current worksheet to your pocket at once.",
+    "reportsTitle": "Student Reports",
+    "reportsDesc": "View detailed reports of student performance, track their progress over time, and identify areas for improvement.",
+    "competitionsTitle": "Competitions & Games",
+    "competitionsDesc": "Teachers can assign homework, make competitions, and attract the attention of students by playing educational online games."
+  },
   "navbar": {
     "dashboard": "Dashboard",
     "changeLanguage": "Change Language"

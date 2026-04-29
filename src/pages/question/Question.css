@@ -2274,8 +2274,13 @@ input[type="radio"] {
         top: 60px;
     }
 }
-/* Worksheet print button */
-.worksheet-print-btn {
+/* 3D toolbar buttons */
+.worksheet-print-btn,
+.fullscreen-button,
+.flash-mode-button,
+.abacus-button,
+.add-question-icon,
+.all-question-icon {
     width: 42px;
     height: 42px;
     margin-right: 0.65rem;
@@ -2288,14 +2293,27 @@ input[type="radio"] {
     transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
     background: linear-gradient(135deg, #4b5563 0%, #1f2937 100%);
     box-shadow: 0 8px 18px rgba(31, 41, 55, 0.28);
+    color: #fff;
+    text-decoration: none;
 }
 
-.worksheet-print-btn:hover:not(:disabled) {
+.worksheet-print-btn:hover:not(:disabled),
+.fullscreen-button:hover,
+.flash-mode-button:hover,
+.abacus-button:hover,
+.add-question-icon:hover,
+.all-question-icon:hover {
     transform: scale(1.06);
     box-shadow: 0 10px 20px rgba(31, 41, 55, 0.4);
+    color: #fff;
 }
 
-.worksheet-print-btn:active:not(:disabled) {
+.worksheet-print-btn:active:not(:disabled),
+.fullscreen-button:active,
+.flash-mode-button:active,
+.abacus-button:active,
+.add-question-icon:active,
+.all-question-icon:active {
     transform: scale(0.95);
 }
 
@@ -2305,7 +2323,12 @@ input[type="radio"] {
 }
 
 @media only screen and (max-width: 768px) {
-    .worksheet-print-btn {
+    .worksheet-print-btn,
+    .fullscreen-button,
+    .flash-mode-button,
+    .abacus-button,
+    .add-question-icon,
+    .all-question-icon {
         width: 38px;
         height: 38px;
         margin-right: 0.45rem;
@@ -2313,7 +2336,12 @@ input[type="radio"] {
 }
 
 @media only screen and (max-width: 480px) {
-    .worksheet-print-btn {
+    .worksheet-print-btn,
+    .fullscreen-button,
+    .flash-mode-button,
+    .abacus-button,
+    .add-question-icon,
+    .all-question-icon {
         width: 34px;
         height: 34px;
         margin-right: 0.35rem;

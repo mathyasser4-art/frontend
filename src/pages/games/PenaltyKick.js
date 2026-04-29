@@ -9,6 +9,7 @@ import './PenaltyKick.css';
 // Import images
 import keeperImg from '../../img/football_keeper.png';
 import ballImg from '../../img/football_ball.png';
+import ArithmeticMcqDebugPanel from '../../components/debug/ArithmeticMcqDebugPanel';
 
 // Sound effects
 const audioCheer = new Audio('https://actions.google.com/sounds/v1/crowds/crowd_cheering.ogg');
@@ -110,6 +111,7 @@ const PenaltyKick = () => {
     <div className="penalty-page">
       <MobileNav role="Student" />
       <Navbar />
+      <ArithmeticMcqDebugPanel />
 
       <div className="penalty-container">
         <div className="game-header">

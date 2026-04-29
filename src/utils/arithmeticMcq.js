@@ -1,3 +1,9 @@
+const __debugHistory = [];
+
+export function getArithmeticMcqDebugHistory() {
+  return __debugHistory.slice();
+}
+
 export function generateArithmeticMcq(level, optionsCount = 4) {
   const lvl = String(level);
   const ranges = {
@@ -34,6 +40,17 @@ export function generateArithmeticMcq(level, optionsCount = 4) {
   while (opts.length < optionsCount) opts.push(answer + opts.length + 1);
 
   opts.sort(() => Math.random() - 0.5);
-  return { text, answer, options: opts };
+  // Defensive: ensure answer is present and options are unique
+  const uniq = Array.from(new Set(opts));
+  while (uniq.length < optionsCount) uniq.push(answer + uniq.length + 1);
+  const finalOptions = uniq.slice(0, optionsCount).sort(() => Math.random() - 0.5);
+  const result = { text, answer, options: finalOptions };
+
+  // #region agent log
+  __debugHistory.unshift({ ts: Date.now(), level: lvl, ...result });
+  if (__debugHistory.length > 25) __debugHistory.length = 25;
+  // #endregion
+
+  return result;
 }
 

@@ -4,6 +4,7 @@ import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
 import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal } from 'lucide-react';
+import ArithmeticMcqDebugPanel from '../../components/debug/ArithmeticMcqDebugPanel';
 import './MathRacer.css';
 
 const F1CarSVG = ({ color, name, isBoosting }) => (
@@ -231,6 +232,7 @@ function MathRacer() {
     <>
       <MobileNav role="Student" />
       <Navbar />
+      <ArithmeticMcqDebugPanel />
       
       <div className="math-racer-container">
         <div className="racer-header">

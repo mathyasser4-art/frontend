@@ -718,7 +718,10 @@ button#nextBtn:active,
 }
 
 .end-assignment-btn,
-.worksheet-print-btn {
+.worksheet-print-btn,
+.fullscreen-button,
+.flash-mode-button,
+.abacus-button {
     width: 42px;
     height: 42px;
     margin-right: 0.65rem;
@@ -729,6 +732,8 @@ button#nextBtn:active,
     justify-content: center;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    color: #fff;
+    text-decoration: none;
 }
 
 .end-assignment-btn {
@@ -750,12 +755,19 @@ button#nextBtn:active,
     box-shadow: 0 8px 18px rgba(31, 41, 55, 0.28);
 }
 
-.worksheet-print-btn:hover:not(:disabled) {
+.worksheet-print-btn:hover:not(:disabled),
+.fullscreen-button:hover,
+.flash-mode-button:hover,
+.abacus-button:hover {
     transform: scale(1.06);
     box-shadow: 0 10px 20px rgba(31, 41, 55, 0.4);
+    color: #fff;
 }
 
-.worksheet-print-btn:active:not(:disabled) {
+.worksheet-print-btn:active:not(:disabled),
+.fullscreen-button:active,
+.flash-mode-button:active,
+.abacus-button:active {
     transform: scale(0.95);
 }
 
@@ -991,7 +1003,10 @@ button#nextBtn:active,
     }
 
     .end-assignment-btn,
-    .worksheet-print-btn {
+    .worksheet-print-btn,
+    .fullscreen-button,
+    .flash-mode-button,
+    .abacus-button {
         width: 38px;
         height: 38px;
         margin-right: 0.45rem;
@@ -1005,7 +1020,10 @@ button#nextBtn:active,
     }
 
     .end-assignment-btn,
-    .worksheet-print-btn {
+    .worksheet-print-btn,
+    .fullscreen-button,
+    .flash-mode-button,
+    .abacus-button {
         width: 34px;
         height: 34px;
         margin-right: 0.35rem;
