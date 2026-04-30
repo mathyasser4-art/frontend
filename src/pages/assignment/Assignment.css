@@ -755,6 +755,26 @@ button#nextBtn:active,
     box-shadow: 0 8px 18px rgba(255, 107, 157, 0.35);
 }
 
+.fullscreen-button {
+    background: linear-gradient(135deg, #4FACFE, #00F2FE);
+    box-shadow: 0 8px 18px rgba(79, 172, 254, 0.35);
+}
+
+.flash-mode-button {
+    background: linear-gradient(135deg, #FA709A, #FEE140);
+    box-shadow: 0 8px 18px rgba(250, 112, 154, 0.35);
+}
+
+.flash-mode-button.flash-active {
+    background: linear-gradient(135deg, #43E97B, #38F9D7);
+    box-shadow: 0 8px 18px rgba(67, 233, 123, 0.35);
+}
+
+.abacus-button {
+    background: linear-gradient(135deg, #b088f9, #da9ff9);
+    box-shadow: 0 8px 18px rgba(176, 136, 249, 0.35);
+}
+
 .worksheet-print-btn:hover:not(:disabled),
 .fullscreen-button:hover,
 .flash-mode-button:hover,
@@ -1099,6 +1119,22 @@ button#nextBtn:active,
     .mobile-fullscreen .graph-container {
         width: 100% !important;
         margin-top: 1rem;
+        padding: 0 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .mobile-fullscreen .mcq-answer-layout {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .mobile-fullscreen .mcq-choice {
+        padding: 0.8rem 1rem;
+        font-size: 1.1rem;
+        width: 100%;
+        justify-content: flex-start;
     }
 
     /* Hide whiteboard and other desktop elements on mobile */

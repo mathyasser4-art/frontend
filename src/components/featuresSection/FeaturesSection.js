@@ -31,6 +31,39 @@ function FeaturesSection() {
           <h3>{t('featuresSection.toolsTitle')}</h3>
         </div>
         <div className="features-grid">
+          {/* Add All to Pocket */}
+          <div className="feature-item">
+            <div className="icon-3d-wrapper icon-pocket-all">
+              <i className="fa fa-plus-square-o" style={{color: '#fff', fontSize: '22px'}}></i>
+            </div>
+            <div className="feature-item-text">
+              <h4>{t('featuresSection.iconAddAllPocketTitle')}</h4>
+              <p>{t('featuresSection.iconAddAllPocketDesc')}</p>
+            </div>
+          </div>
+
+          {/* Add to Pocket */}
+          <div className="feature-item">
+            <div className="icon-3d-wrapper icon-pocket">
+              <i className="fa fa-plus" style={{color: '#fff', fontSize: '20px'}}></i>
+            </div>
+            <div className="feature-item-text">
+              <h4>{t('featuresSection.iconAddPocketTitle')}</h4>
+              <p>{t('featuresSection.iconAddPocketDesc')}</p>
+            </div>
+          </div>
+
+          {/* Virtual Abacus */}
+          <div className="feature-item">
+            <div className="icon-3d-wrapper icon-abacus">
+              <i className="fa fa-calculator" style={{color: '#fff', fontSize: '18px'}}></i>
+            </div>
+            <div className="feature-item-text">
+              <h4>{t('featuresSection.iconAbacusTitle')}</h4>
+              <p>{t('featuresSection.iconAbacusDesc')}</p>
+            </div>
+          </div>
+
           {/* Printer */}
           <div className="feature-item">
             <div className="icon-3d-wrapper icon-printer">
@@ -61,39 +94,6 @@ function FeaturesSection() {
             <div className="feature-item-text">
               <h4>{t('featuresSection.iconFlashTitle')}</h4>
               <p>{t('featuresSection.iconFlashDesc')}</p>
-            </div>
-          </div>
-
-          {/* Virtual Abacus */}
-          <div className="feature-item">
-            <div className="icon-3d-wrapper icon-abacus">
-              <i className="fa fa-calculator" style={{color: '#fff', fontSize: '18px'}}></i>
-            </div>
-            <div className="feature-item-text">
-              <h4>{t('featuresSection.iconAbacusTitle')}</h4>
-              <p>{t('featuresSection.iconAbacusDesc')}</p>
-            </div>
-          </div>
-
-          {/* Add to Pocket */}
-          <div className="feature-item">
-            <div className="icon-3d-wrapper icon-pocket">
-              <i className="fa fa-plus" style={{color: '#fff', fontSize: '20px'}}></i>
-            </div>
-            <div className="feature-item-text">
-              <h4>{t('featuresSection.iconAddPocketTitle')}</h4>
-              <p>{t('featuresSection.iconAddPocketDesc')}</p>
-            </div>
-          </div>
-
-          {/* Add All to Pocket */}
-          <div className="feature-item">
-            <div className="icon-3d-wrapper icon-pocket-all">
-              <i className="fa fa-plus-square-o" style={{color: '#fff', fontSize: '22px'}}></i>
-            </div>
-            <div className="feature-item-text">
-              <h4>{t('featuresSection.iconAddAllPocketTitle')}</h4>
-              <p>{t('featuresSection.iconAddAllPocketDesc')}</p>
             </div>
           </div>
         </div>

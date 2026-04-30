@@ -13,10 +13,7 @@ const ArcheryGame = () => {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing'
   const [difficulty, setDifficulty] = useState('easy');
-  const currentUrl = window.location && window.location.hostname === 'localhost' 
-    ? 'https://abacusheroes.com/student/games/archery' 
-    : (window.location ? window.location.href : 'https://abacusheroes.com');
-  const iframeUrl = `https://html5.gamedistribution.com/b8cf1cc516e14f4b8e7cb3119cdfcec6/?gd_sdk_referrer_url=${encodeURIComponent(currentUrl)}`;
+  const iframeUrl = "https://html5.gamedistribution.com/b8cf1cc516e14f4b8e7cb3119cdfcec6/?gd_sdk_referrer_url=https%3A%2F%2Fabacusheroes.com";
   
   const [question, setQuestion] = useState(null);
   const [feedback, setFeedback] = useState(null);
@@ -121,8 +118,8 @@ const ArcheryGame = () => {
                 src={iframeUrl}
                 className="archery-iframe"
                 title="Battle Racing Stars"
-                width="800"
-                height="600"
+                width="100%"
+                height="100%"
                 scrolling="no"
                 frameBorder="0"
                 allow="autoplay; fullscreen; encrypted-media"
