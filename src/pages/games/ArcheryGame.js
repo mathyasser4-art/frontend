@@ -8,12 +8,15 @@ import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './ArcheryGame.css';
 
 const QUESTIONS_TO_UNLOCK = 3;
-const IFRAME_URL = "https://html5.gamedistribution.com/b8cf1cc516e14f4b8e7cb3119cdfcec6/?gd_sdk_referrer_url=https://gamedistribution.com/games/battle-racing-stars/";
 
 const ArcheryGame = () => {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing'
   const [difficulty, setDifficulty] = useState('easy');
+  const currentUrl = window.location && window.location.hostname === 'localhost' 
+    ? 'https://abacusheroes.com/student/games/archery' 
+    : (window.location ? window.location.href : 'https://abacusheroes.com');
+  const iframeUrl = `https://html5.gamedistribution.com/b8cf1cc516e14f4b8e7cb3119cdfcec6/?gd_sdk_referrer_url=${encodeURIComponent(currentUrl)}`;
   
   const [question, setQuestion] = useState(null);
   const [feedback, setFeedback] = useState(null);
@@ -115,11 +118,15 @@ const ArcheryGame = () => {
             {/* The External Game via iframe */}
             {gameState === 'playing' && (
               <iframe 
-                src={IFRAME_URL}
+                src={iframeUrl}
                 className="archery-iframe"
                 title="Battle Racing Stars"
+                width="800"
+                height="600"
                 scrolling="no"
-                allow="autoplay; fullscreen"
+                frameBorder="0"
+                allow="autoplay; fullscreen; encrypted-media"
+                allowFullScreen
               />
             )}
 
