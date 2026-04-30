@@ -1,156 +1,202 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, RefreshCw } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './PenaltyKick.css';
 
-// Import images
+// Images
 import keeperImg from '../../img/football_keeper.png';
 import ballImg from '../../img/football_ball.png';
-import ArithmeticMcqDebugPanel from '../../components/debug/ArithmeticMcqDebugPanel';
+import playerImg from '../../img/player.png';
 
-// Sound effects
+// Sounds
 const audioCheer = new Audio('https://actions.google.com/sounds/v1/crowds/crowd_cheering.ogg');
 const audioAww = new Audio('https://actions.google.com/sounds/v1/crowds/crowd_groan.ogg');
 const audioWhistle = new Audio('https://actions.google.com/sounds/v1/sports/referee_whistle.ogg');
+const kickSound = new Audio('https://actions.google.com/sounds/v1/sports/football_kick.ogg');
 
 const ZONES = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'];
 
 const PenaltyKick = () => {
   const navigate = useNavigate();
-  const [gameState, setGameState] = useState('menu'); // menu, question, aiming, kicking, result
+
+  const [gameState, setGameState] = useState('menu');
   const [difficulty, setDifficulty] = useState('0');
   const [question, setQuestion] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+
   const [keeperDive, setKeeperDive] = useState('');
   const [ballTarget, setBallTarget] = useState('');
-  
-  const [stats, setStats] = useState({ goals: 0, saves: 0 });
 
+  const [stats, setStats] = useState({ goals: 0, saves: 0 });
+  const [streak, setStreak] = useState(0);
+
+  // 🔥 Power system
+  const [power, setPower] = useState(0);
+  const [isCharging, setIsCharging] = useState(false);
+
+  // =============================
+  // Generate Question
+  // =============================
   const fetchQuestion = useCallback((level) => {
     const q = generateArithmeticMcq(level !== undefined ? level : difficulty, 4);
     setQuestion({ text: q.text, answer: q.answer, options: q.options });
   }, [difficulty]);
 
+  // =============================
+  // Start Game
+  // =============================
   const startGame = (level) => {
     setDifficulty(level);
     setGameState('question');
     fetchQuestion(level);
   };
 
+  // =============================
+  // Handle Answer
+  // =============================
   const handleAnswer = (selectedAns) => {
     const correct = selectedAns === question.answer;
     setIsAnswerCorrect(correct);
     setGameState('aiming');
-    audioWhistle.play().catch(e => console.log('Audio play failed', e));
+    audioWhistle.play();
   };
 
+  // =============================
+  // Power Charging
+  // =============================
+  useEffect(() => {
+    let interval;
+
+    if (isCharging) {
+      interval = setInterval(() => {
+        setPower(prev => {
+          if (prev >= 100) return 0;
+          return prev + 5;
+        });
+      }, 50);
+    }
+
+    return () => clearInterval(interval);
+  }, [isCharging]);
+
+  // =============================
+  // Kick Logic
+  // =============================
   const handleKick = (zone) => {
     if (gameState !== 'aiming') return;
-    
+
+    setIsCharging(false);
     setBallTarget(zone);
     setGameState('kicking');
+    kickSound.play();
 
-    // Determine keeper dive based on answer
-    let dive;
-    if (isAnswerCorrect) {
-      // Keeper jumps to a random WRONG zone
-      const wrongZones = ZONES.filter(z => z !== zone);
-      dive = wrongZones[Math.floor(Math.random() * wrongZones.length)];
-    } else {
-      // Keeper saves it! (Jumps to the EXACT zone)
-      dive = zone;
-    }
-    setKeeperDive(dive);
+    const reactionSpeed = {
+      '0': 900,
+      '1': 700,
+      '2': 500,
+      '3': 300
+    };
 
-    // Wait for animation to finish
+    const successChance = isAnswerCorrect ? (power / 100) : 0.2;
+    const isGoal = Math.random() < successChance;
+
+    setTimeout(() => {
+      let dive;
+
+      if (isGoal) {
+        const wrongZones = ZONES.filter(z => z !== zone);
+        dive = wrongZones[Math.floor(Math.random() * wrongZones.length)];
+      } else {
+        dive = zone;
+      }
+
+      setKeeperDive(dive);
+    }, reactionSpeed[difficulty]);
+
     setTimeout(() => {
       setGameState('result');
-      if (isAnswerCorrect) {
-        audioCheer.play().catch(e => console.log('Audio play failed', e));
+
+      if (isGoal) {
+        audioCheer.play();
         setStats(prev => ({ ...prev, goals: prev.goals + 1 }));
+        setStreak(prev => prev + 1);
       } else {
-        audioAww.play().catch(e => console.log('Audio play failed', e));
+        audioAww.play();
         setStats(prev => ({ ...prev, saves: prev.saves + 1 }));
+        setStreak(0);
       }
-      
-      // Reset after a delay
+
+      // Reset
       setTimeout(() => {
         setGameState('question');
         setBallTarget('');
         setKeeperDive('');
+        setPower(0);
         setIsAnswerCorrect(null);
         fetchQuestion();
       }, 2500);
-      
-    }, 500); // 500ms kick animation
+
+    }, 700);
   };
 
-  // Ball positioning logic based on zone
+  // =============================
+  // Ball Movement (Curve + Depth)
+  // =============================
   const getBallStyle = () => {
-    if (gameState === 'question' || gameState === 'aiming') {
-      return { bottom: '5%', left: '50%' };
-    }
-    
-    // Target positions
+    const curve = power > 70 ? 30 : 0;
+
     const positions = {
-      'top-left': { bottom: '50%', left: '20%' },
+      'top-left': { bottom: '50%', left: `calc(20% - ${curve}px)` },
       'top-center': { bottom: '50%', left: '50%' },
-      'top-right': { bottom: '50%', left: '80%' },
-      'bottom-left': { bottom: '25%', left: '20%' },
+      'top-right': { bottom: '50%', left: `calc(80% + ${curve}px)` },
+      'bottom-left': { bottom: '25%', left: `calc(20% - ${curve}px)` },
       'bottom-center': { bottom: '25%', left: '50%' },
-      'bottom-right': { bottom: '25%', left: '80%' }
+      'bottom-right': { bottom: '25%', left: `calc(80% + ${curve}px)` }
     };
-    
+
     return positions[ballTarget] || { bottom: '5%', left: '50%' };
   };
 
+  // =============================
+  // UI
+  // =============================
   return (
     <div className="penalty-page">
       <MobileNav role="Student" />
       <Navbar />
-      <ArithmeticMcqDebugPanel />
 
       <div className="penalty-container">
+
+        {/* HEADER */}
         <div className="game-header">
           <button className="back-btn" onClick={() => navigate('/student/games-menu')}>
             <ArrowLeft size={24} />
             <span>Fun Games Menu</span>
           </button>
+
           <div className="stats-bar">
-            <div className="stat-pill goals">
-              ⚽ Goals: {stats.goals}
-            </div>
-            <div className="stat-pill saves">
-              🧤 Saves: {stats.saves}
-            </div>
+            <div className="stat-pill goals">⚽ {stats.goals}</div>
+            <div className="stat-pill saves">🧤 {stats.saves}</div>
+            <div className="stat-pill">🔥 {streak}</div>
           </div>
         </div>
 
+        {/* GAME AREA */}
         <div className="game-area">
-          
-          {gameState === 'menu' && (
-            <div className="math-overlay">
-              <div className="question-box" style={{textAlign: 'center'}}>
-                <h2>Penalty Kick</h2>
-                <p style={{marginBottom: '2rem'}}>Select a difficulty level to start playing!</p>
-                <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap'}}>
-                  <button className="option-btn" style={{background: '#4ade80'}} onClick={() => startGame('0')}>Level 0</button>
-                  <button className="option-btn" style={{background: '#fbbf24'}} onClick={() => startGame('1')}>Level 1</button>
-                  <button className="option-btn" style={{background: '#f87171'}} onClick={() => startGame('2')}>Level 2</button>
-                  <button className="option-btn" style={{background: '#4f46e5'}} onClick={() => startGame('3')}>Level 3</button>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Goal Net clickable zones */}
+
+          {/* Player */}
+          <div className="player">
+            <img src={playerImg} alt="player" />
+          </div>
+
+          {/* Goal */}
           <div className="goal-net">
             {ZONES.map(zone => (
-              <div 
-                key={zone} 
+              <div
+                key={zone}
                 className={`target-zone ${gameState === 'aiming' ? 'active' : ''}`}
                 onClick={() => handleKick(zone)}
               />
@@ -159,39 +205,66 @@ const PenaltyKick = () => {
 
           {/* Keeper */}
           <div className={`keeper ${keeperDive ? `dive-${keeperDive}` : ''}`}>
-            <img src={keeperImg} alt="Goalkeeper" />
+            <img src={keeperImg} alt="keeper" />
           </div>
 
           {/* Ball */}
-          <div 
-            className={`ball ${gameState === 'kicking' || gameState === 'result' ? 'kicking' : ''}`} 
-            style={getBallStyle()}
-          >
-            <img src={ballImg} alt="Football" />
+          <div className={`ball ${gameState === 'kicking' ? 'kicking' : ''}`} style={getBallStyle()}>
+            <img src={ballImg} alt="ball" />
           </div>
 
-          {/* Result Feedback Overlay */}
-          {gameState === 'result' && (
-            <div className={`feedback-overlay ${isAnswerCorrect ? 'goal' : 'save'}`}>
-              {isAnswerCorrect ? 'GOAL!!! 🥅' : 'SAVED! 🧤'}
+          {/* POWER BAR */}
+          {gameState === 'aiming' && (
+            <div className="power-bar-container">
+              <div className="power-bar">
+                <div className="power-fill" style={{ width: `${power}%` }} />
+              </div>
+
+              <button
+                className="shoot-btn"
+                onMouseDown={() => setIsCharging(true)}
+                onMouseUp={() => setIsCharging(false)}
+              >
+                HOLD & RELEASE
+              </button>
             </div>
           )}
 
-          {/* Math Question Overlay */}
+          {/* RESULT */}
+          {gameState === 'result' && (
+            <div className="feedback-overlay">
+              {streak > 2 ? "🔥 AMAZING!" : ""}
+            </div>
+          )}
+
+          {/* QUESTION */}
           {gameState === 'question' && question && (
             <div className="math-overlay">
               <div className="question-box">
                 <h2>{question.text}</h2>
+
                 <div className="options-grid">
                   {question.options.map((opt, i) => (
-                    <button 
-                      key={i} 
-                      className="option-btn"
-                      onClick={() => handleAnswer(opt)}
-                    >
+                    <button key={i} className="option-btn" onClick={() => handleAnswer(opt)}>
                       {opt}
                     </button>
                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MENU */}
+          {gameState === 'menu' && (
+            <div className="math-overlay">
+              <div className="question-box">
+                <h2>Penalty Kick</h2>
+
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                  <button className="option-btn" onClick={() => startGame('0')}>Easy</button>
+                  <button className="option-btn" onClick={() => startGame('1')}>Medium</button>
+                  <button className="option-btn" onClick={() => startGame('2')}>Hard</button>
+                  <button className="option-btn" onClick={() => startGame('3')}>Pro</button>
                 </div>
               </div>
             </div>

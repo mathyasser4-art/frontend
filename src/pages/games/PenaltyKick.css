@@ -1,6 +1,9 @@
+/* =============================
+   PAGE
+============================= */
 .penalty-page {
   min-height: 100vh;
-  background-color: #f0fdf4;
+  background: linear-gradient(to bottom, #87ceeb, #4ade80);
   font-family: 'Outfit', sans-serif;
   padding-bottom: 2rem;
 }
@@ -11,6 +14,9 @@
   padding: 2rem;
 }
 
+/* =============================
+   HEADER
+============================= */
 .game-header {
   display: flex;
   justify-content: space-between;
@@ -24,173 +30,288 @@
   gap: 0.5rem;
   background: white;
   border: 2px solid #e2e8f0;
-  padding: 0.75rem 1.5rem;
+  padding: 0.7rem 1.4rem;
   border-radius: 9999px;
-  font-size: 1.1rem;
   font-weight: 600;
-  color: #475569;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: 0.2s;
 }
 
 .back-btn:hover {
-  background: #f8fafc;
   transform: translateY(-2px);
 }
 
 .stats-bar {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .stat-pill {
   background: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 9999px;
-  font-weight: 700;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-weight: bold;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
-.stat-pill.goals { color: #16a34a; border: 2px solid #34d399; }
-.stat-pill.saves { color: #ef4444; border: 2px solid #f87171; }
+.stat-pill.goals {
+  color: #16a34a;
+}
 
+.stat-pill.saves {
+  color: #ef4444;
+}
+
+/* =============================
+   GAME AREA
+============================= */
 .game-area {
   position: relative;
-  width: 100%;
   height: 600px;
-  background: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 40%, #4ade80 40%, #22c55e 100%);
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
-  border: 8px solid white;
+  background: linear-gradient(#38bdf8 40%, #22c55e 40%);
+  border: 6px solid white;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
-/* Grass Pattern */
+/* =============================
+   STADIUM (Fans)
+============================= */
 .game-area::before {
   content: '';
   position: absolute;
-  top: 40%;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px);
+  top: 0;
+  height: 40%;
+  width: 100%;
+  background: repeating-linear-gradient(90deg,
+      #1e293b,
+      #1e293b 10px,
+      #334155 10px,
+      #334155 20px);
+  z-index: 0;
+}
+
+.game-area::after {
+  content: '👥 👥 👥 👥 👥 👥 👥 👥 👥 👥';
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+  animation: crowdMove 1s infinite alternate;
   z-index: 1;
 }
 
-/* Goal Net */
+@keyframes crowdMove {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+/* =============================
+   GOAL NET
+============================= */
 .goal-net {
   position: absolute;
   top: 20%;
   left: 15%;
   right: 15%;
   height: 40%;
-  border: 12px solid #f8fafc;
+  border: 10px solid white;
   border-bottom: none;
-  background-image: 
-    linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0.3)), 
-    linear-gradient(-45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0.3));
-  background-size: 20px 20px;
-  z-index: 2;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 1fr);
+  z-index: 2;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
 }
 
 .target-zone {
-  border: 2px dashed transparent;
   cursor: crosshair;
-  transition: background 0.2s, border 0.2s;
-  z-index: 10;
+  transition: 0.2s;
 }
 
 .target-zone.active:hover {
   background: rgba(250, 204, 21, 0.3);
-  border-color: #facc15;
 }
 
-/* Keeper */
+/* =============================
+   PLAYER
+============================= */
+.player {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  z-index: 3;
+}
+
+.player img {
+  width: 100%;
+  animation: idleBounce 1.5s infinite ease-in-out;
+}
+
+@keyframes idleBounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* =============================
+   KEEPER
+============================= */
 .keeper {
   position: absolute;
   bottom: 40%;
   left: 50%;
-  width: 120px;
-  height: 120px;
   transform: translateX(-50%);
+  width: 120px;
   z-index: 3;
-  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .keeper img {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
 }
 
-/* Ball */
+/* Dives */
+.keeper.dive-top-left {
+  transform: translate(-180px, -120px) rotate(-60deg) scale(1.1);
+}
+
+.keeper.dive-top-right {
+  transform: translate(180px, -120px) rotate(60deg) scale(1.1);
+}
+
+.keeper.dive-bottom-left {
+  transform: translate(-180px, 20px) rotate(-80deg);
+}
+
+.keeper.dive-bottom-right {
+  transform: translate(180px, 20px) rotate(80deg);
+}
+
+.keeper.dive-top-center {
+  transform: translate(-50%, -120px);
+}
+
+.keeper.dive-bottom-center {
+  transform: translate(-50%, 20px);
+}
+
+/* =============================
+   BALL (3D FEEL)
+============================= */
 .ball {
   position: absolute;
   bottom: 5%;
   left: 50%;
   width: 60px;
-  height: 60px;
   margin-left: -30px;
   z-index: 4;
-  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: all 0.6s ease;
 }
 
 .ball img {
   width: 100%;
+}
+
+/* Kick animation */
+.ball.kicking {
+  animation: kick3D 0.6s forwards;
+}
+
+@keyframes kick3D {
+  0% {
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -150px) scale(0.7);
+  }
+
+  100% {
+    transform: translate(-50%, -280px) scale(0.4);
+  }
+}
+
+/* =============================
+   POWER BAR
+============================= */
+.power-bar-container {
+  position: absolute;
+  bottom: 10%;
+  width: 100%;
+  text-align: center;
+  z-index: 10;
+}
+
+.power-bar {
+  width: 300px;
+  height: 18px;
+  background: #ddd;
+  margin: 0 auto 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.power-fill {
   height: 100%;
-  object-fit: contain;
-  transition: transform 0.5s linear;
+  background: linear-gradient(to right, #4ade80, #facc15, #ef4444);
+  transition: width 0.05s;
 }
 
-/* Kick Animation Classes */
-.ball.kicking img {
-  transform: rotate(720deg) scale(0.5);
+.shoot-btn {
+  padding: 10px 20px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-/* Keeper Dives */
-.keeper.dive-top-left { transform: translate(-150px, -80px) rotate(-45deg); }
-.keeper.dive-top-center { transform: translate(-50%, -100px); }
-.keeper.dive-top-right { transform: translate(150px, -80px) rotate(45deg); }
-.keeper.dive-bottom-left { transform: translate(-150px, 0) rotate(-70deg); }
-.keeper.dive-bottom-center { transform: translate(-50%, 0); }
-.keeper.dive-bottom-right { transform: translate(150px, 0) rotate(70deg); }
+.shoot-btn:hover {
+  background: #2563eb;
+}
 
-/* Math Question Overlay */
+/* =============================
+   QUESTION OVERLAY
+============================= */
 .math-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(8px);
-  z-index: 20;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 20;
 }
 
 .question-box {
   background: white;
-  padding: 3rem;
-  border-radius: 24px;
+  padding: 2rem;
+  border-radius: 20px;
   text-align: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  max-width: 500px;
-  width: 90%;
-  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: popIn 0.3s ease;
 }
 
 .question-box h2 {
-  font-size: 3.5rem;
-  color: #1e293b;
-  margin: 0 0 2rem 0;
-  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
 }
 
 .options-grid {
@@ -200,45 +321,45 @@
 }
 
 .option-btn {
-  background: #f8fafc;
-  border: 3px solid #e2e8f0;
-  padding: 1.5rem;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #3b82f6;
-  border-radius: 16px;
+  padding: 1rem;
+  font-size: 1.8rem;
+  border-radius: 12px;
+  border: 2px solid #ddd;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: 0.2s;
 }
 
 .option-btn:hover {
+  transform: scale(1.05);
   background: #eff6ff;
-  border-color: #3b82f6;
-  transform: translateY(-2px);
 }
 
+/* =============================
+   RESULT FEEDBACK
+============================= */
 .feedback-overlay {
   position: absolute;
   top: 10%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 4rem;
-  font-weight: 900;
+  font-size: 3rem;
+  font-weight: bold;
   color: white;
-  text-shadow: 0 4px 10px rgba(0,0,0,0.5);
   z-index: 30;
-  animation: slideDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: popIn 0.4s ease;
 }
 
-.feedback-overlay.goal { color: #4ade80; }
-.feedback-overlay.save { color: #f87171; }
-
+/* =============================
+   ANIMATIONS
+============================= */
 @keyframes popIn {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
-}
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translate(-50%, -50px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
