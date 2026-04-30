@@ -117,7 +117,7 @@ const PenaltyKick = () => {
         <div className="game-header">
           <button className="back-btn" onClick={() => navigate('/student/games-menu')}>
             <ArrowLeft size={24} />
-            <span>Arcade Menu</span>
+            <span>Fun Games Menu</span>
           </button>
           <div className="stats-bar">
             <div className="stat-pill goals">

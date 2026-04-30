@@ -78,7 +78,7 @@ const ArcheryGame = () => {
         <div className="archery-header">
           <button className="back-btn" onClick={() => navigate('/student/games-menu')}>
             <ArrowLeft size={20} />
-            <span>Arcade Menu</span>
+            <span>Fun Games Menu</span>
           </button>
         </div>
 

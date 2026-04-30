@@ -16,13 +16,18 @@ function FeaturesSection() {
         </div>
 
         {/* Section A: Teachers Assign Homework */}
-        <div className="feature-block highlight-block">
-          <div className="feature-icon-large">
-            <FileText size={48} strokeWidth={2} />
-          </div>
-          <div className="feature-content">
-            <h3>{t('featuresSection.teacherHomeworkTitle')}</h3>
-            <p>{t('featuresSection.teacherHomeworkDesc')}</p>
+        <div className="feature-block">
+          <div className="feature-content-with-image">
+            <div className="feature-content">
+              <div className="feature-icon-large pink-icon">
+                <FileText size={48} strokeWidth={2} />
+              </div>
+              <h3>{t('featuresSection.teacherHomeworkTitle')}</h3>
+              <p>{t('featuresSection.teacherHomeworkDesc')}</p>
+            </div>
+            <div className="feature-image-preview">
+              <img src={require('../../img/assignment-preview.png')} alt="Assignment Preview" />
+            </div>
           </div>
         </div>
 

@@ -23,7 +23,7 @@ const GamesMenu = () => {
             <ArrowLeft size={24} />
             Back
           </button>
-          <h1>Arcade Room</h1>
+          <h1>Fun Games Room</h1>
         </div>
 
         <div className="games-grid">

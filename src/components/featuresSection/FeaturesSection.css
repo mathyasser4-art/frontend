@@ -84,6 +84,41 @@
     background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
 }
 
+.pink-icon {
+    background: linear-gradient(135deg, #FF6B9D, #FFA07A);
+}
+
+.feature-content-with-image {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    width: 100%;
+}
+
+.feature-image-preview {
+    flex: 1;
+    max-width: 500px;
+}
+
+.feature-image-preview img {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 5px solid #fff;
+}
+
+@media only screen and (max-width: 992px) {
+    .feature-content-with-image {
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .feature-image-preview {
+        max-width: 100%;
+    }
+}
+
 .feature-content h3 {
     font-size: 24px;
     margin-bottom: 0.8rem;
