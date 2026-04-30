@@ -36,6 +36,7 @@ import CaveRunner from './pages/games/CaveRunner';
 import PenaltyKick from './pages/games/PenaltyKick';
 import ArcheryGame from './pages/games/ArcheryGame';
 import HighwayRiderGame from './pages/games/HighwayRiderGame';
+import WaterSortGame from './pages/games/WaterSortGame';
 import GamesMenu from './pages/studentDashboard/GamesMenu';
 import LiveChatWidget from './components/liveChat/LiveChatWidget';
 import ChatManagement from './pages/dashboardSchool/ChatManagement';
@@ -87,6 +88,7 @@ function App() {
       <Route path='/student/games/penalty-kick' element={<PenaltyKick />} />
       <Route path='/student/games/archery' element={<ArcheryGame />} />
       <Route path='/student/games/highway-rider' element={<HighwayRiderGame />} />
+      <Route path='/student/games/water-sort' element={<WaterSortGame />} />
       <Route path='/student/games-menu' element={<GamesMenu />} />
 
       </Routes>

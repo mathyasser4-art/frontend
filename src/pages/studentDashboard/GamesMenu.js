@@ -155,6 +155,24 @@ const GamesMenu = () => {
             </div>
           </div>
 
+          {/* Water Sort Puzzle */}
+          <div className="game-card-full" onClick={() => navigate('/student/games/water-sort')}>
+            <div className="game-thumbnail thumb-watersort" style={{ background: '#fdf4ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '5px' }}>
+                <div style={{display: 'flex', gap: '10px'}}>
+                    <span style={{fontSize: '2.5rem'}}>🧪</span>
+                    <span style={{fontSize: '2.5rem'}}>🧪</span>
+                </div>
+                <div style={{width: '60px', height: '10px', background: '#3b82f6', borderRadius: '5px'}}></div>
+            </div>
+            <div className="game-card-body">
+              <h3>Water Sort Puzzle</h3>
+              <p>Solve 3 math questions to unlock this fun puzzle! Sort the colored liquids into the right glasses.</p>
+              <button className="play-now-btn">
+                <Play size={20} fill="currentColor" /> Play Now
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
