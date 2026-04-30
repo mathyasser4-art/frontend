@@ -1440,8 +1440,6 @@ input[type="radio"] {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
   filter: brightness(1.2);
 }
-  box-shadow: 0 2px 0 0 #545b64;
-}
 
 /* Responsive Design */
 
