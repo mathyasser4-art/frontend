@@ -9,6 +9,12 @@ import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 
 import './CaveRunner.css';
 
+// Premium Assets
+import bunnyImg from '../../img/bunny-character.png';
+import backgroundImg from '../../img/bunny-background.png';
+import crateImg from '../../img/crate-obstacle.png';
+import carrotImg from '../../img/carrot-item.png';
+
 const BunnyRun = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -100,7 +106,7 @@ const BunnyRun = () => {
     setTimeout(() => {
       setIsJumping(false);
       isJumpingRef.current = false;
-    }, 800); // jump animation duration
+    }, 700); // slightly faster jump for better feel
   }, [gameState]);
 
   // Listen for spacebar
@@ -298,9 +304,21 @@ const BunnyRun = () => {
             ) : (
               <>
                 <div className="ground-segment" style={{ position: 'absolute', left: 0, right: 0 }}></div>
-                {obstacleType === 'rock' && <div className="cartoony-rock" style={{ left: `${obstaclePos}%` }}></div>}
-                {obstacleType === 'pine_tree' && <div className="obstacle-emoji pine-tree" style={{ left: `${obstaclePos}%` }}>🌲</div>}
-                {obstacleType === 'fire' && <div className="obstacle-emoji fire" style={{ left: `${obstaclePos}%` }}>🔥</div>}
+                {obstacleType === 'rock' && (
+                  <div className="obstacle-image-container" style={{ left: `${obstaclePos}%` }}>
+                    <img src={crateImg} alt="crate" className="crate-obstacle" />
+                  </div>
+                )}
+                {obstacleType === 'pine_tree' && (
+                  <div className="obstacle-image-container" style={{ left: `${obstaclePos}%`, transform: 'scale(1.2)' }}>
+                    <img src={crateImg} alt="crate" className="crate-obstacle" />
+                  </div>
+                )}
+                {obstacleType === 'fire' && (
+                  <div className="obstacle-image-container" style={{ left: `${obstaclePos}%`, transform: 'scale(0.8)' }}>
+                    <img src={crateImg} alt="crate" className="crate-obstacle" />
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -338,36 +356,40 @@ const BunnyRun = () => {
 
           {gameState === 'playing' && (
             <>
-              {/* Math Panel (Appears every 10 seconds) */}
+              {/* Math Cloud Bubble */}
               {isWaitingForAnswer && (
-                <div className="math-panel">
-                  <div className="math-panel-header">Earn Bonus Carrots!</div>
-                  <div className="math-question">{question.text}</div>
-                  <div className="math-options">
-                    {options.map((opt, i) => (
-                      <button 
-                        key={i} 
-                        className="math-opt-btn"
-                        onClick={(e) => {
-                          e.stopPropagation(); // prevent jumping
-                          handleAnswer(opt);
-                        }}
-                      >
-                        {opt}
-                      </button>
-                    ))}
+                <div className="math-cloud-overlay">
+                  <div className="math-cloud-content">
+                    <div className="cloud-header">Solve to Jump!</div>
+                    <div className="cloud-question">{question.text}</div>
+                    <div className="cloud-options">
+                      {options.map((opt, i) => (
+                        <button 
+                          key={i} 
+                          className="cloud-opt-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAnswer(opt);
+                          }}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
 
               {/* Character */}
               <div className={`character ${isJumping ? 'jumping' : ''} ${isFalling ? 'falling' : ''} ${!isJumping && !isFalling ? 'running' : ''}`}>
-                🐇
+                <img src={bunnyImg} alt="bunny" className="bunny-img" />
               </div>
 
               {/* Carrots */}
               {coins.map(coin => !coin.collected && (
-                <div key={coin.id} className="carrot-item" style={{ left: `${coin.pos}%` }}>🥕</div>
+                <div key={coin.id} className="carrot-item-new" style={{ left: `${coin.pos}%` }}>
+                  <img src={carrotImg} alt="carrot" />
+                </div>
               ))}
             </>
           )}
