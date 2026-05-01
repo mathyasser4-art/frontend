@@ -279,7 +279,11 @@ const BunnyRun = () => {
         <div 
           className={`game-area ${gameState === 'playing' && !isWaitingForAnswer && !isFalling ? 'moving' : ''} ${isWaitingForAnswer ? 'frozen' : ''}`}
           onClick={jump}
+          style={{ backgroundImage: `url(${backgroundImg})` }}
         >
+          {/* Parallax Lake Layer */}
+          <div className="lake-layer"></div>
+          <div className="mountain-layer"></div>
           {/* Sky Elements */}
           <div className="sun"></div>
           
@@ -382,7 +386,7 @@ const BunnyRun = () => {
 
               {/* Character */}
               <div className={`character ${isJumping ? 'jumping' : ''} ${isFalling ? 'falling' : ''} ${!isJumping && !isFalling ? 'running' : ''}`}>
-                <img src={bunnyImg} alt="bunny" className="bunny-img" />
+                <img src={bunnyImg} alt="bunny" className="bunny-img flipped" />
               </div>
 
               {/* Carrots */}
