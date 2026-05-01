@@ -114,7 +114,6 @@
   width: 100px;
   height: 100px;
   z-index: 10;
-  transition: bottom 0.1s ease-out;
 }
 
 .character::after {
@@ -139,7 +138,8 @@
 .bunny-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  clip-path: circle(45% at 50% 50%); /* Turn into a circle to hide checkerboard corners */
 }
 
 .bunny-img.flipped {
@@ -155,10 +155,15 @@
   to { transform: scaleX(-1) translateY(-5px); }
 }
 
+.character.jumping {
+  animation: parabolicJump 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: none !important; /* Fix conflict */
+}
+
 @keyframes parabolicJump {
   0% { bottom: 100px; transform: rotate(0deg); }
-  40% { bottom: 350px; transform: rotate(-10deg); }
-  60% { bottom: 350px; transform: rotate(-5deg); }
+  40% { bottom: 380px; transform: rotate(-10deg); }
+  60% { bottom: 380px; transform: rotate(-5deg); }
   100% { bottom: 100px; transform: rotate(0deg); }
 }
 
@@ -213,7 +218,6 @@
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-/* Carrots */
 .carrot-item-new {
   position: absolute;
   bottom: 150px;
@@ -221,16 +225,17 @@
   height: 60px;
   z-index: 7;
   animation: floatCarrot 2s infinite ease-in-out;
-  background: rgba(255,255,255,0.8);
+  background: white;
   border-radius: 50%;
   padding: 5px;
-  box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+  box-shadow: 0 5px 15px rgba(251, 191, 36, 0.4);
+  overflow: hidden;
 }
 
 .carrot-item-new img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 @keyframes floatCarrot {
