@@ -102,8 +102,8 @@ const BunnyRun = () => {
   const [obstacleType, setObstacleType] = useState('rock');
   const [speed, setSpeed] = useState(0.8);
 
-  const timeSinceLastQuestionRef = useRef(0);
-  const QUESTION_INTERVAL = 9000;
+  const obstaclesPassedRef = useRef(0);
+  const targetObstaclesRef = useRef(Math.floor(Math.random() * 3) + 3); // Random 3 to 5
   
   const [question, setQuestion] = useState({ text: '' });
   const [options, setOptions] = useState([]);
@@ -149,7 +149,8 @@ const BunnyRun = () => {
     isFallingRef.current = false;
     isJumpingRef.current = false;
     setIsJumping(false);
-    timeSinceLastQuestionRef.current = 0;
+    obstaclesPassedRef.current = 0;
+    targetObstaclesRef.current = Math.floor(Math.random() * 3) + 3;
     spawnCoins();
     generateQuestion(selectedLevel);
   };
@@ -203,7 +204,8 @@ const BunnyRun = () => {
 
     setIsWaitingForAnswer(false);
     isWaitingRef.current = false;
-    timeSinceLastQuestionRef.current = 0;
+    obstaclesPassedRef.current = 0;
+    targetObstaclesRef.current = Math.floor(Math.random() * 3) + 3;
     generateQuestion(difficulty);
   };
 
@@ -215,15 +217,6 @@ const BunnyRun = () => {
     const loop = (time) => {
       const deltaTime = time - lastTime;
       lastTime = time;
-
-      if (!isWaitingRef.current && !isFallingRef.current) {
-        timeSinceLastQuestionRef.current += deltaTime;
-
-        if (timeSinceLastQuestionRef.current >= QUESTION_INTERVAL) {
-          setIsWaitingForAnswer(true);
-          isWaitingRef.current = true;
-        }
-      }
 
       setObstaclePos(pos => {
         if (isWaitingRef.current || isFallingRef.current) return pos;
@@ -260,6 +253,14 @@ const BunnyRun = () => {
         }
         
         if (newPos < -20) {
+           // Increment obstacle count
+           obstaclesPassedRef.current += 1;
+           
+           if (obstaclesPassedRef.current >= targetObstaclesRef.current) {
+              setIsWaitingForAnswer(true);
+              isWaitingRef.current = true;
+           }
+
            newPos = 120 + Math.random() * 40;
            setObstacleType(OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)]);
            spawnCoins();
