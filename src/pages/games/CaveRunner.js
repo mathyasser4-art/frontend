@@ -9,11 +9,41 @@ import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 
 import './CaveRunner.css';
 
-// Premium Assets
-import bunnyImg from '../../img/bunny-character.png';
-import backgroundImg from '../../img/bunny-background.png';
-import crateImg from '../../img/crate-obstacle.png';
-import carrotImg from '../../img/carrot-item.png';
+// SVG Assets for high quality and no broken links
+const BunnySVG = () => (
+  <svg viewBox="0 0 100 100" className="bunny-svg">
+    <ellipse cx="50" cy="65" rx="30" ry="25" fill="#f8fafc" />
+    <circle cx="50" cy="35" r="20" fill="#f8fafc" />
+    <ellipse cx="42" cy="15" rx="8" ry="18" fill="#f8fafc" transform="rotate(-10, 42, 15)" />
+    <ellipse cx="58" cy="15" rx="8" ry="18" fill="#f8fafc" transform="rotate(10, 58, 15)" />
+    <ellipse cx="42" cy="15" rx="4" ry="12" fill="#fda4af" transform="rotate(-10, 42, 15)" />
+    <ellipse cx="58" cy="15" rx="4" ry="12" fill="#fda4af" transform="rotate(10, 58, 15)" />
+    <circle cx="43" cy="32" r="3" fill="#1e293b" />
+    <circle cx="57" cy="32" r="3" fill="#1e293b" />
+    <circle cx="50" cy="40" r="4" fill="#fda4af" />
+    <path d="M 45 65 Q 50 70 55 65" stroke="#cbd5e1" fill="none" strokeWidth="2" />
+  </svg>
+);
+
+const CarrotSVG = () => (
+  <svg viewBox="0 0 60 60" className="carrot-svg">
+    <path d="M 30 10 L 45 50 Q 30 55 15 50 Z" fill="#fb923c" />
+    <path d="M 30 10 C 25 0, 35 0, 30 10" fill="#4ade80" stroke="#22c55e" strokeWidth="2" />
+    <path d="M 30 10 C 20 5, 25 5, 30 10" fill="#4ade80" stroke="#22c55e" strokeWidth="2" />
+    <path d="M 30 10 C 35 5, 40 5, 30 10" fill="#4ade80" stroke="#22c55e" strokeWidth="2" />
+    <path d="M 22 25 L 38 25" stroke="#ea580c" strokeWidth="2" strokeLinecap="round" />
+    <path d="M 25 35 L 35 35" stroke="#ea580c" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+const CrateSVG = () => (
+  <svg viewBox="0 0 100 100" className="crate-svg">
+    <rect x="5" y="5" width="90" height="90" fill="#78350f" rx="8" />
+    <rect x="15" y="15" width="70" height="70" fill="#92400e" rx="4" />
+    <path d="M 15 15 L 85 85 M 85 15 L 15 85" stroke="#78350f" strokeWidth="6" />
+    <rect x="5" y="5" width="90" height="90" fill="none" stroke="#451a03" strokeWidth="4" rx="8" />
+  </svg>
+);
 
 const BunnyRun = () => {
   const navigate = useNavigate();
@@ -276,126 +306,94 @@ const BunnyRun = () => {
           )}
         </div>
 
-        <div 
-          className={`game-area ${gameState === 'playing' && !isWaitingForAnswer && !isFalling ? 'moving' : ''} ${isWaitingForAnswer ? 'frozen' : ''}`}
-          onClick={jump}
-          style={{ backgroundImage: `url(${backgroundImg})` }}
-        >
-          {/* Parallax Lake Layer */}
-          <div className="lake-layer"></div>
-          <div className="mountain-layer"></div>
-          {/* Sky Elements */}
-          <div className="sun"></div>
-          
-          <div className="cloud-layer">
-            <div className="cloud3d" style={{ top: '20px', left: '10%' }}></div>
-            <div className="cloud3d" style={{ top: '50px', left: '40%', transform: 'scale(0.8)' }}></div>
-            <div className="cloud3d" style={{ top: '10px', left: '70%', transform: 'scale(1.2)' }}></div>
+        <div className={`game-area-premium ${isWaitingForAnswer ? 'frozen' : ''}`}>
+          {/* Animated Background Layers */}
+          <div className="sky-layer">
+            <div className="sun-glow"></div>
+            <div className="clouds-container">
+              <div className="cloud-p p1"></div>
+              <div className="cloud-p p2"></div>
+              <div className="cloud-p p3"></div>
+            </div>
           </div>
           
-          {/* Background Layers */}
-          <div className="bg-layer cave-back"></div>
-          <div className="bg-layer cave-front"></div>
-          
-          {/* Ground */}
-          <div className="ground-container">
-            {obstacleType === 'gap' ? (
-              <>
-                <div className="ground-segment" style={{ position: 'absolute', left: 0, width: `${Math.max(0, obstaclePos)}%` }}></div>
-                <div className="gap-segment" style={{ position: 'absolute', left: `${obstaclePos}%`, width: `${GAP_WIDTH}%` }}></div>
-                <div className="ground-segment" style={{ position: 'absolute', left: `${obstaclePos + GAP_WIDTH}%`, right: 0 }}></div>
-              </>
-            ) : (
-              <>
-                <div className="ground-segment" style={{ position: 'absolute', left: 0, right: 0 }}></div>
-                {obstacleType === 'rock' && (
-                  <div className="obstacle-image-container" style={{ left: `${obstaclePos}%` }}>
-                    <img src={crateImg} alt="crate" className="crate-obstacle" />
-                  </div>
-                )}
-                {obstacleType === 'pine_tree' && (
-                  <div className="obstacle-image-container" style={{ left: `${obstaclePos}%`, transform: 'scale(1.2)' }}>
-                    <img src={crateImg} alt="crate" className="crate-obstacle" />
-                  </div>
-                )}
-                {obstacleType === 'fire' && (
-                  <div className="obstacle-image-container" style={{ left: `${obstaclePos}%`, transform: 'scale(0.8)' }}>
-                    <img src={crateImg} alt="crate" className="crate-obstacle" />
-                  </div>
-                )}
-              </>
-            )}
+          <div className="mountains-container">
+            <div className="mountain-p far"></div>
+            <div className="mountain-p mid"></div>
           </div>
 
+          <div className="ground-world">
+            <div className="ground-surface">
+              {obstacleType === 'gap' ? (
+                <>
+                  <div className="surface-part" style={{ width: `${obstaclePos}%` }}></div>
+                  <div className="surface-gap" style={{ width: `${GAP_WIDTH}%` }}></div>
+                  <div className="surface-part" style={{ flex: 1 }}></div>
+                </>
+              ) : (
+                <div className="surface-part full"></div>
+              )}
+            </div>
+
+            {obstacleType === 'rock' && (
+              <div className="obstacle-node" style={{ left: `${obstaclePos}%` }}>
+                <CrateSVG />
+              </div>
+            )}
+
+            {coins.map(coin => !coin.collected && (
+              <div key={coin.id} className="collectible-node" style={{ left: `${coin.pos}%` }}>
+                <CarrotSVG />
+              </div>
+            ))}
+          </div>
+
+          {gameState === 'playing' && (
+            <div className={`bunny-node ${isJumping ? 'jumping' : ''} ${isFalling ? 'falling' : ''} ${!isJumping && !isFalling ? 'running' : ''}`}>
+              <BunnySVG />
+            </div>
+          )}
+
+          {isWaitingForAnswer && (
+            <div className="math-overlay-modern">
+              <div className="math-card">
+                <div className="math-title">Quick Solve!</div>
+                <div className="math-q">{question.text}</div>
+                <div className="math-opts">
+                  {options.map((opt, i) => (
+                    <button key={i} onClick={() => handleAnswer(opt)}>{opt}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {gameState === 'menu' && (
-            <div className="menu-overlay">
-              <div className="logo-box">
-                <h1>Bunny Run</h1>
-                <p>Run, calculate, and jump!</p>
-              </div>
-              <div className="instructions">
-                <p>Solve the math problem before the rock hits you!</p>
-                <p>Select the correct answer to JUMP.</p>
-              </div>
-              <div className="difficulty-buttons" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <button className="start-btn" onClick={() => startGame('0')}>Level 0</button>
-                <button className="start-btn" onClick={() => startGame('1')}>Level 1</button>
-                <button className="start-btn" onClick={() => startGame('2')}>Level 2</button>
-                <button className="start-btn" style={{background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)'}} onClick={() => startGame('3')}>Level 3</button>
+            <div className="game-overlay-screen">
+              <div className="menu-inner">
+                <div className="game-logo">BUNNY RUN</div>
+                <p>Jump over crates and gaps. Collect carrots for points!</p>
+                <div className="diff-select">
+                  <button className="lvl-btn l0" onClick={() => startGame('0')}>Level 0</button>
+                  <button className="lvl-btn l1" onClick={() => startGame('1')}>Level 1</button>
+                  <button className="lvl-btn l2" onClick={() => startGame('2')}>Level 2</button>
+                  <button className="lvl-btn l3" onClick={() => startGame('3')}>Level 3</button>
+                </div>
               </div>
             </div>
           )}
 
           {gameState === 'gameover' && (
-            <div className="menu-overlay game-over">
-              <ShieldAlert size={64} color="#ef4444" className="mb-4" />
-              <h1>Game Over!</h1>
-              <p className="final-score">Final Score: {score}</p>
-              <button className="start-btn restart" onClick={() => startGame(difficulty)}>
-                <RotateCcw size={24} />
-                PLAY AGAIN
-              </button>
-            </div>
-          )}
-
-          {gameState === 'playing' && (
-            <>
-              {/* Math Cloud Bubble */}
-              {isWaitingForAnswer && (
-                <div className="math-cloud-overlay">
-                  <div className="math-cloud-content">
-                    <div className="cloud-header">Solve to Jump!</div>
-                    <div className="cloud-question">{question.text}</div>
-                    <div className="cloud-options">
-                      {options.map((opt, i) => (
-                        <button 
-                          key={i} 
-                          className="cloud-opt-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleAnswer(opt);
-                          }}
-                        >
-                          {opt}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Character */}
-              <div className={`character ${isJumping ? 'jumping' : ''} ${isFalling ? 'falling' : ''} ${!isJumping && !isFalling ? 'running' : ''}`}>
-                <img src={bunnyImg} alt="bunny" className="bunny-img flipped" />
+            <div className="game-overlay-screen">
+              <div className="menu-inner">
+                <ShieldAlert size={80} color="#ef4444" />
+                <h2>CRASHED!</h2>
+                <p className="final-s">Final Score: {score}</p>
+                <button className="retry-btn" onClick={() => startGame(difficulty)}>
+                  <RotateCcw /> PLAY AGAIN
+                </button>
               </div>
-
-              {/* Carrots */}
-              {coins.map(coin => !coin.collected && (
-                <div key={coin.id} className="carrot-item-new" style={{ left: `${coin.pos}%` }}>
-                  <img src={carrotImg} alt="carrot" />
-                </div>
-              ))}
-            </>
+            </div>
           )}
         </div>
       </div>
@@ -404,3 +402,4 @@ const BunnyRun = () => {
 };
 
 export default BunnyRun;
+

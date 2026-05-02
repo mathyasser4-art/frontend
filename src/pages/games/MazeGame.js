@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
-import { ChevronLeft, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RefreshCcw, Loader2 } from 'lucide-react';
-import squirrelImg from '../../img/maze_squirrel.png';
+import { ChevronLeft, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RefreshCcw, Loader2, Volume2, VolumeX, Trophy, Clock } from 'lucide-react';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './MazeGame.css';
+
+// Using a placeholder character for now as image generation failed
+const CHARACTER_URL = 'https://api.dicebear.com/7.x/bottts/svg?seed=toothpaste&backgroundColor=b6e3f4';
 
 const generateMaze = (width, height) => {
   const grid = [];
@@ -64,14 +66,6 @@ const generateMaze = (width, height) => {
   // Set goal
   grid[height - 1][width - 1].isGoal = true;
   
-  // Force start cell to have two open routes (right and down) to create a branch right away!
-  if (width > 1 && height > 1) {
-    grid[0][0].walls.right = false;
-    grid[0][1].walls.left = false;
-    grid[0][0].walls.bottom = false;
-    grid[1][0].walls.top = false;
-  }
-  
   return grid;
 };
 
@@ -86,33 +80,41 @@ function MazeGame() {
   const [grid, setGrid] = useState([]);
   const [playerPos, setPlayerPos] = useState({ x: 0, y: 0 });
   const [difficulty, setDifficulty] = useState('0');
+  const [level, setLevel] = useState(1);
+  const totalLevels = 15;
   
+  // Stats
+  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+  const timerRef = useRef(null);
+
   // Door Modal
   const [currentDoor, setCurrentDoor] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [feedback, setFeedback] = useState(null);
 
-  const startGame = async (level) => {
-    soundEffects.playClick();
-    setDifficulty(level);
+  const startGame = async (diff) => {
+    if (isSoundEnabled) soundEffects.playClick();
+    setDifficulty(diff);
     setGameState('loading');
+    setLevel(1);
+    setTimeLeft(120);
     
-    // Determine size - Match the provided image (much simpler layout)
-    const size = level === '0' ? 5 : level === '1' ? 7 : level === '2' ? 9 : 11;
+    // Determine size
+    const size = diff === '0' ? 8 : diff === '1' ? 10 : diff === '2' ? 12 : 14;
     const newGrid = generateMaze(size, size);
     
     // Place random doors
-    const numDoors = level === '0' ? 2 : level === '1' ? 3 : level === '2' ? 4 : 5;
+    const numDoors = diff === '0' ? 2 : diff === '1' ? 3 : diff === '2' ? 4 : 5;
     let doorsPlaced = 0;
     while(doorsPlaced < numDoors) {
        const rx = Math.floor(Math.random() * size);
        const ry = Math.floor(Math.random() * size);
-       // don't place on start or goal
        if ((rx === 0 && ry === 0) || (rx === size-1 && ry === size-1)) continue;
        
        if (!newGrid[ry][rx].isDoor) {
          newGrid[ry][rx].isDoor = true;
-        newGrid[ry][rx].doorData = { ...generateQuestion(level), isOpen: false, x: rx, y: ry };
+         newGrid[ry][rx].doorData = { ...generateQuestion(diff), isOpen: false, x: rx, y: ry };
          doorsPlaced++;
        }
     }
@@ -122,14 +124,41 @@ function MazeGame() {
     setGameState('playing');
   };
 
+  const nextLevel = () => {
+    if (level < totalLevels) {
+      setLevel(prev => prev + 1);
+      const size = difficulty === '0' ? 8 : difficulty === '1' ? 10 : difficulty === '2' ? 12 : 14;
+      const newGrid = generateMaze(size, size);
+      
+      const numDoors = difficulty === '0' ? 2 : difficulty === '1' ? 3 : difficulty === '2' ? 4 : 5;
+      let doorsPlaced = 0;
+      while(doorsPlaced < numDoors) {
+         const rx = Math.floor(Math.random() * size);
+         const ry = Math.floor(Math.random() * size);
+         if ((rx === 0 && ry === 0) || (rx === size-1 && ry === size-1)) continue;
+         if (!newGrid[ry][rx].isDoor) {
+           newGrid[ry][rx].isDoor = true;
+           newGrid[ry][rx].doorData = { ...generateQuestion(difficulty), isOpen: false, x: rx, y: ry };
+           doorsPlaced++;
+         }
+      }
+      setGrid(newGrid);
+      setPlayerPos({ x: 0, y: 0 });
+      setGameState('playing');
+    } else {
+      setGameState('won');
+      if (isSoundEnabled) soundEffects.playWinSound();
+    }
+  };
+
   const handleMove = useCallback((dx, dy) => {
     if (gameState !== 'playing') return;
 
     const cell = grid[playerPos.y][playerPos.x];
-    if (dx === 0 && dy === -1 && cell.walls.top) { soundEffects.playWrong(); return; }
-    if (dx === 1 && dy === 0 && cell.walls.right) { soundEffects.playWrong(); return; }
-    if (dx === 0 && dy === 1 && cell.walls.bottom) { soundEffects.playWrong(); return; }
-    if (dx === -1 && dy === 0 && cell.walls.left) { soundEffects.playWrong(); return; }
+    if (dx === 0 && dy === -1 && cell.walls.top) { if (isSoundEnabled) soundEffects.playWrong(); return; }
+    if (dx === 1 && dy === 0 && cell.walls.right) { if (isSoundEnabled) soundEffects.playWrong(); return; }
+    if (dx === 0 && dy === 1 && cell.walls.bottom) { if (isSoundEnabled) soundEffects.playWrong(); return; }
+    if (dx === -1 && dy === 0 && cell.walls.left) { if (isSoundEnabled) soundEffects.playWrong(); return; }
 
     const newX = playerPos.x + dx;
     const newY = playerPos.y + dy;
@@ -141,20 +170,20 @@ function MazeGame() {
     if (targetCell.isDoor && !targetCell.doorData.isOpen) {
       setCurrentDoor(targetCell.doorData);
       setGameState('door-modal');
-      soundEffects.playClick();
+      if (isSoundEnabled) soundEffects.playClick();
       return;
     }
 
     if (targetCell.isGoal) {
       setPlayerPos({ x: newX, y: newY });
-      setGameState('won');
-      soundEffects.playWinSound();
+      if (isSoundEnabled) soundEffects.playCorrect();
+      setTimeout(nextLevel, 300);
       return;
     }
 
     setPlayerPos({ x: newX, y: newY });
-    soundEffects.playClick();
-  }, [gameState, playerPos, grid]);
+    if (isSoundEnabled) soundEffects.playClick();
+  }, [gameState, playerPos, grid, isSoundEnabled, level, difficulty]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -172,9 +201,33 @@ function MazeGame() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleMove, gameState]);
 
+  useEffect(() => {
+    if (gameState === 'playing') {
+      timerRef.current = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            setGameState('won'); // End game if time runs out
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      clearInterval(timerRef.current);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [gameState]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const handleDoorSubmit = () => {
     if (parseInt(inputValue) === currentDoor.answer) {
-      soundEffects.playCorrect();
+      if (isSoundEnabled) soundEffects.playCorrect();
       
       setGrid(prev => {
         const newGrid = [...prev];
@@ -188,7 +241,7 @@ function MazeGame() {
       setInputValue('');
       setFeedback(null);
     } else {
-      soundEffects.playWrong();
+      if (isSoundEnabled) soundEffects.playWrong();
       setFeedback('wrong');
       setTimeout(() => setFeedback(null), 1000);
     }
@@ -198,104 +251,143 @@ function MazeGame() {
     if (e.key === 'Enter') handleDoorSubmit();
   };
 
+  const toggleSound = () => {
+    setIsSoundEnabled(!isSoundEnabled);
+    soundEffects.playClick();
+  };
+
   return (
-    <>
+    <div className="maze-game-wrapper">
       <MobileNav role="Student" />
       <Navbar />
       
-      <div className="maze-container">
-        <div className="racer-header">
-          <button onClick={() => navigate(-1)} className="back-button">
-            <ChevronLeft size={20} />
-            <span>Back</span>
-          </button>
-          <h2>Math Maze 🐿️</h2>
-        </div>
-
-        {gameState === 'menu' && (
-          <div className="maze-menu">
-            <h1>Acorn Maze</h1>
-            <p>Help the squirrel find its way to the acorn!</p>
-            <p className="subtitle">Solve math problems to break through the locked branches.</p>
-            <div className="difficulty-buttons">
-              <button className="diff-btn easy" onClick={() => startGame('0')}>Level 0</button>
-              <button className="diff-btn medium" onClick={() => startGame('1')}>Level 1</button>
-              <button className="diff-btn hard" onClick={() => startGame('2')}>Level 2</button>
-              <button className="diff-btn" style={{background: '#4f46e5'}} onClick={() => startGame('3')}>Level 3</button>
-            </div>
-          </div>
-        )}
-
-        {gameState === 'loading' && (
-          <div className="maze-menu" style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-             <Loader2 size={48} className="spin-animation" color="#d97706" />
-             <h3 style={{marginTop: '1rem'}}>Drawing Maze...</h3>
-          </div>
-        )}
-
-        { (gameState === 'playing' || gameState === 'door-modal' || gameState === 'won') && grid.length > 0 && (
-          <div className="maze-board-container">
-            <div className="maze-world">
-              {/* Squirrel character on the left */}
-              <div className="maze-character-left">
-                <img src={squirrelImg} alt="Squirrel" />
-              </div>
-              
-              {/* The actual Maze */}
-              <div className="maze-grid algorithmic" 
-                style={{ 
-                  gridTemplateColumns: `repeat(${grid[0].length}, 1fr)`,
-                  gridTemplateRows: `repeat(${grid.length}, 1fr)`
-                }}
-              >
-                {/* Entry and Exit arrows */}
-                <div className="entry-arrow">➔</div>
-                <div className="exit-arrow">⬇</div>
-
-                {grid.map((row, y) => (
-                  row.map((cell, x) => {
-                    const isPlayer = playerPos.x === x && playerPos.y === y;
-                    const classes = [];
-                    if (cell.walls.top) classes.push('wall-t');
-                    if (cell.walls.right) classes.push('wall-r');
-                    if (cell.walls.bottom) classes.push('wall-b');
-                    if (cell.walls.left) classes.push('wall-l');
-                    
-                    return (
-                      <div key={`${x}-${y}`} className={`maze-cell ${classes.join(' ')}`}>
-                        {isPlayer && <div className="player-avatar">🐿️</div>}
-                        {cell.isDoor && !cell.doorData.isOpen && !isPlayer && <div className="door-icon">🔒</div>}
-                      </div>
-                    );
-                  })
-                ))}
-              </div>
-
-              {/* Acorns at bottom right */}
-              <div className="maze-goal-right">
-                <div className="acorn-pile">🌰🌰🌰</div>
-              </div>
-            </div>
-            
-            <div className="maze-controls">
-              <div className="d-pad">
-                <button className="d-btn up" onClick={() => handleMove(0, -1)}><ArrowUp /></button>
-                <div className="d-row">
-                  <button className="d-btn left" onClick={() => handleMove(-1, 0)}><ArrowLeft /></button>
-                  <button className="d-btn right" onClick={() => handleMove(1, 0)}><ArrowRight /></button>
+      <div className="maze-main-container">
+        {gameState === 'menu' ? (
+          <div className="maze-menu-modern">
+             <div className="menu-card">
+                <div className="menu-icon-wrapper">
+                   <Trophy size={64} color="#a855f7" />
                 </div>
-                <button className="d-btn down" onClick={() => handleMove(0, 1)}><ArrowDown /></button>
+                <h1>MAZE GAME</h1>
+                <p>Navigate through the maze and solve math problems to unlock doors!</p>
+                <div className="difficulty-grid">
+                  <button className="diff-card level-0" onClick={() => startGame('0')}>
+                    <span className="lvl">Level 0</span>
+                    <span className="desc">Easy</span>
+                  </button>
+                  <button className="diff-card level-1" onClick={() => startGame('1')}>
+                    <span className="lvl">Level 1</span>
+                    <span className="desc">Normal</span>
+                  </button>
+                  <button className="diff-card level-2" onClick={() => startGame('2')}>
+                    <span className="lvl">Level 2</span>
+                    <span className="desc">Hard</span>
+                  </button>
+                  <button className="diff-card level-3" onClick={() => startGame('3')}>
+                    <span className="lvl">Level 3</span>
+                    <span className="desc">Expert</span>
+                  </button>
+                </div>
+                <button onClick={() => navigate(-1)} className="back-link">
+                  <ChevronLeft size={20} /> Back to Games
+                </button>
+             </div>
+          </div>
+        ) : gameState === 'loading' ? (
+          <div className="maze-loading">
+             <Loader2 size={64} className="animate-spin" color="#a855f7" />
+             <h2>Preparing Maze...</h2>
+          </div>
+        ) : (
+          <div className="maze-game-layout">
+            {/* Left Side: Maze and Top HUD */}
+            <div className="maze-game-area">
+              <div className="maze-hud">
+                <button className="hud-btn sound" onClick={toggleSound}>
+                  {isSoundEnabled ? <Volume2 /> : <VolumeX />}
+                </button>
+                
+                <div className="hud-timer">
+                  <Clock size={24} />
+                  <span>{formatTime(timeLeft)}</span>
+                </div>
+                
+                <div className="hud-level">
+                  <span>{level}/{totalLevels}</span>
+                </div>
+              </div>
+
+              <div className="maze-viewport">
+                <div className="maze-grid-wrapper">
+                  <div className="start-arrow">⬇</div>
+                  <div className="maze-render-grid" 
+                    style={{ 
+                      gridTemplateColumns: `repeat(${grid[0]?.length || 0}, 1fr)`,
+                      gridTemplateRows: `repeat(${grid?.length || 0}, 1fr)`
+                    }}
+                  >
+                    {grid.map((row, y) => (
+                      row.map((cell, x) => {
+                        const isPlayer = playerPos.x === x && playerPos.y === y;
+                        const classes = [];
+                        if (cell.walls.top) classes.push('w-t');
+                        if (cell.walls.right) classes.push('w-r');
+                        if (cell.walls.bottom) classes.push('w-b');
+                        if (cell.walls.left) classes.push('w-l');
+                        
+                        return (
+                          <div key={`${x}-${y}`} className={`m-cell ${classes.join(' ')}`}>
+                            {isPlayer && (
+                              <div className="player-indicator">
+                                <div className="dot"></div>
+                              </div>
+                            )}
+                            {cell.isDoor && !cell.doorData.isOpen && !isPlayer && (
+                              <div className="m-door">🔒</div>
+                            )}
+                            {cell.isGoal && <div className="m-goal">🏁</div>}
+                          </div>
+                        );
+                      })
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side: Sidebar */}
+            <div className="maze-sidebar">
+              <div className="sidebar-header">
+                <span className="m-title-part m-1">MAZE</span>
+                <span className="m-title-part m-2">GAME</span>
+              </div>
+
+              <div className="sidebar-character">
+                <img src={CHARACTER_URL} alt="Character" />
+              </div>
+
+              <div className="sidebar-controls">
+                <div className="dpad-modern">
+                  <button className="d-up" onClick={() => handleMove(0, -1)}><ArrowUp /></button>
+                  <div className="d-mid">
+                    <button className="d-left" onClick={() => handleMove(-1, 0)}><ArrowLeft /></button>
+                    <button className="d-right" onClick={() => handleMove(1, 0)}><ArrowRight /></button>
+                  </div>
+                  <button className="d-down" onClick={() => handleMove(0, 1)}><ArrowDown /></button>
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {gameState === 'door-modal' && currentDoor && (
-          <div className="door-modal-overlay">
-            <div className={`door-modal-content ${feedback}`}>
-              <h3>Locked Path!</h3>
-              <p className="door-problem">{currentDoor.text}</p>
-              <div className="door-input-group">
+          <div className="maze-overlay">
+            <div className={`maze-modal ${feedback}`}>
+              <h3>LOCKED!</h3>
+              <div className="problem-box">
+                {currentDoor.text}
+              </div>
+              <div className="input-group-modern">
                 <input
                   type="number"
                   value={inputValue}
@@ -304,28 +396,37 @@ function MazeGame() {
                   placeholder="?"
                   autoFocus
                 />
-                <button onClick={handleDoorSubmit}>Unlock</button>
+                <button onClick={handleDoorSubmit}>GO</button>
               </div>
-              <button className="cancel-btn" onClick={() => setGameState('playing')}>Go Back</button>
+              <button className="modal-close" onClick={() => setGameState('playing')}>CANCEL</button>
             </div>
           </div>
         )}
 
         {gameState === 'won' && (
-          <div className="door-modal-overlay">
-            <div className="door-modal-content won">
-              <h2>You Found It! 🌰</h2>
-              <p>The squirrel got the acorn thanks to your math skills!</p>
-              <div className="gameover-actions mt-4" style={{justifyContent: 'center'}}>
-                <button className="play-again-btn" onClick={() => setGameState('menu')}>
-                  <RefreshCcw size={20} /> Play Again
-                </button>
+          <div className="maze-overlay">
+            <div className="maze-modal winner">
+              <Trophy size={64} color="#f59e0b" />
+              <h2>MAZE MASTER!</h2>
+              <p>Great job solving the math problems and navigating the maze!</p>
+              <div className="won-stats">
+                 <div className="stat">
+                    <span>Level</span>
+                    <strong>{level}</strong>
+                 </div>
+                 <div className="stat">
+                    <span>Time Left</span>
+                    <strong>{formatTime(timeLeft)}</strong>
+                 </div>
               </div>
+              <button className="restart-btn" onClick={() => setGameState('menu')}>
+                <RefreshCcw size={20} /> Play Again
+              </button>
             </div>
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
