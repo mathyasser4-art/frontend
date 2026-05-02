@@ -173,6 +173,21 @@ const GamesMenu = () => {
             </div>
           </div>
 
+          {/* Jet Ski Racing */}
+          <div className="game-card-full" onClick={() => navigate('/student/games/jetski')}>
+            <div className="game-thumbnail thumb-jetski" style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                <span style={{fontSize: '4.5rem', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.2))'}}>🚤</span>
+                <div className="waves" style={{ position: 'absolute', bottom: '0', width: '100%', height: '30px', background: 'rgba(255,255,255,0.2)', clipPath: 'polygon(0% 100%, 10% 80%, 20% 100%, 30% 80%, 40% 100%, 50% 80%, 60% 100%, 70% 80%, 80% 100%, 90% 80%, 100% 100%)' }}></div>
+            </div>
+            <div className="game-card-body">
+              <h3>Jet Ski Racing</h3>
+              <p>Solve 3 math questions to unlock the race! Master the waves and speed to victory.</p>
+              <button className="play-now-btn">
+                <Play size={20} fill="currentColor" /> Play Now
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
