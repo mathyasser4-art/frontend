@@ -8,7 +8,7 @@ import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './HighwayRiderGame.css';
 import './ArcheryGame.css'; // Reuse the lock UI styles
 
-const QUESTIONS_TO_UNLOCK = 3;
+const QUESTIONS_TO_UNLOCK = 5;
 const IFRAME_URL = "https://play.famobi.com/highway-rider-extreme";
 
 const HighwayRiderGame = () => {
@@ -85,7 +85,7 @@ const HighwayRiderGame = () => {
             <h1>Highway Rider Extreme 🏍️</h1>
             <p>Put your helmet on and race down the highway in this super fast-paced game!</p>
             <p style={{color: '#64748b', marginTop: '1rem'}}>
-              <strong>How it works:</strong> You must solve <strong>3 math questions</strong> to completely unlock the game and play forever!
+              <strong>How it works:</strong> You must solve <strong>5 math questions</strong> to completely unlock the game and play forever!
             </p>
             
             <div className="difficulty-buttons">

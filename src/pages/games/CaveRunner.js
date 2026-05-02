@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Play, RotateCcw, Heart, ShieldAlert, Award } from 'lucide-react';
+import { ArrowLeft, Play, RotateCcw, Heart, ShieldAlert, Award, Sun } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
@@ -9,19 +9,27 @@ import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 
 import './CaveRunner.css';
 
-// SVG Assets for high quality and no broken links
+// Profile-facing Bunny SVG (Facing Right)
 const BunnySVG = () => (
   <svg viewBox="0 0 100 100" className="bunny-svg">
-    <ellipse cx="50" cy="65" rx="30" ry="25" fill="#f8fafc" />
-    <circle cx="50" cy="35" r="20" fill="#f8fafc" />
-    <ellipse cx="42" cy="15" rx="8" ry="18" fill="#f8fafc" transform="rotate(-10, 42, 15)" />
-    <ellipse cx="58" cy="15" rx="8" ry="18" fill="#f8fafc" transform="rotate(10, 58, 15)" />
-    <ellipse cx="42" cy="15" rx="4" ry="12" fill="#fda4af" transform="rotate(-10, 42, 15)" />
-    <ellipse cx="58" cy="15" rx="4" ry="12" fill="#fda4af" transform="rotate(10, 58, 15)" />
-    <circle cx="43" cy="32" r="3" fill="#1e293b" />
-    <circle cx="57" cy="32" r="3" fill="#1e293b" />
-    <circle cx="50" cy="40" r="4" fill="#fda4af" />
-    <path d="M 45 65 Q 50 70 55 65" stroke="#cbd5e1" fill="none" strokeWidth="2" />
+    {/* Body */}
+    <ellipse cx="45" cy="70" rx="35" ry="22" fill="#f8fafc" />
+    {/* Tail */}
+    <circle cx="12" cy="70" r="8" fill="#f1f5f9" />
+    {/* Head */}
+    <circle cx="70" cy="50" r="20" fill="#f8fafc" />
+    {/* Ears */}
+    <ellipse cx="65" cy="25" rx="7" ry="20" fill="#f8fafc" transform="rotate(-5, 65, 25)" />
+    <ellipse cx="75" cy="25" rx="7" ry="20" fill="#f8fafc" transform="rotate(5, 75, 25)" />
+    <ellipse cx="65" cy="25" rx="3" ry="12" fill="#fda4af" transform="rotate(-5, 65, 25)" />
+    <ellipse cx="75" cy="25" rx="3" ry="12" fill="#fda4af" transform="rotate(5, 75, 25)" />
+    {/* Eye */}
+    <circle cx="80" cy="45" r="3" fill="#1e293b" />
+    {/* Nose */}
+    <circle cx="88" cy="52" r="3" fill="#fda4af" />
+    {/* Paws */}
+    <ellipse cx="40" cy="88" rx="8" ry="4" fill="#f1f5f9" />
+    <ellipse cx="65" cy="88" rx="8" ry="4" fill="#f1f5f9" />
   </svg>
 );
 
@@ -49,7 +57,7 @@ const BunnyRun = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const [gameState, setGameState] = useState('menu'); // menu, playing, gameover
+  const [gameState, setGameState] = useState('menu');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(5);
   const [isJumping, setIsJumping] = useState(false);
@@ -58,35 +66,31 @@ const BunnyRun = () => {
   const isFallingRef = useRef(false);
   const [isWaitingForAnswer, setIsWaitingForAnswer] = useState(false);
   const isWaitingRef = useRef(false);
-  const [obstaclePos, setObstaclePos] = useState(120); // percentage 120 to -GAP_WIDTH
-  const OBSTACLE_TYPES = ['gap', 'rock', 'pine_tree', 'fire'];
-  const [obstacleType, setObstacleType] = useState('gap'); // 'gap' or 'rock' or 'pine_tree' or 'fire'
-  const [speed, setSpeed] = useState(1); // game speed
+  const [obstaclePos, setObstaclePos] = useState(120);
+  const OBSTACLE_TYPES = ['gap', 'rock'];
+  const [obstacleType, setObstacleType] = useState('gap');
+  const [speed, setSpeed] = useState(0.8);
 
-  const GAP_WIDTH = 20;
-  
-  // Timed Question State
+  const GAP_WIDTH = 25;
   const timeSinceLastQuestionRef = useRef(0);
-  const QUESTION_INTERVAL = 10000; // 10 seconds
+  const QUESTION_INTERVAL = 9000;
   
-  // Math Question State
-  const [question, setQuestion] = useState({ num1: 0, num2: 0, op: '+' });
+  const [question, setQuestion] = useState({ text: '' });
   const [options, setOptions] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState(0);
   const [difficulty, setDifficulty] = useState('0');
 
-  // Coins State
   const [coins, setCoins] = useState([]);
   const nextCoinId = useRef(0);
-
   const gameLoopRef = useRef(null);
 
   const spawnCoins = useCallback(() => {
     const newCoins = [];
+    const basePos = 100 + Math.random() * 20;
     for (let i = 0; i < 3; i++) {
       newCoins.push({
         id: nextCoinId.current++,
-        pos: 100 + (i * 25), // Spaced out
+        pos: basePos + (i * 12),
         collected: false
       });
     }
@@ -94,7 +98,7 @@ const BunnyRun = () => {
   }, []);
 
   const generateQuestion = (level = difficulty) => {
-    const q = generateArithmeticMcq(level, 3);
+    const q = generateArithmeticMcq(level, 4);
     setQuestion({ text: q.text });
     setCorrectAnswer(q.answer);
     setOptions(q.options);
@@ -106,9 +110,9 @@ const BunnyRun = () => {
     setGameState('playing');
     setScore(0);
     setLives(5);
-    setSpeed(1.2);
-    setObstaclePos(120);
-    setObstacleType('gap');
+    setSpeed(0.8); // Start slower
+    setObstaclePos(150);
+    setObstacleType('rock');
     setIsWaitingForAnswer(false);
     isWaitingRef.current = false;
     setIsFalling(false);
@@ -136,10 +140,9 @@ const BunnyRun = () => {
     setTimeout(() => {
       setIsJumping(false);
       isJumpingRef.current = false;
-    }, 700); // slightly faster jump for better feel
+    }, 700);
   }, [gameState]);
 
-  // Listen for spacebar
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.code === 'Space') {
@@ -155,9 +158,10 @@ const BunnyRun = () => {
     if (gameState !== 'playing') return;
 
     if (selectedAns === correctAnswer) {
-      soundEffects.playWinSound();
+      soundEffects.playCorrect();
       setScore(s => s + 50);
-      setSpeed(s => Math.min(s + 0.15, 3.5)); // Increase speed dynamically
+      setSpeed(s => Math.min(s + 0.1, 3.2)); // Increase speed gradually
+      jump();
     } else {
       soundEffects.playWrong();
       setLives(l => {
@@ -167,14 +171,12 @@ const BunnyRun = () => {
       });
     }
 
-    // Unfreeze and reset question timer
     setIsWaitingForAnswer(false);
     isWaitingRef.current = false;
     timeSinceLastQuestionRef.current = 0;
     generateQuestion(difficulty);
   };
 
-  // Game Loop
   useEffect(() => {
     if (gameState !== 'playing') return;
 
@@ -187,7 +189,6 @@ const BunnyRun = () => {
       if (!isWaitingRef.current && !isFallingRef.current) {
         timeSinceLastQuestionRef.current += deltaTime;
 
-        // Check if it's time to ask a question
         if (timeSinceLastQuestionRef.current >= QUESTION_INTERVAL) {
           setIsWaitingForAnswer(true);
           isWaitingRef.current = true;
@@ -199,23 +200,22 @@ const BunnyRun = () => {
 
         let newPos = pos - (speed * (deltaTime / 16));
         
-        // Check collision based on obstacle type
+        // Accurate Collision Detection
+        // Bunny center is at ~20%. Bounding box is ~15% to 25%.
         let hitObstacle = false;
-        
         if (obstacleType === 'gap') {
-          // Gap is from newPos to newPos + GAP_WIDTH (20)
-          if (newPos <= 15 && (newPos + GAP_WIDTH) >= 20 && !isJumpingRef.current && !isFallingRef.current) {
+          // If bunny center (20%) is over a gap. Gap starts at pos and ends at pos + GAP_WIDTH.
+          if (newPos <= 22 && (newPos + GAP_WIDTH) >= 28 && !isJumpingRef.current) {
             hitObstacle = true;
           }
         } else {
-          // Rock, Pine Tree, Fire is at newPos. Width is approx 5-10%.
-          if (newPos <= 18 && newPos >= 12 && !isJumpingRef.current && !isFallingRef.current) {
+          // If bunny (15-25%) hits rock (pos to pos+8%).
+          if (newPos <= 26 && (newPos + 8) >= 14 && !isJumpingRef.current) {
             hitObstacle = true;
           }
         }
 
         if (hitObstacle) {
-          // Hit the obstacle! Fall down / trip!
           soundEffects.playWrong();
           setIsFalling(true);
           isFallingRef.current = true;
@@ -228,36 +228,33 @@ const BunnyRun = () => {
               } else {
                 setIsFalling(false);
                 isFallingRef.current = false;
-                setObstaclePos(120); // Reset obstacle far away
-                setObstacleType(OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)]);
+                setObstaclePos(120);
+                setObstacleType(Math.random() > 0.4 ? 'rock' : 'gap');
                 spawnCoins();
               }
               return newLives;
             });
           }, 600);
           
-          return pos; // Stop moving obstacle during fall
+          return pos;
         }
         
-        // Loop obstacle infinitely
         if (newPos < -GAP_WIDTH) {
-           newPos = 120 + Math.random() * 50; // Random distance before next obstacle
-           setObstacleType(Math.random() > 0.5 ? 'gap' : 'rock');
-           spawnCoins(); // Spawn new coins with the new obstacle
+           newPos = 120 + Math.random() * 40;
+           setObstacleType(Math.random() > 0.4 ? 'rock' : 'gap');
+           spawnCoins();
         }
         
         return newPos;
       });
 
-      // Move coins
       setCoins(prevCoins => {
         if (isWaitingRef.current || isFallingRef.current) return prevCoins;
         
         return prevCoins.map(c => {
           if (c.collected) return c;
           const newCoinPos = c.pos - (speed * (deltaTime / 16));
-          // Collect if it hits the player
-          if (newCoinPos <= 20 && newCoinPos >= 10 && !isFallingRef.current) {
+          if (newCoinPos <= 25 && newCoinPos >= 15 && !isFallingRef.current) {
              soundEffects.playNumberClick();
              setScore(s => s + 10);
              return { ...c, pos: newCoinPos, collected: true };
@@ -270,7 +267,6 @@ const BunnyRun = () => {
     };
 
     gameLoopRef.current = requestAnimationFrame(loop);
-
     return () => cancelAnimationFrame(gameLoopRef.current);
   }, [gameState, speed, handleGameOver, spawnCoins]);
 
@@ -307,9 +303,12 @@ const BunnyRun = () => {
         </div>
 
         <div className={`game-area-premium ${isWaitingForAnswer ? 'frozen' : ''}`}>
-          {/* Animated Background Layers */}
-          <div className="sky-layer">
-            <div className="sun-glow"></div>
+          {/* Sunny Background Layers */}
+          <div className="sky-layer sunny">
+            <div className="sun-bright">
+              <Sun size={120} color="#fbbf24" strokeWidth={3} />
+            </div>
+            <div className="sun-glow-bright"></div>
             <div className="clouds-container">
               <div className="cloud-p p1"></div>
               <div className="cloud-p p2"></div>
@@ -402,4 +401,5 @@ const BunnyRun = () => {
 };
 
 export default BunnyRun;
+
 

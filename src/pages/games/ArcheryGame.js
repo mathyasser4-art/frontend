@@ -7,7 +7,7 @@ import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './ArcheryGame.css';
 
-const QUESTIONS_TO_UNLOCK = 3;
+const QUESTIONS_TO_UNLOCK = 5;
 
 const ArcheryGame = () => {
   const navigate = useNavigate();
@@ -88,7 +88,7 @@ const ArcheryGame = () => {
             <h1>Battle Racing Stars 🏎️</h1>
             <p>Race against others in this fun multiplayer game!</p>
             <p style={{color: '#64748b', marginTop: '1rem'}}>
-              <strong>How it works:</strong> You must solve <strong>3 math questions</strong> to completely unlock the game and play forever!
+              <strong>How it works:</strong> You must solve <strong>5 math questions</strong> to completely unlock the game and play forever!
             </p>
             
             <div className="difficulty-buttons">

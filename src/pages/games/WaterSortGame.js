@@ -7,7 +7,7 @@ import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './WaterSortGame.css';
 
-const QUESTIONS_TO_UNLOCK = 3;
+const QUESTIONS_TO_UNLOCK = 5;
 
 const WaterSortGame = () => {
   const navigate = useNavigate();
@@ -84,7 +84,7 @@ const WaterSortGame = () => {
             <h1>Water Sort Puzzle 🧪</h1>
             <p>Sort the colored water in the glasses until all colors are in the same glass!</p>
             <p style={{color: '#64748b', marginTop: '1rem'}}>
-              <strong>How it works:</strong> You must solve <strong>3 math questions</strong> to unlock the game!
+              <strong>How it works:</strong> You must solve <strong>5 math questions</strong> to unlock the game!
             </p>
             
             <div className="difficulty-buttons">

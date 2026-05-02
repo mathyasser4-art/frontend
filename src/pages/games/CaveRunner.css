@@ -73,7 +73,7 @@
 .game-area-premium {
   position: relative;
   flex: 1;
-  background: linear-gradient(to bottom, #0ea5e9 0%, #38bdf8 100%);
+  background: linear-gradient(to bottom, #7dd3fc 0%, #38bdf8 100%);
   border-radius: 48px;
   overflow: hidden;
   box-shadow: 0 40px 80px -20px rgba(14, 165, 233, 0.3);
@@ -83,34 +83,51 @@
   flex-direction: column;
 }
 
-/* Sky & Elements */
-.sky-layer {
+/* Sky & Sunny Elements */
+.sky-layer.sunny {
   position: absolute;
   inset: 0;
   z-index: 1;
+  background: linear-gradient(to bottom, #bae6fd 0%, #7dd3fc 100%);
 }
 
-.sun-glow {
+.sun-bright {
   position: absolute;
-  top: -100px;
-  right: -100px;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+  top: 40px;
+  right: 60px;
+  z-index: 2;
+  filter: drop-shadow(0 0 30px #fbbf24);
+  animation: sunPulse 4s infinite ease-in-out;
+}
+
+@keyframes sunPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 30px #fbbf24); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 50px #fbbf24); }
+}
+
+.sun-glow-bright {
+  position: absolute;
+  top: -150px;
+  right: -150px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, transparent 70%);
   pointer-events: none;
+  z-index: 1;
 }
 
 .clouds-container {
   position: absolute;
   inset: 0;
+  z-index: 2;
 }
 
 .cloud-p {
   position: absolute;
   background: white;
   border-radius: 100px;
-  opacity: 0.8;
-  filter: blur(5px);
+  opacity: 0.9;
+  filter: blur(2px);
   animation: floatClouds 20s infinite linear;
 }
 

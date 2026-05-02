@@ -148,7 +148,7 @@ const GamesMenu = () => {
             </div>
             <div className="game-card-body">
               <h3>Highway Rider Extreme</h3>
-              <p>Solve 3 math questions to unlock the road! Put on a helmet and race down the highway.</p>
+              <p>Solve 5 math questions to unlock the road! Put on a helmet and race down the highway.</p>
               <button className="play-now-btn">
                 <Play size={20} fill="currentColor" /> Play Now
               </button>
@@ -166,7 +166,7 @@ const GamesMenu = () => {
             </div>
             <div className="game-card-body">
               <h3>Water Sort Puzzle</h3>
-              <p>Solve 3 math questions to unlock this fun puzzle! Sort the colored liquids into the right glasses.</p>
+              <p>Solve 5 math questions to unlock this fun puzzle! Sort the colored liquids into the right glasses.</p>
               <button className="play-now-btn">
                 <Play size={20} fill="currentColor" /> Play Now
               </button>
@@ -181,7 +181,7 @@ const GamesMenu = () => {
             </div>
             <div className="game-card-body">
               <h3>Jet Ski Racing</h3>
-              <p>Solve 3 math questions to unlock the race! Master the waves and speed to victory.</p>
+              <p>Solve 5 math questions to unlock the race! Master the waves and speed to victory.</p>
               <button className="play-now-btn">
                 <Play size={20} fill="currentColor" /> Play Now
               </button>

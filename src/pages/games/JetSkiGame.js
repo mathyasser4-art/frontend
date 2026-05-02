@@ -7,7 +7,7 @@ import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import './JetSkiGame.css';
 
-const QUESTIONS_TO_UNLOCK = 3;
+const QUESTIONS_TO_UNLOCK = 5;
 
 const JetSkiGame = () => {
   const navigate = useNavigate();
