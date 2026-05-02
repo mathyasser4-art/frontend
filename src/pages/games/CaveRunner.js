@@ -9,27 +9,27 @@ import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 
 import './CaveRunner.css';
 
-// Profile-facing Bunny SVG (Facing Right)
+// Profile-facing Bunny SVG (Facing LEFT)
 const BunnySVG = () => (
   <svg viewBox="0 0 100 100" className="bunny-svg">
     {/* Body */}
-    <ellipse cx="45" cy="70" rx="35" ry="22" fill="#f8fafc" />
+    <ellipse cx="55" cy="70" rx="35" ry="22" fill="#f8fafc" />
     {/* Tail */}
-    <circle cx="12" cy="70" r="8" fill="#f1f5f9" />
+    <circle cx="88" cy="70" r="8" fill="#f1f5f9" />
     {/* Head */}
-    <circle cx="70" cy="50" r="20" fill="#f8fafc" />
+    <circle cx="30" cy="50" r="20" fill="#f8fafc" />
     {/* Ears */}
-    <ellipse cx="65" cy="25" rx="7" ry="20" fill="#f8fafc" transform="rotate(-5, 65, 25)" />
-    <ellipse cx="75" cy="25" rx="7" ry="20" fill="#f8fafc" transform="rotate(5, 75, 25)" />
-    <ellipse cx="65" cy="25" rx="3" ry="12" fill="#fda4af" transform="rotate(-5, 65, 25)" />
-    <ellipse cx="75" cy="25" rx="3" ry="12" fill="#fda4af" transform="rotate(5, 75, 25)" />
+    <ellipse cx="25" cy="25" rx="7" ry="20" fill="#f8fafc" transform="rotate(5, 25, 25)" />
+    <ellipse cx="35" cy="25" rx="7" ry="20" fill="#f8fafc" transform="rotate(-5, 35, 25)" />
+    <ellipse cx="25" cy="25" rx="3" ry="12" fill="#fda4af" transform="rotate(5, 25, 25)" />
+    <ellipse cx="35" cy="25" rx="3" ry="12" fill="#fda4af" transform="rotate(-5, 35, 25)" />
     {/* Eye */}
-    <circle cx="80" cy="45" r="3" fill="#1e293b" />
+    <circle cx="20" cy="45" r="3" fill="#1e293b" />
     {/* Nose */}
-    <circle cx="88" cy="52" r="3" fill="#fda4af" />
+    <circle cx="12" cy="52" r="3" fill="#fda4af" />
     {/* Paws */}
-    <ellipse cx="40" cy="88" rx="8" ry="4" fill="#f1f5f9" />
-    <ellipse cx="65" cy="88" rx="8" ry="4" fill="#f1f5f9" />
+    <ellipse cx="35" cy="88" rx="8" ry="4" fill="#f1f5f9" />
+    <ellipse cx="60" cy="88" rx="8" ry="4" fill="#f1f5f9" />
   </svg>
 );
 
@@ -44,12 +44,29 @@ const CarrotSVG = () => (
   </svg>
 );
 
-const CrateSVG = () => (
-  <svg viewBox="0 0 100 100" className="crate-svg">
-    <rect x="5" y="5" width="90" height="90" fill="#78350f" rx="8" />
-    <rect x="15" y="15" width="70" height="70" fill="#92400e" rx="4" />
-    <path d="M 15 15 L 85 85 M 85 15 L 15 85" stroke="#78350f" strokeWidth="6" />
-    <rect x="5" y="5" width="90" height="90" fill="none" stroke="#451a03" strokeWidth="4" rx="8" />
+const RockSVG = () => (
+  <svg viewBox="0 0 100 100" className="rock-svg">
+    <path d="M 10 90 L 30 20 L 70 10 L 95 85 Z" fill="#64748b" />
+    <path d="M 30 20 L 50 40 L 70 10" fill="#94a3b8" />
+    <path d="M 10 90 L 30 20 L 50 40 L 40 90" fill="#475569" />
+  </svg>
+);
+
+const TreeSVG = () => (
+  <svg viewBox="0 0 100 100" className="tree-svg">
+    <rect x="42" y="60" width="16" height="30" fill="#78350f" />
+    <circle cx="50" cy="40" r="30" fill="#15803d" />
+    <circle cx="35" cy="50" r="20" fill="#166534" />
+    <circle cx="65" cy="50" r="20" fill="#166534" />
+    <circle cx="50" cy="25" r="15" fill="#15803d" />
+  </svg>
+);
+
+const FireSVG = () => (
+  <svg viewBox="0 0 100 100" className="fire-svg">
+    <path d="M 20 90 Q 50 0 80 90 Z" fill="#ef4444" />
+    <path d="M 35 90 Q 50 30 65 90 Z" fill="#f59e0b" />
+    <path d="M 45 90 Q 50 60 55 90 Z" fill="#fef08a" />
   </svg>
 );
 
@@ -67,11 +84,10 @@ const BunnyRun = () => {
   const [isWaitingForAnswer, setIsWaitingForAnswer] = useState(false);
   const isWaitingRef = useRef(false);
   const [obstaclePos, setObstaclePos] = useState(120);
-  const OBSTACLE_TYPES = ['gap', 'rock'];
-  const [obstacleType, setObstacleType] = useState('gap');
+  const OBSTACLE_TYPES = ['rock', 'tree', 'fire'];
+  const [obstacleType, setObstacleType] = useState('rock');
   const [speed, setSpeed] = useState(0.8);
 
-  const GAP_WIDTH = 25;
   const timeSinceLastQuestionRef = useRef(0);
   const QUESTION_INTERVAL = 9000;
   
@@ -110,7 +126,7 @@ const BunnyRun = () => {
     setGameState('playing');
     setScore(0);
     setLives(5);
-    setSpeed(0.8); // Start slower
+    setSpeed(0.8);
     setObstaclePos(150);
     setObstacleType('rock');
     setIsWaitingForAnswer(false);
@@ -160,7 +176,7 @@ const BunnyRun = () => {
     if (selectedAns === correctAnswer) {
       soundEffects.playCorrect();
       setScore(s => s + 50);
-      setSpeed(s => Math.min(s + 0.1, 3.2)); // Increase speed gradually
+      setSpeed(s => Math.min(s + 0.1, 3.2));
       jump();
     } else {
       soundEffects.playWrong();
@@ -201,18 +217,10 @@ const BunnyRun = () => {
         let newPos = pos - (speed * (deltaTime / 16));
         
         // Accurate Collision Detection
-        // Bunny center is at ~20%. Bounding box is ~15% to 25%.
         let hitObstacle = false;
-        if (obstacleType === 'gap') {
-          // If bunny center (20%) is over a gap. Gap starts at pos and ends at pos + GAP_WIDTH.
-          if (newPos <= 22 && (newPos + GAP_WIDTH) >= 28 && !isJumpingRef.current) {
-            hitObstacle = true;
-          }
-        } else {
-          // If bunny (15-25%) hits rock (pos to pos+8%).
-          if (newPos <= 26 && (newPos + 8) >= 14 && !isJumpingRef.current) {
-            hitObstacle = true;
-          }
+        // If bunny (15-25%) hits obstacle (pos to pos+8%).
+        if (newPos <= 26 && (newPos + 8) >= 14 && !isJumpingRef.current) {
+          hitObstacle = true;
         }
 
         if (hitObstacle) {
@@ -229,7 +237,7 @@ const BunnyRun = () => {
                 setIsFalling(false);
                 isFallingRef.current = false;
                 setObstaclePos(120);
-                setObstacleType(Math.random() > 0.4 ? 'rock' : 'gap');
+                setObstacleType(OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)]);
                 spawnCoins();
               }
               return newLives;
@@ -239,9 +247,9 @@ const BunnyRun = () => {
           return pos;
         }
         
-        if (newPos < -GAP_WIDTH) {
+        if (newPos < -20) {
            newPos = 120 + Math.random() * 40;
-           setObstacleType(Math.random() > 0.4 ? 'rock' : 'gap');
+           setObstacleType(OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)]);
            spawnCoins();
         }
         
@@ -323,22 +331,14 @@ const BunnyRun = () => {
 
           <div className="ground-world">
             <div className="ground-surface">
-              {obstacleType === 'gap' ? (
-                <>
-                  <div className="surface-part" style={{ width: `${obstaclePos}%` }}></div>
-                  <div className="surface-gap" style={{ width: `${GAP_WIDTH}%` }}></div>
-                  <div className="surface-part" style={{ flex: 1 }}></div>
-                </>
-              ) : (
-                <div className="surface-part full"></div>
-              )}
+              <div className="surface-part full"></div>
             </div>
 
-            {obstacleType === 'rock' && (
-              <div className="obstacle-node" style={{ left: `${obstaclePos}%` }}>
-                <CrateSVG />
-              </div>
-            )}
+            <div className="obstacle-node" style={{ left: `${obstaclePos}%` }}>
+              {obstacleType === 'rock' && <RockSVG />}
+              {obstacleType === 'tree' && <TreeSVG />}
+              {obstacleType === 'fire' && <FireSVG />}
+            </div>
 
             {coins.map(coin => !coin.collected && (
               <div key={coin.id} className="collectible-node" style={{ left: `${coin.pos}%` }}>
@@ -371,7 +371,7 @@ const BunnyRun = () => {
             <div className="game-overlay-screen">
               <div className="menu-inner">
                 <div className="game-logo">BUNNY RUN</div>
-                <p>Jump over crates and gaps. Collect carrots for points!</p>
+                <p>Jump over rocks, trees, and fire. Collect carrots for points!</p>
                 <div className="diff-select">
                   <button className="lvl-btn l0" onClick={() => startGame('0')}>Level 0</button>
                   <button className="lvl-btn l1" onClick={() => startGame('1')}>Level 1</button>

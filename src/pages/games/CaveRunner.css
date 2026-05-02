@@ -241,7 +241,6 @@
   width: 100%;
   height: 100%;
   filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
-  transform: scaleX(-1); /* Face the right way (forward) */
 }
 
 .bunny-node.running .bunny-svg {
@@ -249,8 +248,8 @@
 }
 
 @keyframes bunnyRunAnim {
-  from { transform: scaleX(-1) translateY(0); }
-  to { transform: scaleX(-1) translateY(-8px) scale(1.05); }
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px) scale(1.05); }
 }
 
 .bunny-node.jumping {
@@ -259,8 +258,8 @@
 
 @keyframes premiumJump {
   0% { bottom: 120px; transform: rotate(0deg); }
-  40% { bottom: 420px; transform: rotate(-10deg); }
-  60% { bottom: 420px; transform: rotate(-5deg); }
+  40% { bottom: 420px; transform: rotate(10deg); }
+  60% { bottom: 420px; transform: rotate(5deg); }
   100% { bottom: 120px; transform: rotate(0deg); }
 }
 
@@ -270,7 +269,7 @@
 
 @keyframes premiumFall {
   0% { bottom: 120px; transform: rotate(0deg); }
-  100% { bottom: 0; transform: rotate(-90deg); opacity: 0; }
+  100% { bottom: 0; transform: rotate(90deg); opacity: 0; }
 }
 
 /* Obstacles & Collectibles */
@@ -282,10 +281,25 @@
   z-index: 15;
 }
 
-.crate-svg {
+.rock-svg, .tree-svg, .fire-svg {
   width: 100%;
   height: 100%;
   filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+}
+
+.tree-svg {
+  height: 120px;
+  bottom: 0;
+  transform: translateY(-40px);
+}
+
+.fire-svg {
+  animation: fireFlicker 0.2s infinite alternate;
+}
+
+@keyframes fireFlicker {
+  from { transform: scale(1); filter: drop-shadow(0 0 10px #ef4444); }
+  to { transform: scale(1.05); filter: drop-shadow(0 0 20px #f59e0b); }
 }
 
 .collectible-node {

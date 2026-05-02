@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play } from 'lucide-react';
+import { ArrowLeft, Play, Timer, Trophy, Zap } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import './GamesMenu.css';
@@ -17,53 +17,76 @@ const GamesMenu = () => {
         <div className="games-header">
           <button 
             onClick={() => navigate('/dashboard/student')} 
-            className="back-button" 
-            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', color: '#64748b', fontSize: '1.2rem' }}
+            className="back-button-modern"
           >
             <ArrowLeft size={24} />
-            Back
+            <span>Back to Dashboard</span>
           </button>
-          <h1>Fun Games Room</h1>
+          <h1 className="menu-title">Adventure Games Room</h1>
+          <p className="menu-subtitle">Play, Learn, and Conquer the Leaderboard!</p>
         </div>
 
-        <div className="games-grid">
+        <div className="games-grid-premium">
           
-          {/* Bunny Run */}
-          <div className="game-card-full" onClick={() => navigate('/student/games/cave-runner')}>
-            <div className="game-thumbnail thumb-bunny">
-              <div className="sun"></div>
-              <div className="ground"></div>
-              <div className="character">🐇</div>
-              <div className="carrot">🥕</div>
-            </div>
-            <div className="game-card-body">
-              <h3>Bunny Run</h3>
-              <p>Jump over obstacles and collect carrots while solving quick math problems!</p>
-              <button className="play-now-btn">
-                <Play size={20} fill="currentColor" /> Play Now
-              </button>
+          {/* Jet Ski Racing - TOP 1 */}
+          <div className="game-card-premium" onClick={() => navigate('/student/games/jetski')}>
+            <div className="card-image-wrapper">
+              <div className="card-badge"><Zap size={14} fill="currentColor" /> FAST PACED</div>
+              <img src="/src/img/games/jetski_cover.jpg" alt="Jet Ski Racing" className="card-bg-img" />
+              <div className="card-overlay">
+                <div className="overlay-content">
+                  <div className="game-stats">
+                    <span><Timer size={16} /> 5 MINS</span>
+                    <span><Trophy size={16} /> RANKED</span>
+                  </div>
+                  <h3>Jet Ski Racing</h3>
+                  <p>Master the waves and speed to victory. Unlock with 5 math questions!</p>
+                  <button className="play-hover-btn">PLAY NOW</button>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Math Racer */}
-          <div className="game-card-full" onClick={() => navigate('/student/games/math-racer')}>
-            <div className="game-thumbnail thumb-racer">
-              <div className="lines"></div>
-              <div className="car1">🏎️</div>
-              <div className="car2" style={{filter: 'hue-rotate(90deg)'}}>🏎️</div>
-              <div className="finish"></div>
+          {/* Math Racer - TOP 2 */}
+          <div className="game-card-premium" onClick={() => navigate('/student/games/math-racer')}>
+            <div className="card-image-wrapper">
+              <div className="card-badge racer"><Zap size={14} fill="currentColor" /> TURBO</div>
+              <img src="/src/img/games/racer_cover.jpg" alt="Math Racer" className="card-bg-img" />
+              <div className="card-overlay">
+                <div className="overlay-content">
+                  <div className="game-stats">
+                    <span><Timer size={16} /> 3 MINS</span>
+                    <span><Trophy size={16} /> F1 GP</span>
+                  </div>
+                  <h3>Math Racer</h3>
+                  <p>Race F1 cars against AI bots! Answer correctly for a fiery speed boost.</p>
+                  <button className="play-hover-btn">PLAY NOW</button>
+                </div>
+              </div>
             </div>
-            <div className="game-card-body">
-              <h3>Math Racer</h3>
-              <p>Race your Formula 1 car against AI bots! Answer correctly to trigger your fiery boost.</p>
-              <button className="play-now-btn">
-                <Play size={20} fill="currentColor" /> Play Now
-              </button>
+          </div>
+
+          {/* Bunny Run - TOP 3 */}
+          <div className="game-card-premium" onClick={() => navigate('/student/games/cave-runner')}>
+            <div className="card-image-wrapper">
+              <div className="card-badge bunny"><Zap size={14} fill="currentColor" /> ADVENTURE</div>
+              <img src="/src/img/games/bunny_cover.jpg" alt="Bunny Run" className="card-bg-img" />
+              <div className="card-overlay">
+                <div className="overlay-content">
+                  <div className="game-stats">
+                    <span><Timer size={16} /> ENDLESS</span>
+                    <span><Trophy size={16} /> ARCADE</span>
+                  </div>
+                  <h3>Bunny Run</h3>
+                  <p>Hop & Harvest! Jump over rocks and fires to collect carrots.</p>
+                  <button className="play-hover-btn">PLAY NOW</button>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Math Maze */}
-          <div className="game-card-full" onClick={() => navigate('/student/games/maze')}>
+          <div className="game-card-full legacy" onClick={() => navigate('/student/games/maze')}>
             <div className="game-thumbnail thumb-maze">
               <div className="maze-lines"></div>
               <div className="player">🐿️</div>
@@ -71,7 +94,7 @@ const GamesMenu = () => {
             </div>
             <div className="game-card-body">
               <h3>Math Maze</h3>
-              <p>Navigate a massive, procedurally generated maze and unlock doors by solving equations!</p>
+              <p>Navigate a massive maze and unlock doors by solving equations!</p>
               <button className="play-now-btn">
                 <Play size={20} fill="currentColor" /> Play Now
               </button>
@@ -79,7 +102,7 @@ const GamesMenu = () => {
           </div>
 
           {/* Pattern Puzzle */}
-          <div className="game-card-full" onClick={() => navigate('/student/games/pattern-puzzle')}>
+          <div className="game-card-full legacy" onClick={() => navigate('/student/games/pattern-puzzle')}>
             <div className="game-thumbnail thumb-pattern">
               <div className="block">2</div>
               <div className="block">4</div>
@@ -96,7 +119,7 @@ const GamesMenu = () => {
           </div>
 
           {/* Image Puzzle */}
-          <div className="game-card-full" onClick={() => navigate('/student/games/image-puzzle')}>
+          <div className="game-card-full legacy" onClick={() => navigate('/student/games/image-puzzle')}>
             <div className="game-thumbnail thumb-image">
               <div className="piece">🧩</div>
               <div className="piece">🧩</div>
@@ -113,7 +136,7 @@ const GamesMenu = () => {
           </div>
 
           {/* Penalty Kick */}
-          <div className="game-card-full" onClick={() => navigate('/student/games/penalty-kick')}>
+          <div className="game-card-full legacy" onClick={() => navigate('/student/games/penalty-kick')}>
             <div className="game-thumbnail thumb-penalty" style={{ background: '#4ade80', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', height: '40%', border: '4px solid white', borderBottom: 'none' }}></div>
               <div style={{ fontSize: '3rem', zIndex: 2, marginBottom: '20px' }}>🧤</div>
@@ -129,13 +152,13 @@ const GamesMenu = () => {
           </div>
 
           {/* Battle Racing Stars Game */}
-          <div className="game-card-full" onClick={() => navigate('/student/games/archery')}>
+          <div className="game-card-full legacy" onClick={() => navigate('/student/games/archery')}>
             <div className="game-thumbnail thumb-archery" style={{ background: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{fontSize: '4rem'}}>🏎️</span>
             </div>
             <div className="game-card-body">
               <h3>Battle Racing Stars</h3>
-              <p>Solve math questions to earn playtime! Race against opponents in this fun multiplayer game!</p>
+              <p>Solve 5 math questions to earn playtime! Race against opponents!</p>
               <button className="play-now-btn">
                 <Play size={20} fill="currentColor" /> Play Now
               </button>
@@ -143,12 +166,12 @@ const GamesMenu = () => {
           </div>
 
           {/* Highway Rider Extreme */}
-          <div className="game-card-full" onClick={() => navigate('/student/games/highway-rider')}>
+          <div className="game-card-full legacy" onClick={() => navigate('/student/games/highway-rider')}>
             <div className="game-thumbnail thumb-highway" style={{ background: 'url(https://games.famobi.com/asset/highway-rider-extreme/teaser) center/cover', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             </div>
             <div className="game-card-body">
               <h3>Highway Rider Extreme</h3>
-              <p>Solve 5 math questions to unlock the road! Put on a helmet and race down the highway.</p>
+              <p>Solve 5 math questions to unlock the road! Fast-paced bike racing.</p>
               <button className="play-now-btn">
                 <Play size={20} fill="currentColor" /> Play Now
               </button>
@@ -156,7 +179,7 @@ const GamesMenu = () => {
           </div>
 
           {/* Water Sort Puzzle */}
-          <div className="game-card-full" onClick={() => navigate('/student/games/water-sort')}>
+          <div className="game-card-full legacy" onClick={() => navigate('/student/games/water-sort')}>
             <div className="game-thumbnail thumb-watersort" style={{ background: '#fdf4ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '5px' }}>
                 <div style={{display: 'flex', gap: '10px'}}>
                     <span style={{fontSize: '2.5rem'}}>🧪</span>
@@ -166,22 +189,7 @@ const GamesMenu = () => {
             </div>
             <div className="game-card-body">
               <h3>Water Sort Puzzle</h3>
-              <p>Solve 5 math questions to unlock this fun puzzle! Sort the colored liquids into the right glasses.</p>
-              <button className="play-now-btn">
-                <Play size={20} fill="currentColor" /> Play Now
-              </button>
-            </div>
-          </div>
-
-          {/* Jet Ski Racing */}
-          <div className="game-card-full" onClick={() => navigate('/student/games/jetski')}>
-            <div className="game-thumbnail thumb-jetski" style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-                <span style={{fontSize: '4.5rem', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.2))'}}>🚤</span>
-                <div className="waves" style={{ position: 'absolute', bottom: '0', width: '100%', height: '30px', background: 'rgba(255,255,255,0.2)', clipPath: 'polygon(0% 100%, 10% 80%, 20% 100%, 30% 80%, 40% 100%, 50% 80%, 60% 100%, 70% 80%, 80% 100%, 90% 80%, 100% 100%)' }}></div>
-            </div>
-            <div className="game-card-body">
-              <h3>Jet Ski Racing</h3>
-              <p>Solve 5 math questions to unlock the race! Master the waves and speed to victory.</p>
+              <p>Solve 5 math questions to unlock! Sort colored liquids into glasses.</p>
               <button className="play-now-btn">
                 <Play size={20} fill="currentColor" /> Play Now
               </button>
@@ -195,3 +203,4 @@ const GamesMenu = () => {
 };
 
 export default GamesMenu;
+
