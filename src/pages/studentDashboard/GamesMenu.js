@@ -32,7 +32,7 @@ const GamesMenu = () => {
           <div className="game-card-premium" onClick={() => navigate('/student/games/jetski')}>
             <div className="card-image-wrapper">
               <div className="card-badge"><Zap size={14} fill="currentColor" /> FAST PACED</div>
-              <img src="/src/img/games/jetski_cover.jpg" alt="Jet Ski Racing" className="card-bg-img" />
+              <img src="/img/games/jetski_cover.jpg" alt="Jet Ski Racing" className="card-bg-img" />
               <div className="card-overlay">
                 <div className="overlay-content">
                   <div className="game-stats">
@@ -51,7 +51,7 @@ const GamesMenu = () => {
           <div className="game-card-premium" onClick={() => navigate('/student/games/math-racer')}>
             <div className="card-image-wrapper">
               <div className="card-badge racer"><Zap size={14} fill="currentColor" /> TURBO</div>
-              <img src="/src/img/games/racer_cover.jpg" alt="Math Racer" className="card-bg-img" />
+              <img src="/img/games/racer_cover.jpg" alt="Math Racer" className="card-bg-img" />
               <div className="card-overlay">
                 <div className="overlay-content">
                   <div className="game-stats">
@@ -70,7 +70,7 @@ const GamesMenu = () => {
           <div className="game-card-premium" onClick={() => navigate('/student/games/cave-runner')}>
             <div className="card-image-wrapper">
               <div className="card-badge bunny"><Zap size={14} fill="currentColor" /> ADVENTURE</div>
-              <img src="/src/img/games/bunny_cover.jpg" alt="Bunny Run" className="card-bg-img" />
+              <img src="/img/games/bunny_cover.jpg" alt="Bunny Run" className="card-bg-img" />
               <div className="card-overlay">
                 <div className="overlay-content">
                   <div className="game-stats">

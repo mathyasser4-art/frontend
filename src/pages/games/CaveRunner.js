@@ -9,27 +9,27 @@ import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 
 import './CaveRunner.css';
 
-// Profile-facing Bunny SVG (Facing LEFT)
+// Profile-facing Bunny SVG (Facing RIGHT)
 const BunnySVG = () => (
   <svg viewBox="0 0 100 100" className="bunny-svg">
     {/* Body */}
-    <ellipse cx="55" cy="70" rx="35" ry="22" fill="#f8fafc" />
+    <ellipse cx="45" cy="70" rx="35" ry="22" fill="#f8fafc" />
     {/* Tail */}
-    <circle cx="88" cy="70" r="8" fill="#f1f5f9" />
+    <circle cx="12" cy="70" r="8" fill="#f1f5f9" />
     {/* Head */}
-    <circle cx="30" cy="50" r="20" fill="#f8fafc" />
+    <circle cx="70" cy="50" r="20" fill="#f8fafc" />
     {/* Ears */}
-    <ellipse cx="25" cy="25" rx="7" ry="20" fill="#f8fafc" transform="rotate(5, 25, 25)" />
-    <ellipse cx="35" cy="25" rx="7" ry="20" fill="#f8fafc" transform="rotate(-5, 35, 25)" />
-    <ellipse cx="25" cy="25" rx="3" ry="12" fill="#fda4af" transform="rotate(5, 25, 25)" />
-    <ellipse cx="35" cy="25" rx="3" ry="12" fill="#fda4af" transform="rotate(-5, 35, 25)" />
+    <ellipse cx="65" cy="25" rx="7" ry="20" fill="#f8fafc" transform="rotate(-5, 65, 25)" />
+    <ellipse cx="75" cy="25" rx="7" ry="20" fill="#f8fafc" transform="rotate(5, 75, 25)" />
+    <ellipse cx="65" cy="25" rx="3" ry="12" fill="#fda4af" transform="rotate(-5, 65, 25)" />
+    <ellipse cx="75" cy="25" rx="3" ry="12" fill="#fda4af" transform="rotate(5, 75, 25)" />
     {/* Eye */}
-    <circle cx="20" cy="45" r="3" fill="#1e293b" />
+    <circle cx="80" cy="45" r="3" fill="#1e293b" />
     {/* Nose */}
-    <circle cx="12" cy="52" r="3" fill="#fda4af" />
+    <circle cx="88" cy="52" r="3" fill="#fda4af" />
     {/* Paws */}
-    <ellipse cx="35" cy="88" rx="8" ry="4" fill="#f1f5f9" />
-    <ellipse cx="60" cy="88" rx="8" ry="4" fill="#f1f5f9" />
+    <ellipse cx="40" cy="88" rx="8" ry="4" fill="#f1f5f9" />
+    <ellipse cx="65" cy="88" rx="8" ry="4" fill="#f1f5f9" />
   </svg>
 );
 

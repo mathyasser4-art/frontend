@@ -37,7 +37,7 @@ function QuestionType() {
             <div className="option-icon-wrapper">
               <Gamepad2 size={64} strokeWidth={2} className="mcq-icon" />
             </div>
-            <h3 className="option-title">Arcade Games</h3>
+            <h3 className="option-title">Fun Games</h3>
             <p className="option-description">Play interactive educational math games</p>
           </Link>
         </div>
