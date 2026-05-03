@@ -22,11 +22,11 @@ function FeaturesSection() {
               <div className="feature-icon-large pink-icon">
                 <FileText size={48} strokeWidth={2} />
               </div>
-              <h3>{t('featuresSection.teacherHomeworkTitle')}</h3>
+              <h3 className="text-3d-glow">{t('featuresSection.teacherHomeworkTitle')}</h3>
               <p>{t('featuresSection.teacherHomeworkDesc')}</p>
             </div>
             <div className="feature-image-preview">
-              <img src={require('../../img/assignment-preview.png')} alt="Assignment Preview" />
+              <img src={require('../../img/reel-question.png')} alt="Reel Question Preview" className="feature-preview-img-premium" />
             </div>
           </div>
         </div>
@@ -109,7 +109,7 @@ function FeaturesSection() {
             <BarChart2 size={48} strokeWidth={2} />
           </div>
           <div className="feature-content">
-            <h3>{t('featuresSection.reportsTitle')}</h3>
+            <h3 className="text-3d-glow">{t('featuresSection.reportsTitle')}</h3>
             <p>{t('featuresSection.reportsDesc')}</p>
           </div>
         </div>
@@ -120,7 +120,7 @@ function FeaturesSection() {
             <Trophy size={48} strokeWidth={2} />
           </div>
           <div className="feature-content">
-            <h3>{t('featuresSection.competitionsTitle')}</h3>
+            <h3 className="text-3d-glow">{t('featuresSection.competitionsTitle')}</h3>
             <p>{t('featuresSection.competitionsDesc')}</p>
           </div>
         </div>

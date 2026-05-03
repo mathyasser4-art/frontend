@@ -219,3 +219,45 @@
         height: 70px;
     }
 }
+
+/* 3D Typography for Feature Headers */
+.text-3d-glow {
+    color: #1e293b;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-shadow: 
+        1px 1px 0px #cbd5e1,
+        2px 2px 0px #94a3b8,
+        0 0 20px rgba(99, 102, 241, 0.15);
+    transition: all 0.3s ease;
+}
+
+.feature-block:hover .text-3d-glow {
+    transform: translateY(-2px);
+    text-shadow: 
+        1px 1px 0px #cbd5e1,
+        3px 3px 0px #6366f1,
+        0 0 30px rgba(99, 102, 241, 0.3);
+}
+
+/* Premium Image Styling */
+.feature-preview-img-premium {
+    border-radius: 24px;
+    box-shadow: 
+        0 20px 50px -12px rgba(0, 0, 0, 0.2),
+        0 0 0 8px rgba(255, 255, 255, 0.8);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 100%;
+}
+
+.feature-image-preview:hover .feature-preview-img-premium {
+    transform: scale(1.03) rotate(-1deg);
+    box-shadow: 
+        0 30px 60px -12px rgba(0, 0, 0, 0.25),
+        0 0 0 12px rgba(255, 255, 255, 0.9);
+}
+
+/* Ensure container handles the shadows */
+.features-container {
+    overflow: visible;
+}
