@@ -819,7 +819,7 @@
     position: fixed;
     bottom: 30px;
     right: 30px;
-    padding: 12px 24px;
+    padding: 10px 20px;
     border-radius: 30px;
     background: #FF0000;
     border: none;
@@ -832,7 +832,7 @@
     transition: all 0.3s ease;
     z-index: 999999999;
     animation: pulse-soft 2s infinite;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
 }
 
