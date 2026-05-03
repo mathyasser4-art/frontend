@@ -27,6 +27,14 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 localStorage.setItem('O_authWEB', responseJson.userToken);
                 localStorage.setItem('auth_role', responseJson.role);
                 localStorage.setItem('pp_name', responseJson.userName);
+                if (responseJson.role === 'School') {
+                    localStorage.setItem('school_name', responseJson.userName);
+                } else if (responseJson.schoolName) {
+                    localStorage.setItem('school_name', responseJson.schoolName);
+                } else if (responseJson.school?.userName) {
+                    localStorage.setItem('school_name', responseJson.school.userName);
+                }
+                
                 if (responseJson.userID) {
                     localStorage.setItem('pp_id', responseJson.userID);
                 }

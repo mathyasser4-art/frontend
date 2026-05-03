@@ -216,8 +216,15 @@ function TeacherDashboard() {
     }
     // remove assignment func end
 
+    const schoolName = localStorage.getItem('school_name') || '';
+    const userName = localStorage.getItem('pp_name') || '';
+    const userRole = localStorage.getItem('auth_role') || '';
+    
+    const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
+                        (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
+
     return (
-        <>
+        <div className={isTopsoroban ? 'topsoroban-theme-global' : ''}>
             {isTrialMode && <TrialBanner />}
             <MobileNav role="Teacher" />
             <Navbar />
@@ -440,7 +447,7 @@ function TeacherDashboard() {
                 </div>
             </div>
             {/* Re-assign Assignment popup end */}
-        </>
+        </div>
     )
 }
 
