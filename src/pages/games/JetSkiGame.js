@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Lock, Trophy } from 'lucide-react';
+import { ArrowLeft, Trophy } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
+import QuestionOverlay from '../../components/questionOverlay/QuestionOverlay';
 import './JetSkiGame.css';
 
 const QUESTIONS_TO_UNLOCK = 5;
+const MID_GAME_INTERVAL = 10000; // Trigger question every 10 seconds
 
 const JetSkiGame = () => {
   const navigate = useNavigate();
@@ -18,6 +20,8 @@ const JetSkiGame = () => {
   const [question, setQuestion] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [solvedCount, setSolvedCount] = useState(0);
+  const [isMidGame, setIsMidGame] = useState(false);
+  const midGameTimerRef = useRef(null);
 
   const fetchQuestion = useCallback(async () => {
     const q = generateArithmeticMcq(difficulty, 4);
@@ -28,6 +32,7 @@ const JetSkiGame = () => {
     soundEffects.playClick();
     setDifficulty(level);
     setSolvedCount(0);
+    setIsMidGame(false);
     setGameState('locked');
   };
 
@@ -35,6 +40,19 @@ const JetSkiGame = () => {
     if (gameState === 'locked') {
       fetchQuestion();
     }
+    
+    if (gameState === 'playing') {
+      // Start mid-game question timer
+      midGameTimerRef.current = setInterval(() => {
+        setIsMidGame(true);
+        setSolvedCount(0); // Reset for mid-game streak if needed, or just set to 0 for 1 question
+        fetchQuestion();
+      }, MID_GAME_INTERVAL);
+    }
+
+    return () => {
+      if (midGameTimerRef.current) clearInterval(midGameTimerRef.current);
+    };
   }, [gameState, fetchQuestion]);
 
   const handleAnswer = (selectedAns) => {
@@ -43,8 +61,14 @@ const JetSkiGame = () => {
       setFeedback('correct');
       setTimeout(() => {
         const newCount = solvedCount + 1;
-        if (newCount >= QUESTIONS_TO_UNLOCK) {
-          setGameState('playing');
+        const goal = isMidGame ? 1 : QUESTIONS_TO_UNLOCK; // Only 1 question to resume mid-game
+
+        if (newCount >= goal) {
+          if (isMidGame) {
+            setIsMidGame(false);
+          } else {
+            setGameState('playing');
+          }
           setSolvedCount(0);
         } else {
           setSolvedCount(newCount);
@@ -109,7 +133,7 @@ const JetSkiGame = () => {
 
         {(gameState === 'playing' || gameState === 'locked') && (
           <div className="game-view-area">
-            {gameState === 'playing' && (
+            {(gameState === 'playing') && (
               <iframe 
                 src={iframeUrl}
                 className="jetski-iframe"
@@ -123,43 +147,14 @@ const JetSkiGame = () => {
               />
             )}
 
-            {gameState === 'locked' && question && (
-              <div className="jetski-lock-overlay">
-                <div className="lock-card">
-                  <div className="lock-icon">
-                    <Lock size={40} />
-                  </div>
-                  <h3>Ready to Race?</h3>
-                  <p>Solve to unlock: <strong>{QUESTIONS_TO_UNLOCK - solvedCount} remaining</strong></p>
-                  
-                  <div className="progress-bar-container">
-                    <div 
-                      className="progress-fill" 
-                      style={{ width: `${(solvedCount / QUESTIONS_TO_UNLOCK) * 100}%` }}
-                    ></div>
-                  </div>
-                  
-                  <div className="math-problem-box">{question.text}</div>
-                  
-                  <div className="math-options-grid">
-                    {question.options.map((opt, i) => (
-                      <button 
-                        key={i} 
-                        className="math-opt-button"
-                        onClick={() => handleAnswer(opt)}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
-
-                  {feedback && (
-                    <div className={`math-feedback ${feedback}`}>
-                      {feedback === 'correct' ? "Excellent! Next one..." : "Oops! Let's try another one."}
-                    </div>
-                  )}
-                </div>
-              </div>
+            {(gameState === 'locked' || isMidGame) && question && (
+              <QuestionOverlay 
+                question={question}
+                solvedCount={solvedCount}
+                total={isMidGame ? 1 : QUESTIONS_TO_UNLOCK}
+                onAnswer={handleAnswer}
+                feedback={feedback}
+              />
             )}
           </div>
         )}
