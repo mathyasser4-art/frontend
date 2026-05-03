@@ -20,6 +20,8 @@ const getClass = (setLoading, setClassName, setTeacherList) => {
                 setTeacherList(responseJson.studentData?.class?.teachers)
                 if (responseJson.studentData?.school?.userName) {
                     localStorage.setItem('school_name', responseJson.studentData.school.userName)
+                } else if (responseJson.studentData?.createdBy?.userName) {
+                    localStorage.setItem('school_name', responseJson.studentData.createdBy.userName)
                 }
             } else {
                 console.log(responseJson.message)

@@ -13,6 +13,11 @@ const userInfo = (userToken, setLoading, setUserData) => {
             if (responseJson.message === 'success') {
                 setLoading(false)
                 setUserData(responseJson.userInfo)
+                if (responseJson.userInfo?.role === 'School') {
+                    localStorage.setItem('school_name', responseJson.userInfo.userName)
+                } else if (responseJson.userInfo?.createdBy?.userName) {
+                    localStorage.setItem('school_name', responseJson.userInfo.createdBy.userName)
+                }
             } else {
                 console.log(responseJson.message)
                 setLoading(false)

@@ -33,6 +33,8 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                     localStorage.setItem('school_name', responseJson.schoolName);
                 } else if (responseJson.school?.userName) {
                     localStorage.setItem('school_name', responseJson.school.userName);
+                } else if (responseJson.createdBy?.userName) {
+                    localStorage.setItem('school_name', responseJson.createdBy.userName);
                 }
                 
                 if (responseJson.userID) {

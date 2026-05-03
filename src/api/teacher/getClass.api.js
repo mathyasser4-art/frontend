@@ -21,6 +21,8 @@ const getClass = (setLoading, setClassesList) => {
                 setClassesList(responseJson.teacherClasess?.classList)
                 if (responseJson.teacherClasess?.school?.userName) {
                     localStorage.setItem('school_name', responseJson.teacherClasess.school.userName)
+                } else if (responseJson.teacherClasess?.createdBy?.userName) {
+                    localStorage.setItem('school_name', responseJson.teacherClasess.createdBy.userName)
                 }
             } else {
                 console.log(responseJson.message)
