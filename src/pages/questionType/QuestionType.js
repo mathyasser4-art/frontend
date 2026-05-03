@@ -9,15 +9,22 @@ import './QuestionType.css'
 function QuestionType() {
   const { t } = useTranslation()
   
+  const schoolName = localStorage.getItem('school_name') || '';
+  const userName = localStorage.getItem('pp_name') || '';
+  const userRole = localStorage.getItem('auth_role') || '';
+  
+  const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
+                      (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
+
   return (
-    <div className='questionType'>
+    <div className={`questionType ${isTopsoroban ? 'topsoroban-theme' : ''}`}>
       <div className="questionType-container">
         <div className="questionType-title">
-          <h3>{t('academy.chooseYourAcademy')}</h3>
+          <h3>{isTopsoroban ? 'TOPSOROBAN' : t('academy.chooseYourAcademy')}</h3>
           <div className="line"></div>
         </div>
         <div className="questionType-options">
-          <Link to={'/system/65a4963482dbaac16d820fc6'} className="questionType-option" onClick={() => soundEffects.playClick()}>
+          <Link to={'/system/65a4963482dbaac16d820fc6'} className="questionType-option mcq" onClick={() => soundEffects.playClick()}>
             <div className="option-icon-wrapper">
               <Circle size={64} strokeWidth={2} className="mcq-icon" />
             </div>
@@ -29,7 +36,7 @@ function QuestionType() {
             <div className="option-icon-wrapper">
               <CheckCircle2 size={64} strokeWidth={2} className="completion-icon" />
             </div>
-            <h3 className="option-title">{t('academy.masterMinds')}</h3>
+            <h3 className="option-title">{isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}</h3>
             <p className="option-description">{t('academy.masterMindsDesc')}</p>
           </Link>
 

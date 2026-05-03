@@ -128,8 +128,15 @@ function StudentDashboard() {
         }, 300);
     }
 
+    const schoolName = localStorage.getItem('school_name') || '';
+    const userName = localStorage.getItem('pp_name') || '';
+    const userRole = localStorage.getItem('auth_role') || '';
+    
+    const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
+                        (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
+
     return (
-        <>
+        <div className={isTopsoroban ? 'topsoroban-theme-global' : ''}>
             <MobileNav role="Student" />
             <Navbar />
             
@@ -185,7 +192,7 @@ function StudentDashboard() {
                                 </div>
 
                                 {/* Practice Card - Blue */}
-                                <div onClick={openPracticeOptions} className="dashboard-card practice-card">
+                                <div onClick={openPracticeOptions} className={`dashboard-card practice-card ${isTopsoroban ? 'topsoroban-practice' : ''}`}>
                                     <div className="card-icon-wrapper">
                                         <Brain size={48} strokeWidth={2} />
                                     </div>
@@ -195,7 +202,7 @@ function StudentDashboard() {
                                             <span className="stat-label">{t('academy.freeWorksheets')}</span>
                                         </div>
                                         <div className="stat-item">
-                                            <span className="stat-label">{t('academy.masterMinds')}</span>
+                                            <span className="stat-label">{isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}</span>
                                         </div>
                                     </div>
 
@@ -231,11 +238,11 @@ function StudentDashboard() {
                                     <i className="fa fa-arrow-left" aria-hidden="true"></i>
                                     <span>Back</span>
                                 </button>
-                                <h2>{t('academy.chooseYourAcademy')}</h2>
+                                <h2>{isTopsoroban ? 'TOPSOROBAN' : t('academy.chooseYourAcademy')}</h2>
                             </div>
 
                             <div className="practice-options-grid">
-                                <Link to="/system/65a4963482dbaac16d820fc6" className="practice-option mental-math">
+                                <Link to="/system/65a4963482dbaac16d820fc6" className={`practice-option mental-math ${isTopsoroban ? 'topsoroban-red' : ''}`}>
                                     <div className="practice-option-icon">⚡</div>
                                     <h3>{t('academy.freeWorksheets')}</h3>
                                     <p>{t('academy.freeWorksheetsDesc')}</p>
@@ -245,9 +252,9 @@ function StudentDashboard() {
                                     </button>
                                 </Link>
 
-                                <Link to="/system/65a4964b82dbaac16d820fc8" className="practice-option masterminds">
+                                <Link to="/system/65a4964b82dbaac16d820fc8" className={`practice-option masterminds ${isTopsoroban ? 'topsoroban-blue' : ''}`}>
                                     <div className="practice-option-icon">🧠</div>
-                                    <h3>{t('academy.masterMinds')}</h3>
+                                    <h3>{isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}</h3>
                                     <p>{t('academy.masterMindsDesc')}</p>
                                     <button className="practice-option-btn">
                                         <span>{t('academy.start')}</span>
@@ -416,7 +423,7 @@ function StudentDashboard() {
                     }}
                 />
             )}
-        </>
+        </div>
     )
 }
 

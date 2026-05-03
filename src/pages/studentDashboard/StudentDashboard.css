@@ -1014,3 +1014,76 @@
         font-size: 1.1rem;
     }
 }
+
+/* Topsoroban Global Theme Styles */
+.topsoroban-theme-global .student-dashboard-container {
+    background-color: #ffffff;
+    min-height: 100vh;
+}
+
+.topsoroban-theme-global .dashboard-card.practice-card.topsoroban-practice {
+    background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+    color: white;
+}
+
+.topsoroban-theme-global .dashboard-card.practice-card.topsoroban-practice h3,
+.topsoroban-theme-global .dashboard-card.practice-card.topsoroban-practice .stat-label {
+    color: white !important;
+    text-shadow: none !important;
+    font-family: inherit !important;
+    text-transform: none !important;
+}
+
+.topsoroban-theme-global .dashboard-card.practice-card.topsoroban-practice .card-icon-wrapper {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.topsoroban-theme-global .dashboard-card.practice-card.topsoroban-practice .card-button {
+    background: white;
+    color: #2563eb;
+}
+
+/* Practice Options Section - Topsoroban Red & Blue */
+.topsoroban-theme-global .practice-option.topsoroban-red {
+    background: #ffffff;
+    border: 3px solid #e11d48;
+}
+
+.topsoroban-theme-global .practice-option.topsoroban-red::before {
+    background: #e11d48;
+}
+
+.topsoroban-theme-global .practice-option.topsoroban-red h3 {
+    color: #e11d48;
+}
+
+.topsoroban-theme-global .practice-option.topsoroban-red .practice-option-btn {
+    background: #e11d48;
+    color: white;
+}
+
+.topsoroban-theme-global .practice-option.topsoroban-blue {
+    background: #ffffff;
+    border: 3px solid #2563eb;
+}
+
+.topsoroban-theme-global .practice-option.topsoroban-blue::before {
+    background: #2563eb;
+}
+
+.topsoroban-theme-global .practice-option.topsoroban-blue h3 {
+    color: #2563eb;
+    font-family: inherit !important;
+    text-shadow: none !important;
+    text-transform: none !important;
+}
+
+.topsoroban-theme-global .practice-option.topsoroban-blue .practice-option-btn {
+    background: #2563eb;
+    color: white;
+}
+
+.topsoroban-theme-global .section-header h2 {
+    color: #1e293b;
+    font-weight: 800;
+}

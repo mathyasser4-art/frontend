@@ -352,3 +352,57 @@
         font-size: 40px;
     }
 }
+
+/* Topsoroban Theme Styles */
+.questionType.topsoroban-theme {
+    background-color: #f8fafc;
+    background-image: none;
+}
+
+.questionType.topsoroban-theme .questionType-container {
+    background: #ffffff;
+    background-image: none;
+    box-shadow: 0 20px 50px rgba(37, 99, 235, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.questionType.topsoroban-theme .questionType-title {
+    background: linear-gradient(135deg, #e11d48 0%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.questionType.topsoroban-theme .line {
+    background: linear-gradient(to right, #e11d48, #2563eb);
+    box-shadow: none;
+}
+
+/* Red MCQ Card */
+.questionType.topsoroban-theme .questionType-option.mcq {
+    background: linear-gradient(135deg, #e11d48 0%, #fb7185 100%);
+    border-color: #ffffff;
+    box-shadow: 0 10px 25px rgba(225, 29, 72, 0.3);
+}
+
+/* Blue Masterminds Card */
+.questionType.topsoroban-theme .questionType-option.mastermind {
+    background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+    border-color: #ffffff;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+}
+
+.questionType.topsoroban-theme .option-title {
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.questionType.topsoroban-theme .option-description {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.questionType.topsoroban-theme .option-icon-wrapper {
+    background: rgba(255, 255, 255, 0.25);
+}
