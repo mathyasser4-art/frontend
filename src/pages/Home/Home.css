@@ -49,9 +49,8 @@
     position: fixed;
     bottom: 100px;
     right: 30px;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
+    padding: 14px 28px;
+    border-radius: 35px;
     background: linear-gradient(135deg, #FF4444 0%, #CC0000 100%);
     border: 3px solid white;
     color: white;
@@ -64,7 +63,7 @@
     z-index: 999999;
     animation: pulse-help 2.5s ease-in-out infinite;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .floating-help-btn:hover {
@@ -384,8 +383,9 @@
     .floating-help-btn {
         bottom: 90px;
         right: 20px;
-        width: 64px;
-        height: 64px;
+        height: auto;
+        padding: 10px 18px;
+        font-size: 12px;
     }
 }
 
@@ -440,7 +440,8 @@
     .floating-help-btn {
         bottom: 85px;
         right: 15px;
-        width: 60px;
-        height: 60px;
+        height: auto;
+        padding: 8px 14px;
+        font-size: 11px;
     }
 }

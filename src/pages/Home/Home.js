@@ -35,9 +35,9 @@ function Home() {
             setShowTutorialModal(true);
           }}
           aria-label="Tutorial Video"
-          title="Watch Tutorial"
+          title="Watch how to assign homework"
         >
-          Help
+          Watch how to assign homework
         </button>
       )}
       

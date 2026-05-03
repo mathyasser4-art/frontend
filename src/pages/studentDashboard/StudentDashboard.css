@@ -819,9 +819,8 @@
     position: fixed;
     bottom: 30px;
     right: 30px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    padding: 12px 24px;
+    border-radius: 30px;
     background: #FF0000;
     border: none;
     color: white;
@@ -834,7 +833,7 @@
     z-index: 999999999;
     animation: pulse-soft 2s infinite;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .floating-help-btn:hover {

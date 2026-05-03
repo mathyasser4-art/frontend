@@ -148,9 +148,9 @@ function StudentDashboard() {
                     setShowTutorialModal(true);
                 }}
                 aria-label="Tutorial Video"
-                title="Watch Tutorial"
+                title="Watch how to solve homework"
             >
-                Help
+                Watch how to solve homework
             </button>
 
             <div className="student-dashboard-container">
