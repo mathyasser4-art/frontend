@@ -132,6 +132,10 @@
   background: #000;
 }
 
+.hidden-game {
+  display: none !important;
+}
+
 /* Lock Overlay */
 .jetski-lock-overlay {
   position: absolute;

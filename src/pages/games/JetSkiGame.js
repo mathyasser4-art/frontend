@@ -36,24 +36,28 @@ const JetSkiGame = () => {
     setGameState('locked');
   };
 
+  // Timer Management
   useEffect(() => {
     if (gameState === 'locked') {
       fetchQuestion();
     }
     
-    if (gameState === 'playing') {
-      // Start mid-game question timer
+    // Only run the timer if we are playing AND not currently in a mid-game challenge
+    if (gameState === 'playing' && !isMidGame) {
       midGameTimerRef.current = setInterval(() => {
         setIsMidGame(true);
-        setSolvedCount(0); // Reset for mid-game streak if needed, or just set to 0 for 1 question
+        setSolvedCount(0);
         fetchQuestion();
       }, MID_GAME_INTERVAL);
     }
 
     return () => {
-      if (midGameTimerRef.current) clearInterval(midGameTimerRef.current);
+      if (midGameTimerRef.current) {
+        clearInterval(midGameTimerRef.current);
+        midGameTimerRef.current = null;
+      }
     };
-  }, [gameState, fetchQuestion]);
+  }, [gameState, isMidGame, fetchQuestion]);
 
   const handleAnswer = (selectedAns) => {
     if (selectedAns === question.answer) {
@@ -61,11 +65,11 @@ const JetSkiGame = () => {
       setFeedback('correct');
       setTimeout(() => {
         const newCount = solvedCount + 1;
-        const goal = isMidGame ? 1 : QUESTIONS_TO_UNLOCK; // Only 1 question to resume mid-game
+        const goal = isMidGame ? 1 : QUESTIONS_TO_UNLOCK;
 
         if (newCount >= goal) {
           if (isMidGame) {
-            setIsMidGame(false);
+            setIsMidGame(false); // This will trigger the useEffect to restart the timer
           } else {
             setGameState('playing');
           }
@@ -136,7 +140,7 @@ const JetSkiGame = () => {
             {(gameState === 'playing') && (
               <iframe 
                 src={iframeUrl}
-                className="jetski-iframe"
+                className={`jetski-iframe ${isMidGame ? 'hidden-game' : ''}`}
                 title="Jet Ski Racing"
                 width="100%"
                 height="100%"
