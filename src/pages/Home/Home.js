@@ -17,11 +17,11 @@ import './Home.css'
 // and place them in public/img/showcase/. 
 // The website will automatically find them!
 const SHOWCASE_IMAGES = [
-  '/img/showcase/showcase1.PNG',
+  '/img/showcase/showcase1.png',
   '/img/showcase/showcase2.png',
   '/img/showcase/showcase3.png',
-  '/img/showcase/showcase4.PNG',
-  '/img/showcase/showcase5.PNG',
+  '/img/showcase/showcase4.png',
+  '/img/showcase/showcase5.png',
   '/img/showcase/showcase6.png',
   '/img/showcase/showcase7.png',
 ]
