@@ -12,15 +12,11 @@ import { GraduationCap, Presentation } from 'lucide-react'
 import '../../reusable.css'
 import './Home.css'
 
-// 🖼️ REPLACE these with your real showcase images once you provide them.
-// Place images in: public/img/showcase/
-// Then update the paths here:
-const SHOWCASE_IMAGES = [
-  '/img/showcase/math racer.png',
-  '/img/showcase/puzzle game.PNG',
-  '/img/showcase/puzzle.PNG',
-  '/img/showcase/bunny run.png',
-]
+// 🖼️ HOW TO ADD IMAGES:
+// Just name your images showcase1.png, showcase2.png, showcase3.png... 
+// and place them in public/img/showcase/. 
+// The website will automatically find them!
+const SHOWCASE_IMAGES_COUNT = 10; 
 
 const GAME_PREVIEWS = [
   { emoji: '🌊', name: 'Jet Ski Racing',  badge: 'FAST PACED', color: '#0ea5e9', path: '/student/games/jetski' },
@@ -44,7 +40,7 @@ function Home() {
     const timer = setInterval(() => {
       setFading(true)
       setTimeout(() => {
-        setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length)
+        setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES_COUNT)
         setFading(false)
       }, 400) // fade-out duration
     }, 2000)
@@ -107,30 +103,23 @@ function Home() {
               </Link>
             </div>
 
-            {/* ── RIGHT: Mascot + Image Slideshow ── */}
+            {/* ── RIGHT: Image Slideshow ── */}
             <div className="hero-showcase">
               <div className="magical-screen-wrapper">
                 <div className="magical-screen">
                   <div className="screen-content">
                     <img
-                      src={SHOWCASE_IMAGES[currentSlide]}
+                      src={`/img/showcase/showcase${currentSlide + 1}.png`}
                       alt="Gameplay Preview"
                       className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
+                      onError={(e) => {
+                        // If an image doesn't exist, we've hit the end of your folder, so go back to 1
+                        if (currentSlide > 0) {
+                          setCurrentSlide(0);
+                        }
+                      }}
                     />
-                    {/* Dot indicators */}
-                    <div className="slide-dots">
-                      {SHOWCASE_IMAGES.map((_, i) => (
-                        <span
-                          key={i}
-                          className={`slide-dot ${i === currentSlide ? 'active' : ''}`}
-                          onClick={() => { setFading(true); setTimeout(() => { setCurrentSlide(i); setFading(false) }, 400) }}
-                        />
-                      ))}
-                    </div>
                   </div>
-                </div>
-                <div className="mascot-container">
-                  <img src={require('../../img/cute_robot.png')} alt="Abacus Hero Mascot" className="mascot-img" />
                 </div>
               </div>
             </div>
