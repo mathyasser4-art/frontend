@@ -1,0 +1,145 @@
+.crossword-page {
+  min-height: 100vh;
+  background-color: #f0f9ff;
+  font-family: 'Outfit', sans-serif;
+}
+
+.crossword-container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.crossword-header {
+  margin-bottom: 1.5rem;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  border: 2px solid #e2e8f0;
+  padding: 0.6rem 1.2rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #f8fafc;
+  transform: translateX(-5px);
+}
+
+.crossword-menu {
+  background: white;
+  padding: 3rem;
+  border-radius: 32px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+  text-align: center;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.game-badge {
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  padding: 1.5rem;
+  background: #fffbeb;
+  border-radius: 50%;
+}
+
+.crossword-menu h1 {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.crossword-menu p {
+  font-size: 1.25rem;
+  color: #64748b;
+  margin-bottom: 3rem;
+}
+
+.play-section {
+  margin-bottom: 3rem;
+}
+
+.play-big-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  padding: 1.5rem 4rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+}
+
+.play-big-btn:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
+}
+
+.game-features {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.feature span {
+  font-size: 2.5rem;
+}
+
+.feature p {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.game-view-area {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 600px;
+  background: #000;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+}
+
+.crossword-iframe {
+  border: none;
+  background: #000;
+}
+
+@media (max-width: 768px) {
+  .crossword-menu { padding: 2rem 1rem; }
+  .crossword-menu h1 { font-size: 2.2rem; }
+  .game-view-area { aspect-ratio: 4 / 3; min-height: 450px; }
+  .game-features { gap: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+  .crossword-container { padding: 0.5rem; }
+  .crossword-menu h1 { font-size: 1.8rem; }
+  .play-big-btn { padding: 1rem 2.5rem; font-size: 1.2rem; }
+}

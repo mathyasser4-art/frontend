@@ -85,6 +85,27 @@ const GamesMenu = () => {
             </div>
           </div>
 
+          {/* Math Crossword Puzzle - TOP 4 */}
+          <div className="game-card-premium" onClick={() => navigate('/student/games/math-crossword')}>
+            <div className="card-image-wrapper">
+              <div className="card-badge crossword"><Zap size={14} fill="currentColor" /> GENIUS</div>
+              <div className="card-bg-img" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                <span style={{ fontSize: '5rem' }}>🧩</span>
+              </div>
+              <div className="card-overlay">
+                <div className="overlay-content">
+                  <div className="game-stats">
+                    <span><Timer size={16} /> UNLIMITED</span>
+                    <span><Trophy size={16} /> PUZZLE</span>
+                  </div>
+                  <h3>Math Crossword</h3>
+                  <p>Solve genius-level math puzzles in a crossword format. No unlock required!</p>
+                  <button className="play-hover-btn">PLAY NOW</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Math Maze */}
           <div className="game-card-full legacy" onClick={() => navigate('/student/games/maze')}>
             <div className="game-thumbnail thumb-maze">

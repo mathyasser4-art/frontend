@@ -38,6 +38,7 @@ import ArcheryGame from './pages/games/ArcheryGame';
 import HighwayRiderGame from './pages/games/HighwayRiderGame';
 import WaterSortGame from './pages/games/WaterSortGame';
 import JetSkiGame from './pages/games/JetSkiGame';
+import MathCrosswordGame from './pages/games/MathCrosswordGame';
 import GamesMenu from './pages/studentDashboard/GamesMenu';
 import LiveChatWidget from './components/liveChat/LiveChatWidget';
 import ChatManagement from './pages/dashboardSchool/ChatManagement';
@@ -91,6 +92,7 @@ function App() {
       <Route path='/student/games/highway-rider' element={<HighwayRiderGame />} />
       <Route path='/student/games/water-sort' element={<WaterSortGame />} />
       <Route path='/student/games/jetski' element={<JetSkiGame />} />
+      <Route path='/student/games/math-crossword' element={<MathCrosswordGame />} />
       <Route path='/student/games-menu' element={<GamesMenu />} />
 
       </Routes>
