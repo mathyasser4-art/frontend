@@ -28,7 +28,7 @@
 }
 
 .home-container {
-    padding: 2.5rem 3.5rem 3.5rem 3.5rem;
+    padding: 3rem;
     position: relative;
     z-index: 2;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 250, 240, 0.92) 100%);
@@ -38,10 +38,112 @@
                 0 8px 20px rgba(255, 107, 107, 0.1);
     backdrop-filter: blur(10px);
     border: 3px solid rgba(255, 255, 255, 0.8);
-    text-align: center;
-    max-width: 900px;
+    text-align: left;
+    max-width: 1200px;
     width: calc(100% - 4rem);
     animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-split {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    justify-content: space-between;
+}
+
+.hero-text-content {
+    flex: 1.2;
+}
+
+.hero-showcase {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.magical-screen-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+}
+
+.magical-screen {
+    background: #000;
+    border-radius: 24px;
+    padding: 8px;
+    border: 4px solid #FFD93D;
+    box-shadow: 0 0 30px rgba(255, 217, 61, 0.4),
+                0 0 60px rgba(255, 107, 107, 0.2);
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+}
+
+.screen-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.preview-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.play-button-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.1);
+}
+
+.play-icon-circle {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.play-icon-circle::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 18px solid #FF6B6B;
+    margin-left: 5px;
+}
+
+.mascot-container {
+    position: absolute;
+    bottom: -40px;
+    right: -40px;
+    width: 180px;
+    z-index: 5;
+    animation: mascotFloat 3s ease-in-out infinite;
+}
+
+.mascot-img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+}
+
+@keyframes mascotFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
 }
 
 /* Floating Help Button */
@@ -167,15 +269,15 @@
     align-items: center;
     justify-content: center;
     gap: 15px;
-    padding: 1.3rem 3.2rem;
-    font-size: 32px;
+    padding: 1.1rem 2.8rem;
+    font-size: 28px;
     text-align: center;
     color: white;
     border-radius: 60px;
     background: linear-gradient(135deg, #FF6B6B 0%, #FFD93D 50%, #4ECDC4 100%);
     background-size: 200% auto;
     cursor: pointer;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     font-weight: 900;
     font-family: 'Comic Sans MS', cursive, sans-serif;
     border: 6px solid white;
@@ -249,18 +351,18 @@
 }
 
 .home-options {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-    margin: 2rem 0 1rem 0;
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
     animation: fadeIn 1s ease-out 0.9s both;
 }
 
 .home-option-card {
+    flex: 1;
     background: white;
     border: 3px solid #e0e0e0;
     border-radius: 20px;
-    padding: 2rem 1.5rem;
+    padding: 1.2rem 1rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -294,11 +396,11 @@
 }
 
 .option-icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 1rem auto;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 0.7rem auto;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
+    border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -352,6 +454,17 @@
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (max-width: 1100px) {
+    .hero-split {
+        gap: 2rem;
+    }
+    .mascot-container {
+        width: 130px;
+        right: -20px;
+        bottom: -30px;
+    }
+}
+
 @media only screen and (max-width: 992px) {
     .home{
         display: none;

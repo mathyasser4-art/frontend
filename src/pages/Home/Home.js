@@ -44,40 +44,59 @@ function Home() {
       <div className='home'>
         <Navbar />
         <div className="home-container">
-          <div className="home-title">
-            <h1 className='text-purple'>{t('home.welcomeTo')}</h1>
-            <h1 className='text-red'>{t('home.abacusHeroes')}</h1>
-          </div>
-          <div className="home-paragraph">
-            <p>{t('home.tagline')}</p>
-          </div>
-          
-          {!role && (
-            <div className="home-options">
-              <div className="home-option-card" onClick={() => { soundEffects.playClick(); navigate('/system/65a4963482dbaac16d820fc6'); }}>
-                <div className="option-icon">
-                  <GraduationCap size={48} strokeWidth={2.5} />
-                </div>
-                <h3>{t('home.practiceAsStudent')}</h3>
-                <p>{t('home.practiceDescription')}</p>
-                <span className="option-badge">{t('home.noLoginRequired')}</span>
+          <div className="hero-split">
+            <div className="hero-text-content">
+              <div className="home-title">
+                <h1 className='text-purple'>{t('home.welcomeTo')}</h1>
+                <h1 className='text-red'>{t('home.abacusHeroes')}</h1>
               </div>
+              <div className="home-paragraph">
+                <p>{t('home.tagline')}</p>
+              </div>
+              
+              {!role && (
+                <div className="home-options">
+                  <div className="home-option-card" onClick={() => { soundEffects.playClick(); navigate('/system/65a4963482dbaac16d820fc6'); }}>
+                    <div className="option-icon">
+                      <GraduationCap size={32} strokeWidth={2.5} />
+                    </div>
+                    <h3>{t('home.practiceAsStudent')}</h3>
+                    <span className="option-badge">{t('home.noLoginRequired')}</span>
+                  </div>
 
-              <div className="home-option-card" onClick={() => { soundEffects.playClick(); setShowTrialModal(true); }}>
-                <div className="option-icon teacher-icon">
-                  <Presentation size={48} strokeWidth={2.5} />
+                  <div className="home-option-card" onClick={() => { soundEffects.playClick(); setShowTrialModal(true); }}>
+                    <div className="option-icon teacher-icon">
+                      <Presentation size={32} strokeWidth={2.5} />
+                    </div>
+                    <h3>{t('home.tryTeacherFeatures')}</h3>
+                    <span className="option-badge trial-badge">{t('home.freeTrialBadge')}</span>
+                  </div>
                 </div>
-                <h3>{t('home.tryTeacherFeatures')}</h3>
-                <p>{t('home.tryTeacherDescription')}</p>
-                <span className="option-badge trial-badge">{t('home.freeTrialBadge')}</span>
+              )}
+              
+              <Link to="/pricing" className="home-btn" onClick={() => soundEffects.playClick()}>
+                <span className="btn-text">{t('home.joinNow')}</span>
+                <span className="btn-arrow">→</span>
+              </Link>
+            </div>
+
+            <div className="hero-showcase">
+              <div className="magical-screen-wrapper">
+                <div className="magical-screen">
+                  {/* We can use a video or an animated gif here. Using a placeholder for now */}
+                  <div className="screen-content">
+                    <img src={require('../../img/past-paper.gif')} alt="Gameplay Preview" className="preview-gif" />
+                    <div className="play-button-overlay">
+                      <div className="play-icon-circle"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mascot-container">
+                  <img src={require('../../img/cute_robot.png')} alt="Abacus Hero Mascot" className="mascot-img" />
+                </div>
               </div>
             </div>
-          )}
-          
-          <Link to="/pricing" className="home-btn" onClick={() => soundEffects.playClick()}>
-            <span className="btn-text">{t('home.joinNow')}</span>
-            <span className="btn-arrow">→</span>
-          </Link>
+          </div>
         </div>
       </div>
       
