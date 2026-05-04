@@ -9,7 +9,6 @@ import QuestionOverlay from '../../components/questionOverlay/QuestionOverlay';
 import './JetSkiGame.css';
 
 const QUESTIONS_TO_UNLOCK = 5;
-const MID_GAME_INTERVAL = 10000; // Trigger question every 10 seconds
 
 const JetSkiGame = () => {
   const navigate = useNavigate();
@@ -20,8 +19,6 @@ const JetSkiGame = () => {
   const [question, setQuestion] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [solvedCount, setSolvedCount] = useState(0);
-  const [isMidGame, setIsMidGame] = useState(false);
-  const midGameTimerRef = useRef(null);
 
   const fetchQuestion = useCallback(async () => {
     const q = generateArithmeticMcq(difficulty, 4);
@@ -32,32 +29,14 @@ const JetSkiGame = () => {
     soundEffects.playClick();
     setDifficulty(level);
     setSolvedCount(0);
-    setIsMidGame(false);
     setGameState('locked');
   };
 
-  // Timer Management
   useEffect(() => {
     if (gameState === 'locked') {
       fetchQuestion();
     }
-    
-    // Only run the timer if we are playing AND not currently in a mid-game challenge
-    if (gameState === 'playing' && !isMidGame) {
-      midGameTimerRef.current = setInterval(() => {
-        setIsMidGame(true);
-        setSolvedCount(0);
-        fetchQuestion();
-      }, MID_GAME_INTERVAL);
-    }
-
-    return () => {
-      if (midGameTimerRef.current) {
-        clearInterval(midGameTimerRef.current);
-        midGameTimerRef.current = null;
-      }
-    };
-  }, [gameState, isMidGame, fetchQuestion]);
+  }, [gameState, fetchQuestion]);
 
   const handleAnswer = (selectedAns) => {
     if (selectedAns === question.answer) {
@@ -65,14 +44,8 @@ const JetSkiGame = () => {
       setFeedback('correct');
       setTimeout(() => {
         const newCount = solvedCount + 1;
-        const goal = isMidGame ? 1 : QUESTIONS_TO_UNLOCK;
-
-        if (newCount >= goal) {
-          if (isMidGame) {
-            setIsMidGame(false); // This will trigger the useEffect to restart the timer
-          } else {
-            setGameState('playing');
-          }
+        if (newCount >= QUESTIONS_TO_UNLOCK) {
+          setGameState('playing');
           setSolvedCount(0);
         } else {
           setSolvedCount(newCount);
@@ -140,7 +113,7 @@ const JetSkiGame = () => {
             {(gameState === 'playing') && (
               <iframe 
                 src={iframeUrl}
-                className={`jetski-iframe ${isMidGame ? 'hidden-game' : ''}`}
+                className="jetski-iframe"
                 title="Jet Ski Racing"
                 width="100%"
                 height="100%"
@@ -151,11 +124,11 @@ const JetSkiGame = () => {
               />
             )}
 
-            {(gameState === 'locked' || isMidGame) && question && (
+            {(gameState === 'locked') && question && (
               <QuestionOverlay 
                 question={question}
                 solvedCount={solvedCount}
-                total={isMidGame ? 1 : QUESTIONS_TO_UNLOCK}
+                total={QUESTIONS_TO_UNLOCK}
                 onAnswer={handleAnswer}
                 feedback={feedback}
               />
