@@ -146,6 +146,156 @@
     50% { transform: translateY(-15px) rotate(5deg); }
 }
 
+/* ── Clickable Screen ── */
+.clickable-screen {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.clickable-screen:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 50px rgba(255, 217, 61, 0.6),
+                0 0 80px rgba(255, 107, 107, 0.3);
+}
+
+.screen-label {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+}
+
+/* ── Video Modal ── */
+.video-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(10px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.video-modal-content {
+    background: #0f172a;
+    border-radius: 24px;
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 860px;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    border: 2px solid rgba(255, 217, 61, 0.4);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.video-modal-close {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #FF6B6B;
+    border: 3px solid white;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: all 0.2s ease;
+}
+.video-modal-close:hover {
+    background: #D95858;
+    transform: scale(1.15) rotate(90deg);
+}
+
+.video-modal-frame {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 14px;
+    overflow: hidden;
+}
+.video-modal-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.video-modal-caption {
+    text-align: center;
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 1rem;
+    letter-spacing: 0.5px;
+}
+
+/* ── Game Strip ── */
+.game-strip {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px dashed rgba(255, 107, 107, 0.2);
+}
+
+.strip-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.strip-cards {
+    display: flex;
+    gap: 0.8rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+}
+.strip-cards::-webkit-scrollbar { display: none; }
+
+.strip-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: white;
+    border: 2px solid #f1f5f9;
+    border-radius: 16px;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    min-width: 110px;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+}
+.strip-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--card-color);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.strip-emoji { font-size: 2rem; }
+.strip-name  { font-size: 11px; font-weight: 700; color: #334155; text-align: center; line-height: 1.2; }
+.strip-badge {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--card-color);
+    background: color-mix(in srgb, var(--card-color) 12%, white);
+    border-radius: 20px;
+    padding: 2px 8px;
+    letter-spacing: 0.5px;
+}
+
 /* Floating Help Button */
 .floating-help-btn {
     position: fixed;
