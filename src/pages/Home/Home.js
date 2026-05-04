@@ -102,10 +102,6 @@ function Home() {
                 </div>
               )}
 
-              <Link to="/pricing" className="home-btn" onClick={() => soundEffects.playClick()}>
-                <span className="btn-text">{t('home.joinNow')}</span>
-                <span className="btn-arrow">→</span>
-              </Link>
             </div>
 
             {/* ── RIGHT: Image Slideshow ── */}

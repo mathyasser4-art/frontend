@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import logo from '../../logo.png'
@@ -60,6 +60,11 @@ const Navbar = () => {
                     {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {isAuth ? role === 'School' ? <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img className='school-avatar' src={school} alt="" /></Link> : <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img src={profileImg} alt="" /></Link> : (
                         <>
+                            <Link to={'/pricing'} onClick={() => soundEffects.playClick()}>
+                                <div className="nav-btn nav-btn-join" style={{ marginRight: '15px' }}>
+                                    {t('home.joinNow')}
+                                </div>
+                            </Link>
                             <Link to={'/auth/register'} onClick={() => soundEffects.playClick()}>
                                 <div className="nav-btn nav-btn-signup" style={{ marginRight: '15px' }}>
                                     {t('auth.signUp')}

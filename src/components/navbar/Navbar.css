@@ -31,6 +31,13 @@
   background-size: 600%;
 }
 
+.nav-btn-join {
+  background: linear-gradient(-45deg, #FF6B6B, #FF8E53, #FFD93D, #FF6B6B);
+  background-size: 600%;
+  font-weight: 800;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+}
+
 .gear{
   color: #5d17eb;
   margin-right: 1rem;
