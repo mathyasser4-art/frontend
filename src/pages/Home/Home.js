@@ -16,10 +16,10 @@ import './Home.css'
 // Place images in: public/img/showcase/
 // Then update the paths here:
 const SHOWCASE_IMAGES = [
-  '/img/showcase/math_racer.png',
-  '/img/showcase/jetski.png',
-  '/img/showcase/unlock_math.png',
-  '/img/showcase/bunny_run.png',
+  '/img/showcase/math racer.png',
+  '/img/showcase/puzzle game.PNG',
+  '/img/showcase/puzzle.PNG',
+  '/img/showcase/bunny run.png',
 ]
 
 const GAME_PREVIEWS = [

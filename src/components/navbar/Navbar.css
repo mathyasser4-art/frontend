@@ -3,11 +3,11 @@
 }
 
 .nav-container img {
-  width: 170px;
+  width: 155px;
 }
 
 .nav-right-side img {
-  width: 55px !important;
+  width: 45px !important;
 }
 
 .school-avatar{
@@ -15,8 +15,8 @@
 }
 
 .nav-btn {
-  padding: 0.6rem 1.5rem;
-  font-size: 20px;
+  padding: 0.4rem 1.2rem;
+  font-size: 16px;
   text-align: center;
   color: rgba(255, 255, 255, 0.9);
   border-radius: 50px;
@@ -42,7 +42,7 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.6rem 1.2rem;
+  padding: 0.4rem 1rem;
   margin-right: 1rem;
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #f86c8c 100%);
   color: white;
@@ -76,7 +76,7 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.6rem 1.2rem;
+  padding: 0.4rem 1rem;
   margin-right: 1rem;
   background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #087e8b 100%);
   color: white;
