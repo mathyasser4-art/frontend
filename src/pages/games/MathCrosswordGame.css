@@ -68,58 +68,57 @@
   margin-bottom: 3rem;
 }
 
-.play-section {
-  margin-bottom: 3rem;
+.difficulty-selection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
 
-.play-big-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  border: none;
-  padding: 1.5rem 4rem;
-  font-size: 1.5rem;
-  font-weight: 800;
-  border-radius: 20px;
+.diff-card {
+  padding: 1.5rem;
+  border: 3px solid #f1f5f9;
+  border-radius: 24px;
+  background: white;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
-}
-
-.play-big-btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
-}
-
-.game-features {
-  display: flex;
-  justify-content: center;
-  gap: 3rem;
-  flex-wrap: wrap;
-}
-
-.feature {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
 }
 
-.feature span {
-  font-size: 2.5rem;
+.diff-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
 }
 
-.feature p {
+.diff-card.easy:hover { border-color: #4ade80; }
+.diff-card.medium:hover { border-color: #fbbf24; }
+.diff-card.hard:hover { border-color: #f87171; }
+.diff-card.expert:hover { border-color: #818cf8; }
+
+.lvl {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin-bottom: 0.25rem;
+}
+
+.type {
   font-size: 0.9rem;
-  font-weight: 700;
   color: #94a3b8;
-  margin: 0;
+  font-weight: 600;
 }
+
+.easy .lvl { color: #22c55e; }
+.medium .lvl { color: #f59e0b; }
+.hard .lvl { color: #ef4444; }
+.expert .lvl { color: #4f46e5; }
 
 .game-view-area {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  min-height: 600px;
+  min-height: 500px;
   background: #000;
   border-radius: 24px;
   overflow: hidden;
@@ -134,12 +133,11 @@
 @media (max-width: 768px) {
   .crossword-menu { padding: 2rem 1rem; }
   .crossword-menu h1 { font-size: 2.2rem; }
-  .game-view-area { aspect-ratio: 4 / 3; min-height: 450px; }
+  .game-view-area { aspect-ratio: 4 / 3; min-height: 400px; }
   .game-features { gap: 1.5rem; }
 }
 
 @media (max-width: 480px) {
   .crossword-container { padding: 0.5rem; }
   .crossword-menu h1 { font-size: 1.8rem; }
-  .play-big-btn { padding: 1rem 2.5rem; font-size: 1.2rem; }
 }

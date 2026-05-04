@@ -16,7 +16,12 @@ import './Home.css'
 // Just name your images showcase1.png, showcase2.png, showcase3.png... 
 // and place them in public/img/showcase/. 
 // The website will automatically find them!
-const SHOWCASE_IMAGES_COUNT = 10; 
+const SHOWCASE_IMAGES = [
+  '/img/showcase/math racer.png',
+  '/img/showcase/puzzle game.PNG',
+  '/img/showcase/puzzle.PNG',
+  '/img/showcase/bunny run.png',
+]
 
 const GAME_PREVIEWS = [
   { emoji: '🌊', name: 'Jet Ski Racing',  badge: 'FAST PACED', color: '#0ea5e9', path: '/student/games/jetski' },
@@ -40,7 +45,7 @@ function Home() {
     const timer = setInterval(() => {
       setFading(true)
       setTimeout(() => {
-        setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES_COUNT)
+        setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length)
         setFading(false)
       }, 400) // fade-out duration
     }, 2000)
@@ -74,7 +79,7 @@ function Home() {
                 <h1 className='text-red'>{t('home.abacusHeroes')}</h1>
               </div>
               <div className="home-paragraph">
-                <p>{t('home.tagline')}</p>
+                <p className="hero-tagline-text">Play the Abacus .. Be a Hero !</p>
               </div>
 
               {!role && (
@@ -109,15 +114,9 @@ function Home() {
                 <div className="magical-screen">
                   <div className="screen-content">
                     <img
-                      src={`/img/showcase/showcase${currentSlide + 1}.png`}
+                      src={SHOWCASE_IMAGES[currentSlide]}
                       alt="Gameplay Preview"
                       className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
-                      onError={(e) => {
-                        // If an image doesn't exist, we've hit the end of your folder, so go back to 1
-                        if (currentSlide > 0) {
-                          setCurrentSlide(0);
-                        }
-                      }}
                     />
                   </div>
                 </div>
