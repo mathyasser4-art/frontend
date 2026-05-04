@@ -8,13 +8,18 @@ import FeaturesSection from '../../components/featuresSection/FeaturesSection'
 import TeacherTrialModal from '../../components/teacherTrialModal/TeacherTrialModal'
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
 import soundEffects from '../../utils/soundEffects'
-import { GraduationCap, Presentation, X, Play } from 'lucide-react'
+import { GraduationCap, Presentation } from 'lucide-react'
 import '../../reusable.css'
 import './Home.css'
 
-// 🎬 REPLACE this with your YouTube video ID (the part after ?v= in the URL)
-// Example: https://www.youtube.com/watch?v=ABC123 → 'ABC123'
-const SHOWCASE_VIDEO_ID = 'dQw4w9WgXcQ'
+// 🖼️ REPLACE these with your real showcase images once you provide them.
+// Place images in: public/img/showcase/
+// Then update the paths here:
+const SHOWCASE_IMAGES = [
+  '/img/games/jetski_cover.png',
+  '/img/games/racer_cover.png',
+  '/img/games/bunny_cover.png',
+]
 
 const GAME_PREVIEWS = [
   { emoji: '🌊', name: 'Jet Ski Racing',  badge: 'FAST PACED', color: '#0ea5e9', path: '/student/games/jetski' },
@@ -30,12 +35,20 @@ function Home() {
   const navigate = useNavigate()
   const [showTrialModal, setShowTrialModal] = useState(false)
   const [showTutorialModal, setShowTutorialModal] = useState(false)
-  const [showVideoModal, setShowVideoModal] = useState(false)
+  const [currentSlide, setCurrentSlide] = React.useState(0)
+  const [fading, setFading] = React.useState(false)
 
-  const openVideo = () => {
-    soundEffects.playClick()
-    setShowVideoModal(true)
-  }
+  // Auto-advance slides every 2 seconds with a smooth fade
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setFading(true)
+      setTimeout(() => {
+        setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length)
+        setFading(false)
+      }, 400) // fade-out duration
+    }, 2000)
+    return () => clearInterval(timer)
+  }, [])
 
   return (
     <>
@@ -51,27 +64,6 @@ function Home() {
         >
           Watch how to assign homework
         </button>
-      )}
-
-      {/* ── VIDEO MODAL ── */}
-      {showVideoModal && (
-        <div className="video-modal-backdrop" onClick={() => setShowVideoModal(false)}>
-          <div className="video-modal-content" onClick={e => e.stopPropagation()}>
-            <button className="video-modal-close" onClick={() => setShowVideoModal(false)}>
-              <X size={28} />
-            </button>
-            <div className="video-modal-frame">
-              <iframe
-                src={`https://www.youtube.com/embed/${SHOWCASE_VIDEO_ID}?autoplay=1&rel=0`}
-                title="Abacus Heroes Showcase"
-                allow="autoplay; fullscreen"
-                allowFullScreen
-                frameBorder="0"
-              />
-            </div>
-            <p className="video-modal-caption">🎮 See Abacus Heroes in Action!</p>
-          </div>
-        </div>
       )}
 
       <div className='home'>
@@ -114,18 +106,26 @@ function Home() {
               </Link>
             </div>
 
-            {/* ── RIGHT: Mascot + Clickable Screen ── */}
+            {/* ── RIGHT: Mascot + Image Slideshow ── */}
             <div className="hero-showcase">
               <div className="magical-screen-wrapper">
-                <div className="magical-screen clickable-screen" onClick={openVideo} title="Watch our games!">
+                <div className="magical-screen">
                   <div className="screen-content">
-                    <img src={require('../../img/past-paper.gif')} alt="Gameplay Preview" className="preview-gif" />
-                    <div className="play-button-overlay">
-                      <div className="play-icon-circle">
-                        <Play size={22} color="#FF6B6B" fill="#FF6B6B" style={{ marginLeft: 4 }} />
-                      </div>
+                    <img
+                      src={SHOWCASE_IMAGES[currentSlide]}
+                      alt="Gameplay Preview"
+                      className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
+                    />
+                    {/* Dot indicators */}
+                    <div className="slide-dots">
+                      {SHOWCASE_IMAGES.map((_, i) => (
+                        <span
+                          key={i}
+                          className={`slide-dot ${i === currentSlide ? 'active' : ''}`}
+                          onClick={() => { setFading(true); setTimeout(() => { setCurrentSlide(i); setFading(false) }, 400) }}
+                        />
+                      ))}
                     </div>
-                    <div className="screen-label">▶ Watch Our Games</div>
                   </div>
                 </div>
                 <div className="mascot-container">
