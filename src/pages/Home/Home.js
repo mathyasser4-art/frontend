@@ -17,10 +17,10 @@ import './Home.css'
 // and place them in public/img/showcase/. 
 // The website will automatically find them!
 const SHOWCASE_IMAGES = [
-  '/img/showcase/math racer.png',
-  '/img/showcase/puzzle game.PNG',
-  '/img/showcase/puzzle.PNG',
-  '/img/showcase/bunny run.png',
+  '/img/showcase/showcase1.png',
+  '/img/showcase/showcase2.png',
+  '/img/showcase/showcase3.PNG',
+  '/img/showcase/showcase4.PNG',
 ]
 
 const GAME_PREVIEWS = [
