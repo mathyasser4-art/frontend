@@ -81,9 +81,6 @@ function Home() {
                 <h1 className='text-purple'>{t('home.welcomeTo')}</h1>
                 <h1 className='text-red'>{t('home.abacusHeroes')}</h1>
               </div>
-              <div className="home-paragraph">
-                <p className="hero-tagline-text">Play the Abacus .. Be a Hero !</p>
-              </div>
 
               {!role && (
                 <div className="home-options">

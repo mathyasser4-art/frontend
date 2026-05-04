@@ -93,15 +93,12 @@
     overflow: hidden;
 }
 
-.hero-tagline-text {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: #FF6B6B;
-    margin-top: -0.5rem;
-    margin-bottom: 2rem;
+.home-title h1 {
+    font-size: 3rem;
+    line-height: 1.1;
+    margin: 0;
     font-family: 'Comic Jungle', sans-serif;
-    text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.8);
-    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 /* ── Image Slideshow ── */
@@ -533,18 +530,18 @@
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (max-width: 768px) {
     .home-title h1 {
-        font-size: 60px;
+        font-size: 32px;
     }
     .home-container {
         margin: 1rem;
         padding: 2rem 1.5rem;
     }
     .home-paragraph {
-        font-size: 32px;
+        font-size: 24px;
     }
     .home-btn {
-        font-size: 30px;
-        padding: 1.2rem 3rem;
+        font-size: 24px;
+        padding: 1rem 2.5rem;
     }
     .floating-help-btn {
         bottom: 90px;
@@ -558,8 +555,8 @@
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (max-width: 600px) {
     .home-title h1 {
-        font-size: 40px;
-        letter-spacing: 2px;
+        font-size: 24px;
+        letter-spacing: 1px;
     }
     .home-title{
         padding-left: 0.8rem;
