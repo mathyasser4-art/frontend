@@ -32,7 +32,7 @@
     position: relative;
     z-index: 2;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 250, 240, 0.92) 100%);
-    margin: 1rem auto 2rem auto;
+    margin: 0.2rem auto 2rem auto;
     border-radius: 40px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
                 0 8px 20px rgba(255, 107, 107, 0.1);
