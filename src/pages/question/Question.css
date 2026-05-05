@@ -462,7 +462,7 @@ body {
 /* MCQ CHOICES CONTAINER - BESIDE QUESTION BOX */
 .mcq-container {
     width: 50%;
-    margin-top: 0.5rem !important; /* Raise it up */
+    margin-top: 0.2rem !important; /* Perfectly level with the question box */
     flex-shrink: 0;
     align-self: flex-start; /* Align to top of question box */
 }

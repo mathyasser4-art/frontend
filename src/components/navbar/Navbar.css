@@ -108,19 +108,20 @@ nav .nav-container img {
 }
 
 .nav-right-side img {
-  width: 48px !important;
-  height: 48px !important;
+  width: 42px !important; /* Matches the height of the nav-btns */
+  height: 42px !important;
+  aspect-ratio: 1 / 1 !important;
   border-radius: 50% !important;
-  border: 2px solid rgba(255, 255, 255, 0.8);
+  border: 2px solid white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  object-fit: cover;
+  object-fit: cover !important;
   transition: all 0.3s ease;
+  display: block;
 }
 
 .nav-right-side img:hover {
-  transform: scale(1.08);
-  border-color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .teachers-btn:active {
