@@ -518,17 +518,18 @@
     }
     .home-mobile{
         display: block;
-        min-height: 100vh;
         background-image: url('../../img/webbackground10.jpg');
         background-size: cover;
         background-position: center;
-        background-attachment: fixed;
+        background-attachment: scroll;
+        padding-bottom: 1rem;
     }
     .mobile-hero-showcase {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 1rem;
+        padding: 0.5rem 1rem;
+        margin-top: 0;
         width: 100%;
     }
     .mobile-hero-showcase .magical-screen-wrapper {
