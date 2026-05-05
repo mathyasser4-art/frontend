@@ -1,22 +1,23 @@
-.nav-container {
-  padding: 0.1rem 2rem;
+nav .nav-container {
+  padding: 0.1rem 2rem !important;
+  min-height: 50px !important;
+  height: 55px !important;
 }
 
-.nav-container img {
-  width: 110px;
+nav .nav-container img {
+  width: 90px !important;
+  max-height: 40px !important;
+  object-fit: contain;
 }
 
 .nav-right-side img {
-  width: 35px !important;
-}
-
-.school-avatar{
-  width: 400px !important;
+  width: 30px !important;
+  height: 30px !important;
 }
 
 .nav-btn {
-  padding: 0.3rem 1rem;
-  font-size: 14px;
+  padding: 0.2rem 0.8rem !important;
+  font-size: 13px !important;
   font-weight: 700;
   text-align: center;
   color: rgba(255, 255, 255, 0.9);
@@ -49,13 +50,13 @@
 .homework-btn {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.4rem 1rem;
-  margin-right: 1rem;
+  gap: 0.5rem;
+  padding: 0.2rem 0.8rem;
+  margin-right: 0.8rem;
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #f86c8c 100%);
   color: white;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 13px;
   border-radius: 25px;
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
@@ -65,31 +66,25 @@
 }
 
 .homework-btn span {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   display: inline-block;
 }
 
 .homework-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
-  background: linear-gradient(135deg, #ff5252 0%, #ee3d5f 50%, #f85c7c 100%);
-}
-
-.homework-btn:active {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
 }
 
 .teachers-btn {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.4rem 1rem;
-  margin-right: 1rem;
+  gap: 0.5rem;
+  padding: 0.2rem 0.8rem;
+  margin-right: 0.8rem;
   background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #087e8b 100%);
   color: white;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 13px;
   border-radius: 25px;
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
@@ -144,14 +139,16 @@
 
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (max-width: 992px) {
-  .nav-container {
-    padding: 1rem 1.5rem;
+  nav .nav-container {
+    padding: 0.1rem 1rem !important;
+    height: 50px !important;
   }
 }
 
 @media only screen and (max-width: 768px) {
-  .nav-container {
-    padding: 1rem 0.7rem;
+  nav .nav-container {
+    padding: 0.1rem 0.5rem !important;
+    height: 48px !important;
   }
 
   .gear{
@@ -161,63 +158,30 @@
 
 /* Mobile devices (phones, 576px and below) */
 @media only screen and (max-width: 576px) {
-  .nav-container {
-    padding: 0.8rem 0.5rem;
+  nav .nav-container {
+    padding: 0.1rem 0.4rem !important;
+    height: 45px !important;
   }
 
-  .nav-container img {
-    width: 150px;
+  nav .nav-container img {
+    width: 80px !important;
+    max-height: 30px !important;
   }
 
-  .homework-btn {
-    padding: 0.5rem 0.7rem;
-    font-size: 12px;
-    margin-right: 0.5rem;
-    gap: 0.3rem;
-  }
-
-  .homework-btn span {
-    font-size: 1rem;
-  }
-
-  .teachers-btn {
-    padding: 0.5rem 0.7rem;
-    font-size: 12px;
-    margin-right: 0.5rem;
-    gap: 0.3rem;
-  }
-
-  .teachers-btn span {
-    font-size: 1rem;
+  .homework-btn, .teachers-btn {
+    padding: 0.2rem 0.5rem;
+    font-size: 11px;
+    margin-right: 0.4rem;
+    gap: 0.2rem;
   }
 
   .nav-btn {
-    padding: 0.5rem 1rem;
-    font-size: 14px;
+    padding: 0.2rem 0.6rem !important;
+    font-size: 11px !important;
   }
 
   .nav-right-side img {
-    width: 45px !important;
-  }
-}
-
-/* Extra small devices (320px and above) */
-@media only screen and (max-width: 420px) {
-  .homework-btn, .teachers-btn {
-    white-space: nowrap;
-    padding: 0.4rem 0.5rem;
-    font-size: 11px;
-  }
-
-  .homework-btn span, .teachers-btn span {
-    font-size: 0.9rem;
-  }
-
-  .nav-container img {
-    width: 120px;
-  }
-
-  .nav-right-side img {
-    width: 40px !important;
+    width: 25px !important;
+    height: 25px !important;
   }
 }
