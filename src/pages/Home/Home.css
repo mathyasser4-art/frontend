@@ -94,8 +94,8 @@
 }
 
 .home-title h1 {
-    font-size: 3rem;
-    line-height: 1.1;
+    font-size: 1.8rem;
+    line-height: 1.2;
     margin: 0;
     font-family: 'Comic Jungle', sans-serif;
     text-transform: uppercase;
@@ -530,18 +530,18 @@
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (max-width: 768px) {
     .home-title h1 {
-        font-size: 32px;
+        font-size: 20px;
     }
     .home-container {
         margin: 1rem;
         padding: 2rem 1.5rem;
     }
     .home-paragraph {
-        font-size: 24px;
+        font-size: 18px;
     }
     .home-btn {
-        font-size: 24px;
-        padding: 1rem 2.5rem;
+        font-size: 18px;
+        padding: 0.8rem 2rem;
     }
     .floating-help-btn {
         bottom: 90px;
@@ -555,8 +555,8 @@
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (max-width: 600px) {
     .home-title h1 {
-        font-size: 24px;
-        letter-spacing: 1px;
+        font-size: 18px;
+        letter-spacing: 0.5px;
     }
     .home-title{
         padding-left: 0.8rem;
