@@ -16,26 +16,28 @@ nav .nav-container img {
 }
 
 .nav-btn {
-  padding: 0.7rem 1.6rem !important;
-  font-size: 18px !important;
+  padding: 0.65rem 1.4rem !important;
+  font-size: 16px !important;
   font-weight: 700;
   text-align: center;
-  color: rgba(255, 255, 255, 0.9);
+  color: #fff;
   border-radius: 50px;
-  background: linear-gradient(-45deg, #ffa63d, #ff3d77, #338aff, #3cf0c5);
-  background-size: 600%;
-  -webkit-animation: anime 16s linear infinite;
-  animation: anime 16s linear infinite;
+  background: linear-gradient(-45deg, #FF6B6B, #FF8E53, #338aff, #3cf0c5);
+  background-size: 400% 400%;
+  animation: anime 8s ease infinite;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
 }
 
-.nav-btn-signup {
-  background: linear-gradient(-45deg, #4CAF50, #45a049, #2e7d32, #1b5e20);
-  background-size: 600%;
+/* Unify all variants to use the shared animated background */
+.nav-btn-signup, .nav-btn-join {
+  background: linear-gradient(-45deg, #FF6B6B, #FF8E53, #338aff, #3cf0c5);
+  background-size: 400% 400%;
+  animation: anime 8s ease infinite;
 }
 
 .nav-btn-join {
-  background: linear-gradient(-45deg, #FF6B6B, #FF8E53, #FFD93D, #FF6B6B);
-  background-size: 600%;
   font-weight: 800;
   box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
 }
@@ -159,33 +161,37 @@ nav .nav-container img {
 /* Mobile devices (phones, 576px and below) */
 @media only screen and (max-width: 576px) {
   nav .nav-container {
-    padding: 0.15rem 0.8rem !important;
-    height: 70px !important;
+    padding: 0.4rem 0.8rem !important;
+    height: auto !important;
+    min-height: 65px !important;
   }
 
   nav .nav-container img {
-    width: 160px !important;
-    max-height: 55px !important;
-  }
-
-  .mobile-hero-showcase {
-    padding: 1rem;
-    margin-top: 0.5rem;
-  }
-
-  .mobile-hero-showcase .magical-screen {
-    border-width: 4px;
-    border-radius: 16px;
-  }
-
-  .homework-btn, .teachers-btn {
-    padding: 0.55rem 1.2rem;
-    font-size: 15px;
-    margin-right: 0.8rem;
+    width: 110px !important;
+    max-height: 45px !important;
   }
 
   .nav-btn {
-    padding: 0.6rem 1.4rem !important;
-    font-size: 16px !important;
+    padding: 0.35rem 0.7rem !important;
+    font-size: 11px !important;
+    border-width: 1px !important;
+  }
+
+  .homework-btn, .teachers-btn {
+    padding: 0.35rem 0.6rem;
+    font-size: 11px;
+    margin-right: 0.5rem;
+  }
+}
+
+/* Extra small devices */
+@media only screen and (max-width: 400px) {
+  nav .nav-container img {
+    width: 90px !important;
+  }
+  
+  .nav-btn {
+    padding: 0.3rem 0.5rem !important;
+    font-size: 10px !important;
   }
 }
