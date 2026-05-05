@@ -141,29 +141,27 @@ function Home() {
       <TeacherTrialModal isOpen={showTrialModal} onClose={() => setShowTrialModal(false)} />
       <TutorialVideoModal isOpen={showTutorialModal} onClose={() => setShowTutorialModal(false)} />
 
-      <div className='home-mobile-wrapper'>
-        <div className='home-mobile'>
-          <Navbar />
-          <div className="hero-showcase mobile-hero-showcase">
-            <div className="magical-screen-wrapper">
-              <div className="magical-screen">
-                <div className="screen-content">
-                  <img
-                    src={SHOWCASE_IMAGES[currentSlide]}
-                    alt="Gameplay Preview"
-                    className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
-                    onError={() => {
-                      setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length);
-                    }}
-                  />
-                </div>
+      <div className='home-mobile'>
+        <Navbar />
+        <div className="hero-showcase mobile-hero-showcase">
+          <div className="magical-screen-wrapper">
+            <div className="magical-screen">
+              <div className="screen-content">
+                <img
+                  src={SHOWCASE_IMAGES[currentSlide]}
+                  alt="Gameplay Preview"
+                  className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
+                  onError={() => {
+                    setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length);
+                  }}
+                />
               </div>
             </div>
           </div>
         </div>
-        <QuestionType />
-        <FeaturesSection />
       </div>
+      <QuestionType />
+      <FeaturesSection />
     </>
   )
 }
