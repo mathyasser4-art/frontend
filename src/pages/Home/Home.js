@@ -74,43 +74,22 @@ function Home() {
       <div className='home'>
         <Navbar />
         <div className="home-container">
-          <div className="hero-split">
-            {/* ── LEFT: Text + CTA ── */}
-            <div className="hero-text-content">
+          <div className="hero-vertical">
+            {/* ── TOP: Title ── */}
+            <div className="hero-top-content">
               <div className="home-title">
                 <h1 className='text-purple'>{t('home.welcomeTo')}</h1>
                 <h1 className='text-red'>{t('home.abacusHeroes')}</h1>
               </div>
-
-              {!role && (
-                <div className="home-options">
-                  <div className="home-option-card" onClick={() => { soundEffects.playClick(); navigate('/system/65a4963482dbaac16d820fc6') }}>
-                    <div className="option-icon">
-                      <GraduationCap size={32} strokeWidth={2.5} />
-                    </div>
-                    <h3>{t('home.practiceAsStudent')}</h3>
-                    <span className="option-badge">{t('home.noLoginRequired')}</span>
-                  </div>
-
-                  <div className="home-option-card" onClick={() => { soundEffects.playClick(); setShowTrialModal(true) }}>
-                    <div className="option-icon teacher-icon">
-                      <Presentation size={32} strokeWidth={2.5} />
-                    </div>
-                    <h3>{t('home.tryTeacherFeatures')}</h3>
-                    <span className="option-badge trial-badge">{t('home.freeTrialBadge')}</span>
-                  </div>
-                </div>
-              )}
-
             </div>
 
-            {/* ── RIGHT: Image Slideshow ── */}
+            {/* ── BOTTOM: Image Slideshow ── */}
             <div className="hero-showcase">
               <div className="magical-screen-wrapper">
                 <div className="magical-screen">
                   <div className="screen-content">
                     <img
-                      src={SHOWCASE_IMAGES[currentSlide]}
+                      src={`${SHOWCASE_IMAGES[currentSlide]}?t=${new Date().getTime()}`}
                       alt="Gameplay Preview"
                       className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
                       onError={() => {
@@ -122,6 +101,26 @@ function Home() {
                 </div>
               </div>
             </div>
+
+            {!role && (
+              <div className="home-options vertical-options">
+                <div className="home-option-card" onClick={() => { soundEffects.playClick(); navigate('/system/65a4963482dbaac16d820fc6') }}>
+                  <div className="option-icon">
+                    <GraduationCap size={32} strokeWidth={2.5} />
+                  </div>
+                  <h3>{t('home.practiceAsStudent')}</h3>
+                  <span className="option-badge">{t('home.noLoginRequired')}</span>
+                </div>
+
+                <div className="home-option-card" onClick={() => { soundEffects.playClick(); setShowTrialModal(true) }}>
+                  <div className="option-icon teacher-icon">
+                    <Presentation size={32} strokeWidth={2.5} />
+                  </div>
+                  <h3>{t('home.tryTeacherFeatures')}</h3>
+                  <span className="option-badge trial-badge">{t('home.freeTrialBadge')}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ── GAME STRIP ── */}
