@@ -81,7 +81,7 @@ function Home() {
                 <div className="magical-screen">
                   <div className="screen-content">
                     <img
-                      src={`${SHOWCASE_IMAGES[currentSlide]}?t=${new Date().getTime()}`}
+                      src={SHOWCASE_IMAGES[currentSlide]}
                       alt="Gameplay Preview"
                       className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
                       onError={() => {
@@ -148,7 +148,7 @@ function Home() {
             <div className="magical-screen">
               <div className="screen-content">
                 <img
-                  src={`${SHOWCASE_IMAGES[currentSlide]}?t=${new Date().getTime()}`}
+                  src={SHOWCASE_IMAGES[currentSlide]}
                   alt="Gameplay Preview"
                   className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
                   onError={() => {
