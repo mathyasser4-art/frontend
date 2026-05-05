@@ -75,14 +75,6 @@ function Home() {
         <Navbar />
         <div className="home-container">
           <div className="hero-vertical">
-            {/* ── TOP: Title ── */}
-            <div className="hero-top-content">
-              <div className="home-title">
-                <h1 className='text-purple'>{t('home.welcomeTo')}</h1>
-                <h1 className='text-red'>{t('home.abacusHeroes')}</h1>
-              </div>
-            </div>
-
             {/* ── BOTTOM: Image Slideshow ── */}
             <div className="hero-showcase">
               <div className="magical-screen-wrapper">
