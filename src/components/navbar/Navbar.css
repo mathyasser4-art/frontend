@@ -20,26 +20,28 @@ nav .nav-container img {
   font-size: 16px !important;
   font-weight: 700;
   text-align: center;
-  color: #fff;
+  color: #3b2a00 !important; /* Dark brown text for readability on gold */
   border-radius: 50px;
-  background: linear-gradient(-45deg, #FF6B6B, #FF8E53, #338aff, #3cf0c5);
-  background-size: 400% 400%;
-  animation: anime 8s ease infinite;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #caa64a 0%, #f6e27a 50%, #b8891f 100%) !important;
+  box-shadow: 0 4px 15px rgba(184, 137, 31, 0.3);
+  border: 3px solid white !important;
   transition: all 0.3s ease;
+  text-transform: uppercase;
 }
 
-/* Unify all variants to use the shared animated background */
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(184, 137, 31, 0.5);
+  background: linear-gradient(135deg, #d4b25e 0%, #fff0a3 50%, #c99b32 100%) !important;
+}
+
 .nav-btn-signup, .nav-btn-join {
-  background: linear-gradient(-45deg, #FF6B6B, #FF8E53, #338aff, #3cf0c5);
-  background-size: 400% 400%;
-  animation: anime 8s ease infinite;
+  background: linear-gradient(135deg, #caa64a 0%, #f6e27a 50%, #b8891f 100%) !important;
 }
 
 .nav-btn-join {
-  font-weight: 800;
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  font-weight: 900;
+  box-shadow: 0 6px 20px rgba(184, 137, 31, 0.4);
 }
 
 .gear{

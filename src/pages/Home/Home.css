@@ -512,18 +512,20 @@
     }
 }
 
-@media only screen and (max-width: 992px) {
-    .home{
+    .home-mobile-wrapper {
         display: none;
-    }
-    .home-mobile{
-        display: block;
         background-image: url('../../img/webbackground10.jpg');
         background-size: cover;
         background-position: center;
         background-attachment: scroll;
+    }
+
+    .home-mobile{
+        display: block;
+        background: transparent;
         padding-bottom: 1rem;
     }
+
     .mobile-hero-showcase {
         display: flex;
         justify-content: center;
@@ -538,6 +540,23 @@
     .mobile-hero-showcase .magical-screen {
         border: 4px solid #fff;
         border-radius: 20px;
+    }
+
+    .home-mobile-wrapper .questionType {
+        background: transparent !important;
+    }
+
+    .home-mobile-wrapper .features-section {
+        background: transparent !important;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    .home-mobile-wrapper {
+        display: block;
+    }
+    .home {
+        display: none;
     }
 }
 
