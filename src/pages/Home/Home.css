@@ -28,20 +28,26 @@
 }
 
 .home-container {
-    padding: 3rem;
+    padding: 2rem 3rem;
     position: relative;
     z-index: 2;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 250, 240, 0.92) 100%);
+    background: transparent;
     margin: 0 auto 2rem auto;
-    border-radius: 40px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
-                0 8px 20px rgba(255, 107, 107, 0.1);
-    backdrop-filter: blur(10px);
-    border: 3px solid rgba(255, 255, 255, 0.8);
     text-align: left;
     max-width: 1200px;
     width: calc(100% - 4rem);
     animation: fadeInUp 0.8s ease-out;
+}
+
+.home-title h1 {
+    font-size: 2.8rem;
+    line-height: 1.1;
+    margin: 0;
+    font-family: 'Comic Jungle', sans-serif;
+    text-transform: uppercase;
+    display: block;
+    text-shadow: 3px 3px 0px rgba(255, 255, 255, 0.9), 
+                 0px 0px 20px rgba(255, 255, 255, 0.5);
 }
 
 .hero-vertical {
@@ -54,15 +60,6 @@
 
 .hero-top-content {
     width: 100%;
-}
-
-.home-title h1 {
-    font-size: 2.8rem;
-    line-height: 1.1;
-    margin: 0;
-    font-family: 'Comic Jungle', sans-serif;
-    text-transform: uppercase;
-    display: block;
 }
 
 .hero-showcase {
