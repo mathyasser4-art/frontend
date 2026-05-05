@@ -1,10 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import logo from '../../logo.png'
-import google from '../../img/google-icon.png'
 import login from '../../api/auth/login.api'
-import { useGoogleLogin } from '@react-oauth/google';
-import authWithGoogle from '../../api/auth/authWithGoogle.api'
 import '../../reusable.css'
 import './Login.css'
 
@@ -24,20 +21,12 @@ function Login() {
 
     const handleLogin = () => {
         if (email === '' || password === '') {
-            setError('All field is required!!')
+            setError('All fields are required!!')
         } else {
             const userData = { email, password }
             login(userData, setError, setLoading, navigate, showAlert)
         }
     }
-
-    const loginWithGoogle = useGoogleLogin({
-        onSuccess: (tokenResponse) => {
-            const { access_token } = tokenResponse
-            const data = { access_token }
-            authWithGoogle(data)
-        }
-    });
 
     return (
         <div className='login d-flex flex-direction-column justify-content-center align-items-center'>
@@ -58,19 +47,6 @@ function Login() {
                     <div className="login-btn2"></div>
                 </div>
             </div>
-            <div className="login-or d-flex justify-content-center align-items-center">
-                <div className='or-line'></div>
-                <p className='or-text'>OR</p>
-                <div className='or-line'></div>
-            </div>
-            <div onClick={() => loginWithGoogle()} className="google-btn d-flex justify-content-center align-items-center">
-                <img src={google} alt="" />
-                <p>Sign in with Google</p>
-            </div>
-            <div className="login-footer">
-                <p>Don't have account? <Link to={'/auth/register'}><span className='text-purple'>Sign up</span></Link></p>
-            </div>
-
         </div>
     )
 }
