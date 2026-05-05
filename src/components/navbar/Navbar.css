@@ -16,32 +16,32 @@ nav .nav-container img {
 }
 
 .nav-btn {
-  padding: 0.65rem 1.4rem !important;
-  font-size: 16px !important;
+  padding: 0.6rem 1.4rem !important;
+  font-size: 15px !important;
   font-weight: 700;
   text-align: center;
-  color: #3b2a00 !important; /* Dark brown text for readability on gold */
+  color: #fff !important;
   border-radius: 50px;
-  background: linear-gradient(135deg, #caa64a 0%, #f6e27a 50%, #b8891f 100%) !important;
-  box-shadow: 0 4px 15px rgba(184, 137, 31, 0.3);
-  border: 3px solid white !important;
+  background: #00C9FF !important; /* Default Cyan */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border: none !important;
   transition: all 0.3s ease;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .nav-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(184, 137, 31, 0.5);
-  background: linear-gradient(135deg, #d4b25e 0%, #fff0a3 50%, #c99b32 100%) !important;
+  filter: brightness(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
-.nav-btn-signup, .nav-btn-join {
-  background: linear-gradient(135deg, #caa64a 0%, #f6e27a 50%, #b8891f 100%) !important;
+.nav-btn-signup {
+  background: #FFA63D !important; /* Orange from toolbar */
 }
 
 .nav-btn-join {
-  font-weight: 900;
-  box-shadow: 0 6px 20px rgba(184, 137, 31, 0.4);
+  background: #FF85A2 !important; /* Pink from toolbar */
+  font-weight: 800;
 }
 
 .gear{

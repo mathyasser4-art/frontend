@@ -520,12 +520,8 @@ body {
 }
 
 .mcq-choice {
-    background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
-    color: #4C5287;
-}
-
-.mcq-choice:nth-child(even) {
     background: linear-gradient(135deg, #A1C4FD 0%, #C2E9FB 100%);
+    color: #4C5287;
 }
 
 .mcq-choice:hover {
@@ -576,28 +572,6 @@ body {
     border-color: #4C5287;
     transform: translateX(8px) scale(1.05);
     box-shadow: 0 8px 16px rgba(76, 82, 135, 0.3);
-}
-
-.mcq-choice.selected::after {
-    content: '👆';
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 24px;
-    animation: checkmark 0.3s ease;
-}
-
-@keyframes checkmark {
-    0% {
-        transform: translateY(-50%) scale(0);
-    }
-    50% {
-        transform: translateY(-50%) scale(1.2);
-    }
-    100% {
-        transform: translateY(-50%) scale(1);
-    }
 }
 
 .mcq-error {
@@ -660,16 +634,6 @@ body {
     box-shadow: 0 10px 20px rgba(76, 82, 135, 0.3);
 }
 
-.graph-choice.selected::after {
-    content: '👆';
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
 .floating-question {
     background-color: #fff;
