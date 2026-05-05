@@ -38,7 +38,6 @@ function Home() {
   const { t } = useTranslation()
   const role = localStorage.getItem('auth_role')
   const navigate = useNavigate()
-  const [showTrialModal, setShowTrialModal] = useState(false)
   const [showTutorialModal, setShowTutorialModal] = useState(false)
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const [fading, setFading] = React.useState(false)
@@ -94,25 +93,6 @@ function Home() {
               </div>
             </div>
 
-            {!role && (
-              <div className="home-options vertical-options">
-                <div className="home-option-card" onClick={() => { soundEffects.playClick(); navigate('/system/65a4963482dbaac16d820fc6') }}>
-                  <div className="option-icon">
-                    <GraduationCap size={32} strokeWidth={2.5} />
-                  </div>
-                  <h3>{t('home.practiceAsStudent')}</h3>
-                  <span className="option-badge">{t('home.noLoginRequired')}</span>
-                </div>
-
-                <div className="home-option-card" onClick={() => { soundEffects.playClick(); setShowTrialModal(true) }}>
-                  <div className="option-icon teacher-icon">
-                    <Presentation size={32} strokeWidth={2.5} />
-                  </div>
-                  <h3>{t('home.tryTeacherFeatures')}</h3>
-                  <span className="option-badge trial-badge">{t('home.freeTrialBadge')}</span>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* ── GAME STRIP ── */}
@@ -138,7 +118,6 @@ function Home() {
         </div>
       </div>
 
-      <TeacherTrialModal isOpen={showTrialModal} onClose={() => setShowTrialModal(false)} />
       <TutorialVideoModal isOpen={showTutorialModal} onClose={() => setShowTutorialModal(false)} />
 
       <div className='home-mobile'>

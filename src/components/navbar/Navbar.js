@@ -71,16 +71,9 @@ const Navbar = () => {
                                     {t('home.joinNow')}
                                 </div>
                             </Link>
-                            <Link to={'/auth/register'} onClick={() => soundEffects.playClick()}>
-                                <div className="nav-btn nav-btn-signup" style={{ marginRight: '15px' }}>
-                                    {t('auth.signUp')}
-                                    <div className="nav-btn2"></div>
-                                </div>
-                            </Link>
                             <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}>
                                 <div className="nav-btn">
                                     {t('common.login')}
-                                    <div className="nav-btn2"></div>
                                 </div>
                             </Link>
                         </>
