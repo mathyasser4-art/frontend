@@ -58,7 +58,13 @@ const Navbar = () => {
                     {role === 'Student' ? <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
-                    {isAuth ? role === 'School' ? <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img className='school-avatar' src={school} alt="" /></Link> : <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img src={profileImg} alt="" /></Link> : (
+                    {isAuth ? (
+                      <Link to={'/user/info'} onClick={() => soundEffects.playClick()}>
+                        <div className="nav-btn nav-btn-profile">
+                          👤 PROFILE
+                        </div>
+                      </Link>
+                    ) : (
                         <>
                             <Link to={'/pricing'} onClick={() => soundEffects.playClick()}>
                                 <div className="nav-btn nav-btn-join" style={{ marginRight: '15px' }}>
