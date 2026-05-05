@@ -143,9 +143,21 @@ function Home() {
 
       <div className='home-mobile'>
         <Navbar />
-        <div className="home-title">
-          <h1 className='text-purple'>{t('home.welcomeTo')}</h1>
-          <h1 className='text-red'>{t('home.abacusHeroes')}</h1>
+        <div className="hero-showcase mobile-hero-showcase">
+          <div className="magical-screen-wrapper">
+            <div className="magical-screen">
+              <div className="screen-content">
+                <img
+                  src={`${SHOWCASE_IMAGES[currentSlide]}?t=${new Date().getTime()}`}
+                  alt="Gameplay Preview"
+                  className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
+                  onError={() => {
+                    setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <QuestionType />

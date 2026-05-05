@@ -518,9 +518,25 @@
     }
     .home-mobile{
         display: block;
+        min-height: 100vh;
+        background-image: url('../../img/webbackground10.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
     }
-    .home-title{
-        padding-left: 1.5rem;
+    .mobile-hero-showcase {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+        width: 100%;
+    }
+    .mobile-hero-showcase .magical-screen-wrapper {
+        max-width: 90%;
+    }
+    .mobile-hero-showcase .magical-screen {
+        border: 4px solid #fff;
+        border-radius: 20px;
     }
 }
 
