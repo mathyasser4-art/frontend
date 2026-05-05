@@ -46,8 +46,7 @@
     font-family: 'Comic Jungle', sans-serif;
     text-transform: uppercase;
     display: block;
-    text-shadow: 3px 3px 0px rgba(255, 255, 255, 0.9), 
-                 0px 0px 20px rgba(255, 255, 255, 0.5);
+    text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.9);
 }
 
 .hero-vertical {
