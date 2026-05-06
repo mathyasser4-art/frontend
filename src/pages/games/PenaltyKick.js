@@ -186,6 +186,7 @@ const PenaltyKick = () => {
 
         {/* GAME AREA */}
         <div className="game-area">
+          <div className="grass-field" />
 
           {/* Player */}
           <div className="player">
@@ -194,6 +195,7 @@ const PenaltyKick = () => {
 
           {/* Goal */}
           <div className="goal-net">
+            <div className="goal-net-texture" />
             {ZONES.map(zone => (
               <div
                 key={zone}
@@ -209,7 +211,7 @@ const PenaltyKick = () => {
           </div>
 
           {/* Ball */}
-          <div className={`ball ${gameState === 'kicking' ? 'kicking' : ''}`} style={getBallStyle()}>
+          <div className={`ball ${gameState === 'kicking' ? 'kicking' : ''}`}>
             <img src={ballImg} alt="ball" />
           </div>
 
