@@ -31,8 +31,8 @@ import Pricing from './pages/pricing/Pricing';
 import MathRacer from './pages/games/MathRacer';
 import ImagePuzzle from './pages/games/ImagePuzzle';
 import CaveRunner from './pages/games/CaveRunner';
-import PenaltyKick from './pages/games/PenaltyKick';
 import JetSkiGame from './pages/games/JetSkiGame';
+import CartoonAirplanesGame from './pages/games/CartoonAirplanesGame';
 import SudokuGame from './pages/games/SudokuGame';
 import KenKenGame from './pages/games/KenKenGame';
 import GamesMenu from './pages/studentDashboard/GamesMenu';
@@ -81,8 +81,8 @@ function App() {
       <Route path='/student/games/math-racer' element={<MathRacer />} />
       <Route path='/student/games/image-puzzle' element={<ImagePuzzle />} />
       <Route path='/student/games/cave-runner' element={<CaveRunner />} />
-      <Route path='/student/games/penalty-kick' element={<PenaltyKick />} />
       <Route path='/student/games/jetski' element={<JetSkiGame />} />
+      <Route path='/student/games/airplanes' element={<CartoonAirplanesGame />} />
       <Route path='/student/games/sudoku' element={<SudokuGame />} />
       <Route path='/student/games/kenken' element={<KenKenGame />} />
       <Route path='/student/games-menu' element={<GamesMenu />} />

@@ -85,6 +85,25 @@ const GamesMenu = () => {
             </div>
           </div>
 
+          {/* Cartoon Airplanes - TOP 4 */}
+          <div className="game-card-premium" onClick={() => navigate('/student/games/airplanes')}>
+            <div className="card-image-wrapper">
+              <div className="card-badge" style={{background: '#0ea5e9'}}><Zap size={14} fill="currentColor" /> PUZZLE</div>
+              <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>✈️</div>
+              <div className="card-overlay">
+                <div className="overlay-content">
+                  <div className="game-stats">
+                    <span><Timer size={16} /> RELAXING</span>
+                    <span><Trophy size={16} /> JIGSAW</span>
+                  </div>
+                  <h3>Cartoon Airplanes</h3>
+                  <p>Solve beautiful airplane jigsaw puzzles. Unlock with 5 math questions!</p>
+                  <button className="play-hover-btn">PLAY NOW</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Image Puzzle */}
           <div className="game-card-full legacy" onClick={() => navigate('/student/games/image-puzzle')}>
             <div className="game-thumbnail thumb-image">
@@ -102,21 +121,6 @@ const GamesMenu = () => {
             </div>
           </div>
 
-          {/* Penalty Kick */}
-          <div className="game-card-full legacy" onClick={() => navigate('/student/games/penalty-kick')}>
-            <div className="game-thumbnail thumb-penalty" style={{ background: '#4ade80', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', height: '40%', border: '4px solid white', borderBottom: 'none' }}></div>
-              <div style={{ fontSize: '3rem', zIndex: 2, marginBottom: '20px' }}>🧤</div>
-              <div style={{ fontSize: '2rem', position: 'absolute', bottom: '10px' }}>⚽</div>
-            </div>
-            <div className="game-card-body">
-              <h3>Penalty Kick</h3>
-              <p>Answer math questions correctly to outsmart the goalkeeper and score goals!</p>
-              <button className="play-now-btn">
-                <Play size={20} fill="currentColor" /> Play Now
-              </button>
-            </div>
-          </div>
 
           {/* Sudoku Master */}
           <div className="game-card-full legacy" onClick={() => navigate('/student/games/sudoku')}>
