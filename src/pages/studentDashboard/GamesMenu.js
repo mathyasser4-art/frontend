@@ -217,6 +217,34 @@ const GamesMenu = () => {
             </div>
           </div>
 
+          {/* Sudoku Master */}
+          <div className="game-card-full legacy" onClick={() => navigate('/student/games/sudoku')}>
+            <div className="game-thumbnail" style={{ background: '#0ea5e9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{fontSize: '4rem'}}>🧩</span>
+            </div>
+            <div className="game-card-body">
+              <h3>Sudoku Master</h3>
+              <p>Sharpen your focus and solve the logic grid!</p>
+              <button className="play-now-btn">
+                <Play size={20} fill="currentColor" /> Play Now
+              </button>
+            </div>
+          </div>
+
+          {/* KenKen Logic */}
+          <div className="game-card-full legacy" onClick={() => navigate('/student/games/kenken')}>
+            <div className="game-thumbnail" style={{ background: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{fontSize: '4rem'}}>🧮</span>
+            </div>
+            <div className="game-card-body">
+              <h3>KenKen Logic</h3>
+              <p>Combine math operations and logic to fill the grid!</p>
+              <button className="play-now-btn">
+                <Play size={20} fill="currentColor" /> Play Now
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
