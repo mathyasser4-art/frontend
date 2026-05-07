@@ -29,7 +29,7 @@ import TeacherAssignmentReports from './components/teacherReports/TeacherAssignm
 import StudentHistory from './components/studentHistory/StudentHistory';
 import Pricing from './pages/pricing/Pricing';
 import MathRacer from './pages/games/MathRacer';
-import ImagePuzzle from './pages/games/ImagePuzzle';
+import SuperMarioAndSonicGame from './pages/games/SuperMarioAndSonicGame';
 import CaveRunner from './pages/games/CaveRunner';
 import JetSkiGame from './pages/games/JetSkiGame';
 import CartoonAirplanesGame from './pages/games/CartoonAirplanesGame';
@@ -79,7 +79,7 @@ function App() {
       <Route path='/teacher/student/:studentID/history' element={isAuth ? <StudentHistory /> : <Navigate to='/' />} />
       <Route path='/pricing' element={<Pricing />} />
       <Route path='/student/games/math-racer' element={<MathRacer />} />
-      <Route path='/student/games/image-puzzle' element={<ImagePuzzle />} />
+      <Route path='/student/games/super-mario-sonic' element={<SuperMarioAndSonicGame />} />
       <Route path='/student/games/cave-runner' element={<CaveRunner />} />
       <Route path='/student/games/jetski' element={<JetSkiGame />} />
       <Route path='/student/games/airplanes' element={<CartoonAirplanesGame />} />

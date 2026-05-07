@@ -104,49 +104,60 @@ const GamesMenu = () => {
             </div>
           </div>
 
-          {/* Image Puzzle */}
-          <div className="game-card-full legacy" onClick={() => navigate('/student/games/image-puzzle')}>
-            <div className="game-thumbnail thumb-image">
-              <div className="piece">🧩</div>
-              <div className="piece">🧩</div>
-              <div className="piece">🧩</div>
-              <div className="piece"></div>
-            </div>
-            <div className="game-card-body">
-              <h3>Image Puzzle</h3>
-              <p>Slide and arrange jigsaw puzzle pieces into the correct image!</p>
-              <button className="play-now-btn">
-                <Play size={20} fill="currentColor" /> Play Now
-              </button>
+          {/* Super Mario and Sonic - TOP 5 */}
+          <div className="game-card-premium" onClick={() => navigate('/student/games/super-mario-sonic')}>
+            <div className="card-image-wrapper">
+              <div className="card-badge" style={{background: '#f43f5e'}}><Zap size={14} fill="currentColor" /> ARCADE</div>
+              <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #ef4444 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🍄</div>
+              <div className="card-overlay">
+                <div className="overlay-content">
+                  <div className="game-stats">
+                    <span><Timer size={16} /> ACTION</span>
+                    <span><Trophy size={16} /> ADVENTURE</span>
+                  </div>
+                  <h3>Super Mario and Sonic</h3>
+                  <p>Join your friend Mario and Sonic in this epic adventure. Unlock with 5 math questions!</p>
+                  <button className="play-hover-btn">PLAY NOW</button>
+                </div>
+              </div>
             </div>
           </div>
 
-
           {/* Sudoku Master */}
-          <div className="game-card-full legacy" onClick={() => navigate('/student/games/sudoku')}>
-            <div className="game-thumbnail" style={{ background: '#0ea5e9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{fontSize: '4rem'}}>🧩</span>
-            </div>
-            <div className="game-card-body">
-              <h3>Sudoku Master</h3>
-              <p>Sharpen your focus and solve the logic grid!</p>
-              <button className="play-now-btn">
-                <Play size={20} fill="currentColor" /> Play Now
-              </button>
+          <div className="game-card-premium" onClick={() => navigate('/student/games/sudoku')}>
+            <div className="card-image-wrapper">
+              <div className="card-badge" style={{background: '#0ea5e9'}}><Zap size={14} fill="currentColor" /> LOGIC</div>
+              <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧩</div>
+              <div className="card-overlay">
+                <div className="overlay-content">
+                  <div className="game-stats">
+                    <span><Timer size={16} /> FOCUS</span>
+                    <span><Trophy size={16} /> PUZZLE</span>
+                  </div>
+                  <h3>Sudoku Master</h3>
+                  <p>Sharpen your focus and solve the logic grid! Unlock with 5 math questions.</p>
+                  <button className="play-hover-btn">PLAY NOW</button>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* KenKen Logic */}
-          <div className="game-card-full legacy" onClick={() => navigate('/student/games/kenken')}>
-            <div className="game-thumbnail" style={{ background: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{fontSize: '4rem'}}>🧮</span>
-            </div>
-            <div className="game-card-body">
-              <h3>KenKen Logic</h3>
-              <p>Combine math operations and logic to fill the grid!</p>
-              <button className="play-now-btn">
-                <Play size={20} fill="currentColor" /> Play Now
-              </button>
+          <div className="game-card-premium" onClick={() => navigate('/student/games/kenken')}>
+            <div className="card-image-wrapper">
+              <div className="card-badge" style={{background: '#ea580c'}}><Zap size={14} fill="currentColor" /> MATH</div>
+              <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #c2410c 0%, #ea580c 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧮</div>
+              <div className="card-overlay">
+                <div className="overlay-content">
+                  <div className="game-stats">
+                    <span><Timer size={16} /> BRAIN</span>
+                    <span><Trophy size={16} /> PUZZLE</span>
+                  </div>
+                  <h3>KenKen Logic</h3>
+                  <p>Combine math operations and logic to fill the grid! Unlock with 5 math questions.</p>
+                  <button className="play-hover-btn">PLAY NOW</button>
+                </div>
+              </div>
             </div>
           </div>
 

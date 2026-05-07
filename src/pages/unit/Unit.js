@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
-import GuestBanner from '../../components/guestBanner/GuestBanner';
+
 import MobileNav from '../../components/mobileNav/MobileNav';
 import { Link, useParams } from 'react-router-dom';
 import SystemLoading from '../../components/systemLoding/SystemLoading';
@@ -79,7 +79,7 @@ function Unit() {
 
     return (
         <>
-            {!isAuth && <GuestBanner />}
+
             <Navbar />
             <MobileNav role={role} />
             {loading ? <SystemLoading /> : <div className="unit-container">

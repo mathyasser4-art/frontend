@@ -5,7 +5,7 @@ import logo from '../../logo.png';
 import avatarExam from '../../img/avatar-exam.png';
 import profileImg from '../../img/avatar-profile.png';
 import QuestionLoading from '../../components/questionLoading/QuestionLoading';
-import GuestBanner from '../../components/guestBanner/GuestBanner';
+
 import getQuestion from '../../api/question/getQuestion.api';
 import createAssignment from '../../api/assignment/createAssignment.api';
 import getClass from '../../api/teacher/getClass.api';
@@ -726,7 +726,7 @@ function Question() {
 
     return (
         <>
-            {!isAuth && <GuestBanner />}
+
             <audio ref={audioRef} src="/audio/birds sound no.mp3" loop preload="auto" />
             <audio ref={audioRefCorrect} src="/audio/correct.mp3" preload="auto" />
             <audio ref={audioRefWrong} src="/audio/wrong.mp3" preload="auto" />
