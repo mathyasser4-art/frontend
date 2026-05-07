@@ -394,6 +394,7 @@ bkcore.hexgl.tracks.Cityscape = {
 
 		// SHIP
 		var ship = ctx.createMesh(scene, this.lib.get("geometries", "ship.feisar"), -1134*2, 10, -443*2, this.materials.ship);
+		ship.scale.set(0.5, 0.5, 0.5);
 
 		var booster = ctx.createMesh(ship, this.lib.get("geometries", "booster"), 0, 0.665, -3.8, this.materials.booster);
 		booster.depthWrite = false;

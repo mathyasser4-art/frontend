@@ -107,6 +107,29 @@ Mario.LevelState.prototype.Enter = function() {
         }
     };
     window.addEventListener('message', this.mathListener);
+
+    this.touchListener = function(e) {
+        if (!self.Paused || !self.InGameQuestion) return;
+        var canvas = document.getElementsByTagName('canvas')[0];
+        if (!canvas) return;
+        var rect = canvas.getBoundingClientRect();
+        var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        var scaleX = 320 / rect.width;
+        var scaleY = 240 / rect.height;
+        var x = (clientX - rect.left) * scaleX;
+        var y = (clientY - rect.top) * scaleY;
+        
+        if (x >= 40 && x <= 280) {
+            if (y >= 64 && y < 74) { window.parent.postMessage({type: 'mario_answer', index: 0}, '*'); }
+            else if (y >= 74 && y < 82) { window.parent.postMessage({type: 'mario_answer', index: 1}, '*'); }
+            else if (y >= 82 && y < 90) { window.parent.postMessage({type: 'mario_answer', index: 2}, '*'); }
+            else if (y >= 90 && y < 100) { window.parent.postMessage({type: 'mario_answer', index: 3}, '*'); }
+        }
+    };
+    window.addEventListener('mousedown', this.touchListener);
+    window.addEventListener('touchstart', this.touchListener, {passive: false});
 };
 
 Mario.LevelState.prototype.Exit = function() {
@@ -121,6 +144,8 @@ Mario.LevelState.prototype.Exit = function() {
     delete this.FontShadow;
     delete this.Font;
     window.removeEventListener('message', this.mathListener);
+    window.removeEventListener('mousedown', this.touchListener);
+    window.removeEventListener('touchstart', this.touchListener);
 };
 
 Mario.LevelState.prototype.CheckShellCollide = function(shell) {
@@ -187,7 +212,7 @@ Mario.LevelState.prototype.Update = function(delta) {
         }
 
         for (i = 0; i < this.Sprites.Objects.length; i++) {
-            if (this.Sprites.Objects[i] === Mario.MarioCharacter) {
+            if (this.Sprites.Objects[i] === Mario.MarioCharacter && !this.InGameQuestion) {
                 this.Sprites.Objects[i].Update(delta);
             } else {
                 this.Sprites.Objects[i].UpdateNoMove(delta);

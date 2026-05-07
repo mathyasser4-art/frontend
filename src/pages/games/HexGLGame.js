@@ -54,23 +54,7 @@ const HexGLGame = () => {
     return () => window.removeEventListener('message', handleMessage);
   }, []);
 
-  // 20-second dynamic Math Lock interval
-  useEffect(() => {
-    let interval;
-    if (gameState === 'playing') {
-      interval = setInterval(() => {
-        if (iframeRef.current && iframeRef.current.contentWindow) {
-          iframeRef.current.contentWindow.postMessage({ type: 'hexgl_pause' }, '*');
-        }
-        setQuestionsNeeded(1);
-        setSolvedCount(0);
-        setGameState('in_game_lock');
-      }, 20000); // 20 seconds
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [gameState]);
+  // Removed 20-second dynamic Math Lock interval
 
   const handleAnswer = (selectedAns) => {
     if (selectedAns === question.answer) {
