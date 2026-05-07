@@ -58,6 +58,84 @@
 
         <script src="code/music.js"></script>
 
+        <style>
+            .touch-controls {
+                display: none;
+                position: absolute;
+                bottom: 10px;
+                width: 100%;
+                height: 150px;
+                pointer-events: none;
+                z-index: 1000;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            .touch-btn {
+                position: absolute;
+                background: rgba(255, 255, 255, 0.3);
+                border: 2px solid rgba(255, 255, 255, 0.5);
+                border-radius: 50%;
+                pointer-events: auto;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: white;
+                font-family: sans-serif;
+                font-weight: bold;
+                touch-action: none;
+            }
+            .touch-btn:active { background: rgba(255, 255, 255, 0.6); }
+            
+            .btn-up { width: 50px; height: 50px; left: 80px; bottom: 80px; }
+            .btn-left { width: 50px; height: 50px; left: 20px; bottom: 20px; }
+            .btn-right { width: 50px; height: 50px; left: 140px; bottom: 20px; }
+            
+            .btn-start { width: 60px; height: 30px; right: 180px; bottom: 80px; border-radius: 15px; font-size: 10px;}
+            .btn-b { width: 60px; height: 60px; right: 90px; bottom: 20px; font-size: 20px; }
+            .btn-a { width: 60px; height: 60px; right: 20px; bottom: 70px; font-size: 20px; }
+        </style>
+
+        <div class="touch-controls" id="touch-controls">
+            <div class="touch-btn btn-up" data-key="38">↑</div>
+            <div class="touch-btn btn-left" data-key="37">←</div>
+            <div class="touch-btn btn-right" data-key="39">→</div>
+            
+            <div class="touch-btn btn-start" data-key="83">START</div>
+            <div class="touch-btn btn-b" data-key="32">B</div>
+            <div class="touch-btn btn-a" data-key="38">A</div>
+        </div>
+
+        <script>
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                document.getElementById('touch-controls').style.display = 'block';
+                var buttons = document.querySelectorAll('.touch-btn');
+                buttons.forEach(function(btn) {
+                    btn.addEventListener('touchstart', function(e) {
+                        e.preventDefault();
+                        var keyCode = parseInt(this.getAttribute('data-key'));
+                        if (Enjine && Enjine.KeyboardInput) {
+                            Enjine.KeyboardInput.KeyDownEvent({ keyCode: keyCode, preventDefault: function(){} });
+                        }
+                    }, {passive: false});
+                    
+                    btn.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        var keyCode = parseInt(this.getAttribute('data-key'));
+                        if (Enjine && Enjine.KeyboardInput) {
+                            Enjine.KeyboardInput.KeyUpEvent({ keyCode: keyCode, preventDefault: function(){} });
+                        }
+                    }, {passive: false});
+                    
+                    btn.addEventListener('touchcancel', function(e) {
+                        e.preventDefault();
+                        var keyCode = parseInt(this.getAttribute('data-key'));
+                        if (Enjine && Enjine.KeyboardInput) {
+                            Enjine.KeyboardInput.KeyUpEvent({ keyCode: keyCode, preventDefault: function(){} });
+                        }
+                    }, {passive: false});
+                });
+            }
+        </script>
         <script>$(document).ready(function() { new Enjine.Application().Initialize(new Mario.LoadingState(), 320, 240) });</script>
 	</body>
 </html>

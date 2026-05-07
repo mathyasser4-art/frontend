@@ -190,7 +190,7 @@ Mario.Character.prototype.Move = function() {
         this.Facing = -1;
     }
     
-    if (Enjine.KeyboardInput.IsKeyDown(Enjine.Keys.S) || (this.JumpTime < 0 && !this.OnGround && !this.Sliding)) {
+    if (Enjine.KeyboardInput.IsKeyDown(Enjine.Keys.Up) || (this.JumpTime < 0 && !this.OnGround && !this.Sliding)) {
         if (this.JumpTime < 0) {
             this.Xa = this.XJumpSpeed;
             this.Ya = -this.JumpTime * this.YJumpSpeed;
@@ -252,7 +252,7 @@ Mario.Character.prototype.Move = function() {
     }
     
     this.CanShoot = !Enjine.KeyboardInput.IsKeyDown(Enjine.Keys.A);
-    this.MayJump = (this.OnGround || this.Sliding) && !Enjine.KeyboardInput.IsKeyDown(Enjine.Keys.S);
+    this.MayJump = (this.OnGround || this.Sliding) && !Enjine.KeyboardInput.IsKeyDown(Enjine.Keys.Up);
     this.XFlip = (this.Facing === -1);
     this.RunTime += Math.abs(this.Xa) + 5;
     
