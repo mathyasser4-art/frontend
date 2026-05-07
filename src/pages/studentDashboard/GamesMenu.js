@@ -47,6 +47,25 @@ const GamesMenu = () => {
             </div>
           </div>
 
+          {/* HexGL Racing */}
+          <div className="game-card-premium" onClick={() => navigate('/student/games/hexgl')}>
+            <div className="card-image-wrapper">
+              <div className="card-badge" style={{background: '#8b5cf6'}}><Zap size={14} fill="currentColor" /> FUTURISTIC</div>
+              <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🚀</div>
+              <div className="card-overlay">
+                <div className="overlay-content">
+                  <div className="game-stats">
+                    <span><Timer size={16} /> 5 MINS</span>
+                    <span><Trophy size={16} /> 3D RACING</span>
+                  </div>
+                  <h3>HexGL Racing</h3>
+                  <p>A fast-paced futuristic 3D racing game. Unlock with 5 math questions and survive!</p>
+                  <button className="play-hover-btn">PLAY NOW</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Math Racer - TOP 2 */}
           <div className="game-card-premium" onClick={() => navigate('/student/games/math-racer')}>
             <div className="card-image-wrapper">
