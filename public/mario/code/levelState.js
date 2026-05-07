@@ -79,6 +79,7 @@ Mario.LevelState.prototype.Enter = function() {
     this.GotoLoseState = false;
 
     this.waitingForMath = false;
+    this.InGameQuestion = null;
     var self = this;
     this.mathListener = function(e) {
         if (e.data && e.data.type === 'mario_revive') {
@@ -94,6 +95,15 @@ Mario.LevelState.prototype.Enter = function() {
             Enjine.KeyboardInput.Pressed = new Array(); // Clear pressed keys
         } else if (e.data && e.data.type === 'mario_resume') {
             self.Paused = false;
+        } else if (e.data && e.data.type === 'mario_show_question') {
+            self.Paused = true;
+            Enjine.KeyboardInput.Pressed = new Array();
+            self.InGameQuestion = e.data;
+            self.lastK1 = false; self.lastK2 = false; self.lastK3 = false; self.lastK4 = false;
+        } else if (e.data && e.data.type === 'mario_hide_question') {
+            self.InGameQuestion = null;
+        } else if (e.data && e.data.type === 'mario_wrong_answer') {
+            Enjine.Resources.PlaySound("bump");
         }
     };
     window.addEventListener('message', this.mathListener);
@@ -162,6 +172,20 @@ Mario.LevelState.prototype.Update = function(delta) {
     }
 
     if (this.Paused) {
+        if (this.InGameQuestion) {
+            var a1 = Enjine.KeyboardInput.IsKeyDown(49);
+            var a2 = Enjine.KeyboardInput.IsKeyDown(50);
+            var a3 = Enjine.KeyboardInput.IsKeyDown(51);
+            var a4 = Enjine.KeyboardInput.IsKeyDown(52);
+            
+            if (a1 && !this.lastK1) { window.parent.postMessage({type: 'mario_answer', index: 0}, '*'); }
+            else if (a2 && !this.lastK2) { window.parent.postMessage({type: 'mario_answer', index: 1}, '*'); }
+            else if (a3 && !this.lastK3) { window.parent.postMessage({type: 'mario_answer', index: 2}, '*'); }
+            else if (a4 && !this.lastK4) { window.parent.postMessage({type: 'mario_answer', index: 3}, '*'); }
+            
+            this.lastK1 = a1; this.lastK2 = a2; this.lastK3 = a3; this.lastK4 = a4;
+        }
+
         for (i = 0; i < this.Sprites.Objects.length; i++) {
             if (this.Sprites.Objects[i] === Mario.MarioCharacter) {
                 this.Sprites.Objects[i].Update(delta);
@@ -362,6 +386,17 @@ Mario.LevelState.prototype.Draw = function(context) {
             }
         } else {
             this.RenderBlackout(context, ((Mario.MarioCharacter.XDeathPos - this.Camera.X) | 0), ((Mario.MarioCharacter.YDeathPos - this.Camera.Y) | 0), (320 - t) | 0);
+        }
+    }
+
+    if (this.InGameQuestion) {
+        context.fillStyle = "rgba(0, 0, 0, 0.75)";
+        context.fillRect(40, 20, 240, 120);
+        
+        this.DrawStringShadow(context, "MATH LOCK!", 15, 3);
+        this.DrawStringShadow(context, this.InGameQuestion.question.substring(0, 28), 6, 6);
+        for(var k=0; k<this.InGameQuestion.options.length; k++) {
+            this.DrawStringShadow(context, this.InGameQuestion.options[k].substring(0, 28), 6, 8 + k);
         }
     }
 };

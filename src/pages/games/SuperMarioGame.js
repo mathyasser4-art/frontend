@@ -41,28 +41,43 @@ const SuperMarioGame = () => {
     }
   }, [gameState, fetchQuestion]);
 
+  // Sync question to iframe for native rendering
+  useEffect(() => {
+    if ((gameState === 'in_game_lock' || gameState === 'revive_locked') && question) {
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({ 
+          type: 'mario_show_question', 
+          question: question.text,
+          options: question.options.map((opt, i) => `${i+1}) ${opt}`)
+        }, '*');
+      }
+    }
+  }, [gameState, question]);
+
   useEffect(() => {
     const handleMessage = (event) => {
-      // Allow messages from the iframe
       if (event.data && event.data.type === 'mario_died') {
-        setQuestionsNeeded(1); // Only 1 question to revive
+        setQuestionsNeeded(1); 
         setSolvedCount(0);
         setGameState('revive_locked');
+      } else if (event.data && event.data.type === 'mario_answer') {
+        // Handle native answer input
+        if (question && question.options) {
+          const selectedAns = question.options[event.data.index];
+          handleAnswer(selectedAns);
+        }
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [question, gameState]);
 
   // 20-second dynamic Math Lock interval
   useEffect(() => {
     let interval;
     if (gameState === 'playing') {
       interval = setInterval(() => {
-        if (iframeRef.current && iframeRef.current.contentWindow) {
-          iframeRef.current.contentWindow.postMessage({ type: 'mario_pause' }, '*');
-        }
         setQuestionsNeeded(1);
         setSolvedCount(0);
         setGameState('in_game_lock');
@@ -80,13 +95,14 @@ const SuperMarioGame = () => {
       setTimeout(() => {
         const newCount = solvedCount + 1;
         if (newCount >= questionsNeeded) {
+          if (iframeRef.current && iframeRef.current.contentWindow) {
+              iframeRef.current.contentWindow.postMessage({ type: 'mario_hide_question' }, '*');
+          }
           if (gameState === 'revive_locked') {
-             // Send revive message to iframe
              if (iframeRef.current && iframeRef.current.contentWindow) {
                  iframeRef.current.contentWindow.postMessage({ type: 'mario_revive' }, '*');
              }
           } else if (gameState === 'in_game_lock') {
-             // Send resume message to iframe
              if (iframeRef.current && iframeRef.current.contentWindow) {
                  iframeRef.current.contentWindow.postMessage({ type: 'mario_resume' }, '*');
              }
@@ -102,15 +118,17 @@ const SuperMarioGame = () => {
     } else {
       soundEffects.playWrong();
       setFeedback('wrong');
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+          iframeRef.current.contentWindow.postMessage({ type: 'mario_wrong_answer' }, '*');
+      }
       setTimeout(() => {
         if (gameState === 'revive_locked') {
-            // Failed revive -> real death
             if (iframeRef.current && iframeRef.current.contentWindow) {
+                iframeRef.current.contentWindow.postMessage({ type: 'mario_hide_question' }, '*');
                 iframeRef.current.contentWindow.postMessage({ type: 'mario_die_for_real' }, '*');
             }
-            setGameState('playing'); // Returns control to game to show map/game over
+            setGameState('playing'); 
         } else if (gameState === 'in_game_lock') {
-            // If they fail during gameplay lock, just fetch a new question until they get it
             fetchQuestion();
         } else {
             fetchQuestion();
@@ -167,7 +185,6 @@ const SuperMarioGame = () => {
 
         {(gameState === 'playing' || gameState === 'locked' || gameState === 'revive_locked' || gameState === 'in_game_lock') && (
           <div className="game-view-area">
-            {/* The iframe is always rendered to keep state, just hidden if not playing */}
             <iframe 
               ref={iframeRef}
               src={iframeUrl}
@@ -181,7 +198,8 @@ const SuperMarioGame = () => {
               allowFullScreen
             />
 
-            {(gameState === 'locked' || gameState === 'revive_locked' || gameState === 'in_game_lock') && question && (
+            {/* ONLY render QuestionOverlay for the initial 5 questions */}
+            {gameState === 'locked' && question && (
               <QuestionOverlay 
                 question={question}
                 solvedCount={solvedCount}
