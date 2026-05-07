@@ -13,7 +13,7 @@ const QUESTIONS_TO_UNLOCK = 5;
 const SuperMarioGame = () => {
   const navigate = useNavigate();
   const iframeRef = useRef(null);
-  const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing', 'revive_locked'
+  const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing', 'revive_locked', 'in_game_lock'
   const [difficulty, setDifficulty] = useState('0');
   const iframeUrl = "/mario/index.html";
   
@@ -36,7 +36,7 @@ const SuperMarioGame = () => {
   };
 
   useEffect(() => {
-    if (gameState === 'locked' || gameState === 'revive_locked') {
+    if (gameState === 'locked' || gameState === 'revive_locked' || gameState === 'in_game_lock') {
       fetchQuestion();
     }
   }, [gameState, fetchQuestion]);
@@ -55,6 +55,24 @@ const SuperMarioGame = () => {
     return () => window.removeEventListener('message', handleMessage);
   }, []);
 
+  // 20-second dynamic Math Lock interval
+  useEffect(() => {
+    let interval;
+    if (gameState === 'playing') {
+      interval = setInterval(() => {
+        if (iframeRef.current && iframeRef.current.contentWindow) {
+          iframeRef.current.contentWindow.postMessage({ type: 'mario_pause' }, '*');
+        }
+        setQuestionsNeeded(1);
+        setSolvedCount(0);
+        setGameState('in_game_lock');
+      }, 20000); // 20 seconds
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [gameState]);
+
   const handleAnswer = (selectedAns) => {
     if (selectedAns === question.answer) {
       soundEffects.playCorrect();
@@ -66,6 +84,11 @@ const SuperMarioGame = () => {
              // Send revive message to iframe
              if (iframeRef.current && iframeRef.current.contentWindow) {
                  iframeRef.current.contentWindow.postMessage({ type: 'mario_revive' }, '*');
+             }
+          } else if (gameState === 'in_game_lock') {
+             // Send resume message to iframe
+             if (iframeRef.current && iframeRef.current.contentWindow) {
+                 iframeRef.current.contentWindow.postMessage({ type: 'mario_resume' }, '*');
              }
           }
           setGameState('playing');
@@ -86,6 +109,9 @@ const SuperMarioGame = () => {
                 iframeRef.current.contentWindow.postMessage({ type: 'mario_die_for_real' }, '*');
             }
             setGameState('playing'); // Returns control to game to show map/game over
+        } else if (gameState === 'in_game_lock') {
+            // If they fail during gameplay lock, just fetch a new question until they get it
+            fetchQuestion();
         } else {
             fetchQuestion();
         }
@@ -139,7 +165,7 @@ const SuperMarioGame = () => {
           </div>
         )}
 
-        {(gameState === 'playing' || gameState === 'locked' || gameState === 'revive_locked') && (
+        {(gameState === 'playing' || gameState === 'locked' || gameState === 'revive_locked' || gameState === 'in_game_lock') && (
           <div className="game-view-area">
             {/* The iframe is always rendered to keep state, just hidden if not playing */}
             <iframe 
@@ -155,7 +181,7 @@ const SuperMarioGame = () => {
               allowFullScreen
             />
 
-            {(gameState === 'locked' || gameState === 'revive_locked') && question && (
+            {(gameState === 'locked' || gameState === 'revive_locked' || gameState === 'in_game_lock') && question && (
               <QuestionOverlay 
                 question={question}
                 solvedCount={solvedCount}

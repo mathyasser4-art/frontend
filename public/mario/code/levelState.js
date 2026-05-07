@@ -75,9 +75,9 @@ Mario.LevelState.prototype.Enter = function() {
     this.StartTime = 1;
     this.TimeLeft = 200;
 
-	this.GotoMapState = false;
-	this.GotoLoseState = false;
-    
+    this.GotoMapState = false;
+    this.GotoLoseState = false;
+
     this.waitingForMath = false;
     var self = this;
     this.mathListener = function(e) {
@@ -89,6 +89,11 @@ Mario.LevelState.prototype.Enter = function() {
             if (Mario.MarioCharacter.Lives <= 0) {
                 self.GotoLoseState = true;
             }
+        } else if (e.data && e.data.type === 'mario_pause') {
+            self.Paused = true;
+            Enjine.KeyboardInput.Pressed = new Array(); // Clear pressed keys
+        } else if (e.data && e.data.type === 'mario_resume') {
+            self.Paused = false;
         }
     };
     window.addEventListener('message', this.mathListener);

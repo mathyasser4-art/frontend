@@ -22,7 +22,7 @@ Enjine.Keys = {
     P: 80,
     Q: 81,
     R: 82,
-    S: 83,
+    S: 32,
     T: 84,
     U: 85,
     V: 86,
@@ -62,8 +62,8 @@ Enjine.KeyboardInput = {
     },
 
     PreventScrolling: function(event) {
-        // 37: left, 38: up, 39: right, 40: down
-        if(event.keyCode >= 37 && event.keyCode <= 40){
+        // 37: left, 38: up, 39: right, 40: down, 32: space
+        if((event.keyCode >= 37 && event.keyCode <= 40) || event.keyCode === 32){
             event.preventDefault();
         }
     }
