@@ -104,8 +104,8 @@ const GamesMenu = () => {
             </div>
           </div>
 
-          {/* Super Mario and Sonic - TOP 5 */}
-          <div className="game-card-premium" onClick={() => navigate('/student/games/super-mario-sonic')}>
+          {/* Infinite Mario - TOP 5 */}
+          <div className="game-card-premium" onClick={() => navigate('/student/games/super-mario')}>
             <div className="card-image-wrapper">
               <div className="card-badge" style={{background: '#f43f5e'}}><Zap size={14} fill="currentColor" /> ARCADE</div>
               <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #ef4444 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🍄</div>
@@ -115,8 +115,8 @@ const GamesMenu = () => {
                     <span><Timer size={16} /> ACTION</span>
                     <span><Trophy size={16} /> ADVENTURE</span>
                   </div>
-                  <h3>Super Mario and Sonic</h3>
-                  <p>Join your friend Mario and Sonic in this epic adventure. Unlock with 5 math questions!</p>
+                  <h3>Super Mario Bros</h3>
+                  <p>Play the classic platformer. Unlock with 5 math questions, and answer to revive if you die!</p>
                   <button className="play-hover-btn">PLAY NOW</button>
                 </div>
               </div>

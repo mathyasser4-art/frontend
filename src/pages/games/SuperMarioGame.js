@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trophy } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
@@ -6,19 +6,21 @@ import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import QuestionOverlay from '../../components/questionOverlay/QuestionOverlay';
-import './SuperMarioAndSonicGame.css';
+import './SuperMarioGame.css';
 
 const QUESTIONS_TO_UNLOCK = 5;
 
-const SuperMarioAndSonicGame = () => {
+const SuperMarioGame = () => {
   const navigate = useNavigate();
-  const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing'
+  const iframeRef = useRef(null);
+  const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing', 'revive_locked'
   const [difficulty, setDifficulty] = useState('0');
-  const iframeUrl = "https://html5.gamemonetize.co/9s24edtryabq95mg8ebnh5ej6z60lpwp/";
+  const iframeUrl = "/mario/index.html";
   
   const [question, setQuestion] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [solvedCount, setSolvedCount] = useState(0);
+  const [questionsNeeded, setQuestionsNeeded] = useState(QUESTIONS_TO_UNLOCK);
 
   const fetchQuestion = useCallback(async () => {
     const q = generateArithmeticMcq(difficulty, 4);
@@ -29,14 +31,29 @@ const SuperMarioAndSonicGame = () => {
     soundEffects.playClick();
     setDifficulty(level);
     setSolvedCount(0);
+    setQuestionsNeeded(QUESTIONS_TO_UNLOCK);
     setGameState('locked');
   };
 
   useEffect(() => {
-    if (gameState === 'locked') {
+    if (gameState === 'locked' || gameState === 'revive_locked') {
       fetchQuestion();
     }
   }, [gameState, fetchQuestion]);
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Allow messages from the iframe
+      if (event.data && event.data.type === 'mario_died') {
+        setQuestionsNeeded(1); // Only 1 question to revive
+        setSolvedCount(0);
+        setGameState('revive_locked');
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   const handleAnswer = (selectedAns) => {
     if (selectedAns === question.answer) {
@@ -44,7 +61,13 @@ const SuperMarioAndSonicGame = () => {
       setFeedback('correct');
       setTimeout(() => {
         const newCount = solvedCount + 1;
-        if (newCount >= QUESTIONS_TO_UNLOCK) {
+        if (newCount >= questionsNeeded) {
+          if (gameState === 'revive_locked') {
+             // Send revive message to iframe
+             if (iframeRef.current && iframeRef.current.contentWindow) {
+                 iframeRef.current.contentWindow.postMessage({ type: 'mario_revive' }, '*');
+             }
+          }
           setGameState('playing');
           setSolvedCount(0);
         } else {
@@ -57,8 +80,16 @@ const SuperMarioAndSonicGame = () => {
       soundEffects.playWrong();
       setFeedback('wrong');
       setTimeout(() => {
+        if (gameState === 'revive_locked') {
+            // Failed revive -> real death
+            if (iframeRef.current && iframeRef.current.contentWindow) {
+                iframeRef.current.contentWindow.postMessage({ type: 'mario_die_for_real' }, '*');
+            }
+            setGameState('playing'); // Returns control to game to show map/game over
+        } else {
+            fetchQuestion();
+        }
         setFeedback(null);
-        fetchQuestion();
       }, 1000);
     }
   };
@@ -81,10 +112,10 @@ const SuperMarioAndSonicGame = () => {
             <div className="game-badge">
               <Trophy size={48} color="#fbbf24" />
             </div>
-            <h1>Super Mario and Sonic 🍄🦔</h1>
-            <p>Solve the math questions to unlock this epic adventure!</p>
+            <h1>Super Mario Bros 🍄</h1>
+            <p>Solve math questions to unlock this classic adventure!</p>
             <div className="unlock-info">
-              <p>Solve <strong>{QUESTIONS_TO_UNLOCK} math questions</strong> to unlock the game!</p>
+              <p>Solve <strong>{QUESTIONS_TO_UNLOCK} math questions</strong> to unlock the game. If you die, answer another to revive!</p>
             </div>
             
             <div className="difficulty-selection">
@@ -108,27 +139,27 @@ const SuperMarioAndSonicGame = () => {
           </div>
         )}
 
-        {(gameState === 'playing' || gameState === 'locked') && (
+        {(gameState === 'playing' || gameState === 'locked' || gameState === 'revive_locked') && (
           <div className="game-view-area">
-            {(gameState === 'playing') && (
-              <iframe 
-                src={iframeUrl}
-                className="super-mario-iframe"
-                title="Super Mario and Sonic"
-                width="100%"
-                height="100%"
-                scrolling="no"
-                frameBorder="0"
-                allow="autoplay; fullscreen; encrypted-media"
-                allowFullScreen
-              />
-            )}
+            {/* The iframe is always rendered to keep state, just hidden if not playing */}
+            <iframe 
+              ref={iframeRef}
+              src={iframeUrl}
+              className="super-mario-iframe"
+              title="Super Mario Bros"
+              width="100%"
+              height="100%"
+              scrolling="no"
+              frameBorder="0"
+              allow="autoplay; fullscreen; encrypted-media"
+              allowFullScreen
+            />
 
-            {(gameState === 'locked') && question && (
+            {(gameState === 'locked' || gameState === 'revive_locked') && question && (
               <QuestionOverlay 
                 question={question}
                 solvedCount={solvedCount}
-                total={QUESTIONS_TO_UNLOCK}
+                total={questionsNeeded}
                 onAnswer={handleAnswer}
                 feedback={feedback}
               />
@@ -140,4 +171,4 @@ const SuperMarioAndSonicGame = () => {
   );
 };
 
-export default SuperMarioAndSonicGame;
+export default SuperMarioGame;
