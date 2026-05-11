@@ -126,6 +126,79 @@ nav .nav-container img {
   box-shadow: 0 4px 10px rgba(78, 205, 196, 0.3);
 }
 
+.nav-center-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #334155;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.nav-link:hover {
+  color: #FF6B6B;
+  transform: translateY(-2px);
+}
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-dropdown:hover .dropdown-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  min-width: 180px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  padding: 0.5rem 0;
+  z-index: 1000;
+  border: 2px solid #f1f5f9;
+}
+
+.dropdown-item {
+  padding: 0.8rem 1.2rem;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: #f8fafc;
+  color: #FF6B6B;
+}
+
+/* Ensure bootstrap utility classes work or provide fallbacks if they don't exist */
+@media (min-width: 992px) {
+  .d-lg-flex {
+    display: flex !important;
+  }
+}
+@media (max-width: 991px) {
+  .d-none {
+    display: none !important;
+  }
+}
+
 @-webkit-keyframes anime {
   0% {
     background-position: 0% 50%;

@@ -51,6 +51,22 @@ const Navbar = () => {
         <nav>
             <div className='nav-container d-flex justify-content-space-between align-items-center'>
                 <Link to={'/'} onClick={() => soundEffects.playClick()}><img src={logo} alt="" /></Link>
+                
+                {/* Desktop Center Links */}
+                <div className="nav-center-links d-none d-lg-flex">
+                    <Link to="/" onClick={() => soundEffects.playClick()} className="nav-link">Home</Link>
+                    <Link to="/games" onClick={() => soundEffects.playClick()} className="nav-link">Games</Link>
+                    <div className="nav-dropdown">
+                        <span className="nav-link">For Teachers ▾</span>
+                        <div className="dropdown-menu">
+                            <span onClick={openTeacherForm} className="dropdown-item">Register as Teacher</span>
+                        </div>
+                    </div>
+                    <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">Pricing</Link>
+                    <Link to="/about" onClick={() => soundEffects.playClick()} className="nav-link">About Us</Link>
+                    <Link to="/contact" onClick={() => soundEffects.playClick()} className="nav-link">Contact</Link>
+                </div>
+
                 <div className='nav-right-side d-flex align-items-center'>
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {role === 'Teacher' ? <div className="teachers-btn" onClick={openTeacherForm}><span>👨‍🏫</span> TEACHERS</div> : null}

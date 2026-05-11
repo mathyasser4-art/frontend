@@ -27,11 +27,11 @@ const SHOWCASE_IMAGES = [
 ]
 
 const GAME_PREVIEWS = [
-  { emoji: '🌊', name: 'Jet Ski Racing',  badge: 'FAST PACED', color: '#0ea5e9', path: '/student/games/jetski' },
-  { emoji: '🏎️', name: 'Math Racer',      badge: 'TURBO',      color: '#f59e0b', path: '/student/games/math-racer' },
-  { emoji: '🏹', name: 'Battle Racing',   badge: 'RANKED',     color: '#ef4444', path: '/student/games/archery' },
-  { emoji: '🧩', name: 'Math Crossword',  badge: 'GENIUS',     color: '#a855f7', path: '/student/games/math-crossword' },
-  { emoji: '🐰', name: 'Bunny Run',       badge: 'ENDLESS',    color: '#22c55e', path: '/student/games/cave-runner' },
+  { emoji: '🌊', image: '/img/games/jetski_cover.png', name: 'Jet Ski Racing',  badge: 'FAST PACED', color: '#0ea5e9', path: '/student/games/jetski' },
+  { emoji: '🏎️', image: '/img/games/racer_cover.png', name: 'Math Racer',      badge: 'TURBO',      color: '#f59e0b', path: '/student/games/math-racer' },
+  { emoji: '🏹', image: '/img/games/racer_cover.png', name: 'Battle Racing',   badge: 'RANKED',     color: '#ef4444', path: '/student/games/archery' },
+  { emoji: '🧩', image: '/img/games/bunny_cover.png', name: 'Math Crossword',  badge: 'GENIUS',     color: '#a855f7', path: '/student/games/math-crossword' },
+  { emoji: '🐰', image: '/img/games/bunny_cover.png', name: 'Bunny Run',       badge: 'ENDLESS',    color: '#22c55e', path: '/student/games/cave-runner' },
 ]
 
 function Home() {
@@ -39,6 +39,7 @@ function Home() {
   const role = localStorage.getItem('auth_role')
   const navigate = useNavigate()
   const [showTutorialModal, setShowTutorialModal] = useState(false)
+  const [showTeacherTrialModal, setShowTeacherTrialModal] = useState(false)
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const [fading, setFading] = React.useState(false)
 
@@ -73,43 +74,87 @@ function Home() {
       <div className='home'>
         <Navbar />
         <div className="home-container">
-          <div className="hero-vertical">
-            {/* ── BOTTOM: Image Slideshow ── */}
-            <div className="hero-showcase">
-              <div className="magical-screen-wrapper">
-                <div className="magical-screen">
-                  <div className="screen-content">
-                    <img
-                      src={SHOWCASE_IMAGES[currentSlide]}
-                      alt="Gameplay Preview"
-                      className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
-                      onError={() => {
-                        // If an image fails, skip to the next one immediately
-                        setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length);
-                      }}
-                    />
+          
+          <div className="hero-hybrid">
+            {/* ── LEFT: Text and Buttons ── */}
+            <div className="hero-left">
+              <div className="home-title">
+                <h1 className="text-purple">Smart Games.</h1>
+                <h1 className="text-red">Smarter Teaching.</h1>
+                <h1 className="text-purple">Better Results.</h1>
+              </div>
+              <div className="home-paragraph">
+                <p>The all-in-one platform for abacus learning,</p>
+                <p>homework management & automatic correction.</p>
+              </div>
+              <div className="hero-buttons">
+                <button 
+                  className="home-btn pink-btn"
+                  onClick={() => { soundEffects.playClick(); setShowTeacherTrialModal(true); }}
+                >
+                  <span className="btn-text">👨‍🏫 I'M A TEACHER</span>
+                  <div className="btn-subtitle">Manage my class & homework</div>
+                </button>
+                <button 
+                  className="home-btn blue-btn"
+                  onClick={() => { 
+                    soundEffects.playClick(); 
+                    document.getElementById('games-section').scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  <span className="btn-text">🎮 PLAY GAMES</span>
+                  <div className="btn-subtitle">Play & learn math</div>
+                </button>
+              </div>
+            </div>
+
+            {/* ── RIGHT: Showcase & Illustration ── */}
+            <div className="hero-right">
+              <div className="showcase-title">
+                <h2>✨ See How It Works</h2>
+              </div>
+              <div className="hero-showcase small-showcase">
+                <img src="/img/smart-boy.png" alt="Smart Boy" className="hero-illustration" />
+                <div className="magical-screen-wrapper">
+                  <div className="magical-screen">
+                    <div className="screen-content">
+                      <img
+                        src={SHOWCASE_IMAGES[currentSlide]}
+                        alt="Gameplay Preview"
+                        className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
+                        onError={() => {
+                          setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length);
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* ── GAME STRIP ── */}
           {!role && (
-            <div className="game-strip">
-              <p className="strip-label">🎮 Jump straight into a game</p>
-              <div className="strip-cards">
+            <div className="game-strip" id="games-section">
+              <div className="game-strip-header">
+                <h2>⚡ Fun & Educational Games ⚡</h2>
+              </div>
+              <div className="strip-cards-3d">
                 {GAME_PREVIEWS.map((g) => (
                   <div
                     key={g.path}
-                    className="strip-card"
+                    className="strip-card-3d"
                     style={{ '--card-color': g.color }}
                     onClick={() => { soundEffects.playClick(); navigate(g.path) }}
                   >
-                    <span className="strip-emoji">{g.emoji}</span>
-                    <span className="strip-name">{g.name}</span>
-                    <span className="strip-badge">{g.badge}</span>
+                    <div className="card-image-wrapper">
+                      <img src={g.image} alt={g.name} className="game-thumbnail" onError={(e) => e.target.style.display='none'} />
+                      <div className="fallback-emoji">{g.emoji}</div>
+                    </div>
+                    <div className="card-info">
+                      <span className="strip-name">{g.name}</span>
+                      <span className="strip-badge">{g.badge}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -119,23 +164,36 @@ function Home() {
       </div>
 
       <TutorialVideoModal isOpen={showTutorialModal} onClose={() => setShowTutorialModal(false)} />
+      {showTeacherTrialModal && <TeacherTrialModal onClose={() => setShowTeacherTrialModal(false)} />}
 
       <div className='home-mobile'>
         <Navbar />
-        <div className="hero-showcase mobile-hero-showcase">
-          <div className="magical-screen-wrapper">
-            <div className="magical-screen">
-              <div className="screen-content">
-                <img
-                  src={SHOWCASE_IMAGES[currentSlide]}
-                  alt="Gameplay Preview"
-                  className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
-                  onError={() => {
-                    setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length);
-                  }}
-                />
+        {/* Mobile version remains similar but uses the new text/buttons below the showcase */}
+        <div className="mobile-hero-container">
+           <div className="home-title mobile-title text-center">
+              <h1 className="text-purple">Smart Games.</h1>
+              <h1 className="text-red">Smarter Teaching.</h1>
+           </div>
+           <div className="hero-showcase mobile-hero-showcase">
+            <div className="magical-screen-wrapper">
+              <div className="magical-screen">
+                <div className="screen-content">
+                  <img
+                    src={SHOWCASE_IMAGES[currentSlide]}
+                    alt="Gameplay Preview"
+                    className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
+                    onError={() => {
+                      setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length);
+                    }}
+                  />
+                </div>
               </div>
             </div>
+          </div>
+          <div className="hero-buttons mobile-buttons">
+              <button className="home-btn pink-btn" onClick={() => { soundEffects.playClick(); setShowTeacherTrialModal(true); }}>
+                <span className="btn-text">👨‍🏫 I'M A TEACHER</span>
+              </button>
           </div>
         </div>
       </div>
