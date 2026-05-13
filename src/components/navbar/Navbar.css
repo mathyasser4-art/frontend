@@ -133,7 +133,7 @@ nav .nav-container img {
 }
 
 .nav-link {
-  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 16px;
   font-weight: 700;
   color: #334155;
@@ -174,7 +174,7 @@ nav .nav-container img {
 
 .dropdown-item {
   padding: 0.8rem 1.2rem;
-  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 600;
   color: #334155;

@@ -79,32 +79,36 @@ function Home() {
             {/* ── LEFT: Text and Buttons ── */}
             <div className="hero-left">
               <div className="home-title">
-                <h1 className="text-purple">Smart Games.</h1>
-                <h1 className="text-red">Smarter Teaching.</h1>
-                <h1 className="text-purple">Better Results.</h1>
+                <h1 className="text-dark">Smart Games.</h1>
+                <h1 className="text-dark">Smarter Teaching.</h1>
+                <h1 className="text-red">Better Results.</h1>
               </div>
               <div className="home-paragraph">
                 <p>The all-in-one platform for abacus learning,</p>
                 <p>homework management & automatic correction.</p>
               </div>
               <div className="hero-buttons">
-                <button 
-                  className="home-btn pink-btn"
-                  onClick={() => { soundEffects.playClick(); setShowTeacherTrialModal(true); }}
-                >
-                  <span className="btn-text">👨‍🏫 I'M A TEACHER</span>
+                <div className="hero-btn-wrapper">
+                  <button 
+                    className="home-btn pink-btn"
+                    onClick={() => { soundEffects.playClick(); setShowTeacherTrialModal(true); }}
+                  >
+                    <span className="btn-text">👤 I'M A TEACHER</span>
+                  </button>
                   <div className="btn-subtitle">Manage my class & homework</div>
-                </button>
-                <button 
-                  className="home-btn blue-btn"
-                  onClick={() => { 
-                    soundEffects.playClick(); 
-                    document.getElementById('games-section').scrollIntoView({ behavior: 'smooth' });
-                  }}
-                >
-                  <span className="btn-text">🎮 PLAY GAMES</span>
+                </div>
+                <div className="hero-btn-wrapper">
+                  <button 
+                    className="home-btn blue-btn"
+                    onClick={() => { 
+                      soundEffects.playClick(); 
+                      document.getElementById('games-section').scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    <span className="btn-text">🎮 PLAY GAMES</span>
+                  </button>
                   <div className="btn-subtitle">Play & learn math</div>
-                </button>
+                </div>
               </div>
             </div>
 
@@ -114,7 +118,6 @@ function Home() {
                 <h2>✨ See How It Works</h2>
               </div>
               <div className="hero-showcase small-showcase">
-                <img src="/img/smart-boy.png" alt="Smart Boy" className="hero-illustration" />
                 <div className="magical-screen-wrapper">
                   <div className="magical-screen">
                     <div className="screen-content">
@@ -171,8 +174,9 @@ function Home() {
         {/* Mobile version remains similar but uses the new text/buttons below the showcase */}
         <div className="mobile-hero-container">
            <div className="home-title mobile-title text-center">
-              <h1 className="text-purple">Smart Games.</h1>
-              <h1 className="text-red">Smarter Teaching.</h1>
+              <h1 className="text-dark">Smart Games.</h1>
+              <h1 className="text-dark">Smarter Teaching.</h1>
+              <h1 className="text-red">Better Results.</h1>
            </div>
            <div className="hero-showcase mobile-hero-showcase">
             <div className="magical-screen-wrapper">
