@@ -323,7 +323,10 @@ const BunnyRun = () => {
           )}
         </div>
 
-        <div className={`game-area-premium ${isWaitingForAnswer ? 'frozen' : ''}`}>
+        <div 
+          className={`game-area-premium ${isWaitingForAnswer ? 'frozen' : ''}`}
+          onTouchStart={(e) => { e.preventDefault(); jump(); }}
+        >
           {/* Brighter Atmosphere Background Layers */}
           <div className="sky-layer sunny">
             <div className="sun-bright">

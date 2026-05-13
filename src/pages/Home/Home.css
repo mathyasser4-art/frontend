@@ -54,6 +54,14 @@
     text-align: left;
     max-width: 600px;
 }
+.hero-text-box {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(8px);
+    padding: 2rem;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
 
 .hero-right {
     flex: 1;

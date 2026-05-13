@@ -202,4 +202,22 @@
 .game-card-body h3 { font-size: 1.5rem; color: #1e293b; margin-bottom: 0.5rem; }
 .game-card-body p { color: #64748b; font-size: 0.9rem; line-height: 1.4; margin-bottom: 1.5rem; flex: 1; }
 .play-now-btn { background: #f8fafc; color: #3b82f6; border: 2px solid #e2e8f0; padding: 0.8rem; border-radius: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s; cursor: pointer; }
+.game-card-full.legacy:hover { border-color: #3b82f6; }
 .game-card-full.legacy:hover .play-now-btn { background: #3b82f6; color: white; border-color: #3b82f6; }
+
+@media (max-width: 992px) {
+  .menu-title { font-size: 2.5rem; }
+  .games-grid-premium { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+  .game-card-premium { height: 260px; }
+  .overlay-content h3 { font-size: 1.5rem; }
+}
+
+@media (max-width: 600px) {
+  .games-menu-page { padding: 2rem 1rem; }
+  .menu-title { font-size: 2rem; }
+  .games-grid-premium { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .game-card-premium { height: 240px; }
+  .card-overlay { padding: 1.2rem; }
+  .overlay-content p { font-size: 0.85rem; margin-bottom: 1rem; }
+  .play-hover-btn { padding: 0.5rem 1.5rem; font-size: 0.9rem; }
+}

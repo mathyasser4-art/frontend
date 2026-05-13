@@ -29,7 +29,7 @@ const SHOWCASE_IMAGES = [
 const GAME_PREVIEWS = [
   { emoji: '🌊', image: '/img/games/jetski_cover.png', name: 'Jet Ski Racing',  badge: 'FAST PACED', color: '#0ea5e9', path: '/student/games/jetski' },
   { emoji: '🏎️', image: '/img/games/racer_cover.png', name: 'Math Racer',      badge: 'TURBO',      color: '#f59e0b', path: '/student/games/math-racer' },
-  { emoji: '🏹', image: '/img/games/racer_cover.png', name: 'Battle Racing',   badge: 'RANKED',     color: '#ef4444', path: '/student/games/archery' },
+  { emoji: '🏹', image: '/img/games/battle_racing_cover.png', name: 'Battle Racing',   badge: 'RANKED',     color: '#ef4444', path: '/student/games/archery' },
   { emoji: '🧩', image: '/img/games/bunny_cover.png', name: 'Math Crossword',  badge: 'GENIUS',     color: '#a855f7', path: '/student/games/math-crossword' },
   { emoji: '🐰', image: '/img/games/bunny_cover.png', name: 'Bunny Run',       badge: 'ENDLESS',    color: '#22c55e', path: '/student/games/cave-runner' },
 ]
@@ -78,36 +78,38 @@ function Home() {
           <div className="hero-hybrid">
             {/* ── LEFT: Text and Buttons ── */}
             <div className="hero-left">
-              <div className="home-title">
-                <h1 className="text-dark">Smart Games.</h1>
-                <h1 className="text-dark">Smarter Teaching.</h1>
-                <h1 className="text-red">Better Results.</h1>
-              </div>
-              <div className="home-paragraph">
-                <p>The all-in-one platform for abacus learning,</p>
-                <p>homework management & automatic correction.</p>
-              </div>
-              <div className="hero-buttons">
-                <div className="hero-btn-wrapper">
-                  <button 
-                    className="home-btn pink-btn"
-                    onClick={() => { soundEffects.playClick(); setShowTeacherTrialModal(true); }}
-                  >
-                    <span className="btn-text">👤 I'M A TEACHER</span>
-                  </button>
-                  <div className="btn-subtitle">Manage my class & homework</div>
+              <div className="hero-text-box">
+                <div className="home-title">
+                  <h1 className="text-dark">Smart Games.</h1>
+                  <h1 className="text-dark">Smarter Teaching.</h1>
+                  <h1 className="text-red">Better Results.</h1>
                 </div>
-                <div className="hero-btn-wrapper">
-                  <button 
-                    className="home-btn blue-btn"
-                    onClick={() => { 
-                      soundEffects.playClick(); 
-                      document.getElementById('games-section').scrollIntoView({ behavior: 'smooth' });
-                    }}
-                  >
-                    <span className="btn-text">🎮 PLAY GAMES</span>
-                  </button>
-                  <div className="btn-subtitle">Play & learn math</div>
+                <div className="home-paragraph">
+                  <p>The all-in-one platform for abacus learning,</p>
+                  <p>homework management & automatic correction.</p>
+                </div>
+                <div className="hero-buttons">
+                  <div className="hero-btn-wrapper">
+                    <button 
+                      className="home-btn pink-btn"
+                      onClick={() => { soundEffects.playClick(); setShowTeacherTrialModal(true); }}
+                    >
+                      <span className="btn-text">👤 I'M A TEACHER</span>
+                    </button>
+                    <div className="btn-subtitle">Manage my class & homework</div>
+                  </div>
+                  <div className="hero-btn-wrapper">
+                    <button 
+                      className="home-btn blue-btn"
+                      onClick={() => { 
+                        soundEffects.playClick(); 
+                        document.getElementById('games-section').scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    >
+                      <span className="btn-text">🎮 PLAY GAMES</span>
+                    </button>
+                    <div className="btn-subtitle">Play & learn math</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -173,10 +175,12 @@ function Home() {
         <Navbar />
         {/* Mobile version remains similar but uses the new text/buttons below the showcase */}
         <div className="mobile-hero-container">
-           <div className="home-title mobile-title text-center">
-              <h1 className="text-dark">Smart Games.</h1>
-              <h1 className="text-dark">Smarter Teaching.</h1>
-              <h1 className="text-red">Better Results.</h1>
+           <div className="hero-text-box mobile-hero-box">
+             <div className="home-title mobile-title text-center">
+                <h1 className="text-dark">Smart Games.</h1>
+                <h1 className="text-dark">Smarter Teaching.</h1>
+                <h1 className="text-red">Better Results.</h1>
+             </div>
            </div>
            <div className="hero-showcase mobile-hero-showcase">
             <div className="magical-screen-wrapper">

@@ -6,6 +6,7 @@ import profileImg from '../../img/avatar-profile.png'
 import school from '../../img/school-avatar.png'
 import soundEffects from '../../utils/soundEffects'
 import TeacherRegistration from '../teacherRegistration/TeacherRegistration'
+import TeacherHelpModal from '../teacherHelpModal/TeacherHelpModal'
 import '../../reusable.css'
 import './Navbar.css'
 
@@ -14,6 +15,7 @@ const Navbar = () => {
     const isAuth = localStorage.getItem('O_authWEB')
     const role = localStorage.getItem('auth_role')
     const [showTeacherForm, setShowTeacherForm] = useState(false)
+    const [showTeacherHelp, setShowTeacherHelp] = useState(false)
 
     const openTeacherForm = () => {
         soundEffects.playClick()
@@ -69,7 +71,7 @@ const Navbar = () => {
 
                 <div className='nav-right-side d-flex align-items-center'>
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
-                    {role === 'Teacher' ? <div className="teachers-btn" onClick={openTeacherForm}><span>👨‍🏫</span> TEACHERS</div> : null}
+                    {role === 'Teacher' ? <div className="teachers-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}><span>👨‍🏫</span> TEACHERS</div> : null}
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {role === 'Student' ? <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
@@ -101,6 +103,11 @@ const Navbar = () => {
                 <TeacherRegistration
                     onClose={closeTeacherForm}
                     onSave={handleSaveTeacher}
+                />
+            )}
+            {showTeacherHelp && (
+                <TeacherHelpModal
+                    onClose={() => setShowTeacherHelp(false)}
                 />
             )}
         </nav >
