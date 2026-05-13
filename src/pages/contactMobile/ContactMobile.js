@@ -48,56 +48,58 @@ function ContactMobile() {
             <Navbar />
             <MobileNav role={role} />
             <div className='contact-mobile'>
-                <div className="contact-mobile-container">
-                    <div className="contact-mobile-info d-flex align-items-center">
-                        <div className="icon d-flex justify-content-center align-items-center">
-                            <i className="fa fa-envelope-o" aria-hidden="true"></i>
+                <div className="contact-box">
+                    <div className="contact-mobile-container">
+                        <div className="contact-mobile-info d-flex align-items-center">
+                            <div className="icon d-flex justify-content-center align-items-center">
+                                <i className="fa fa-envelope-o" aria-hidden="true"></i>
+                            </div>
+                            <div className="info">
+                                <p>Email</p>
+                                <p className='text-gray'>abacusheroes@gmail.com</p>
+                            </div>
                         </div>
-                        <div className="info">
-                            <p>Email</p>
-                            <p className='text-gray'>abacusheroes@gmail.com</p>
+                        <div className="contact-mobile-info d-flex align-items-center">
+                            <div className="icon d-flex justify-content-center align-items-center">
+                                <i className="fa fa-phone" aria-hidden="true"></i>
+                            </div>
+                            <div className="info">
+                                <p>Phone</p>
+                                <p className='text-gray'>01202281023</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="contact-mobile-info d-flex align-items-center">
-                        <div className="icon d-flex justify-content-center align-items-center">
-                            <i className="fa fa-phone" aria-hidden="true"></i>
-                        </div>
-                        <div className="info">
-                            <p>Phone</p>
-                            <p className='text-gray'>01202281023</p>
-                        </div>
-                    </div>
-                    <div className="contact-mobile-info d-flex align-items-center">
-                        <div className="icon d-flex justify-content-center align-items-center">
-                            <i className="fa fa-link" aria-hidden="true"></i>
-                        </div>
-                        <div className="info contact-link">
-                            <p>Social Media</p>
-                            <div className='social-link'>
-                                <i className="fa fa-facebook text-gray" aria-hidden="true"></i>
-                                <i className="fa fa-whatsapp text-gray" aria-hidden="true"></i>
-                                <i className="fa fa-linkedin-square text-gray" aria-hidden="true"></i>
-                                <i className="fa fa-google text-gray" aria-hidden="true"></i>
+                        <div className="contact-mobile-info d-flex align-items-center">
+                            <div className="icon d-flex justify-content-center align-items-center">
+                                <i className="fa fa-link" aria-hidden="true"></i>
+                            </div>
+                            <div className="info contact-link">
+                                <p>Social Media</p>
+                                <div className='social-link'>
+                                    <i className="fa fa-facebook text-gray" aria-hidden="true"></i>
+                                    <i className="fa fa-whatsapp text-gray" aria-hidden="true"></i>
+                                    <i className="fa fa-linkedin-square text-gray" aria-hidden="true"></i>
+                                    <i className="fa fa-google text-gray" aria-hidden="true"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="contact-mobile-form">
-                    <p>Send Message</p>
-                    <div>
-                        <label>Full Name</label><br />
-                        <input type="text" />
-                    </div>
-                    <div>
-                        <label>Email</label><br />
-                        <input type="email" />
-                    </div>
-                    <div>
-                        <label>Type your message...</label><br />
-                        <input className='last-mobile-input' onChange={e => setMessage(e.target.value)} type="text" />
-                    </div>
-                    <div className="contact-mobile-btn" onClick={send}>Send
-                        <div className="contact-mobile-btn2"></div>
+                    <div className="contact-mobile-form">
+                        <p>Send Message</p>
+                        <div>
+                            <label>Full Name</label><br />
+                            <input type="text" />
+                        </div>
+                        <div>
+                            <label>Email</label><br />
+                            <input type="email" />
+                        </div>
+                        <div>
+                            <label>Type your message...</label><br />
+                            <input className='last-mobile-input' onChange={e => setMessage(e.target.value)} type="text" />
+                        </div>
+                        <div className="contact-mobile-btn" onClick={send}>Send
+                            <div className="contact-mobile-btn2"></div>
+                        </div>
                     </div>
                 </div>
                 <div className="d-flex download-app">

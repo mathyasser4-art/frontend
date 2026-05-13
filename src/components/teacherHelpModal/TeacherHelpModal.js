@@ -51,7 +51,7 @@ const TeacherHelpModal = ({ onClose }) => {
                             Our system will automatically generate unique accounts for every student you add!
                         </p>
                         <div className="screenshot-container">
-                            <img src="/img/registration_list_preview.png" alt="Registration List Preview" className="help-screenshot" />
+                            <img src="/img/registration_form_real.png" alt="Registration List Preview" className="help-screenshot" />
                             <div className="screenshot-caption">Fill this list to create student accounts instantly!</div>
                         </div>
                     </section>

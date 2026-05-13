@@ -1,6 +1,22 @@
 .contact-mobile {
-    padding: 0.5rem 1rem;
+    padding: 2rem 1rem;
     padding-bottom: 6rem;
+    min-height: 100vh;
+    background-image: url('../../img/webbackground10.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.contact-box {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 3rem;
+    border-radius: 40px;
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
 }
 
 .icon {
@@ -80,9 +96,9 @@
 .contact-mobile-form{
     border: 1px solid #5d17eb;
     padding: 1.5rem 1.8rem;
-    width: 90%;
+    width: 100%;
     border-radius: 20px;
-    margin-top: 1rem;
+    margin-top: 2rem;
 }
 
 .contact-mobile-form input{

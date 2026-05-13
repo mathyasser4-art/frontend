@@ -57,11 +57,12 @@ const Navbar = () => {
                 {/* Desktop Center Links */}
                 <div className="nav-center-links d-none d-lg-flex">
                     <Link to="/" onClick={() => soundEffects.playClick()} className="nav-link">Home</Link>
-                    <Link to="/games" onClick={() => soundEffects.playClick()} className="nav-link">Games</Link>
+                    <Link to="/student/games-menu" onClick={() => soundEffects.playClick()} className="nav-link">Games</Link>
                     <div className="nav-dropdown">
                         <span className="nav-link">For Teachers ▾</span>
                         <div className="dropdown-menu">
                             <span onClick={openTeacherForm} className="dropdown-item">Register as Teacher</span>
+                            <span onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }} className="dropdown-item">Website Explanation</span>
                         </div>
                     </div>
                     <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">Pricing</Link>
