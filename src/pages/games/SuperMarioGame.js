@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trophy } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
+import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import QuestionOverlay from '../../components/questionOverlay/QuestionOverlay';
@@ -13,6 +14,7 @@ const QUESTIONS_TO_UNLOCK = 5;
 const SuperMarioGame = () => {
   const navigate = useNavigate();
   const iframeRef = useRef(null);
+  const containerRef = useRef(null);
   const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing', 'revive_locked', 'in_game_lock'
   const [difficulty, setDifficulty] = useState('0');
   const iframeUrl = "/mario/index.html";
@@ -184,7 +186,8 @@ const SuperMarioGame = () => {
         )}
 
         {(gameState === 'playing' || gameState === 'locked' || gameState === 'revive_locked' || gameState === 'in_game_lock') && (
-          <div className="game-view-area">
+          <div className="game-view-area" ref={containerRef}>
+            <FullscreenButton targetRef={containerRef} />
             <iframe 
               ref={iframeRef}
               src={iframeUrl}

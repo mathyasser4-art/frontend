@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Play, RotateCcw, Heart, ShieldAlert, Award, Sun } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
+import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 
@@ -86,6 +87,7 @@ const FireSVG = () => (
 
 const BunnyRun = () => {
   const navigate = useNavigate();
+  const containerRef = useRef(null);
   const { t } = useTranslation();
 
   const [gameState, setGameState] = useState('menu');
@@ -326,7 +328,9 @@ const BunnyRun = () => {
         <div 
           className={`game-area-premium ${isWaitingForAnswer ? 'frozen' : ''}`}
           onTouchStart={(e) => { e.preventDefault(); jump(); }}
+          ref={containerRef}
         >
+          <FullscreenButton targetRef={containerRef} />
           {/* Brighter Atmosphere Background Layers */}
           <div className="sky-layer sunny">
             <div className="sun-bright">

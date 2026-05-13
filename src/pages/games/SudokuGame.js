@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCcw, Trophy, Lightbulb } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
+import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import soundEffects from '../../utils/soundEffects';
 import './SudokuGame.css';
 
@@ -88,6 +89,7 @@ const isSafe = (board, row, col, num) => {
 
 const SudokuGame = () => {
   const navigate = useNavigate();
+  const containerRef = React.useRef(null);
   const [grid, setGrid] = useState([]);
   const [initialGrid, setInitialGrid] = useState([]);
   const [solution, setSolution] = useState([]);
@@ -173,7 +175,8 @@ const SudokuGame = () => {
         )}
 
         {(gameState === 'playing' || gameState === 'won') && (
-          <div className="game-play-area">
+          <div className="game-play-area" ref={containerRef}>
+            <FullscreenButton targetRef={containerRef} />
             <div className="sudoku-board">
               {grid.map((row, r) => (
                 <div key={r} className="sudoku-row">

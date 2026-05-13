@@ -61,8 +61,8 @@ const Navbar = () => {
                     <div className="nav-dropdown">
                         <span className="nav-link">For Teachers ▾</span>
                         <div className="dropdown-menu">
-                            <span onClick={openTeacherForm} className="dropdown-item">Register as Teacher</span>
                             <span onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }} className="dropdown-item">Website Explanation</span>
+                            <span onClick={openTeacherForm} className="dropdown-item">Register as Teacher</span>
                         </div>
                     </div>
                     <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">Pricing</Link>

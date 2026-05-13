@@ -55,6 +55,26 @@ const TeacherHelpModal = ({ onClose }) => {
                             <div className="screenshot-caption">Fill this list to create student accounts instantly!</div>
                         </div>
                     </section>
+
+                    <section className="help-section features-cta">
+                        <h3>🌈 Discover Unlimited Possibilities</h3>
+                        <p>
+                            There is so much more to explore! From advanced reporting to student engagement tools, 
+                            discover how our features can transform your classroom.
+                        </p>
+                        <div className="cta-action">
+                            <button className="help-btn-secondary" onClick={() => { 
+                                soundEffects.playClick(); 
+                                onClose();
+                                setTimeout(() => {
+                                    const featuresSec = document.getElementById('features-section');
+                                    if (featuresSec) featuresSec.scrollIntoView({ behavior: 'smooth' });
+                                }, 300);
+                            }}>
+                                🚀 EXPLORE ALL FEATURES
+                            </button>
+                        </div>
+                    </section>
                 </div>
 
                 <div className="help-footer">

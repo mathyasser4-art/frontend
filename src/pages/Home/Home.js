@@ -7,6 +7,7 @@ import QuestionType from '../questionType/QuestionType'
 import FeaturesSection from '../../components/featuresSection/FeaturesSection'
 import TeacherTrialModal from '../../components/teacherTrialModal/TeacherTrialModal'
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
+import TeacherHelpModal from '../../components/teacherHelpModal/TeacherHelpModal'
 import soundEffects from '../../utils/soundEffects'
 import { GraduationCap, Presentation } from 'lucide-react'
 import '../../reusable.css'
@@ -40,6 +41,7 @@ function Home() {
   const navigate = useNavigate()
   const [showTutorialModal, setShowTutorialModal] = useState(false)
   const [showTeacherTrialModal, setShowTeacherTrialModal] = useState(false)
+  const [showTeacherHelp, setShowTeacherHelp] = useState(false)
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const [fading, setFading] = React.useState(false)
 
@@ -92,7 +94,7 @@ function Home() {
                   <div className="hero-btn-wrapper">
                     <button 
                       className="home-btn pink-btn"
-                      onClick={() => { soundEffects.playClick(); setShowTeacherTrialModal(true); }}
+                      onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}
                     >
                       <span className="btn-text">👤 I'M A TEACHER</span>
                     </button>
@@ -170,6 +172,7 @@ function Home() {
 
       <TutorialVideoModal isOpen={showTutorialModal} onClose={() => setShowTutorialModal(false)} />
       {showTeacherTrialModal && <TeacherTrialModal onClose={() => setShowTeacherTrialModal(false)} />}
+      {showTeacherHelp && <TeacherHelpModal onClose={() => setShowTeacherHelp(false)} />}
 
       <div className='home-mobile'>
         <Navbar />
@@ -199,7 +202,7 @@ function Home() {
             </div>
           </div>
           <div className="hero-buttons mobile-buttons">
-              <button className="home-btn pink-btn" onClick={() => { soundEffects.playClick(); setShowTeacherTrialModal(true); }}>
+              <button className="home-btn pink-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}>
                 <span className="btn-text">👨‍🏫 I'M A TEACHER</span>
               </button>
           </div>

@@ -4,6 +4,7 @@ import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
 import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal } from 'lucide-react';
+import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import ArithmeticMcqDebugPanel from '../../components/debug/ArithmeticMcqDebugPanel';
 import './MathRacer.css';
 
@@ -59,6 +60,7 @@ const F1CarSVG = ({ color, name, isBoosting }) => (
 
 function MathRacer() {
   const navigate = useNavigate();
+  const containerRef = useRef(null);
   const [gameState, setGameState] = useState('menu'); // 'menu', 'playing', 'gameover'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy', 'medium', 'hard'
   const [score, setScore] = useState(0);
@@ -269,7 +271,8 @@ function MathRacer() {
         )}
 
         {gameState === 'playing' && (
-          <div className="racer-gameplay">
+          <div className="racer-gameplay" ref={containerRef}>
+            <FullscreenButton targetRef={containerRef} />
             <div className="game-stats">
               <div className="stat-box timer-box">
                 <Timer size={24} color="#fff" />

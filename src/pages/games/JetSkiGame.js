@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trophy } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
+import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import QuestionOverlay from '../../components/questionOverlay/QuestionOverlay';
@@ -12,7 +13,9 @@ const QUESTIONS_TO_UNLOCK = 5;
 
 const JetSkiGame = () => {
   const navigate = useNavigate();
-  const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing'
+  const iframeRef = useRef(null);
+  const containerRef = useRef(null);
+  const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing', 'revive_locked', 'in_game_lock'
   const [difficulty, setDifficulty] = useState('0');
   const iframeUrl = "https://html5.gamemonetize.co/q1rhn9oouokiujejarumihyal58tpbp0/";
   
@@ -108,8 +111,9 @@ const JetSkiGame = () => {
           </div>
         )}
 
-        {(gameState === 'playing' || gameState === 'locked') && (
-          <div className="game-view-area">
+        {(gameState === 'playing' || gameState === 'locked' || gameState === 'revive_locked' || gameState === 'in_game_lock') && (
+          <div className="jetski-game-container" ref={containerRef}>
+            <FullscreenButton targetRef={containerRef} />
             {(gameState === 'playing') && (
               <iframe 
                 src={iframeUrl}

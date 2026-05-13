@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trophy } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
+import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 import QuestionOverlay from '../../components/questionOverlay/QuestionOverlay';
@@ -12,6 +13,7 @@ const QUESTIONS_TO_UNLOCK = 5;
 
 const CartoonAirplanesGame = () => {
   const navigate = useNavigate();
+  const containerRef = React.useRef(null);
   const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing'
   const [difficulty, setDifficulty] = useState('0');
   const iframeUrl = "https://html5.gamemonetize.co/g8ew6t2w53rvjhi59jy4sjfgejhfvakj/";
@@ -109,7 +111,8 @@ const CartoonAirplanesGame = () => {
         )}
 
         {(gameState === 'playing' || gameState === 'locked') && (
-          <div className="game-view-area">
+          <div className="game-view-area" ref={containerRef}>
+            <FullscreenButton targetRef={containerRef} />
             {(gameState === 'playing') && (
               <iframe 
                 src={iframeUrl}

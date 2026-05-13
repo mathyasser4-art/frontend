@@ -1,0 +1,50 @@
+.fullscreen-toggle-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.fullscreen-toggle-btn:hover {
+    background: #0ea5e9;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+.fullscreen-toggle-btn:active {
+    transform: scale(0.98);
+}
+
+/* Hide when in actual fullscreen if needed, or keep to exit */
+:fullscreen .fullscreen-toggle-btn {
+    top: 30px;
+    right: 30px;
+    opacity: 0.5;
+}
+
+:fullscreen .fullscreen-toggle-btn:hover {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .fullscreen-toggle-btn span {
+        display: none;
+    }
+    .fullscreen-toggle-btn {
+        padding: 0.6rem;
+    }
+}
