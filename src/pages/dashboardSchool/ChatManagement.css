@@ -99,6 +99,29 @@
   text-overflow: ellipsis;
 }
 
+.phone-badge {
+  font-size: 0.75rem;
+  color: #0ea5e9;
+  background: #e0f2fe;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-phone {
+  margin: 5px 0 0 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
 .chat-main {
   flex: 1;
   display: flex;

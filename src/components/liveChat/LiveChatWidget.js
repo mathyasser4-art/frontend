@@ -7,6 +7,8 @@ const LiveChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
+  const [userName, setUserName] = useState(localStorage.getItem('chatUserName') || '');
+  const [userPhone, setUserPhone] = useState(localStorage.getItem('chatUserPhone') || '');
   const [hasUnread, setHasUnread] = useState(false);
   const messagesEndRef = useRef(null);
   
@@ -66,8 +68,16 @@ const LiveChatWidget = () => {
       await fetch(`${API_BASE_URL}/chat/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId: sessionIdRef.current, text: textToSend })
+        body: JSON.stringify({ 
+          sessionId: sessionIdRef.current, 
+          text: textToSend,
+          userName: userName,
+          userPhone: userPhone
+        })
       });
+      // Save to local storage after first successful send
+      localStorage.setItem('chatUserName', userName);
+      localStorage.setItem('chatUserPhone', userPhone);
       syncChat();
     } catch (error) {
       console.error('Error sending message:', error);
@@ -99,15 +109,35 @@ const LiveChatWidget = () => {
           </div>
 
           <form onSubmit={sendMessage} className="chat-input-area">
-            <input 
-              type="text" 
-              placeholder="Type a message..." 
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-            />
-            <button type="submit" disabled={!inputText.trim()}>
-              <Send size={18} />
-            </button>
+            {(!localStorage.getItem('chatUserName') || !localStorage.getItem('chatUserPhone')) && (
+              <div className="chat-user-info">
+                <input 
+                  type="text" 
+                  placeholder="Your Name (Required)" 
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  required
+                />
+                <input 
+                  type="tel" 
+                  placeholder="Phone Number (Required)" 
+                  value={userPhone}
+                  onChange={(e) => setUserPhone(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+            <div className="input-row">
+              <input 
+                type="text" 
+                placeholder="Type a message..." 
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+              />
+              <button type="submit" disabled={!inputText.trim() || !userName.trim() || !userPhone.trim()}>
+                <Send size={18} />
+              </button>
+            </div>
           </form>
         </div>
       )}

@@ -146,6 +146,25 @@
   background: white;
   border-top: 1px solid #e2e8f0;
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.chat-user-info input {
+  font-size: 0.85rem !important;
+  padding: 8px 12px !important;
+  background: #f8fafc;
+}
+
+.input-row {
+  display: flex;
   gap: 10px;
 }
 

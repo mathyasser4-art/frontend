@@ -67,8 +67,7 @@ const TeacherHelpModal = ({ onClose }) => {
                                 soundEffects.playClick(); 
                                 onClose();
                                 setTimeout(() => {
-                                    const featuresSec = document.getElementById('features-section');
-                                    if (featuresSec) featuresSec.scrollIntoView({ behavior: 'smooth' });
+                                    document.getElementById('discover-features-title')?.scrollIntoView({ behavior: 'smooth' });
                                 }, 300);
                             }}>
                                 🚀 EXPLORE ALL FEATURES

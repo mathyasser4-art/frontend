@@ -96,7 +96,8 @@ const ChatManagement = () => {
                   {chat.unreadByAdmin && <span className="unread-indicator"></span>}
                 </div>
                 <div className="chat-preview">
-                  <h4>Visitor {chat.sessionId.substring(5, 9)}</h4>
+                  <h4>{chat.userName || `Visitor ${chat.sessionId.substring(5, 9)}`}</h4>
+                  {chat.userPhone && <span className="phone-badge">{chat.userPhone}</span>}
                   <p className="preview-text">
                     {chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : 'No messages'}
                   </p>
@@ -111,7 +112,10 @@ const ChatManagement = () => {
         {selectedChat ? (
           <>
             <div className="chat-main-header">
-              <h3>Chat with Visitor {selectedChat.sessionId.substring(5, 9)}</h3>
+              <div className="header-info">
+                <h3>{selectedChat.userName || `Visitor ${selectedChat.sessionId.substring(5, 9)}`}</h3>
+                {selectedChat.userPhone && <p className="header-phone">📞 {selectedChat.userPhone}</p>}
+              </div>
             </div>
             
             <div className="chat-main-messages">

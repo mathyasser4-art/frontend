@@ -10,7 +10,7 @@ function FeaturesSection() {
     <section className="features-section">
       <div className="features-container">
         <div className="features-header">
-          <h2>{t('featuresSection.title')}</h2>
+          <h2 id="discover-features-title">{t('featuresSection.title')}</h2>
           <p>{t('featuresSection.subtitle')}</p>
           <div className="line"></div>
         </div>

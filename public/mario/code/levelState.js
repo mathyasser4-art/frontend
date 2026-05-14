@@ -121,11 +121,11 @@ Mario.LevelState.prototype.Enter = function() {
         var x = (clientX - rect.left) * scaleX;
         var y = (clientY - rect.top) * scaleY;
         
-        if (x >= 40 && x <= 280) {
-            if (y >= 64 && y < 74) { window.parent.postMessage({type: 'mario_answer', index: 0}, '*'); }
-            else if (y >= 74 && y < 82) { window.parent.postMessage({type: 'mario_answer', index: 1}, '*'); }
-            else if (y >= 82 && y < 90) { window.parent.postMessage({type: 'mario_answer', index: 2}, '*'); }
-            else if (y >= 90 && y < 100) { window.parent.postMessage({type: 'mario_answer', index: 3}, '*'); }
+        if (y >= 60 && y <= 110) {
+            if (x >= 40 && x < 100) { window.parent.postMessage({type: 'mario_answer', index: 0}, '*'); }
+            else if (x >= 100 && x < 160) { window.parent.postMessage({type: 'mario_answer', index: 1}, '*'); }
+            else if (x >= 160 && x < 220) { window.parent.postMessage({type: 'mario_answer', index: 2}, '*'); }
+            else if (x >= 220 && x <= 280) { window.parent.postMessage({type: 'mario_answer', index: 3}, '*'); }
         }
     };
     window.addEventListener('mousedown', this.touchListener);
@@ -420,8 +420,9 @@ Mario.LevelState.prototype.Draw = function(context) {
         
         this.DrawStringShadow(context, "MATH LOCK!", 15, 3);
         this.DrawStringShadow(context, this.InGameQuestion.question.substring(0, 28), 6, 6);
+        var xOffsets = [6, 13, 20, 27];
         for(var k=0; k<this.InGameQuestion.options.length; k++) {
-            this.DrawStringShadow(context, this.InGameQuestion.options[k].substring(0, 28), 6, 8 + k);
+            this.DrawStringShadow(context, this.InGameQuestion.options[k].substring(0, 6), xOffsets[k], 10);
         }
     }
 };
