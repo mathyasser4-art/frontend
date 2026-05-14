@@ -57,7 +57,7 @@ const TeacherHelpModal = ({ onClose }) => {
                     </section>
 
                     <section className="help-section features-cta">
-                        <h3>🌈 Discover Unlimited Possibilities</h3>
+                        <h3>Discover Unlimited Possibilities</h3>
                         <p>
                             There is so much more to explore! From advanced reporting to student engagement tools, 
                             discover how our features can transform your classroom.

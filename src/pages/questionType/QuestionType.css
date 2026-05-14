@@ -53,11 +53,13 @@
     text-align: center;
     font-size: 48px;
     font-weight: 900;
-    background: goldenrod;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -1.5px;
+    background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 3px 3px 0px rgba(255, 255, 255, 0.8);
+    text-shadow: 0 4px 10px rgba(184, 134, 11, 0.3);
     margin-bottom: 1rem;
     animation: bounceIn 1s ease-out;
 }

@@ -234,6 +234,17 @@
     padding-top: 2rem;
     border-top: 2px dashed rgba(255, 107, 107, 0.2);
     width: 100%;
+    margin-bottom: 2rem;
+}
+
+.game-strip-outer {
+    width: 100%;
+    background-image: url('../../img/webbackground10.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    padding-bottom: 2rem;
 }
 
 .game-strip-header {
@@ -601,7 +612,7 @@
         justify-content: center;
         align-items: center;
         padding: 0.5rem 1rem;
-        margin-top: 0;
+        margin-top: 1rem;
         width: 100%;
     }
     .mobile-hero-showcase .magical-screen-wrapper {
@@ -626,8 +637,8 @@
         font-size: 18px;
     }
     .home-btn {
-        font-size: 18px;
-        padding: 0.8rem 2rem;
+        font-size: 16px;
+        padding: 0.7rem 1.5rem;
     }
     .floating-help-btn {
         bottom: 90px;
@@ -653,8 +664,8 @@
         margin-top: 1.5rem;
     }
     .home-btn {
-        font-size: 26px;
-        padding: 1rem 2.5rem;
+        font-size: 18px;
+        padding: 0.8rem 2rem;
         gap: 10px;
     }
     .home-btn .btn-arrow {
