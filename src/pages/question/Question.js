@@ -767,7 +767,7 @@ function Question() {
                     <div className='question-content-wrapper d-flex'>
                         <div className='question-form'>
                         <div className='question-form-head d-flex justify-content-space-between align-items-center'>
-                            <p>Q{thisQuestionNumber}</p>
+                            <p>Q{thisQuestionNumber}/{questionData?.length || 0}</p>
                             <div className='end-head d-flex align-items-center'>
                                 <button
                                     type="button"
@@ -863,7 +863,6 @@ function Question() {
 
                             {thisQuestion?.typeOfAnswer === 'Essay' && (
                                 <div className='math-keyboard'>
-                                    <p>{t('questionPage.writeAnswerHere')}</p>
                                     <div style={{ position: 'relative', width: '100%' }}>
                                         <input
                                             ref={inputRef} type='text' value={answer} onFocus={handleInputFocus} readOnly

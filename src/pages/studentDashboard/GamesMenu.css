@@ -221,3 +221,31 @@
   .overlay-content p { font-size: 0.85rem; margin-bottom: 1rem; }
   .play-hover-btn { padding: 0.5rem 1.5rem; font-size: 0.9rem; }
 }
+
+
+.game-item-container {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.game-item-container:hover {
+  transform: translateY(-5px);
+}
+
+.game-item-container:hover .game-card-premium {
+  transform: scale(1.03) translateY(-5px);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+}
+
+.game-card-title {
+  text-align: center;
+  color: #0f172a;
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  letter-spacing: -0.5px;
+}
+

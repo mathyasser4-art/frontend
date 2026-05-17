@@ -128,6 +128,7 @@ body {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
     flex-shrink: 0;
+    position: relative;
 }
 
 .question-form-head {
@@ -640,12 +641,13 @@ body {
 
 @media only screen and (min-width: 993px) {
     .math-keyboard {
-        position: fixed;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        margin-left: initial;
+        position: absolute;
+        left: calc(100% + 20px);
+        top: 0;
+        transform: none;
+        margin-left: 0;
         margin-top: 0;
+        width: 320px;
         max-width: 320px;
         z-index: 100;
     }

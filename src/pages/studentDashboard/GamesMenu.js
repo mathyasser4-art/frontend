@@ -29,87 +29,93 @@ const GamesMenu = () => {
         <div className="games-grid-premium">
           
           {/* Jet Ski Racing */}
-          <div className="game-card-premium" onClick={() => navigate('/student/games/jetski')}>
-            <div className="card-image-wrapper">
-              <img src="/img/games/jetski_cover.png" alt="Jet Ski Racing" className="card-bg-img" />
-              <div className="card-overlay">
-                <div className="overlay-content">
-                  <button className="play-hover-btn">PLAY NOW</button>
+          <div className="game-item-container" onClick={() => navigate('/student/games/jetski')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <img src="/img/games/jetski_cover.png" alt="Jet Ski Racing" className="card-bg-img" />
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <button className="play-hover-btn">PLAY NOW</button>
+                  </div>
                 </div>
               </div>
             </div>
+            <h3 className="game-card-title">Jet Ski Racing</h3>
           </div>
 
           {/* Math Racer */}
-          <div className="game-card-premium" onClick={() => navigate('/student/games/math-racer')}>
-            <div className="card-image-wrapper">
-              <img src="/img/games/racer_cover.png" alt="Math Racer" className="card-bg-img" />
-              <div className="card-overlay">
-                <div className="overlay-content">
-                  <button className="play-hover-btn">PLAY NOW</button>
+          <div className="game-item-container" onClick={() => navigate('/student/games/math-racer')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <img src="/img/games/racer_cover.png" alt="Math Racer" className="card-bg-img" />
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <button className="play-hover-btn">PLAY NOW</button>
+                  </div>
                 </div>
               </div>
             </div>
+            <h3 className="game-card-title">Math Racer</h3>
           </div>
 
           {/* Bunny Run */}
-          <div className="game-card-premium" onClick={() => navigate('/student/games/cave-runner')}>
-            <div className="card-image-wrapper">
-              <img src="/img/games/bunny_cover.png" alt="Bunny Run" className="card-bg-img" />
-              <div className="card-overlay">
-                <div className="overlay-content">
-                  <button className="play-hover-btn">PLAY NOW</button>
+          <div className="game-item-container" onClick={() => navigate('/student/games/cave-runner')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <img src="/img/games/bunny_cover.png" alt="Bunny Run" className="card-bg-img" />
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <button className="play-hover-btn">PLAY NOW</button>
+                  </div>
                 </div>
               </div>
             </div>
+            <h3 className="game-card-title">Bunny Run</h3>
           </div>
 
           {/* Cartoon Airplanes */}
-          <div className="game-card-premium" onClick={() => navigate('/student/games/airplanes')}>
-            <div className="card-image-wrapper">
-              <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>✈️</div>
-              <div className="card-overlay">
-                <div className="overlay-content">
-                  <button className="play-hover-btn">PLAY NOW</button>
+          <div className="game-item-container" onClick={() => navigate('/student/games/airplanes')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>✈️</div>
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <button className="play-hover-btn">PLAY NOW</button>
+                  </div>
                 </div>
               </div>
             </div>
+            <h3 className="game-card-title">Cartoon Airplanes</h3>
           </div>
 
           {/* Infinite Mario */}
-          <div className="game-card-premium" onClick={() => navigate('/student/games/super-mario')}>
-            <div className="card-image-wrapper">
-              <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #ef4444 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🍄</div>
-              <div className="card-overlay">
-                <div className="overlay-content">
-                  <button className="play-hover-btn">PLAY NOW</button>
+          <div className="game-item-container" onClick={() => navigate('/student/games/super-mario')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #ef4444 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🍄</div>
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <button className="play-hover-btn">PLAY NOW</button>
+                  </div>
                 </div>
               </div>
             </div>
+            <h3 className="game-card-title">Infinite Mario</h3>
           </div>
 
           {/* Sudoku Master */}
-          <div className="game-card-premium" onClick={() => navigate('/student/games/sudoku')}>
-            <div className="card-image-wrapper">
-              <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧩</div>
-              <div className="card-overlay">
-                <div className="overlay-content">
-                  <button className="play-hover-btn">PLAY NOW</button>
+          <div className="game-item-container" onClick={() => navigate('/student/games/sudoku')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧩</div>
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <button className="play-hover-btn">PLAY NOW</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* KenKen Logic */}
-          <div className="game-card-premium" onClick={() => navigate('/student/games/kenken')}>
-            <div className="card-image-wrapper">
-              <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #c2410c 0%, #ea580c 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧮</div>
-              <div className="card-overlay">
-                <div className="overlay-content">
-                  <button className="play-hover-btn">PLAY NOW</button>
-                </div>
-              </div>
-            </div>
+            <h3 className="game-card-title">Sudoku Master</h3>
           </div>
 
         </div>
