@@ -238,7 +238,11 @@ function StudentDashboard() {
                                     <i className="fa fa-arrow-left" aria-hidden="true"></i>
                                     <span>Back</span>
                                 </button>
-                                <h2>{isTopsoroban ? 'TOPSOROBAN' : t('academy.chooseYourAcademy')}</h2>
+                                <h2>
+                                    <span translate="no" className="notranslate" style={{ textShadow: '0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4)' }}>
+                                        {isTopsoroban ? 'TOPSOROBAN' : t('academy.chooseYourAcademy')}
+                                    </span>
+                                </h2>
                             </div>
 
                             <div className="practice-options-grid">
@@ -254,7 +258,11 @@ function StudentDashboard() {
 
                                 <Link to="/system/65a4964b82dbaac16d820fc8" className={`practice-option masterminds ${isTopsoroban ? 'topsoroban-blue' : ''}`}>
                                     <div className="practice-option-icon">🧠</div>
-                                    <h3>{isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}</h3>
+                                    <h3>
+                                        <span translate="no" className="notranslate" style={{ textShadow: '0 0 10px rgba(255, 215, 0, 0.6)' }}>
+                                            {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}
+                                        </span>
+                                    </h3>
                                     <p>{t('academy.masterMindsDesc')}</p>
                                     <button className="practice-option-btn">
                                         <span>{t('academy.start')}</span>

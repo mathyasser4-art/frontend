@@ -20,8 +20,12 @@ function QuestionType() {
     <div className={`questionType ${isTopsoroban ? 'topsoroban-theme' : ''}`}>
       <div className="questionType-container">
         <div className="questionType-title">
-          <h3>{isTopsoroban ? 'TOPSOROBAN' : t('academy.chooseYourAcademy')}</h3>
-          <div className="line"></div>
+          <h3>
+            <span translate="no" className="notranslate" style={{ textShadow: '0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4)' }}>
+              {isTopsoroban ? 'TOPSOROBAN' : t('academy.chooseYourAcademy')}
+            </span>
+          </h3>
+          <div className="line" style={{ marginTop: '0.2rem' }}></div>
         </div>
         <div className="questionType-options">
           <Link to={'/system/65a4963482dbaac16d820fc6'} className="questionType-option mcq" onClick={() => soundEffects.playClick()}>
@@ -36,7 +40,11 @@ function QuestionType() {
             <div className="option-icon-wrapper">
               <CheckCircle2 size={64} strokeWidth={2} className="completion-icon" />
             </div>
-            <h3 className="option-title">{isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}</h3>
+            <h3 className="option-title">
+              <span translate="no" className="notranslate">
+                {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}
+              </span>
+            </h3>
             <p className="option-description">{t('academy.masterMindsDesc')}</p>
           </Link>
 

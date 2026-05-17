@@ -50,7 +50,7 @@ const SuperMarioGame = () => {
         iframeRef.current.contentWindow.postMessage({ 
           type: 'mario_show_question', 
           question: question.text,
-          options: question.options.map((opt, i) => `${i+1}) ${opt}`)
+          options: question.options.map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`)
         }, '*');
       }
     }

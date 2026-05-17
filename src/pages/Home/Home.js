@@ -139,8 +139,6 @@ function Home() {
               </div>
             </div>
           </div>
-
-          )}
         </div>
       </div>
 
@@ -183,36 +181,6 @@ function Home() {
           </div>
         </div>
       </div>
-
-      {/* ── GAME STRIP (Visible on both desktop/mobile) ── */}
-      {!role && (
-        <div className="game-strip-outer">
-          <div className="game-strip" id="games-section">
-            <div className="game-strip-header">
-              <h2>⚡ Fun & Educational Games ⚡</h2>
-            </div>
-            <div className="strip-cards-3d">
-              {GAME_PREVIEWS.map((g) => (
-                <div
-                  key={g.path}
-                  className="strip-card-3d"
-                  style={{ '--card-color': g.color }}
-                  onClick={() => { soundEffects.playClick(); navigate(g.path) }}
-                >
-                  <div className="card-image-wrapper">
-                    <img src={g.image} alt={g.name} className="game-thumbnail" onError={(e) => e.target.style.display='none'} />
-                    <div className="fallback-emoji">{g.emoji}</div>
-                  </div>
-                  <div className="card-info">
-                    <span className="strip-name">{g.name}</span>
-                    <span className="strip-badge">{g.badge}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       <QuestionType />
       <FeaturesSection />

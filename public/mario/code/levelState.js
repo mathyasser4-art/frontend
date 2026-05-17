@@ -198,10 +198,10 @@ Mario.LevelState.prototype.Update = function(delta) {
 
     if (this.Paused) {
         if (this.InGameQuestion) {
-            var a1 = Enjine.KeyboardInput.IsKeyDown(49);
-            var a2 = Enjine.KeyboardInput.IsKeyDown(50);
-            var a3 = Enjine.KeyboardInput.IsKeyDown(51);
-            var a4 = Enjine.KeyboardInput.IsKeyDown(52);
+            var a1 = Enjine.KeyboardInput.IsKeyDown(49) || Enjine.KeyboardInput.IsKeyDown(65);
+            var a2 = Enjine.KeyboardInput.IsKeyDown(50) || Enjine.KeyboardInput.IsKeyDown(66);
+            var a3 = Enjine.KeyboardInput.IsKeyDown(51) || Enjine.KeyboardInput.IsKeyDown(67);
+            var a4 = Enjine.KeyboardInput.IsKeyDown(52) || Enjine.KeyboardInput.IsKeyDown(68);
             
             if (a1 && !this.lastK1) { window.parent.postMessage({type: 'mario_answer', index: 0}, '*'); }
             else if (a2 && !this.lastK2) { window.parent.postMessage({type: 'mario_answer', index: 1}, '*'); }
