@@ -232,10 +232,10 @@ function Teacher() {
                                                         {item.classList && item.classList.length > 0 ? (
                                                             <div className="classes-grid">
                                                                 {item.classList.map((cls, idx) => (
-                                                                    <div key={idx} className="class-pill">
+                                                                    <Link to={`/dashboard-school/class/${cls._id}/homework`} key={idx} className="class-pill" style={{ textDecoration: 'none' }}>
                                                                         <span className="class-icon">🏫</span>
                                                                         <span className="class-name">{cls.class}</span>
-                                                                    </div>
+                                                                    </Link>
                                                                 ))}
                                                             </div>
                                                         ) : (

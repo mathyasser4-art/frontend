@@ -1,0 +1,126 @@
+.class-homework-container {
+    padding: 2rem 5%;
+    min-height: 80vh;
+    background-color: #f8f9fa;
+}
+
+.homework-header {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.homework-header h2 {
+    color: #333;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.back-button {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #5d17eb;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    color: #5d17eb;
+}
+
+.assignments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.assignment-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-top: 4px solid #5d17eb;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.assignment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.assignment-card h3 {
+    color: #333;
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    word-wrap: break-word;
+}
+
+.assignment-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.detail-icon {
+    color: #5d17eb;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.view-reports-btn {
+    display: block;
+    text-align: center;
+    background: #5d17eb;
+    color: white;
+    text-decoration: none;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.view-reports-btn:hover {
+    background: #4a12bc;
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.empty-state h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #666;
+}
