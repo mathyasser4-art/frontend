@@ -1,25 +1,31 @@
-import axios from "axios";
+import API_BASE_URL from '../../config/api.config';
 
-const getAssignmentByClass = async (setLoading, setAllAssignment, setError, classID) => {
-    try {
-        setLoading(true);
-        const token = localStorage.getItem('O_authWEB');
-        const { data } = await axios.get(`http://localhost:5000/assignment/class/${classID}`, {
-            headers: {
-                token: `abacus__${token}`
+const getAssignmentByClass = (setLoading, setAllAssignment, setError, classID) => {
+    setLoading(true);
+    const Token = localStorage.getItem('O_authWEB');
+    const URL = `${API_BASE_URL}/assignment/class/${classID}`;
+
+    fetch(URL, {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json',
+            'authrization': `pracYas09${Token}`
+        },
+    })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            if (responseJson.message === 'success') {
+                setLoading(false);
+                setAllAssignment(responseJson.allAssignment);
+            } else {
+                setError(responseJson.message);
+                setLoading(false);
             }
+        })
+        .catch((error) => {
+            setError(error.message);
+            setLoading(false);
         });
-        
-        if (data.message === 'success') {
-            setAllAssignment(data.allAssignment);
-        } else {
-            setError(data.message);
-        }
-    } catch (error) {
-        setError(error.response?.data?.message || 'Failed to fetch assignments');
-    } finally {
-        setLoading(false);
-    }
 }
 
 export default getAssignmentByClass;
