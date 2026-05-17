@@ -293,3 +293,87 @@
         height: 47px;
     }
 }
+
+/* Accordion Styles for Teacher Classes */
+.teacher-row.expanded {
+    box-shadow: 0 4px 15px 0 rgba(93, 23, 235, 0.2), 0 6px 20px 0 rgba(93, 23, 235, 0.15);
+    border: 2px solid #5d17eb;
+}
+
+.teacher-row.expanded td {
+    border-bottom: none;
+}
+
+.expanded-content-row td {
+    padding: 0;
+}
+
+.teacher-classes-container {
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-top: 1px solid #eaeaea;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    animation: slideDown 0.3s ease-out forwards;
+}
+
+.classes-title {
+    margin: 0 0 1rem 0;
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.classes-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.class-pill {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #e0e0e0;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.class-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-color: #5d17eb;
+}
+
+.class-icon {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.class-name {
+    font-weight: 500;
+    color: #444;
+}
+
+.no-classes-msg {
+    color: #666;
+    font-style: italic;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px dashed #ccc;
+    text-align: center;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

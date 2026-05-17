@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import { Link } from 'react-router-dom'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import student from '../../img/avatar-profile.png'
 import addTeacher from '../../api/teacher/addTeacher.api'
 import getTeacher from '../../api/teacher/getTeacher.api'
@@ -21,7 +22,7 @@ function Teacher() {
     const [searchValue, setSearchValue] = useState('')
     const [teacherID, setTeacherID] = useState('')
     const [allTeacher, setAllTeacher] = useState([])
-    const [classList, setClassList] = useState([])
+    const [expandedTeacherId, setExpandedTeacherId] = useState(null)
     let [pageNumber, setPageNumber] = useState(1)
     const [totalPage, setTotalPage] = useState()
     const [teacherNumber, setTeacherNumber] = useState(0)
@@ -177,25 +178,9 @@ function Teacher() {
         }
     }
 
-    const openClassListPopup = (teacherID) => {
-        const findTeacher = allTeacher.filter(e => e._id === teacherID)[0]
-        setClassList(findTeacher.classList)
-        document.querySelector('.student-list-popup').classList.replace('d-none', 'd-flex')
-        setTimeout(() => {
-            document.querySelector('.student-list-popup').classList.remove('class-popup-hide')
-            document.querySelector('.student-list-container').classList.remove('class-top')
-        }, 50);
+    const toggleExpandTeacher = (teacherID) => {
+        setExpandedTeacherId(prev => prev === teacherID ? null : teacherID)
     }
-
-    const closeClassListPopup = () => {
-        document.querySelector('.student-list-popup').classList.add('class-popup-hide')
-        document.querySelector('.student-list-container').classList.add('class-top')
-        setTimeout(() => {
-            document.querySelector('.student-list-popup').classList.replace('d-flex', 'd-none')
-        }, 300);
-    }
-
-
     return (
         <>
             <MobileNav role={role} />
@@ -220,8 +205,8 @@ function Teacher() {
                         {allTeacher?.map(item => {
                             return (
                                 <React.Fragment key={item._id}>
-                                    <tbody className='teacher-row'>
-                                        <tr>
+                                    <tbody className={`teacher-row ${expandedTeacherId === item._id ? 'expanded' : ''}`}>
+                                        <tr onClick={() => toggleExpandTeacher(item._id)} style={{ cursor: 'pointer' }}>
                                             <td>{number++}</td>
                                             <td className='d-flex teacher-name align-items-center'>
                                                 <img src={student} alt="" />
@@ -229,12 +214,39 @@ function Teacher() {
                                             </td>
                                             <td>{item.email}</td>
                                             <td>{item?.subject?.schoolSubjectName}</td>
-                                            <td><i onClick={() => openClassListPopup(item._id)} className="fa fa-info-circle class-info" aria-hidden="true"></i></td>
-                                            <td className="teacher-action">
+                                            <td>
+                                                <div className="d-flex align-items-center" style={{ color: '#5d17eb' }}>
+                                                    {expandedTeacherId === item._id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                                </div>
+                                            </td>
+                                            <td className="teacher-action" onClick={(e) => e.stopPropagation()}>
                                                 <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item?.subject?.schoolSubjectName)} aria-hidden="true"></i>
                                                 <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true"></i>
                                             </td>
                                         </tr>
+                                        {expandedTeacherId === item._id && (
+                                            <tr className="expanded-content-row">
+                                                <td colSpan="6">
+                                                    <div className="teacher-classes-container">
+                                                        <h4 className="classes-title">Assigned Classes</h4>
+                                                        {item.classList && item.classList.length > 0 ? (
+                                                            <div className="classes-grid">
+                                                                {item.classList.map((cls, idx) => (
+                                                                    <div key={idx} className="class-pill">
+                                                                        <span className="class-icon">🏫</span>
+                                                                        <span className="class-name">{cls.class}</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="no-classes-msg">
+                                                                <p>Oops! This teacher hasn't been assigned to any classes yet.</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody><br />
                                 </React.Fragment>
                             )
@@ -344,28 +356,7 @@ function Teacher() {
             </div>
             {/* remove student popup end */}
 
-            {/*classes list popup start */}
-            <div className="add-to-class-popup student-list-popup class-popup-hide d-none justify-content-center align-items-center">
-                <div className='add-to-class-container student-list-container class-top'>
-                    <div className="update-popup-head">
-                        <p>Classes List</p>
-                    </div>
-                    <div className="add-to-popup-body">
-                        {classList?.length === 0 ? <p>Oops!!This teacher has not been added to any class.</p> :
-                            classList?.map(item => {
-                                return (
-                                    <div className="student-item">
-                                        <p>{item.class}</p>
-                                    </div>
-                                )
-                            })}
-                    </div>
-                    <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeClassListPopup}>Close</button>
-                    </div>
-                </div>
-            </div>
-            {/*classes list popup end */}
+
         </>
     )
 }
