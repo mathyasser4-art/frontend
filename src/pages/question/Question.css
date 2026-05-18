@@ -7,29 +7,7 @@ body {
     min-height: 100vh;
 }
 
-.nav-container {
-    padding: 1rem 2rem;
-}
 
-.nav-container img {
-    width: 218px;
-}
-
-.nav-right-side img {
-    width: 55px !important;
-}
-
-.nav-btn {
-    padding: 0.6rem 1.5rem;
-    font-size: 22px;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.9);
-    border-radius: 50px;
-    background: linear-gradient(-45deg, #ffa63d, #ff3d77, #338aff, #3cf0c5);
-    background-size: 600%;
-    -webkit-animation: anime 16s linear infinite;
-    animation: anime 16s linear infinite;
-}
 
 @-webkit-keyframes anime {
     0% {
