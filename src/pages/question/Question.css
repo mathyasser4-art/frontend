@@ -1387,13 +1387,6 @@ input[type="radio"] {
 
 /* Tablet Landscape and Medium Screens */
 @media only screen and (max-width: 992px) {
-    .nav-container {
-        padding: 1rem 1.5rem;
-    }
-    
-    .nav-container img {
-        width: 180px;
-    }
 
     .question-container {
         width: 90%;
@@ -1464,17 +1457,6 @@ input[type="radio"] {
 
 /* Tablet Portrait */
 @media only screen and (max-width: 768px) {
-    .nav-container {
-        padding: 1rem 0.7rem;
-    }
-    
-    .nav-container img {
-        width: 160px;
-    }
-    
-    .nav-right-side img {
-        width: 45px !important;
-    }
 
     .question-container {
         width: 95%;
@@ -1580,18 +1562,6 @@ input[type="radio"] {
 
 /* Mobile Landscape and Small Tablets */
 @media only screen and (max-width: 600px) {
-    .nav-container img {
-        width: 140px;
-    }
-    
-    .nav-right-side img {
-        width: 40px !important;
-    }
-    
-    .nav-btn {
-        padding: 0.5rem 1.2rem;
-        font-size: 18px;
-    }
 
     .question-container {
         gap: 1rem;
@@ -1913,17 +1883,6 @@ input[type="radio"] {
 
 /* Very Small Mobile Devices */
 @media only screen and (max-width: 400px) {
-    .nav-container {
-        padding: 0.8rem 0.5rem;
-    }
-    
-    .nav-container img {
-        width: 120px;
-    }
-    
-    .nav-right-side img {
-        width: 35px !important;
-    }
     
     .question-container {
         width: 98%;

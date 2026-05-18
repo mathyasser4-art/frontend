@@ -286,13 +286,6 @@ button#nextBtn:active,
 
 /* Tablet Portrait */
 @media only screen and (max-width: 768px) {
-    .nav-container {
-        padding: 1rem 0.7rem;
-    }
-    
-    .nav-container img {
-        width: 160px;
-    }
     
     .assignment-error-ops img {
         max-width: 300px;
@@ -360,15 +353,6 @@ button#nextBtn:active,
     .math-keyboard p {
         font-size: 10px !important;
         margin-bottom: 4px !important;
-    }
-    
-    .nav-container img {
-        width: 140px;
-    }
-    
-    .nav-btn {
-        padding: 0.5rem 1.2rem;
-        font-size: 18px;
     }
     
     .assignment-error-ops {
@@ -473,14 +457,6 @@ button#nextBtn:active,
     .math-keyboard p {
         font-size: 9px !important;
         margin-bottom: 3px !important;
-    }
-    
-    .nav-container {
-        padding: 0.8rem 0.5rem;
-    }
-    
-    .nav-container img {
-        width: 120px;
     }
     
     .assignment-error-ops img {
