@@ -171,7 +171,7 @@ function Question() {
     const [isFullscreen, setIsFullscreen] = useState(false);
 
     // Keyboard Variables
-    const [isArabic, setIsArabic] = useState(true);
+    const [isArabic, setIsArabic] = useState(false);
     const [showKeyboard, setShowKeyboard] = useState(false);
     const inputRef = useRef(null);
     const keyboardRef = useRef(null);

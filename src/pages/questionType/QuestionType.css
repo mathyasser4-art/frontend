@@ -311,33 +311,33 @@
     .questionType-options {
         flex-direction: column;
         align-items: center;
-        gap: 1.5rem;
+        gap: 1.2rem;
     }
     
     .questionType-option {
-        width: 90%;
-        max-width: 280px;
-        padding: 1.5rem;
+        width: 85%;
+        max-width: 240px;
+        padding: 1.2rem;
     }
     
     .option-icon-wrapper {
-        width: 70px;
-        height: 70px;
-        margin-bottom: 0.8rem;
+        width: 60px;
+        height: 60px;
+        margin-bottom: 0.6rem;
     }
     
     .mcq-icon, .completion-icon {
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
     }
     
     .option-emoji {
-        font-size: 50px;
+        font-size: 40px;
         display: none;
     }
     
     .option-title {
-        font-size: 24px;
+        font-size: 20px;
     }
     
     .option-description {

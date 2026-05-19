@@ -35,6 +35,8 @@ const GamesMenu = () => {
                 <img src="/img/games/jetski_cover.png" alt="Jet Ski Racing" className="card-bg-img" />
                 <div className="card-overlay">
                   <div className="overlay-content">
+                    <h3>Jet Ski Racing</h3>
+                    <p>High speed aquatic math</p>
                     <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
@@ -50,6 +52,8 @@ const GamesMenu = () => {
                 <img src="/img/games/racer_cover.png" alt="Math Racer" className="card-bg-img" />
                 <div className="card-overlay">
                   <div className="overlay-content">
+                    <h3>Math Racer</h3>
+                    <p>Turbo charged math action</p>
                     <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
@@ -65,6 +69,8 @@ const GamesMenu = () => {
                 <img src="/img/games/bunny_cover.png" alt="Bunny Run" className="card-bg-img" />
                 <div className="card-overlay">
                   <div className="overlay-content">
+                    <h3>Bunny Run</h3>
+                    <p>Endless runner fun</p>
                     <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
@@ -80,6 +86,8 @@ const GamesMenu = () => {
                 <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>✈️</div>
                 <div className="card-overlay">
                   <div className="overlay-content">
+                    <h3>Cartoon Airplanes</h3>
+                    <p>Take to the skies</p>
                     <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
@@ -95,6 +103,8 @@ const GamesMenu = () => {
                 <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #ef4444 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🍄</div>
                 <div className="card-overlay">
                   <div className="overlay-content">
+                    <h3>Infinite Mario</h3>
+                    <p>Classic platforming</p>
                     <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
@@ -110,6 +120,8 @@ const GamesMenu = () => {
                 <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧩</div>
                 <div className="card-overlay">
                   <div className="overlay-content">
+                    <h3>Sudoku Master</h3>
+                    <p>Brain teasing puzzles</p>
                     <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>

@@ -248,7 +248,7 @@ function Assignment() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Keyboard Variable
-  const [isArabic, setIsArabic] = useState(true);
+  const [isArabic, setIsArabic] = useState(false);
   const [showKeyboard, setShowKeyboard] = useState(false);
   const inputRef = useRef(null);
   const keyboardRef = useRef(null);
