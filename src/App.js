@@ -31,6 +31,7 @@ import Pricing from './pages/pricing/Pricing';
 import MathRacer from './pages/games/MathRacer';
 import SuperMarioGame from './pages/games/SuperMarioGame';
 import CaveRunner from './pages/games/CaveRunner';
+import MazeGame from './pages/games/MazeGame';
 import JetSkiGame from './pages/games/JetSkiGame';
 import CartoonAirplanesGame from './pages/games/CartoonAirplanesGame';
 import SudokuGame from './pages/games/SudokuGame';
@@ -83,6 +84,7 @@ function App() {
       <Route path='/student/games/math-racer' element={<MathRacer />} />
       <Route path='/student/games/super-mario' element={<SuperMarioGame />} />
       <Route path='/student/games/cave-runner' element={<CaveRunner />} />
+      <Route path='/student/games/maze' element={<MazeGame />} />
       <Route path='/student/games/jetski' element={<JetSkiGame />} />
       <Route path='/student/games/airplanes' element={<CartoonAirplanesGame />} />
       <Route path='/student/games/sudoku' element={<SudokuGame />} />

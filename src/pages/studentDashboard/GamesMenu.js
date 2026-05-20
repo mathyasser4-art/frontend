@@ -79,6 +79,23 @@ const GamesMenu = () => {
             <h3 className="game-card-title">Bunny Run</h3>
           </div>
 
+          {/* Maze Game */}
+          <div className="game-item-container" onClick={() => navigate('/student/games/maze')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧩</div>
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <h3>Maze Game</h3>
+                    <p>Navigate and solve math to unlock doors</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 className="game-card-title">Maze Game</h3>
+          </div>
+
           {/* Cartoon Airplanes */}
           <div className="game-item-container" onClick={() => navigate('/student/games/airplanes')}>
             <div className="game-card-premium">
