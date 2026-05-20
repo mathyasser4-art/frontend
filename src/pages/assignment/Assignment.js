@@ -6,6 +6,7 @@ import profileImg from '../../img/avatar-profile.png'
 import MathInput from "react-math-keyboard";
 import QuestionLoading from '../../components/questionLoading/QuestionLoading';
 import NotLogin from '../../components/notLogin/NotLogin';
+import Navbar from '../../components/navbar/Navbar';
 import assignmentDetails from '../../api/student/assignmentDetails.api';
 import getResult from '../../api/assignment/getResult.api';
 import checkAnswer from '../../api/assignment/checkAnswer.api';
@@ -1194,30 +1195,9 @@ function Assignment() {
       {/* --- End Sound Additions --- */}
 
       {/* Navbar - Hidden in fullscreen */}
-      <nav className={isFullscreen ? 'fullscreen-navbar-hidden' : ''}>
-        <div className='nav-container d-flex justify-content-space-between align-items-center'>
-          <Link to={'/'}><img src={logo} alt="" /></Link>
-          <div className='nav-right-side d-flex align-items-center'>
-            {role === 'Student' ? <Link to={'/dashboard/student'}><div className="gear"><i className="fa fa-graduation-cap" aria-hidden="true"></i></div></Link> : null}
-            {isAuth ? <Link to={'/user/info'}><img src={profileImg} alt="" /></Link> : (
-              <>
-                <Link to={'/auth/register'}>
-                  <div className="nav-btn nav-btn-signup" style={{ marginRight: '15px' }}>
-                    Sign Up
-                    <div className="nav-btn2"></div>
-                  </div>
-                </Link>
-                <Link to={'/auth/login'}>
-                  <div className="nav-btn">
-                    Login
-                    <div className="nav-btn2"></div>
-                  </div>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
+      <div className={isFullscreen ? 'fullscreen-navbar-hidden' : ''}>
+        <Navbar />
+      </div>
 
 
       {loading ? <QuestionLoading /> : operationError ?

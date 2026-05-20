@@ -5,6 +5,7 @@ import logo from '../../logo.png';
 import avatarExam from '../../img/avatar-exam.png';
 import profileImg from '../../img/avatar-profile.png';
 import QuestionLoading from '../../components/questionLoading/QuestionLoading';
+import Navbar from '../../components/navbar/Navbar';
 
 import getQuestion from '../../api/question/getQuestion.api';
 import createAssignment from '../../api/assignment/createAssignment.api';
@@ -731,16 +732,9 @@ function Question() {
             <audio ref={audioRefCorrect} src="/audio/correct.mp3" preload="auto" />
             <audio ref={audioRefWrong} src="/audio/wrong.mp3" preload="auto" />
 
-            <nav>
-                <div className='nav-container d-flex justify-content-space-between align-items-center'>
-                    <Link to={'/'} onClick={() => soundEffects.playClick()}><img src={logo} alt='Logo' /></Link>
-                    <div className='nav-right-side d-flex align-items-center'>
-                        {/* Simplified dashboard links */}
-                        {isAuth && role && <Link to={`/dashboard/${role.toLowerCase()}`} onClick={() => soundEffects.playClick()}><div className='gear'><i className='fa fa-graduation-cap' aria-hidden='true'></i></div></Link>}
-                        {isAuth ? <Link to={'/user/info'} onClick={() => soundEffects.playClick()}><img src={profileImg} alt='Profile' /></Link> : <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}><div className='nav-btn'>Login<div className='nav-btn2'></div></div></Link>}
-                    </div>
-                </div>
-            </nav>
+            <div className={isFullscreen ? 'fullscreen-navbar-hidden' : ''}>
+                <Navbar />
+            </div>
 
             {loading ? <QuestionLoading /> : (
                 <div className='question-container d-flex justify-content-center flex-direction-column align-items-center'>
