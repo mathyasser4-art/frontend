@@ -65,8 +65,9 @@
 }
 
 .masterminds-logo-title {
-    max-height: 110px;
-    width: auto;
+    width: 280px;
+    max-width: 90%;
+    height: auto;
     display: block;
     margin: 0 auto;
     filter: drop-shadow(0 4px 15px rgba(255, 215, 0, 0.25));
@@ -257,7 +258,7 @@
     }
     
     .masterminds-logo-title {
-        max-height: 90px;
+        width: 240px;
     }
     
     .line {
@@ -321,7 +322,7 @@
     }
     
     .masterminds-logo-title {
-        max-height: 70px;
+        width: 200px;
     }
     
     .line {
