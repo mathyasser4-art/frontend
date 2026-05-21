@@ -18,7 +18,7 @@ const AbacusMatchGame = () => {
   // Game state
   const [gameState, setGameState] = useState('menu'); // 'menu', 'playing', 'won'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy', 'medium', 'hard', 'expert'
-  const [rodCount, setRodCount] = useState(1);
+  const [rodCount, setRodCount] = useState(4);
   const [targetNumber, setTargetNumber] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
   const [score, setScore] = useState(0);
@@ -62,10 +62,7 @@ const AbacusMatchGame = () => {
   // Start the game
   const startGame = (level) => {
     soundEffects.playClick();
-    let count = 1;
-    if (level === 'medium') count = 2;
-    if (level === 'hard') count = 3;
-    if (level === 'expert') count = 4;
+    const count = 4; // Always use 4 rods for a complete abacus layout across all levels
 
     setDifficulty(level);
     setRodCount(count);
@@ -185,13 +182,7 @@ const AbacusMatchGame = () => {
     return ROD_COLORS[reversedIndex % ROD_COLORS.length];
   };
 
-  // Calculate value of a specific rod
-  const getRodValue = (rod) => {
-    let val = 0;
-    if (rod.topBeadActive) val += 5;
-    val += rod.bottomBeadsActive.filter(isActive => isActive).length;
-    return val;
-  };
+
 
   return (
     <div className="abacus-game-page">
@@ -283,7 +274,6 @@ const AbacusMatchGame = () => {
                     <div className="abacus-rods-container">
                       {rods.map((rod, rodIndex) => {
                         const beadColor = getBeadColor(rodIndex);
-                        const currentRodValue = getRodValue(rod);
                         
                         return (
                           <div key={rodIndex} className="abacus-rod-column">
@@ -326,21 +316,11 @@ const AbacusMatchGame = () => {
                               </div>
                             </div>
 
-                            {/* Dynamic rod value readout */}
-                            <div className="rod-value-readout">
-                              {currentRodValue}
-                            </div>
                           </div>
                         );
                       })}
                     </div>
                   </div>
-                </div>
-
-                {/* dynamic abacus total calculation banner */}
-                <div className="abacus-current-value-bar">
-                  <span>Current Value:</span>
-                  <strong className="value-digits">{currentValue}</strong>
                 </div>
 
                 {/* Interactive Feedback banner */}
