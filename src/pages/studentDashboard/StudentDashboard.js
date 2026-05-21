@@ -238,11 +238,19 @@ function StudentDashboard() {
                                     <i className="fa fa-arrow-left" aria-hidden="true"></i>
                                     <span>Back</span>
                                 </button>
-                                <h2>
-                                    <span translate="no" className="notranslate" style={{ textShadow: '0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4)' }}>
-                                        {isTopsoroban ? 'TOPSOROBAN' : t('academy.chooseYourAcademy')}
-                                    </span>
-                                </h2>
+                                {isTopsoroban ? (
+                                    <h2>
+                                        <span translate="no" className="notranslate" style={{ textShadow: '0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4)' }}>
+                                            TOPSOROBAN
+                                        </span>
+                                    </h2>
+                                ) : (
+                                    <img 
+                                        src="/img/masterminds_logo.png" 
+                                        alt="MASTERMINDS" 
+                                        className="masterminds-logo-dashboard" 
+                                    />
+                                )}
                             </div>
 
                             <div className="practice-options-grid">

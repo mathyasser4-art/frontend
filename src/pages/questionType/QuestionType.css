@@ -64,6 +64,20 @@
     animation: bounceIn 1s ease-out;
 }
 
+.masterminds-logo-title {
+    max-height: 110px;
+    width: auto;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 4px 15px rgba(255, 215, 0, 0.25));
+    animation: bounceIn 1s ease-out;
+    transition: transform 0.3s ease;
+}
+
+.masterminds-logo-title:hover {
+    transform: scale(1.03);
+}
+
 @keyframes bounceIn {
     0% { transform: scale(0.8); opacity: 0; }
     60% { transform: scale(1.1); }
@@ -242,6 +256,10 @@
         font-size: 36px;
     }
     
+    .masterminds-logo-title {
+        max-height: 90px;
+    }
+    
     .line {
         width: 250px;
         margin: 1rem auto 2rem auto;
@@ -300,6 +318,10 @@
     .questionType-title {
         font-size: 28px;
         text-align: center;
+    }
+    
+    .masterminds-logo-title {
+        max-height: 70px;
     }
     
     .line {

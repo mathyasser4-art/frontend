@@ -20,11 +20,19 @@ function QuestionType() {
     <div className={`questionType ${isTopsoroban ? 'topsoroban-theme' : ''}`}>
       <div className="questionType-container">
         <div className="questionType-title">
-          <h3>
-            <span translate="no" className="notranslate" style={{ textShadow: '0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4)' }}>
-              {isTopsoroban ? 'TOPSOROBAN' : t('academy.chooseYourAcademy')}
-            </span>
-          </h3>
+          {isTopsoroban ? (
+            <h3>
+              <span translate="no" className="notranslate" style={{ textShadow: '0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4)' }}>
+                TOPSOROBAN
+              </span>
+            </h3>
+          ) : (
+            <img 
+              src="/img/masterminds_logo.png" 
+              alt="MASTERMINDS" 
+              className="masterminds-logo-title" 
+            />
+          )}
           <div className="line" style={{ marginTop: '0.2rem' }}></div>
         </div>
         <div className="questionType-options">
