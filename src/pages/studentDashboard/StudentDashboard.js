@@ -8,9 +8,10 @@ import DashboardLoading from '../../components/dashboardLoading/DashboardLoading
 import boyPointing from '../../img/boy-pointing.svg'
 import AssignmentLoading from '../../components/assignmentLoading/AssignmentLoading'
 import getAssignment from '../../api/student/getAssignment.api'
+import getAllAttempts from '../../api/assignment/getAllAttempts.api'
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
 import AttemptHistory from '../../components/attemptHistory/AttemptHistory'
-import { NotebookPen, Brain, ChevronRight, HelpCircle, History, CircleCheck, Gamepad2, Image as ImageIcon, FastForward } from 'lucide-react'
+import { NotebookPen, Brain, ChevronRight, CircleCheck, Gamepad2 } from 'lucide-react'
 import API_BASE_URL from '../../config/api.config'
 import soundEffects from '../../utils/soundEffects'
 import '../../reusable.css'
@@ -32,8 +33,10 @@ function StudentDashboard() {
     const [showTutorialModal, setShowTutorialModal] = useState(false)
     const [showAttemptHistory, setShowAttemptHistory] = useState(false)
     const [selectedAssignmentId, setSelectedAssignmentId] = useState(null)
-    const [countdownItem, setCountdownItem] = useState(null) // {id, type: 'start'|'resume'}
-    const [countdownNum, setCountdownNum] = useState(null) // 3, 2, 1, or null
+    const [countdownActive, setCountdownActive] = useState(false)
+    const [countdownNum, setCountdownNum] = useState(null)
+    const [countdownTargetId, setCountdownTargetId] = useState(null)
+    const [resultsCache, setResultsCache] = useState({}) // {assignmentId: {score, total}}
     const isAuth = localStorage.getItem('O_authWEB')
     const userID = localStorage.getItem('pp_id') || 'unknown'
 
@@ -49,9 +52,10 @@ function StudentDashboard() {
         } catch (e) { return false }
     }
 
-    // Countdown 3-2-1 then navigate
-    const startCountdown = (assignmentId, type) => {
-        setCountdownItem({ id: assignmentId, type })
+    // Full-page countdown 3-2-1 then navigate
+    const startCountdown = (assignmentId) => {
+        setCountdownTargetId(assignmentId)
+        setCountdownActive(true)
         setCountdownNum(3)
         soundEffects.playClick()
         let count = 3
@@ -61,11 +65,30 @@ function StudentDashboard() {
                 setCountdownNum(count)
             } else {
                 clearInterval(interval)
-                setCountdownItem(null)
+                setCountdownActive(false)
                 setCountdownNum(null)
+                setCountdownTargetId(null)
                 navigate(`/student/assignment/${assignmentId}`)
             }
-        }, 800)
+        }, 900)
+    }
+
+    // Fetch results for all completed assignments when the popup opens
+    const fetchCompletedResults = async (assignments) => {
+        const completed = assignments.filter(a => a.isCompleted || a.isSubmitted)
+        const cache = {}
+        await Promise.all(completed.map(async (a) => {
+            try {
+                const result = await getAllAttempts(a._id)
+                if (result.success && result.statistics) {
+                    cache[a._id] = {
+                        score: result.statistics.bestScore,
+                        total: result.statistics.totalPossiblePoints
+                    }
+                }
+            } catch (e) { /* ignore */ }
+        }))
+        setResultsCache(cache)
     }
 
     useEffect(() => {
@@ -126,22 +149,32 @@ function StudentDashboard() {
         fetchAssignmentCounts()
     }, [teacherList])
 
-    const getAllAssignment = (teacherID) => {
-        getAssignment(setLoadingOperation, setAllAsignment, setError, teacherID)
-    }
-
-    const openHomeworkSection = () => {
-        setShowHomework(true)
-    }
-
-    const backToMainMenu = () => {
-        setShowHomework(false)
-        setShowPracticeOptions(false)
-        setError(null)
-    }
-
-    const openPracticeOptions = () => {
-        setShowPracticeOptions(true)
+    const getAllAssignment = async (teacherID) => {
+        setLoadingOperation(true)
+        setResultsCache({})
+        try {
+            const Token = localStorage.getItem('O_authWEB')
+            const response = await fetch(`${API_BASE_URL}/student/getAssignment/${teacherID}`, {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authrization': `pracYas09${Token}`
+                }
+            })
+            const responseJson = await response.json()
+            if (responseJson.message === 'success') {
+                setAllAsignment(responseJson.allAssignment)
+                setLoadingOperation(false)
+                // Fetch scores for completed assignments
+                fetchCompletedResults(responseJson.allAssignment)
+            } else {
+                setError(responseJson.message)
+                setLoadingOperation(false)
+            }
+        } catch (err) {
+            setError(err.message)
+            setLoadingOperation(false)
+        }
     }
 
     const openHomeWorkList = (teacherID) => {
@@ -160,6 +193,20 @@ function StudentDashboard() {
         setTimeout(() => {
             document.querySelector('.assignment-popup').classList.replace('d-flex', 'd-none')
         }, 300);
+    }
+
+    const openHomeworkSection = () => {
+        setShowHomework(true)
+    }
+
+    const backToMainMenu = () => {
+        setShowHomework(false)
+        setShowPracticeOptions(false)
+        setError(null)
+    }
+
+    const openPracticeOptions = () => {
+        setShowPracticeOptions(true)
     }
 
     const schoolName = localStorage.getItem('school_name') || '';
@@ -360,7 +407,7 @@ function StudentDashboard() {
                             allAsignment?.map(item => {
                                 const isCompleted = item.isCompleted || item.isSubmitted;
                                 const inProgress = !isCompleted && hasInProgress(item._id);
-                                const isCountingDown = countdownItem?.id === item._id;
+                                const cachedResult = resultsCache[item._id];
                                 return (
                                     <div key={item._id} className={`popup-body assignment-popup-body ${isCompleted ? 'completed-assignment' : inProgress ? 'inprogress-assignment' : ''}`}>
                                         <div className="assignment-item d-flex align-items-center justify-content-space-between">
@@ -393,7 +440,7 @@ function StudentDashboard() {
                                                 </div>
                                             </div>
                                             <div className="assignment-poster">
-                                                <img src={boyPointing} alt="Boy pointing illustration from souandresantana on Pixabay" style={{ width: '180px', height: 'auto', transform: 'scaleX(-1)' }} />
+                                                <img src={boyPointing} alt="Boy pointing illustration" style={{ width: '180px', height: 'auto', transform: 'scaleX(-1)' }} />
                                             </div>
                                         </div>
                                         <div className="assignment-footer d-flex flex-wrap align-items-center justify-content-space-between">
@@ -403,45 +450,36 @@ function StudentDashboard() {
                                             </div>
                                             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                                 {isCompleted ? (
-                                                    // COMPLETED: show clickable result badge
-                                                    <button
-                                                        onClick={() => {
-                                                            soundEffects.playClick();
-                                                            setSelectedAssignmentId(item._id);
-                                                            setShowAttemptHistory(true);
-                                                        }}
-                                                        className="assignment-action-btn completed-btn"
-                                                    >
-                                                        ✅ COMPLETED — View Result
-                                                    </button>
+                                                    // COMPLETED: show inline result score
+                                                    <div className="inline-result-badge">
+                                                        <div className="inline-result-icon">🏆</div>
+                                                        <div className="inline-result-info">
+                                                            <div className="inline-result-label">Your Score</div>
+                                                            {cachedResult ? (
+                                                                <div className="inline-result-score">
+                                                                    {cachedResult.score}<span className="inline-result-total">/{cachedResult.total}</span>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="inline-result-loading">Loading…</div>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 ) : inProgress ? (
-                                                    // IN PROGRESS: only Resume button with countdown
-                                                    isCountingDown ? (
-                                                        <div className="assignment-countdown">
-                                                            <span className="countdown-number">{countdownNum}</span>
-                                                        </div>
-                                                    ) : (
-                                                        <button
-                                                            onClick={() => startCountdown(item._id, 'resume')}
-                                                            className="assignment-action-btn resume-btn"
-                                                        >
-                                                            ▶ CONTINUE ASSIGNMENT
-                                                        </button>
-                                                    )
+                                                    // IN PROGRESS: Resume button
+                                                    <button
+                                                        onClick={() => startCountdown(item._id)}
+                                                        className="assignment-action-btn resume-btn"
+                                                    >
+                                                        ▶ CONTINUE ASSIGNMENT
+                                                    </button>
                                                 ) : (
-                                                    // NOT STARTED: Start button with countdown
-                                                    isCountingDown ? (
-                                                        <div className="assignment-countdown">
-                                                            <span className="countdown-number">{countdownNum}</span>
-                                                        </div>
-                                                    ) : (
-                                                        <button
-                                                            onClick={() => startCountdown(item._id, 'start')}
-                                                            className="assignment-action-btn start-btn"
-                                                        >
-                                                            🚀 START ASSIGNMENT!
-                                                        </button>
-                                                    )
+                                                    // NOT STARTED: Start button
+                                                    <button
+                                                        onClick={() => startCountdown(item._id)}
+                                                        className="assignment-action-btn start-btn"
+                                                    >
+                                                        🚀 START ASSIGNMENT!
+                                                    </button>
                                                 )}
                                             </div>
                                         </div>
@@ -471,6 +509,20 @@ function StudentDashboard() {
                         setSelectedAssignmentId(null);
                     }}
                 />
+            )}
+
+            {/* Full-page 3-2-1 Countdown Overlay */}
+            {countdownActive && (
+                <div className="fullpage-countdown-overlay">
+                    <div className="fullpage-countdown-content">
+                        <div className="fullpage-countdown-ring">
+                            <span className="fullpage-countdown-number">{countdownNum}</span>
+                        </div>
+                        <p className="fullpage-countdown-text">
+                            {countdownNum === 3 ? 'Get Ready...' : countdownNum === 2 ? 'Set...' : 'Go! 🚀'}
+                        </p>
+                    </div>
+                </div>
             )}
         </div>
     )
