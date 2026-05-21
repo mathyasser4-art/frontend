@@ -72,7 +72,7 @@ const Navbar = () => {
                         <span className="nav-link">For Students ▾</span>
                         <div className="dropdown-menu">
                             <span onClick={() => { soundEffects.playClick(); setShowStudentHelp(true); }} className="dropdown-item">Website Explanation</span>
-                            <span onClick={() => { soundEffects.playClick(); navigate('/auth/login'); }} className="dropdown-item">Login as Student</span>
+                            <span onClick={() => { soundEffects.playClick(); if (role === 'Student') { navigate('/dashboard/student'); } else { navigate('/auth/login'); } }} className="dropdown-item">My Homework</span>
                         </div>
                     </div>
                     <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">Pricing</Link>
