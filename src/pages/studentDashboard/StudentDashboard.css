@@ -1380,3 +1380,102 @@
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
 }
+
+/* ============================================
+   COMPLETED ASSIGNMENT CARD
+   ============================================ */
+.completed-assignment-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%) !important;
+    border: 3px dashed #10B981 !important;
+    border-radius: 20px;
+    padding: 1.5rem 2rem !important;
+    margin: 1rem 0rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.completed-assignment-card::before {
+    background: linear-gradient(90deg, #10B981, #34D399, #10B981) !important;
+    background-size: 200% 100%;
+    animation: rainbowShine 3s linear infinite;
+}
+
+.completed-assignment-card:hover {
+    transform: translateY(-4px);
+    border: 3px solid #10B981 !important;
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.15), 0 6px 6px rgba(16, 185, 129, 0.1) !important;
+}
+
+.completed-card-content {
+    width: 100%;
+}
+
+.completed-assignment-title {
+    font-size: 1.8rem !important;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    margin: 0 0 0.3rem 0 !important;
+}
+
+.completed-status-badge {
+    display: inline-block;
+    background: #10B981;
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.8px;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+}
+
+.completed-score-section {
+    flex-shrink: 0;
+}
+
+.completed-score-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    border-radius: 16px;
+    padding: 8px 18px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    min-width: 90px;
+}
+
+.completed-score-badge .score-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.completed-score-badge .score-value {
+    font-size: 1.8rem;
+    font-weight: 900;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.1;
+}
+
+.completed-score-badge .score-total {
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.completed-score-loading {
+    font-size: 0.95rem;
+    color: #059669;
+    font-style: italic;
+    font-weight: 600;
+    animation: shimmer 1.5s ease-in-out infinite;
+}

@@ -7,7 +7,6 @@ import getClass from '../../api/student/getClass.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import boyPointing from '../../img/boy-pointing.svg'
 import AssignmentLoading from '../../components/assignmentLoading/AssignmentLoading'
-import getAssignment from '../../api/student/getAssignment.api'
 import getAllAttempts from '../../api/assignment/getAllAttempts.api'
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
 import AttemptHistory from '../../components/attemptHistory/AttemptHistory'
@@ -35,7 +34,6 @@ function StudentDashboard() {
     const [selectedAssignmentId, setSelectedAssignmentId] = useState(null)
     const [countdownActive, setCountdownActive] = useState(false)
     const [countdownNum, setCountdownNum] = useState(null)
-    const [countdownTargetId, setCountdownTargetId] = useState(null)
     const [resultsCache, setResultsCache] = useState({}) // {assignmentId: {score, total}}
     const isAuth = localStorage.getItem('O_authWEB')
     const userID = localStorage.getItem('pp_id') || 'unknown'
@@ -54,7 +52,6 @@ function StudentDashboard() {
 
     // Full-page countdown 3-2-1 then navigate
     const startCountdown = (assignmentId) => {
-        setCountdownTargetId(assignmentId)
         setCountdownActive(true)
         setCountdownNum(3)
         soundEffects.playClick()
@@ -67,7 +64,6 @@ function StudentDashboard() {
                 clearInterval(interval)
                 setCountdownActive(false)
                 setCountdownNum(null)
-                setCountdownTargetId(null)
                 navigate(`/student/assignment/${assignmentId}`)
             }
         }, 900)
@@ -408,15 +404,46 @@ function StudentDashboard() {
                                 const isCompleted = item.isCompleted || item.isSubmitted;
                                 const inProgress = !isCompleted && hasInProgress(item._id);
                                 const cachedResult = resultsCache[item._id];
+
+                                if (isCompleted) {
+                                    return (
+                                        <div 
+                                            key={item._id} 
+                                            className="popup-body assignment-popup-body completed-assignment-card"
+                                            onClick={() => navigate(`/student/myReport/${item._id}`)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            <div className="completed-card-content d-flex align-items-center justify-content-space-between">
+                                                <div className="d-flex align-items-center" style={{ gap: '15px' }}>
+                                                    <CircleCheck size={36} style={{ color: '#10B981', flexShrink: 0 }} strokeWidth={2.5} />
+                                                    <div style={{ textAlign: 'left' }}>
+                                                        <h2 className="completed-assignment-title">{item.title}</h2>
+                                                        <span className="completed-status-badge">COMPLETED</span>
+                                                    </div>
+                                                </div>
+                                                <div className="completed-score-section">
+                                                    {cachedResult ? (
+                                                        <div className="completed-score-badge">
+                                                            <span className="score-label">Score</span>
+                                                            <span className="score-value">
+                                                                {cachedResult.score}<span className="score-total">/{cachedResult.total}</span>
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="completed-score-loading">Loading result...</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                }
+
                                 return (
-                                    <div key={item._id} className={`popup-body assignment-popup-body ${isCompleted ? 'completed-assignment' : inProgress ? 'inprogress-assignment' : ''}`}>
+                                    <div key={item._id} className={`popup-body assignment-popup-body ${inProgress ? 'inprogress-assignment' : ''}`}>
                                         <div className="assignment-item d-flex align-items-center justify-content-space-between">
                                             <div className="assignment-content">
                                                 <div className="d-flex align-items-center" style={{ gap: '10px' }}>
                                                     <h2>{item.title}</h2>
-                                                    {isCompleted && (
-                                                        <CircleCheck size={32} style={{ color: '#4CAF50', flexShrink: 0 }} strokeWidth={2.5} />
-                                                    )}
                                                     {inProgress && (
                                                         <span className="inprogress-badge">▶ IN PROGRESS</span>
                                                     )}
@@ -449,22 +476,7 @@ function StudentDashboard() {
                                                 {item?.endDate ? <p>Expiry Date: {item?.endDate}</p> : null}
                                             </div>
                                             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                                {isCompleted ? (
-                                                    // COMPLETED: show inline result score
-                                                    <div className="inline-result-badge">
-                                                        <div className="inline-result-icon">🏆</div>
-                                                        <div className="inline-result-info">
-                                                            <div className="inline-result-label">Your Score</div>
-                                                            {cachedResult ? (
-                                                                <div className="inline-result-score">
-                                                                    {cachedResult.score}<span className="inline-result-total">/{cachedResult.total}</span>
-                                                                </div>
-                                                            ) : (
-                                                                <div className="inline-result-loading">Loading…</div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                ) : inProgress ? (
+                                                {inProgress ? (
                                                     // IN PROGRESS: Resume button
                                                     <button
                                                         onClick={() => startCountdown(item._id)}

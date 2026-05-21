@@ -73,6 +73,7 @@ const Navbar = () => {
                         <div className="dropdown-menu">
                             <span onClick={() => { soundEffects.playClick(); setShowStudentHelp(true); }} className="dropdown-item">Website Explanation</span>
                             <span onClick={() => { soundEffects.playClick(); if (role === 'Student') { navigate('/dashboard/student'); } else { navigate('/auth/login'); } }} className="dropdown-item">My Homework</span>
+                            <span onClick={() => { soundEffects.playClick(); navigate('/student/games-menu'); }} className="dropdown-item">Game Room</span>
                         </div>
                     </div>
                     <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">Pricing</Link>
@@ -84,7 +85,12 @@ const Navbar = () => {
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {role === 'Teacher' ? <div className="teachers-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}><span>👨‍🏫</span> TEACHERS</div> : null}
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
-                    {role === 'Student' ? <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
+                    {role === 'Student' ? (
+                        <>
+                            <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn"><span>🎮</span> GAMES</div></Link>
+                            <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link>
+                        </>
+                    ) : null}
                     {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {isAuth ? (
