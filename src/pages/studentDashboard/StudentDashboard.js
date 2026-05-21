@@ -32,7 +32,41 @@ function StudentDashboard() {
     const [showTutorialModal, setShowTutorialModal] = useState(false)
     const [showAttemptHistory, setShowAttemptHistory] = useState(false)
     const [selectedAssignmentId, setSelectedAssignmentId] = useState(null)
+    const [countdownItem, setCountdownItem] = useState(null) // {id, type: 'start'|'resume'}
+    const [countdownNum, setCountdownNum] = useState(null) // 3, 2, 1, or null
     const isAuth = localStorage.getItem('O_authWEB')
+    const userID = localStorage.getItem('pp_id') || 'unknown'
+
+    // Check if an assignment has saved progress in localStorage
+    const hasInProgress = (assignmentId) => {
+        try {
+            const key = `assignment_progress_${assignmentId}_${userID}`
+            const saved = localStorage.getItem(key)
+            if (!saved) return false
+            const progress = JSON.parse(saved)
+            const isRecent = Date.now() - progress.timestamp < 24 * 60 * 60 * 1000
+            return isRecent && progress.questionData && progress.questionData.length > 0
+        } catch (e) { return false }
+    }
+
+    // Countdown 3-2-1 then navigate
+    const startCountdown = (assignmentId, type) => {
+        setCountdownItem({ id: assignmentId, type })
+        setCountdownNum(3)
+        soundEffects.playClick()
+        let count = 3
+        const interval = setInterval(() => {
+            count--
+            if (count > 0) {
+                setCountdownNum(count)
+            } else {
+                clearInterval(interval)
+                setCountdownItem(null)
+                setCountdownNum(null)
+                navigate(`/student/assignment/${assignmentId}`)
+            }
+        }, 800)
+    }
 
     useEffect(() => {
         const handleGetClass = () => {
@@ -325,14 +359,19 @@ function StudentDashboard() {
                         {loadingOperation ? <AssignmentLoading /> :
                             allAsignment?.map(item => {
                                 const isCompleted = item.isCompleted || item.isSubmitted;
+                                const inProgress = !isCompleted && hasInProgress(item._id);
+                                const isCountingDown = countdownItem?.id === item._id;
                                 return (
-                                    <div key={item._id} className={`popup-body assignment-popup-body ${isCompleted ? 'completed-assignment' : ''}`}>
+                                    <div key={item._id} className={`popup-body assignment-popup-body ${isCompleted ? 'completed-assignment' : inProgress ? 'inprogress-assignment' : ''}`}>
                                         <div className="assignment-item d-flex align-items-center justify-content-space-between">
                                             <div className="assignment-content">
                                                 <div className="d-flex align-items-center" style={{ gap: '10px' }}>
                                                     <h2>{item.title}</h2>
                                                     {isCompleted && (
                                                         <CircleCheck size={32} style={{ color: '#4CAF50', flexShrink: 0 }} strokeWidth={2.5} />
+                                                    )}
+                                                    {inProgress && (
+                                                        <span className="inprogress-badge">▶ IN PROGRESS</span>
                                                     )}
                                                 </div>
                                                 <div className='d-flex align-items-center assignment-body-container'>
@@ -362,53 +401,47 @@ function StudentDashboard() {
                                                 {item?.startDate ? <p>Start Date: {item?.startDate}</p> : null}
                                                 {item?.endDate ? <p>Expiry Date: {item?.endDate}</p> : null}
                                             </div>
-                                             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                                 {isCompleted ? (
-                                                    <button 
-                                                        disabled 
-                                                        style={{
-                                                            padding: '1.2rem 2.5rem',
-                                                            background: 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)',
-                                                            border: '4px solid #fff',
-                                                            color: '#fff',
-                                                            fontSize: '20px',
-                                                            fontWeight: '700',
-                                                            borderRadius: '50px',
-                                                            cursor: 'not-allowed',
-                                                            boxShadow: '0 8px 0 #388E3C, 0 12px 24px rgba(76, 175, 80, 0.4)',
-                                                            textTransform: 'uppercase',
-                                                            letterSpacing: '1px',
-                                                            opacity: '0.7'
-                                                        }}
-                                                    >
-                                                        ✓ Completed
-                                                    </button>
-                                                ) : (
-                                                    <Link to={`/student/assignment/${item._id}`}><button>🚀 Start Assignment!</button></Link>
-                                                )}
-                                                {item?.attemptsNumber > 1 && !isCompleted && (
-                                                    <button 
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
+                                                    // COMPLETED: show clickable result badge
+                                                    <button
+                                                        onClick={() => {
+                                                            soundEffects.playClick();
                                                             setSelectedAssignmentId(item._id);
                                                             setShowAttemptHistory(true);
                                                         }}
-                                                        style={{
-                                                            background: 'transparent',
-                                                            border: '2px solid #0284c7',
-                                                            color: '#0284c7',
-                                                            padding: '8px 16px',
-                                                            borderRadius: '8px',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            gap: '6px',
-                                                            fontWeight: '500'
-                                                        }}
+                                                        className="assignment-action-btn completed-btn"
                                                     >
-                                                        <History size={16} />
-                                                        View Attempts
+                                                        ✅ COMPLETED — View Result
                                                     </button>
+                                                ) : inProgress ? (
+                                                    // IN PROGRESS: only Resume button with countdown
+                                                    isCountingDown ? (
+                                                        <div className="assignment-countdown">
+                                                            <span className="countdown-number">{countdownNum}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => startCountdown(item._id, 'resume')}
+                                                            className="assignment-action-btn resume-btn"
+                                                        >
+                                                            ▶ CONTINUE ASSIGNMENT
+                                                        </button>
+                                                    )
+                                                ) : (
+                                                    // NOT STARTED: Start button with countdown
+                                                    isCountingDown ? (
+                                                        <div className="assignment-countdown">
+                                                            <span className="countdown-number">{countdownNum}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => startCountdown(item._id, 'start')}
+                                                            className="assignment-action-btn start-btn"
+                                                        >
+                                                            🚀 START ASSIGNMENT!
+                                                        </button>
+                                                    )
                                                 )}
                                             </div>
                                         </div>

@@ -1592,17 +1592,15 @@ function Assignment() {
             <div className="exit-dialog-icon">
               <i className="fa fa-history" aria-hidden="true"></i>
             </div>
-            <h3>Resume Assignment?</h3>
-            <p>You have unsaved progress on this assignment.</p>
-            <p style={{fontWeight: '600', marginTop: '8px'}}>
-              Question {savedProgressData?.thisQuestionNumber} of {savedProgressData?.questionData?.length}
+            <h3>Welcome Back! 👋</h3>
+            <p>You have unfinished progress on this assignment.</p>
+            <p style={{fontWeight: '600', marginTop: '8px', color: '#f59e0b'}}>
+              Question {savedProgressData?.thisQuestionNumber} of {savedProgressData?.questionData?.length} completed
             </p>
+            <p style={{fontSize: '14px', color: '#64748b', marginTop: '6px'}}>Pick up right where you left off!</p>
             <div className="exit-dialog-actions">
-              <button className="exit-dialog-btn cancel-btn" onClick={discardProgress}>
-                Start Fresh
-              </button>
-              <button className="exit-dialog-btn confirm-btn" onClick={resumeProgress}>
-                Resume
+              <button className="exit-dialog-btn confirm-btn" onClick={resumeProgress} style={{ width: '100%' }}>
+                ▶ Continue Assignment
               </button>
             </div>
           </div>
