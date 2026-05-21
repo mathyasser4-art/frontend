@@ -1,0 +1,948 @@
+/* ==========================================================================
+   Abacus Match Challenge Styles
+   ========================================================================== */
+
+/* Main Page Container */
+.abacus-game-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%);
+  font-family: 'Outfit', sans-serif;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main Game Area Wrapper */
+.game-wrapper-modern {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   DIFFICULTY MENU STATE
+   ========================================================================== */
+.menu-container-modern {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.back-btn-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1.5rem;
+}
+
+.back-btn-top:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(-4px);
+  color: #fff;
+}
+
+.menu-card-modern {
+  width: 100%;
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+
+.game-emoji {
+  font-size: 4.5rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 10px 15px rgba(99, 102, 241, 0.3));
+  animation: float 3s ease-in-out infinite;
+}
+
+.menu-card-modern h1 {
+  font-size: 2.75rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.5px;
+}
+
+.menu-card-modern p {
+  color: #94a3b8;
+  font-size: 1.15rem;
+  margin: 0 auto 2.5rem auto;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+/* Difficulty Cards Grid */
+.difficulty-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.diff-card-modern {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 1.75rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.diff-card-modern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+/* Color codes per level */
+.diff-card-modern.easy::before { background: #22c55e; }
+.diff-card-modern.medium::before { background: #fbbf24; }
+.diff-card-modern.hard::before { background: #f97316; }
+.diff-card-modern.expert::before { background: #ef4444; }
+
+.diff-card-modern:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-5px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.diff-card-modern.easy:hover { box-shadow: 0 10px 25px rgba(34, 197, 94, 0.15); }
+.diff-card-modern.medium:hover { box-shadow: 0 10px 25px rgba(251, 191, 36, 0.15); }
+.diff-card-modern.hard:hover { box-shadow: 0 10px 25px rgba(249, 115, 22, 0.15); }
+.diff-card-modern.expert:hover { box-shadow: 0 10px 25px rgba(239, 68, 68, 0.15); }
+
+.diff-card-modern h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+.diff-card-modern.easy h3 { color: #4ade80; }
+.diff-card-modern.medium h3 { color: #fcd34d; }
+.diff-card-modern.hard h3 { color: #fdba74; }
+.diff-card-modern.expert h3 { color: #fca5a5; }
+
+.diff-card-modern p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+
+/* ==========================================================================
+   ACTIVE GAMEPLAY STATE
+   ========================================================================== */
+.gameplay-container-modern {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Top Game Header Bar */
+.game-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.25rem;
+  border-radius: 20px;
+  gap: 1rem;
+}
+
+.exit-game-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exit-game-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.game-stats-container {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+}
+
+.stat-icon-star {
+  color: #fbbf24;
+  fill: #fbbf24;
+}
+
+.mistakes-pill {
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* Gameplay Arena */
+.game-arena {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Target Panel */
+.target-panel-modern {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 1.25rem 2rem;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+.target-panel-modern h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 0 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.target-number-badge {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+  padding: 0.25rem 2.5rem;
+  border-radius: 16px;
+  display: inline-block;
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+  letter-spacing: 2px;
+}
+
+/* ==========================================================================
+   THE SOROBAN ABACUS COMPONENT
+   ========================================================================== */
+.abacus-board-card {
+  width: 100%;
+  max-width: 620px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  padding: 2.25rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Wrong answer shake animation */
+.shake-abacus {
+  animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Polished Mahogany Wood Frame style */
+.abacus-wooden-outer {
+  background: linear-gradient(135deg, #5c2d18 0%, #3a1b0e 50%, #221008 100%);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 
+    inset 2px 2px 4px rgba(255,255,255,0.25),
+    inset -2px -2px 4px rgba(0,0,0,0.6),
+    0 15px 30px rgba(0,0,0,0.7);
+}
+
+.abacus-wooden-inner {
+  background: #111827; /* Deep inner felt/shadow */
+  border-radius: 12px;
+  padding: 10px;
+  border: 3px solid #27130a;
+  position: relative;
+  box-shadow: inset 0 10px 25px rgba(0,0,0,0.9);
+  overflow: hidden;
+}
+
+/* Horizontal Beam Divider */
+.abacus-beam-divider {
+  position: absolute;
+  top: 98px; /* Positioned between upper deck and lower deck */
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: linear-gradient(180deg, #111 0%, #2a2a2a 50%, #000 100%);
+  border-top: 2px solid #555;
+  border-bottom: 2px solid #222;
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.6);
+}
+
+/* Add alignment alignment marker dots on the beam divider for units/tens/hundreds */
+.abacus-beam-divider::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 50%;
+  box-shadow: -80px 0 0 #94a3b8, -160px 0 0 #94a3b8, 80px 0 0 #94a3b8, 160px 0 0 #94a3b8;
+  opacity: 0.6;
+}
+
+/* Rods and Wire Containers */
+.abacus-rods-container {
+  display: flex;
+  justify-content: space-around;
+  position: relative;
+  z-index: 5;
+  min-height: 280px;
+  padding: 0 10px;
+}
+
+.abacus-rod-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60px;
+  position: relative;
+}
+
+/* Rod Value Label (Thousands, Hundreds, etc) */
+.rod-place-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #4b5563;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Vertical Wire behind beads */
+.abacus-rod-wire {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-image: linear-gradient(to right, rgba(100,100,100,0.4), rgba(230,230,230,0.9) 50%, rgba(100,100,100,0.4));
+  background-size: 5px 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Upper Deck Container (top 5-bead) */
+.upper-deck-container {
+  height: 68px;
+  position: relative;
+  margin-bottom: 24px; /* Space for the divider gap */
+}
+
+/* Lower Deck Container (bottom four 1-beads) */
+.lower-deck-container {
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+}
+
+/* ==========================================================================
+   DIAMOND / SOROBAN BEAD SHAPING
+   ========================================================================== */
+.abacus-bead {
+  width: 48px;
+  height: 25px;
+  border-radius: 50% / 40%; /* Soroban diamond/biconical shape */
+  background: linear-gradient(135deg, var(--bead-color) 0%, rgba(0, 0, 0, 0.4) 100%);
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  box-shadow: 
+    inset 0 3px 5px rgba(255, 255, 255, 0.35),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.6),
+    0 4px 6px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  z-index: 15;
+  transition: transform 0.22s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  margin: 3px 0;
+}
+
+/* Center rod shadow effect inside bead */
+.abacus-bead::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+/* Bead Highlight line on ridge */
+.abacus-bead::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.45);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.abacus-bead:hover {
+  filter: brightness(1.15);
+}
+
+/* Bead Sliding Transitions */
+.bead-active-down {
+  transform: translateY(32px); /* Slides down to touch the divider bar */
+  box-shadow: 
+    inset 0 3px 5px rgba(255, 255, 255, 0.35),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.bead-active-up {
+  transform: translateY(-28px); /* Slides up to touch the divider bar */
+  box-shadow: 
+    inset 0 3px 5px rgba(255, 255, 255, 0.35),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Divider beam Gap spacing */
+.divider-gap {
+  height: 12px; /* matches beam height */
+  pointer-events: none;
+}
+
+/* Dynamic rod value readout */
+.rod-value-readout {
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #818cf8;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-shadow: 0 0 5px rgba(129, 140, 248, 0.4);
+}
+
+/* ==========================================================================
+   VALUE BAR AND FEEDBACK
+   ========================================================================== */
+.abacus-current-value-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 0.75rem 1.5rem;
+  border-radius: 16px;
+}
+
+.abacus-current-value-bar span {
+  font-size: 1rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.value-digits {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #3b82f6;
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  letter-spacing: 1px;
+}
+
+/* Feedback Overlay Banner */
+.feedback-overlay-banner {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 800;
+  z-index: 50;
+  border-radius: 28px;
+  animation: scaleIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.feedback-overlay-banner.correct {
+  color: #10b981;
+  text-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+  border: 3px solid #10b981;
+}
+
+.feedback-overlay-banner.wrong {
+  color: #ef4444;
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+  border: 3px solid #ef4444;
+}
+
+/* Game Action Row */
+.game-action-row {
+  display: flex;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 620px;
+}
+
+.action-btn-modern {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.action-btn-modern.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+}
+
+.action-btn-modern.secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.action-btn-modern.primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  color: white;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.action-btn-modern.primary:hover {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(37, 99, 235, 0.45);
+}
+
+.action-btn-modern:active {
+  transform: translateY(1px);
+}
+
+
+/* ==========================================================================
+   VICTORY / WON STATE
+   ========================================================================== */
+.won-container-modern {
+  width: 100%;
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.won-card-modern {
+  width: 100%;
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 36px;
+  padding: 3.5rem 2.5rem;
+  text-align: center;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+}
+
+.trophy-gold {
+  color: #fbbf24;
+  fill: rgba(251, 191, 36, 0.15);
+  filter: drop-shadow(0 15px 25px rgba(251, 191, 36, 0.35));
+  margin-bottom: 1.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.won-card-modern h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 0 0.5rem 0;
+}
+
+.won-subtitle {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  margin: 0 0 2.5rem 0;
+}
+
+/* Victory Stats Grid */
+.victory-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.victory-stat-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.victory-stat-box .v-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.victory-stat-box .v-val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* Action CTAs in Victory */
+.won-actions-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn-won-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+  width: 100%;
+}
+
+.btn-won-action.primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.btn-won-action.primary:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(16, 185, 129, 0.45);
+}
+
+.btn-won-action.secondary {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+}
+
+.btn-won-action.secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.btn-won-action.exit {
+  background: transparent;
+  color: #94a3b8;
+}
+
+.btn-won-action.exit:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+
+/* ==========================================================================
+   ANIMATIONS & KEYFRAMES
+   ========================================================================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+
+/* ==========================================================================
+   MEDIA QUERIES (RESPONSIVENESS)
+   ========================================================================== */
+
+/* Tablet Viewports */
+@media (max-width: 768px) {
+  .menu-card-modern {
+    padding: 2.5rem 1.5rem;
+  }
+  
+  .menu-card-modern h1 {
+    font-size: 2.25rem;
+  }
+
+  .difficulty-selection-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .abacus-board-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .abacus-wooden-outer {
+    padding: 12px;
+  }
+
+  .abacus-wooden-inner {
+    padding: 6px;
+  }
+
+  .abacus-rods-container {
+    min-height: 250px;
+  }
+
+  .abacus-rod-column {
+    width: 48px;
+  }
+
+  .abacus-bead {
+    width: 42px;
+    height: 22px;
+  }
+
+  .upper-deck-container {
+    height: 60px;
+    margin-bottom: 20px;
+  }
+
+  .lower-deck-container {
+    height: 155px;
+  }
+
+  .bead-active-down {
+    transform: translateY(28px);
+  }
+
+  .bead-active-up {
+    transform: translateY(-24px);
+  }
+
+  .abacus-beam-divider {
+    top: 86px;
+  }
+}
+
+/* Small Mobile Screens */
+@media (max-width: 480px) {
+  .game-wrapper-modern {
+    padding: 1rem 0.5rem;
+  }
+
+  .game-header-bar {
+    padding: 0.5rem 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .exit-game-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .game-stats-container {
+    justify-content: center;
+  }
+
+  .stat-pill {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+  }
+
+  .target-number-badge {
+    font-size: 2.5rem;
+  }
+
+  .abacus-board-card {
+    padding: 1rem 0.5rem;
+  }
+
+  .abacus-wooden-outer {
+    padding: 8px;
+    border-radius: 12px;
+  }
+
+  .abacus-wooden-inner {
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  .abacus-rod-column {
+    width: 38px;
+  }
+
+  .abacus-bead {
+    width: 32px;
+    height: 18px;
+    margin: 2px 0;
+  }
+
+  .upper-deck-container {
+    height: 48px;
+    margin-bottom: 12px;
+  }
+
+  .lower-deck-container {
+    height: 120px;
+  }
+
+  .bead-active-down {
+    transform: translateY(22px);
+  }
+
+  .bead-active-up {
+    transform: translateY(-18px);
+  }
+
+  .abacus-beam-divider {
+    top: 70px;
+    height: 8px;
+  }
+
+  .rod-value-readout {
+    width: 24px;
+    height: 24px;
+    font-size: 0.85rem;
+    margin-top: 6px;
+  }
+
+  .abacus-current-value-bar {
+    padding: 0.5rem 1rem;
+    margin-top: 1rem;
+  }
+
+  .value-digits {
+    font-size: 1.4rem;
+  }
+
+  .game-action-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .action-btn-modern {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .victory-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+}

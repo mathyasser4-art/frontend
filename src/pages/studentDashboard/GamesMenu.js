@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Timer, Trophy, Zap } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import './GamesMenu.css';
@@ -145,6 +145,23 @@ const GamesMenu = () => {
               </div>
             </div>
             <h3 className="game-card-title">Sudoku Master</h3>
+          </div>
+
+          {/* Abacus Match Challenge */}
+          <div className="game-item-container" onClick={() => navigate('/student/games/abacus-match')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <img src="/img/games/abacus_match_cover.png" alt="Abacus Match" className="card-bg-img" />
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <h3>Abacus Match</h3>
+                    <p>Soroban training challenge</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 className="game-card-title">Abacus Match</h3>
           </div>
 
         </div>
