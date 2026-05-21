@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import logo from '../../logo.png'
 import profileImg from '../../img/avatar-profile.png'
@@ -7,15 +7,18 @@ import school from '../../img/school-avatar.png'
 import soundEffects from '../../utils/soundEffects'
 import TeacherRegistration from '../teacherRegistration/TeacherRegistration'
 import TeacherHelpModal from '../teacherHelpModal/TeacherHelpModal'
+import StudentHelpModal from '../studentHelpModal/StudentHelpModal'
 import '../../reusable.css'
 import './Navbar.css'
 
 const Navbar = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const isAuth = localStorage.getItem('O_authWEB')
     const role = localStorage.getItem('auth_role')
     const [showTeacherForm, setShowTeacherForm] = useState(false)
     const [showTeacherHelp, setShowTeacherHelp] = useState(false)
+    const [showStudentHelp, setShowStudentHelp] = useState(false)
 
     const openTeacherForm = () => {
         soundEffects.playClick()
@@ -65,6 +68,13 @@ const Navbar = () => {
                             <span onClick={openTeacherForm} className="dropdown-item">Register as Teacher</span>
                         </div>
                     </div>
+                    <div className="nav-dropdown">
+                        <span className="nav-link">For Students ▾</span>
+                        <div className="dropdown-menu">
+                            <span onClick={() => { soundEffects.playClick(); setShowStudentHelp(true); }} className="dropdown-item">Website Explanation</span>
+                            <span onClick={() => { soundEffects.playClick(); navigate('/auth/login'); }} className="dropdown-item">Login as Student</span>
+                        </div>
+                    </div>
                     <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">Pricing</Link>
                     <Link to="/about" onClick={() => soundEffects.playClick()} className="nav-link">About Us</Link>
                     <Link to="/contact" onClick={() => soundEffects.playClick()} className="nav-link">Contact</Link>
@@ -109,6 +119,11 @@ const Navbar = () => {
             {showTeacherHelp && (
                 <TeacherHelpModal
                     onClose={() => setShowTeacherHelp(false)}
+                />
+            )}
+            {showStudentHelp && (
+                <StudentHelpModal
+                    onClose={() => setShowStudentHelp(false)}
                 />
             )}
         </nav >

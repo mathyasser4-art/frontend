@@ -631,17 +631,20 @@
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (max-width: 768px) {
     .home-title h1 {
-        font-size: 20px;
+        font-size: 32px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.5px;
     }
     .home-container {
         margin: 1rem;
         padding: 2rem 1.5rem;
     }
     .home-paragraph {
-        font-size: 18px;
+        font-size: 15px;
     }
     .home-btn {
-        font-size: 16px;
+        font-size: 14px;
         padding: 0.7rem 1.5rem;
     }
     .floating-help-btn {
@@ -657,24 +660,44 @@
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (max-width: 600px) {
     .home-title h1 {
-        font-size: 18px;
-        letter-spacing: 0.5px;
+        font-size: 26px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.5px;
     }
     .home-title{
         padding-left: 0.8rem;
         margin-top: 0.5rem;
     }
     .home-paragraph {
-        font-size: 28px;
+        font-size: 14px;
+        margin-top: 1rem;
+    }
+    .hero-buttons {
+        display: flex;
+        flex-direction: row !important;
+        gap: 0.6rem;
         margin-top: 1.5rem;
+        width: 100%;
+        padding: 0 0.5rem;
+    }
+    .hero-btn-wrapper {
+        max-width: none;
+        flex: 1;
     }
     .home-btn {
-        font-size: 14px;
-        padding: 0.6rem 1.2rem;
-        gap: 8px;
+        font-size: 12px !important;
+        padding: 0.8rem 0.4rem !important;
+        white-space: nowrap;
+        border-radius: 20px;
+        gap: 4px;
+    }
+    .btn-subtitle {
+        font-size: 9.5px !important;
+        margin-top: 4px;
     }
     .home-btn .btn-arrow {
-        font-size: 32px;
+        font-size: 24px;
     }
     .home-container {
         margin: 0.5rem;
@@ -709,5 +732,14 @@
         height: 90px;
         padding: 4px;
         font-size: 7.5px;
+    }
+    .home-title h1 {
+        font-size: 22px;
+    }
+    .home-btn {
+        font-size: 11px !important;
+    }
+    .btn-subtitle {
+        font-size: 8.5px !important;
     }
 }

@@ -8,6 +8,7 @@ import FeaturesSection from '../../components/featuresSection/FeaturesSection'
 import TeacherTrialModal from '../../components/teacherTrialModal/TeacherTrialModal'
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
 import TeacherHelpModal from '../../components/teacherHelpModal/TeacherHelpModal'
+import StudentHelpModal from '../../components/studentHelpModal/StudentHelpModal'
 import soundEffects from '../../utils/soundEffects'
 import { GraduationCap, Presentation } from 'lucide-react'
 import '../../reusable.css'
@@ -42,6 +43,7 @@ function Home() {
   const [showTutorialModal, setShowTutorialModal] = useState(false)
   const [showTeacherTrialModal, setShowTeacherTrialModal] = useState(false)
   const [showTeacherHelp, setShowTeacherHelp] = useState(false)
+  const [showStudentHelp, setShowStudentHelp] = useState(false)
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const [fading, setFading] = React.useState(false)
 
@@ -105,12 +107,12 @@ function Home() {
                       className="home-btn blue-btn"
                       onClick={() => { 
                         soundEffects.playClick(); 
-                        document.getElementById('games-section').scrollIntoView({ behavior: 'smooth' });
+                        setShowStudentHelp(true);
                       }}
                     >
-                      <span className="btn-text">🎮 PLAY GAMES</span>
+                      <span className="btn-text">🎓 I'M A STUDENT</span>
                     </button>
-                    <div className="btn-subtitle">Play & learn math</div>
+                    <div className="btn-subtitle">Play, practice & solve homework</div>
                   </div>
                 </div>
               </div>
@@ -143,9 +145,10 @@ function Home() {
       </div>
 
 
-      <TutorialVideoModal isOpen={showTutorialModal} onClose={() => setShowTutorialModal(false)} />
+       <TutorialVideoModal isOpen={showTutorialModal} onClose={() => setShowTutorialModal(false)} />
       {showTeacherTrialModal && <TeacherTrialModal onClose={() => setShowTeacherTrialModal(false)} />}
       {showTeacherHelp && <TeacherHelpModal onClose={() => setShowTeacherHelp(false)} />}
+      {showStudentHelp && <StudentHelpModal onClose={() => setShowStudentHelp(false)} />}
 
       <div className='home-mobile'>
         <Navbar />
@@ -175,9 +178,18 @@ function Home() {
             </div>
           </div>
           <div className="hero-buttons mobile-buttons">
-              <button className="home-btn pink-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}>
-                <span className="btn-text">👨‍🏫 I'M A TEACHER</span>
-              </button>
+              <div className="hero-btn-wrapper">
+                <button className="home-btn pink-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}>
+                  <span className="btn-text">👨‍🏫 I'M A TEACHER</span>
+                </button>
+                <div className="btn-subtitle">Manage class & homework</div>
+              </div>
+              <div className="hero-btn-wrapper">
+                <button className="home-btn blue-btn" onClick={() => { soundEffects.playClick(); setShowStudentHelp(true); }}>
+                  <span className="btn-text">🎓 I'M A STUDENT</span>
+                </button>
+                <div className="btn-subtitle">Play & solve homework</div>
+              </div>
           </div>
         </div>
       </div>

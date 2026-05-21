@@ -1,0 +1,226 @@
+.student-help-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    padding: 2rem;
+    animation: fadeInHelp 0.3s ease-out;
+}
+
+@keyframes fadeInHelp {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.student-help-card {
+    background: white;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    border-radius: 40px;
+    padding: 3rem;
+    position: relative;
+    overflow-y: auto;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.25);
+    border: 8px solid #f1f5f9;
+    animation: slideUpHelp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUpHelp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.help-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.help-icon-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.help-icon-title h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #1e293b;
+    font-family: 'Inter', sans-serif;
+}
+
+.help-close {
+    background: #f1f5f9;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #64748b;
+}
+
+.help-close:hover {
+    background: #ff4757;
+    color: white;
+    transform: rotate(90deg);
+}
+
+.help-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.help-section h3 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #3b82f6;
+    margin-bottom: 1rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.help-section p {
+    font-size: 1.1rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.help-feature-card {
+    background: #f8fafc;
+    padding: 1.8rem;
+    border-radius: 24px;
+    text-align: left;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.help-feature-card:hover {
+    background: white;
+    border-color: #3b82f6;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1);
+}
+
+.feat-icon {
+    margin-bottom: 0.5rem;
+}
+
+.blue-icon { color: #3b82f6; }
+.purple-icon { color: #a855f7; }
+.gold-icon { color: #eab308; }
+.pink-icon { color: #ec4899; }
+
+.help-feature-card h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.help-feature-card p {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.guide-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-top: 1rem;
+}
+
+.step-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    background: #f8fafc;
+    padding: 1.2rem;
+    border-radius: 20px;
+    border-left: 5px solid #3b82f6;
+}
+
+.step-number {
+    background: #3b82f6;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.step-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.step-text strong {
+    font-size: 1.1rem;
+    color: #1e293b;
+}
+
+.step-text p {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.help-footer {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+}
+
+.help-btn-primary {
+    background: #3b82f6;
+    color: white;
+    padding: 1.2rem 3rem;
+    border-radius: 999px;
+    border: none;
+    font-weight: 800;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s;
+}
+
+.help-btn-primary:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.5);
+    background: #60a5fa;
+}
+
+@media (max-width: 768px) {
+    .student-help-card { padding: 2rem; border-radius: 30px; }
+    .help-grid { grid-template-columns: 1fr; }
+    .help-icon-title h2 { font-size: 1.5rem; }
+    .help-btn-primary { width: 100%; }
+}
