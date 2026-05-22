@@ -8,6 +8,7 @@ import soundEffects from '../../utils/soundEffects'
 import TeacherRegistration from '../teacherRegistration/TeacherRegistration'
 import TeacherHelpModal from '../teacherHelpModal/TeacherHelpModal'
 import StudentHelpModal from '../studentHelpModal/StudentHelpModal'
+import CreateHomeworkModal from './CreateHomeworkModal'
 import '../../reusable.css'
 import './Navbar.css'
 
@@ -19,6 +20,7 @@ const Navbar = () => {
     const [showTeacherForm, setShowTeacherForm] = useState(false)
     const [showTeacherHelp, setShowTeacherHelp] = useState(false)
     const [showStudentHelp, setShowStudentHelp] = useState(false)
+    const [showCreateHomework, setShowCreateHomework] = useState(false)
 
     const openTeacherForm = () => {
         soundEffects.playClick()
@@ -66,6 +68,14 @@ const Navbar = () => {
                         <div className="dropdown-menu">
                             <span onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }} className="dropdown-item">Website Explanation</span>
                             <span onClick={openTeacherForm} className="dropdown-item">Register as Teacher</span>
+                            <span onClick={() => {
+                                soundEffects.playClick();
+                                if (role === 'Teacher' || role === 'School') {
+                                    setShowCreateHomework(true);
+                                } else {
+                                    navigate('/auth/login');
+                                }
+                            }} className="dropdown-item">Create Homework</span>
                         </div>
                     </div>
                     <div className="nav-dropdown">
@@ -84,6 +94,11 @@ const Navbar = () => {
                 <div className='nav-right-side d-flex align-items-center'>
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {role === 'Teacher' ? <div className="teachers-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}><span>👨‍🏫</span> TEACHERS</div> : null}
+                    {role === 'Teacher' ? (
+                        <div className="create-homework-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateHomework(true); }}>
+                            <span>➕</span> CREATE HW
+                        </div>
+                    ) : null}
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
                     {role === 'Student' ? (
                         <>
@@ -130,6 +145,11 @@ const Navbar = () => {
             {showStudentHelp && (
                 <StudentHelpModal
                     onClose={() => setShowStudentHelp(false)}
+                />
+            )}
+            {showCreateHomework && (
+                <CreateHomeworkModal
+                    onClose={() => setShowCreateHomework(false)}
                 />
             )}
         </nav >

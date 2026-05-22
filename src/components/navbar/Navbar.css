@@ -338,3 +338,47 @@ nav .nav-container img {
   }
 }
 
+.create-homework-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1.1rem !important;
+  margin-right: 1.2rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  font-weight: 700;
+  font-size: 14px !important;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: none;
+}
+
+.create-homework-nav-btn span {
+  font-size: 1.1rem;
+}
+
+.create-homework-nav-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+}
+
+@media only screen and (max-width: 576px) {
+  .create-homework-nav-btn {
+    padding: 0.35rem 0.6rem !important;
+    font-size: 10px !important;
+    margin-right: 0.4rem !important;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .create-homework-nav-btn {
+    padding: 0.3rem 0.4rem !important;
+    font-size: 9px !important;
+    gap: 0.3rem !important;
+  }
+}
+
