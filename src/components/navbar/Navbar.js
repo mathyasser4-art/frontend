@@ -38,7 +38,8 @@ const Navbar = () => {
         const dataWithTeacherId = {
             ...data,
             submittedByTeacherId: teacherID,
-            submittedByTeacherName: localStorage.getItem('pp_name')
+            submittedByTeacherName: localStorage.getItem('pp_name'),
+            status: 'under_construction'
         }
         
         // Store in a combined key that includes teacher data
