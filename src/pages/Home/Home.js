@@ -47,13 +47,7 @@ function Home() {
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const [fading, setFading] = React.useState(false)
 
-  // Redirect student to their dashboard page automatically if logged in
-  React.useEffect(() => {
-    const isAuth = localStorage.getItem('O_authWEB')
-    if (isAuth && role === 'Student') {
-      navigate('/dashboard/student')
-    }
-  }, [role, navigate])
+
 
   // Auto-advance slides every 2 seconds with a smooth fade
   React.useEffect(() => {

@@ -192,13 +192,53 @@ function AIAssignmentInsights({ allAnswers = [], timeSpent = '' }) {
 
   const operatorStrengths = getOperatorStrengths();
 
+  const getTutorComments = () => {
+    let positive = '';
+    let improvement = '';
+
+    // Generate Positive Comment
+    if (accuracy >= 85) {
+      positive = `Fantastic work! You achieved a stellar accuracy of ${accuracy.toFixed(0)}%. You have a strong grasp of the concepts in this assignment.`;
+    } else if (stats.carryErrors === 0 && stats.borrowErrors === 0 && (stats.totalCarryQ + stats.totalBorrowQ > 0)) {
+      positive = `Great job on your technique! You did not make a single carry or borrow error, showing that you are applying the Soroban friend rules correctly.`;
+    } else if (avgTimePerQuestion <= 8 && avgTimePerQuestion > 0) {
+      positive = `Impressive speed! You solved questions at an average of ${avgTimePerQuestion.toFixed(1)} seconds each, which shows excellent finger dexterity and reflex.`;
+    } else {
+      positive = `Well done on completing this assignment! Your dedication and effort to finish all questions is the best way to master the abacus.`;
+    }
+
+    // Generate Improvement Comment
+    if (stats.carryErrors > 0 || stats.borrowErrors > 0) {
+      const errorType = stats.carryErrors > 0 && stats.borrowErrors > 0 
+        ? 'carrying and borrowing' 
+        : stats.carryErrors > 0 ? 'carrying' : 'borrowing';
+      improvement = `Pay closer attention when ${errorType} columns. Remember to review your 5-Friends and 10-Friends rules to avoid minor column slips.`;
+    } else if (accuracy < 75) {
+      improvement = `Try to slow down slightly and double-check your bead positions before submitting. Focus on accuracy first, and speed will follow naturally.`;
+    } else if (avgTimePerQuestion > 15) {
+      improvement = `To improve your speed, try practicing Anzan (mental abacus) to visualize bead movements in your head without physical delays.`;
+    } else {
+      improvement = `Keep practicing regularly to maintain this great level. Next time, aim for 100% accuracy by double checking the final bead configuration!`;
+    }
+
+    return { positive, improvement };
+  };
+
+  const tutorComments = getTutorComments();
+
   // Initialize tutor message
   useEffect(() => {
     const welcome = {
       sender: 'tutor',
       text: t(
         'ai_insights.tutor_welcome',
-        `Hi! I'm your AI Soroban Coach. 🧠 I have completed my analysis on your recent assignment. You achieved an accuracy of ${accuracy.toFixed(0)}%, taking an average of ${avgTimePerQuestion.toFixed(1)} seconds per question. How can I help you improve today?`
+        `Hi! I'm your AI Soroban Coach. 🧠 I have completed my analysis on your recent assignment.
+
+👍 **Positive Verdict**: ${tutorComments.positive}
+
+🔧 **Next Step**: ${tutorComments.improvement}
+
+How can I help you improve today?`
       )
     };
     setMessages([welcome]);
@@ -307,95 +347,45 @@ To give you the best advice:
         <div className="ai-diagnostics-card">
           <div className="card-section-title">
             <Brain className="sec-icon purple" />
-            <h4>{t('ai_insights.diagnostics', 'Cognitive Profile')}</h4>
+            <h4>{t('ai_insights.diagnostics', 'AI Tutor Verdict')}</h4>
           </div>
 
-          <div className="cognitive-metrics">
-            {/* Accuracy */}
-            <div className="metric-row">
-              <div className="metric-header">
-                <span className="metric-label">{t('ai_insights.accuracy_lbl', 'Concept Accuracy')}</span>
-                <span className="metric-val">{accuracy.toFixed(0)}%</span>
+          <div className="ai-judgment-comments">
+            {/* Positive Comment Box */}
+            <div className="judgment-box positive-box">
+              <div className="judgment-header">
+                <Award className="judgment-icon text-good" />
+                <h5>What You Did Great</h5>
               </div>
-              <div className="metric-bar-bg">
-                <div className="metric-bar-fill emerald" style={{ width: `${accuracy}%` }}></div>
-              </div>
+              <p>{tutorComments.positive}</p>
             </div>
 
-            {/* Speed */}
-            <div className="metric-row">
-              <div className="metric-header">
-                <span className="metric-label">{t('ai_insights.speed_lbl', 'Solving Pace')}</span>
-                <span className="metric-val">{speedScore}/100</span>
+            {/* Improvement Comment Box */}
+            <div className="judgment-box improvement-box">
+              <div className="judgment-header">
+                <Zap className="judgment-icon text-warn" />
+                <h5>Where to Improve</h5>
               </div>
-              <div className="metric-bar-bg">
-                <div className="metric-bar-fill orange" style={{ width: `${speedScore}%` }}></div>
-              </div>
-            </div>
-
-            {/* Concept Understanding */}
-            <div className="metric-row">
-              <div className="metric-header">
-                <span className="metric-label">{t('ai_insights.concept_lbl', 'Rule Application')}</span>
-                <span className="metric-val">{conceptScore}/100</span>
-              </div>
-              <div className="metric-bar-bg">
-                <div className="metric-bar-fill blue" style={{ width: `${conceptScore}%` }}></div>
-              </div>
-            </div>
-
-            {/* Attention to Detail */}
-            <div className="metric-row">
-              <div className="metric-header">
-                <span className="metric-label">{t('ai_insights.attention_lbl', 'Attention to Detail')}</span>
-                <span className="metric-val">{attentionScore}/100</span>
-              </div>
-              <div className="metric-bar-bg">
-                <div className="metric-bar-fill pink" style={{ width: `${attentionScore}%` }}></div>
-              </div>
+              <p>{tutorComments.improvement}</p>
             </div>
           </div>
 
-          {/* Abacus Details Breakdown */}
-          <div className="ai-abacus-heuristics">
-            <h5>Soroban Diagnostic Breakdown</h5>
-            <div className="heuristics-list">
-              <div className="heuristic-item">
-                <span className="h-dot purple"></span>
-                <p>
-                  <strong>Carry Operations:</strong> Checked {stats.totalCarryQ} columns. Made{' '}
-                  <span className={stats.carryErrors > 0 ? 'text-warn' : 'text-good'}>
-                    {stats.carryErrors} errors
-                  </span>.
-                </p>
-              </div>
-              <div className="heuristic-item">
-                <span className="h-dot purple"></span>
-                <p>
-                  <strong>Borrow Operations:</strong> Checked {stats.totalBorrowQ} columns. Made{' '}
-                  <span className={stats.borrowErrors > 0 ? 'text-warn' : 'text-good'}>
-                    {stats.borrowErrors} errors
-                  </span>.
-                </p>
-              </div>
-              {operatorStrengths.strongest && (
-                <div className="heuristic-item">
-                  <span className="h-dot green"></span>
-                  <p>
-                    <strong>Strongest Subject:</strong> Highest competency displayed in{' '}
-                    <span className="text-good">{operatorStrengths.strongest}</span>.
-                  </p>
-                </div>
-              )}
-              {operatorStrengths.weakest && (
-                <div className="heuristic-item">
-                  <span className="h-dot orange"></span>
-                  <p>
-                    <strong>Growth Opportunity:</strong> Standard practice recommended in{' '}
-                    <span className="text-warn">{operatorStrengths.weakest}</span>.
-                  </p>
-                </div>
-              )}
+          <div className="ai-quick-stats">
+            <div className="quick-stat-item">
+              <span className="stat-label">Accuracy</span>
+              <span className={`stat-value ${accuracy >= 80 ? 'text-good' : accuracy >= 50 ? 'text-warn' : 'text-danger'}`}>{accuracy.toFixed(0)}%</span>
+            </div>
+            <div className="quick-stat-item">
+              <span className="stat-label">Avg Pace</span>
+              <span className="stat-value text-info">{avgTimePerQuestion.toFixed(1)}s</span>
+            </div>
+            <div className="quick-stat-item">
+              <span className="stat-label">Carry Errs</span>
+              <span className={`stat-value ${stats.carryErrors > 0 ? 'text-warn' : 'text-good'}`}>{stats.carryErrors}</span>
+            </div>
+            <div className="quick-stat-item">
+              <span className="stat-label">Borrow Errs</span>
+              <span className={`stat-value ${stats.borrowErrors > 0 ? 'text-warn' : 'text-good'}`}>{stats.borrowErrors}</span>
             </div>
           </div>
         </div>

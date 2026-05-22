@@ -126,22 +126,14 @@ function StudentDashboard() {
                 totalCount = combinedAssignments.length
                 unsolvedCount = combinedAssignments.filter(a => !a.isCompleted && !a.isSubmitted).length
 
-                // Sort: In Progress first, then Unsolved, then Completed
+                // Sort strictly from newest to earliest (using createdAt date, falling back to _id timestamp)
                 combinedAssignments.sort((a, b) => {
-                    const aCompleted = a.isCompleted || a.isSubmitted
-                    const bCompleted = b.isCompleted || b.isSubmitted
-                    const aInProgress = !aCompleted && hasInProgress(a._id)
-                    const bInProgress = !bCompleted && hasInProgress(b._id)
-
-                    if (aInProgress && !bInProgress) return -1
-                    if (!aInProgress && bInProgress) return 1
-                    if (!aCompleted && bCompleted) return -1
-                    if (aCompleted && !bCompleted) return 1
-                    
-                    if (a.endDate && b.endDate) {
-                        return new Date(a.endDate) - new Date(b.endDate)
+                    const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0)
+                    const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0)
+                    if (dateB - dateA !== 0) {
+                        return dateB - dateA
                     }
-                    return 0
+                    return b._id.localeCompare(a._id)
                 })
 
                 setAllAsignment(combinedAssignments)
