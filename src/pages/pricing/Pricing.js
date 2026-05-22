@@ -48,20 +48,47 @@ function Pricing() {
                 <Users size={40} color="#ec4899" />
               </div>
               <h2>Teacher</h2>
-              <div className="pricing-info">
-                <div className="price-item">
-                  <span className="amount">$3</span>
-                  <span className="period">/month per student</span>
-                </div>
-                <div className="price-item annual">
-                  <div className="annual-top">
-                    <span className="old-price">$20</span>
-                    <span className="discount-tag">50% OFF</span>
-                  </div>
-                  <span className="amount">$10</span>
-                  <span className="period">/year per student</span>
-                </div>
+              
+              <div className="pricing-table-container">
+                <p className="table-subtitle">Tiered pricing based on student count (EGP per student):</p>
+                <table className="teacher-tiers-table">
+                  <thead>
+                    <tr>
+                      <th>Students Count</th>
+                      <th>Monthly</th>
+                      <th>Semi-Yearly</th>
+                      <th>Yearly</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="tier-name">Up to 10 <span className="category-label">(A)</span></td>
+                      <td>20 EGP</td>
+                      <td>110 EGP</td>
+                      <td>150 EGP</td>
+                    </tr>
+                    <tr>
+                      <td className="tier-name">10 to 20 <span className="category-label">(B)</span></td>
+                      <td>15 EGP</td>
+                      <td>90 EGP</td>
+                      <td>120 EGP</td>
+                    </tr>
+                    <tr>
+                      <td className="tier-name">20 to 50 <span className="category-label">(C)</span></td>
+                      <td>12 EGP</td>
+                      <td>70 EGP</td>
+                      <td>100 EGP</td>
+                    </tr>
+                    <tr>
+                      <td className="tier-name">50+ <span className="category-label">(D)</span></td>
+                      <td>10 EGP</td>
+                      <td>55 EGP</td>
+                      <td>80 EGP</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+
               <div className="teacher-bonus">
                 <strong>Bonus:</strong> Get a free account for yourself when you subscribe for 5+ students!
               </div>
@@ -82,17 +109,23 @@ function Pricing() {
               <p className="section-description">
                 Join us to practice questions and play fun educational games!
               </p>
-              <div className="pricing-info">
-                <div className="price-item">
-                  <span className="amount">$3</span>
-                  <span className="period">/month</span>
+              
+              <div className="student-plans-list">
+                <div className="student-plan-row">
+                  <span className="plan-period">Monthly</span>
+                  <span className="plan-price">30 EGP</span>
                 </div>
-                <div className="price-item">
-                  <span className="amount">$10</span>
-                  <span className="period">/year</span>
+                <div className="student-plan-row">
+                  <span className="plan-period">Semi-Yearly</span>
+                  <span className="plan-price">150 EGP</span>
+                </div>
+                <div className="student-plan-row font-bold-row">
+                  <span className="plan-period">Yearly</span>
+                  <span className="plan-price">240 EGP</span>
                 </div>
               </div>
-              <ul className="feature-list">
+
+              <ul className="feature-list" style={{ marginTop: '1.5rem' }}>
                 <li><CheckCircle2 size={18} /> Access to All Practice Questions</li>
                 <li><CheckCircle2 size={18} /> Play All Fun Educational Games</li>
                 <li><CheckCircle2 size={18} /> Track Personal Progress</li>

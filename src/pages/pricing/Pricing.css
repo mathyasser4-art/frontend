@@ -274,3 +274,124 @@
         font-size: 2.25rem;
     }
 }
+
+/* Tiered Pricing Custom Styles */
+.pricing-table-container {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.table-subtitle {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+}
+
+.teacher-tiers-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+}
+
+.teacher-tiers-table th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.teacher-tiers-table th:first-child,
+.teacher-tiers-table td:first-child {
+    text-align: left;
+    padding-left: 1rem;
+}
+
+.teacher-tiers-table td {
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-weight: 500;
+}
+
+.teacher-tiers-table tr:last-child td {
+    border-bottom: none;
+}
+
+.teacher-tiers-table tr:hover td {
+    background-color: #fff1f2;
+}
+
+.teacher-tiers-table td.tier-name {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.category-label {
+    color: #ec4899;
+    font-weight: 700;
+    font-size: 0.75rem;
+    margin-left: 0.25rem;
+}
+
+.student-plans-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.student-plan-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 1.25rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.student-plan-row:hover {
+    border-color: #10b981;
+    background: #f0fdf4;
+    transform: translateY(-1px);
+}
+
+.plan-period {
+    color: #475569;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.plan-price {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.student-plan-row.font-bold-row {
+    background: #f0fdf4;
+    border: 2px solid #10b981;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1);
+}
+
+.student-plan-row.font-bold-row .plan-period {
+    color: #065f46;
+    font-weight: 700;
+}
+
+.student-plan-row.font-bold-row .plan-price {
+    color: #047857;
+    font-size: 1.25rem;
+}

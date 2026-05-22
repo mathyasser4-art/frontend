@@ -92,7 +92,7 @@ const Navbar = () => {
 
                 <div className='nav-right-side d-flex align-items-center'>
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
-                    {role === 'Teacher' ? <div className="teachers-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}><span>👨‍🏫</span> TEACHERS</div> : null}
+                    {role === 'Teacher' ? <div className="teachers-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}><span>➕</span> ADD STUDENTS</div> : null}
                     {role === 'Teacher' ? (
                         <div className="create-homework-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateHomework(true); }}>
                             <span>➕</span> CREATE HW

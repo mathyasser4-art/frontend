@@ -34,7 +34,7 @@ function UpgradePrompt({ message, ctaText = "Upgrade Now" }) {
           </button>
         </Link>
         <p className="upgrade-prompt-note">
-          Full access starts at just $9.99/month
+          Full access starts at just 10 EGP/student per month
         </p>
       </div>
     </div>

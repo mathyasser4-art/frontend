@@ -332,41 +332,88 @@ function Assignment() {
     const pageHeight = pdf.internal.pageSize.getHeight();
     const marginX = 14;
     const maxWidth = pageWidth - (marginX * 2);
-    let y = 18;
 
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(18);
-    pdf.setTextColor(44, 62, 80);
-    pdf.text('Assignment Worksheet', marginX, y);
-    y += 8;
-
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(11);
-    pdf.setTextColor(110, 110, 110);
-    pdf.text(`Questions: ${questionData.length}`, marginX, y);
-    y += 6;
-    pdf.text(`Assignment ID: ${assignmentID}`, marginX, y);
-    y += 10;
-
-    questionData.forEach((question, index) => {
-      const lines = buildWorksheetLines(question, index, pdf, maxWidth - 4);
-      const blockHeight = (lines.length * 6) + 10;
-
-      if (y + blockHeight > pageHeight - 14) {
-        pdf.addPage();
-        y = 18;
+    const drawHeader = (pdfInstance, isFirstPage = false) => {
+      // Draw logo at top-right
+      const logoWidth = 28;
+      const logoHeight = 8;
+      const logoX = pageWidth - marginX - logoWidth;
+      const logoY = 12;
+      try {
+        pdfInstance.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoHeight);
+      } catch (err) {
+        console.error("Failed to add logo to PDF", err);
       }
 
-      pdf.setDrawColor(224, 224, 224);
-      pdf.roundedRect(marginX - 4, y - 5, maxWidth + 8, blockHeight, 4, 4);
+      if (isFirstPage) {
+        let headerY = 18;
+        pdfInstance.setFont('helvetica', 'bold');
+        pdfInstance.setFontSize(18);
+        pdfInstance.setTextColor(44, 62, 80);
+        pdfInstance.text('Assignment Worksheet', marginX, headerY);
+        headerY += 8;
 
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(11);
-      pdf.setTextColor(55, 65, 81);
-      pdf.text(lines, marginX, y);
+        pdfInstance.setFont('helvetica', 'normal');
+        pdfInstance.setFontSize(10);
+        pdfInstance.setTextColor(110, 110, 110);
+        pdfInstance.text(`Questions: ${questionData.length} | Assignment ID: ${assignmentID}`, marginX, headerY);
+        
+        headerY += 6;
+        pdfInstance.setDrawColor(220, 225, 230);
+        pdfInstance.setLineWidth(0.5);
+        pdfInstance.line(marginX, headerY, pageWidth - marginX, headerY);
+        
+        return headerY + 8;
+      } else {
+        pdfInstance.setDrawColor(220, 225, 230);
+        pdfInstance.setLineWidth(0.5);
+        pdfInstance.line(marginX, 22, pageWidth - marginX, 22);
+        return 28;
+      }
+    };
 
-      y += blockHeight + 4;
-    });
+    let y = drawHeader(pdf, true);
+
+    // Group questions into rows of 5
+    const numCols = 5;
+    const colGap = 3;
+    const colWidth = (maxWidth - (colGap * (numCols - 1))) / numCols;
+
+    for (let i = 0; i < questionData.length; i += numCols) {
+      const chunk = questionData.slice(i, i + numCols);
+      
+      const chunkWithLines = chunk.map((q, chunkIdx) => {
+        const questionIndex = i + chunkIdx;
+        const lines = buildWorksheetLines(q, questionIndex, pdf, colWidth - 4);
+        const blockHeight = (lines.length * 5) + 8;
+        return { q, lines, blockHeight };
+      });
+
+      const maxRowHeight = Math.max(...chunkWithLines.map(item => item.blockHeight));
+
+      if (y + maxRowHeight > pageHeight - 14) {
+        pdf.addPage();
+        y = drawHeader(pdf, false);
+      }
+
+      chunkWithLines.forEach((item, colIdx) => {
+        const x = marginX + colIdx * (colWidth + colGap);
+        
+        pdf.setDrawColor(224, 224, 224);
+        pdf.setLineWidth(0.2);
+        pdf.roundedRect(x, y, colWidth, maxRowHeight, 3, 3);
+
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(55, 65, 81);
+        
+        item.lines.forEach((line, lineIdx) => {
+          pdf.text(line, x + 2, y + 6 + (lineIdx * 5));
+        });
+      });
+
+      y += maxRowHeight + colGap;
+    }
 
     const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     pdf.save(`assignment-worksheet-${assignmentID}-${timestamp}.pdf`);
