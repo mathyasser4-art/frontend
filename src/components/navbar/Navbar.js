@@ -62,8 +62,6 @@ const Navbar = () => {
                 
                 {/* Desktop Center Links */}
                 <div className="nav-center-links d-none d-lg-flex">
-                    <Link to="/" onClick={() => soundEffects.playClick()} className="nav-link">Home</Link>
-                    <Link to="/student/games-menu" onClick={() => soundEffects.playClick()} className="nav-link">Games</Link>
                     <div className="nav-dropdown">
                         <span className="nav-link">For Teachers ▾</span>
                         <div className="dropdown-menu">

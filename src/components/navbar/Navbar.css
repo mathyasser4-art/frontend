@@ -20,51 +20,88 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0.5rem 1.4rem !important;
+  gap: 0.4rem;
+  padding: 0.45rem 1.2rem !important;
   height: 40px !important;
   font-size: 13px !important;
   font-weight: 800 !important;
   color: #fff !important;
-  border-radius: 50px !important;
-  background: linear-gradient(135deg, #00D5FC 0%, #0076FF 100%) !important; /* Cyan-Blue */
-  box-shadow: 0 4px 15px rgba(0, 118, 255, 0.4) !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, #00D2FF 0%, #008EB8 100%) !important; /* Glossy Cyan */
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 4px 0 #005F7A, 
+    0 6px 12px rgba(0, 210, 255, 0.25);
   border: none !important;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
   text-transform: uppercase;
   cursor: pointer;
 }
 
 .nav-btn:hover {
-  transform: translateY(-3px) scale(1.02);
-  filter: brightness(1.05);
-  box-shadow: 0 8px 20px rgba(0, 118, 255, 0.55) !important;
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.08);
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 6px 0 #005F7A, 
+    0 8px 16px rgba(0, 210, 255, 0.35);
 }
 
 .nav-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(0, 118, 255, 0.4) !important;
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 
+    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
+    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
+    0 1px 0 #005F7A, 
+    0 2px 4px rgba(0, 210, 255, 0.25);
 }
 
 .nav-btn-signup {
-  background: linear-gradient(135deg, #FFB936 0%, #FF5A5F 100%) !important; /* Orange-Yellow */
-  box-shadow: 0 4px 15px rgba(255, 90, 95, 0.4) !important;
+  background: linear-gradient(180deg, #FFA63D 0%, #D45D00 100%) !important; /* Glossy Orange */
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 4px 0 #9C4500, 
+    0 6px 12px rgba(255, 166, 61, 0.25);
 }
 .nav-btn-signup:hover {
-  box-shadow: 0 8px 20px rgba(255, 90, 95, 0.55) !important;
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 6px 0 #9C4500, 
+    0 8px 16px rgba(255, 166, 61, 0.35);
 }
 .nav-btn-signup:active {
-  box-shadow: 0 2px 8px rgba(255, 90, 95, 0.4) !important;
+  box-shadow: 
+    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
+    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
+    0 1px 0 #9C4500, 
+    0 2px 4px rgba(255, 166, 61, 0.25);
 }
 
 .nav-btn-join {
-  background: linear-gradient(135deg, #FF9B6A 0%, #FF4F58 100%) !important; /* Sunset Orange */
-  box-shadow: 0 4px 15px rgba(255, 79, 88, 0.4) !important;
+  background: linear-gradient(180deg, #FF85A2 0%, #E6005C 100%) !important; /* Glossy Pink */
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 4px 0 #9E003C, 
+    0 6px 12px rgba(255, 133, 162, 0.25);
 }
 .nav-btn-join:hover {
-  box-shadow: 0 8px 20px rgba(255, 79, 88, 0.55) !important;
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 6px 0 #9E003C, 
+    0 8px 16px rgba(255, 133, 162, 0.35);
 }
 .nav-btn-join:active {
-  box-shadow: 0 2px 8px rgba(255, 79, 88, 0.4) !important;
+  box-shadow: 
+    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
+    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
+    0 1px 0 #9E003C, 
+    0 2px 4px rgba(255, 133, 162, 0.25);
 }
 
 .gear {
@@ -79,31 +116,44 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0.5rem 1.4rem !important;
+  gap: 0.4rem;
+  padding: 0.45rem 1.2rem !important;
   margin-right: 0.6rem !important;
   height: 40px !important;
-  background: linear-gradient(135deg, #00D5FC 0%, #0076FF 100%) !important; /* Cyan-Blue */
+  background: linear-gradient(180deg, #B388FF 0%, #6200EA 100%) !important; /* Glossy Purple */
   color: white !important;
   font-weight: 800 !important;
   font-size: 12px !important;
-  border-radius: 50px !important;
+  border-radius: 12px !important;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 118, 255, 0.4) !important;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 4px 0 #4300A3, 
+    0 6px 12px rgba(179, 136, 255, 0.25);
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
   text-decoration: none;
   text-transform: uppercase;
   border: none;
 }
 
 .homework-btn:hover {
-  transform: translateY(-3px) scale(1.02);
-  filter: brightness(1.05);
-  box-shadow: 0 8px 20px rgba(0, 118, 255, 0.55) !important;
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.08);
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 6px 0 #4300A3, 
+    0 8px 16px rgba(179, 136, 255, 0.35);
 }
 
 .homework-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(0, 118, 255, 0.4) !important;
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 
+    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
+    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
+    0 1px 0 #4300A3, 
+    0 2px 4px rgba(179, 136, 255, 0.2);
 }
 
 .teachers-btn {
@@ -111,31 +161,44 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0.5rem 1.4rem !important;
+  gap: 0.4rem;
+  padding: 0.45rem 1.2rem !important;
   margin-right: 0.6rem !important;
   height: 40px !important;
-  background: linear-gradient(135deg, #FF7B8E 0%, #FF4B5A 100%) !important; /* Pink-Coral */
+  background: linear-gradient(180deg, #00D2FF 0%, #008EB8 100%) !important; /* Glossy Cyan */
   color: white !important;
   font-weight: 800 !important;
   font-size: 12px !important;
-  border-radius: 50px !important;
+  border-radius: 12px !important;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(255, 75, 90, 0.4) !important;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 4px 0 #005F7A, 
+    0 6px 12px rgba(0, 210, 255, 0.25);
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
   text-decoration: none;
   text-transform: uppercase;
   border: none;
 }
 
 .teachers-btn:hover {
-  transform: translateY(-3px) scale(1.02);
-  filter: brightness(1.05);
-  box-shadow: 0 8px 20px rgba(255, 75, 90, 0.55) !important;
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.08);
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 6px 0 #005F7A, 
+    0 8px 16px rgba(0, 210, 255, 0.35);
 }
 
 .teachers-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(255, 75, 90, 0.4) !important;
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 
+    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
+    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
+    0 1px 0 #005F7A, 
+    0 2px 4px rgba(0, 210, 255, 0.2);
 }
 
 .nav-btn-profile {
@@ -143,26 +206,39 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0.5rem 1.4rem !important;
+  gap: 0.4rem;
+  padding: 0.45rem 1.2rem !important;
   height: 40px !important;
-  background: linear-gradient(135deg, #FF5FA0 0%, #FF356A 100%) !important; /* Magenta-Pink */
+  background: linear-gradient(180deg, #FFA63D 0%, #D45D00 100%) !important; /* Glossy Orange */
   color: white !important;
   font-weight: 800 !important;
-  border-radius: 50px !important;
-  box-shadow: 0 4px 15px rgba(255, 53, 106, 0.4) !important;
+  border-radius: 12px !important;
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 4px 0 #9C4500, 
+    0 6px 12px rgba(255, 166, 61, 0.25);
   text-transform: uppercase;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
 }
 
 .nav-btn-profile:hover {
-  transform: translateY(-3px) scale(1.02);
-  filter: brightness(1.05);
-  box-shadow: 0 8px 20px rgba(255, 53, 106, 0.55) !important;
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.08);
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 6px 0 #9C4500, 
+    0 8px 16px rgba(255, 166, 61, 0.35);
 }
 
 .nav-btn-profile:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(255, 53, 106, 0.4) !important;
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 
+    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
+    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
+    0 1px 0 #9C4500, 
+    0 2px 4px rgba(255, 166, 61, 0.25);
 }
 
 .nav-center-links {
@@ -285,80 +361,49 @@ nav .nav-container img {
   }
 }
 
-/* Mobile devices (phones, 576px and below) */
-@media only screen and (max-width: 576px) {
-  nav .nav-container {
-    padding: 0.4rem 0.8rem !important;
-    height: auto !important;
-    min-height: 65px !important;
-  }
-
-  nav .nav-container img {
-    width: 110px !important;
-    max-height: 45px !important;
-  }
-
-  .nav-btn {
-    padding: 0.35rem 0.7rem !important;
-    font-size: 11px !important;
-    border-width: 1px !important;
-  }
-
-  .homework-btn, .teachers-btn {
-    padding: 0.35rem 0.6rem !important;
-    font-size: 10px !important;
-    margin-right: 0.4rem !important;
-  }
-}
-
-/* Extra small devices */
-@media only screen and (max-width: 400px) {
-  nav .nav-container img {
-    width: 85px !important;
-  }
-  
-  .nav-btn {
-    padding: 0.3rem 0.5rem !important;
-    font-size: 9px !important;
-  }
-
-  .homework-btn, .teachers-btn {
-    padding: 0.3rem 0.4rem !important;
-    font-size: 9px !important;
-    gap: 0.3rem !important;
-  }
-}
-
 .games-btn {
   display: inline-flex !important;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0.5rem 1.4rem !important;
+  gap: 0.4rem;
+  padding: 0.45rem 1.2rem !important;
   margin-right: 0.6rem !important;
   height: 40px !important;
-  background: linear-gradient(135deg, #CF8FFD 0%, #8E4BFF 100%) !important; /* Lavender-Purple */
+  background: linear-gradient(180deg, #E040FB 0%, #8C00E0 100%) !important; /* Glossy Pink/Purple */
   color: white !important;
   font-weight: 800 !important;
   font-size: 12px !important;
-  border-radius: 50px !important;
+  border-radius: 12px !important;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(142, 75, 255, 0.4) !important;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 4px 0 #5E0096, 
+    0 6px 12px rgba(224, 64, 251, 0.25);
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
   text-decoration: none;
   text-transform: uppercase;
   border: none;
 }
 
 .games-btn:hover {
-  transform: translateY(-3px) scale(1.02);
-  filter: brightness(1.05);
-  box-shadow: 0 8px 20px rgba(142, 75, 255, 0.55) !important;
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.08);
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 6px 0 #5E0096, 
+    0 8px 16px rgba(224, 64, 251, 0.35);
 }
 
 .games-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(142, 75, 255, 0.4) !important;
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 
+    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
+    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
+    0 1px 0 #5E0096, 
+    0 2px 4px rgba(224, 64, 251, 0.2);
 }
 
 .create-homework-nav-btn {
@@ -366,67 +411,259 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0.5rem 1.4rem !important;
+  gap: 0.4rem;
+  padding: 0.45rem 1.2rem !important;
   margin-right: 0.6rem !important;
   height: 40px !important;
-  background: linear-gradient(135deg, #FFB936 0%, #FF5A5F 100%) !important; /* Orange-Yellow */
+  background: linear-gradient(180deg, #10B981 0%, #047857 100%) !important; /* Glossy Green */
   color: white !important;
   font-weight: 800 !important;
   font-size: 12px !important;
-  border-radius: 50px !important;
+  border-radius: 12px !important;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(255, 90, 95, 0.4) !important;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 4px 0 #024A35, 
+    0 6px 12px rgba(16, 185, 129, 0.25);
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
   text-decoration: none;
   text-transform: uppercase;
   border: none;
 }
 
 .create-homework-nav-btn:hover {
-  transform: translateY(-3px) scale(1.02);
-  filter: brightness(1.05);
-  box-shadow: 0 8px 20px rgba(255, 90, 95, 0.55) !important;
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.08);
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 6px 0 #024A35, 
+    0 8px 16px rgba(16, 185, 129, 0.35);
 }
 
 .create-homework-nav-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(255, 90, 95, 0.4) !important;
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 
+    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
+    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
+    0 1px 0 #024A35, 
+    0 2px 4px rgba(16, 185, 129, 0.25);
 }
 
-/* Special style for Teacher reports button */
 .teacher-reports-btn {
   font-size: 11px !important;
 }
 
 /* Dynamic Mobile Responsiveness for all 3D buttons */
 @media only screen and (max-width: 640px) {
-  .nav-btn-text {
-    display: inline !important;
+  nav .nav-container {
+    padding: 0.3rem 0.6rem !important;
+    height: auto !important;
+    min-height: 60px !important;
   }
+
+  nav .nav-container img {
+    width: 90px !important;
+    max-height: 35px !important;
+  }
+
   .nav-right-side {
-    gap: 0.25rem !important;
-    flex-wrap: wrap;
+    gap: 0.15rem !important;
+    display: flex !important;
+    flex-wrap: nowrap !important; /* Keep buttons in one horizontal line */
+    align-items: center;
     justify-content: flex-end;
   }
+
+  /* Scale down buttons to fit horizontally */
   .homework-btn, 
   .teachers-btn, 
   .games-btn, 
   .create-homework-nav-btn, 
-  .nav-btn {
-    padding: 0.3rem 0.5rem !important;
+  .nav-btn,
+  .nav-btn-profile {
+    padding: 0.2rem 0.45rem !important;
     width: auto !important;
-    height: 32px !important;
+    height: 28px !important;
     min-width: unset !important;
-    margin-right: 0.15rem !important;
-    border-radius: 50px !important;
-    font-size: 9px !important;
+    margin-right: 0.1rem !important;
+    border-radius: 8px !important; /* Scaled down from 12px for smaller height */
+    font-size: 8.5px !important;
     font-weight: 800 !important;
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
+    white-space: nowrap !important;
   }
+
+  /* Scale down 3D shadow depths to look proportional on smaller buttons */
+  .nav-btn, .teachers-btn {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.45), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 2px 0 #005F7A, 
+      0 3px 6px rgba(0, 210, 255, 0.25) !important;
+  }
+  .nav-btn:hover, .teachers-btn:hover {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.5), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 3px 0 #005F7A, 
+      0 4px 8px rgba(0, 210, 255, 0.35) !important;
+  }
+  .nav-btn:active, .teachers-btn:active {
+    box-shadow: 
+      inset 0.5px 1px 1px rgba(255, 255, 255, 0.3), 
+      inset -0.5px -1px 1.5px rgba(0, 0, 0, 0.4), 
+      0 0.5px 0 #005F7A, 
+      0 1px 2px rgba(0, 210, 255, 0.25) !important;
+  }
+
+  .nav-btn-signup, .nav-btn-profile {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.45), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 2px 0 #9C4500, 
+      0 3px 6px rgba(255, 166, 61, 0.25) !important;
+  }
+  .nav-btn-signup:hover, .nav-btn-profile:hover {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.5), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 3px 0 #9C4500, 
+      0 4px 8px rgba(255, 166, 61, 0.35) !important;
+  }
+  .nav-btn-signup:active, .nav-btn-profile:active {
+    box-shadow: 
+      inset 0.5px 1px 1px rgba(255, 255, 255, 0.3), 
+      inset -0.5px -1px 1.5px rgba(0, 0, 0, 0.4), 
+      0 0.5px 0 #9C4500, 
+      0 1px 2px rgba(255, 166, 61, 0.25) !important;
+  }
+
+  .nav-btn-join {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.45), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 2px 0 #9E003C, 
+      0 3px 6px rgba(255, 133, 162, 0.25) !important;
+  }
+  .nav-btn-join:hover {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.5), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 3px 0 #9E003C, 
+      0 4px 8px rgba(255, 133, 162, 0.35) !important;
+  }
+  .nav-btn-join:active {
+    box-shadow: 
+      inset 0.5px 1px 1px rgba(255, 255, 255, 0.3), 
+      inset -0.5px -1px 1.5px rgba(0, 0, 0, 0.4), 
+      0 0.5px 0 #9E003C, 
+      0 1px 2px rgba(255, 133, 162, 0.25) !important;
+  }
+
+  .homework-btn {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.45), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 2px 0 #4300A3, 
+      0 3px 6px rgba(179, 136, 255, 0.25) !important;
+  }
+  .homework-btn:hover {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.5), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 3px 0 #4300A3, 
+      0 4px 8px rgba(179, 136, 255, 0.35) !important;
+  }
+  .homework-btn:active {
+    box-shadow: 
+      inset 0.5px 1px 1px rgba(255, 255, 255, 0.3), 
+      inset -0.5px -1px 1.5px rgba(0, 0, 0, 0.4), 
+      0 0.5px 0 #4300A3, 
+      0 1px 2px rgba(179, 136, 255, 0.2) !important;
+  }
+
+  .games-btn {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.45), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 2px 0 #5E0096, 
+      0 3px 6px rgba(224, 64, 251, 0.25) !important;
+  }
+  .games-btn:hover {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.5), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 3px 0 #5E0096, 
+      0 4px 8px rgba(224, 64, 251, 0.35) !important;
+  }
+  .games-btn:active {
+    box-shadow: 
+      inset 0.5px 1px 1px rgba(255, 255, 255, 0.3), 
+      inset -0.5px -1px 1.5px rgba(0, 0, 0, 0.4), 
+      0 0.5px 0 #5E0096, 
+      0 1px 2px rgba(224, 64, 251, 0.2) !important;
+  }
+
+  .create-homework-nav-btn {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.45), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 2px 0 #024A35, 
+      0 3px 6px rgba(16, 185, 129, 0.25) !important;
+  }
+  .create-homework-nav-btn:hover {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.5), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 3px 0 #024A35, 
+      0 4px 8px rgba(16, 185, 129, 0.35) !important;
+  }
+  .create-homework-nav-btn:active {
+    box-shadow: 
+      inset 0.5px 1px 1px rgba(255, 255, 255, 0.3), 
+      inset -0.5px -1px 1.5px rgba(0, 0, 0, 0.4), 
+      0 0.5px 0 #024A35, 
+      0 1px 2px rgba(16, 185, 129, 0.25) !important;
+  }
+}
+
+/* Extra small devices - further scaling down to fit horizontally */
+@media only screen and (max-width: 480px) {
   nav .nav-container img {
-    width: 90px !important;
-    max-height: 35px !important;
+    width: 80px !important;
+    max-height: 30px !important;
+  }
+
+  .homework-btn, 
+  .teachers-btn, 
+  .games-btn, 
+  .create-homework-nav-btn, 
+  .nav-btn,
+  .nav-btn-profile {
+    padding: 0.15rem 0.35rem !important;
+    height: 26px !important;
+    font-size: 8px !important;
+  }
+}
+
+@media only screen and (max-width: 360px) {
+  nav .nav-container img {
+    width: 70px !important;
+  }
+
+  .homework-btn, 
+  .teachers-btn, 
+  .games-btn, 
+  .create-homework-nav-btn, 
+  .nav-btn,
+  .nav-btn-profile {
+    padding: 0.15rem 0.25rem !important;
+    height: 24px !important;
+    font-size: 7.5px !important;
+    border-radius: 6px !important;
   }
 }
