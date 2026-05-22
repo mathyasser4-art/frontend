@@ -10,6 +10,71 @@ function AIAssignmentInsights({ allAnswers = [], timeSpent = '' }) {
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
 
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const initialOffset = useRef({ x: 0, y: 0 });
+
+  const handleMouseDown = (e) => {
+    if (e.button !== 0) return;
+    if (e.target.closest('input') || e.target.closest('button') || e.target.closest('.quick-prompt-btn')) return;
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX, y: e.clientY };
+    initialOffset.current = { ...position };
+    e.preventDefault();
+  };
+
+  const handleTouchStart = (e) => {
+    if (e.touches.length !== 1) return;
+    if (e.target.closest('input') || e.target.closest('button') || e.target.closest('.quick-prompt-btn')) return;
+    setIsDragging(true);
+    dragStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    initialOffset.current = { ...position };
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e) => {
+      const dx = e.clientX - dragStart.current.x;
+      const dy = e.clientY - dragStart.current.y;
+      setPosition({
+        x: initialOffset.current.x + dx,
+        y: initialOffset.current.y + dy
+      });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - dragStart.current.x;
+      const dy = e.touches[0].clientY - dragStart.current.y;
+      setPosition({
+        x: initialOffset.current.x + dx,
+        y: initialOffset.current.y + dy
+      });
+    };
+
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging]);
+
   // Parse questions and extract operator analytics + carry/borrow heuristics
   const analyzeQuestions = () => {
     let correctCount = 0;
@@ -391,8 +456,16 @@ To give you the best advice:
         </div>
 
         {/* Right Side: Chat with AI Tutor */}
-        <div className="ai-chat-card">
-          <div className="card-section-title">
+        <div 
+          className="ai-chat-card"
+          style={{ transform: `translate(${position.x}px, ${position.y}px)`, position: 'relative', zIndex: 100 }}
+        >
+          <div 
+            className="card-section-title"
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+            style={{ cursor: isDragging ? 'grabbing' : 'grab', userSelect: 'none' }}
+          >
             <MessageSquare className="sec-icon pink" />
             <h4>{t('ai_insights.chat_title', 'Chat with AI Soroban Tutor')}</h4>
           </div>

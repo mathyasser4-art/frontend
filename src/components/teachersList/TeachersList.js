@@ -40,6 +40,18 @@ function TeachersList() {
         window.dispatchEvent(new CustomEvent('teacherDataUpdated'));
     };
 
+    const handleCredentialsChange = (index, value) => {
+        const updatedTeachers = [...teachers];
+        updatedTeachers[index] = {
+            ...updatedTeachers[index],
+            credentials: value
+        };
+        setTeachers(updatedTeachers);
+        localStorage.setItem('school_teachers', JSON.stringify(updatedTeachers));
+        window.dispatchEvent(new CustomEvent('teachersUpdated'));
+        window.dispatchEvent(new CustomEvent('teacherDataUpdated'));
+    };
+
     const deleteTeacher = (index) => {
         if (window.confirm('Are you sure you want to delete this teacher record?')) {
             const updatedTeachers = teachers.filter((_, i) => i !== index);
@@ -129,6 +141,15 @@ function TeachersList() {
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                    <div className="credentials-container">
+                                        <label className="credentials-label">🔑 Student Usernames & Passwords (Credentials):</label>
+                                        <textarea
+                                            className="credentials-textarea"
+                                            value={teacher.credentials || ''}
+                                            onChange={(e) => handleCredentialsChange(index, e.target.value)}
+                                            placeholder="Enter student usernames and passwords here..."
+                                        />
                                     </div>
                                     {teacher.createdAt && (
                                         <div className="teacher-timestamp">

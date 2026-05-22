@@ -160,6 +160,14 @@ function TeacherRegistrationPage() {
 
                                     {isExpanded && (
                                         <div className="registration-card-body">
+                                            <div className="teacher-credentials-viewer">
+                                                <label className="credentials-view-label">🔑 Student Usernames & Passwords:</label>
+                                                {record.credentials ? (
+                                                    <pre className="credentials-view-content">{record.credentials}</pre>
+                                                ) : (
+                                                    <p className="credentials-view-pending">Pending school declaration</p>
+                                                )}
+                                            </div>
                                             <div className="groups-container">
                                                 {record.groups.map((group, gIdx) => (
                                                     <div key={gIdx} className="group-detail-box">

@@ -40,7 +40,6 @@ function Login() {
             <div className="login-form">
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder='Enter your email or username' />
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder='Password' />
-                <Link to={'/resetPassword/email'}><p className='text-purple'>Forget Your Password?</p></Link>
             </div>
             <div className="login-btn-container">
                 <div onClick={handleLogin} className="login-btn">{loading ? <span className="loader"></span> : "Login"}

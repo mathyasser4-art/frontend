@@ -335,3 +335,37 @@
     grid-template-columns: 1fr;
   }
 }
+
+.teacher-credentials-viewer {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.2rem;
+  background: rgba(254, 243, 199, 0.4);
+  border: 1px dashed #f59e0b;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.credentials-view-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #d97706;
+  margin-bottom: 6px;
+}
+
+.credentials-view-content {
+  margin: 0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.credentials-view-pending {
+  margin: 0;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #92400e;
+}

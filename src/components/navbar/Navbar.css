@@ -20,95 +20,51 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 0.4rem;
-  padding: 0.45rem 1.2rem !important;
+  padding: 0.5rem 1.4rem !important;
   height: 40px !important;
   font-size: 13px !important;
   font-weight: 800 !important;
   color: #fff !important;
-  border-radius: 12px !important;
-  background: linear-gradient(180deg, #00D2FF 0%, #008EB8 100%) !important; /* Glossy Cyan */
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 4px 0 #005F7A, 
-    0 6px 12px rgba(0, 210, 255, 0.25);
+  border-radius: 50px !important;
+  background: linear-gradient(135deg, #00D5FC 0%, #0076FF 100%) !important; /* Cyan-Blue */
+  box-shadow: 0 4px 15px rgba(0, 118, 255, 0.4) !important;
   border: none !important;
-  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
   text-transform: uppercase;
   cursor: pointer;
 }
 
 .nav-btn:hover {
-  transform: translateY(-2px) scale(1.03);
-  filter: brightness(1.08);
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 6px 0 #005F7A, 
-    0 8px 16px rgba(0, 210, 255, 0.35);
+  transform: translateY(-3px) scale(1.02);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 20px rgba(0, 118, 255, 0.55) !important;
 }
 
 .nav-btn:active {
-  transform: translateY(3px) scale(0.97);
-  box-shadow: 
-    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
-    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
-    0 1px 0 #005F7A, 
-    0 2px 4px rgba(0, 210, 255, 0.25);
-}
-
-.nav-btn span {
-  font-size: 1.1rem !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(0, 118, 255, 0.4) !important;
 }
 
 .nav-btn-signup {
-  background: linear-gradient(180deg, #FFA63D 0%, #D45D00 100%) !important; /* Glossy Orange */
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 4px 0 #9C4500, 
-    0 6px 12px rgba(255, 166, 61, 0.25);
+  background: linear-gradient(135deg, #FFB936 0%, #FF5A5F 100%) !important; /* Orange-Yellow */
+  box-shadow: 0 4px 15px rgba(255, 90, 95, 0.4) !important;
 }
 .nav-btn-signup:hover {
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 6px 0 #9C4500, 
-    0 8px 16px rgba(255, 166, 61, 0.35);
+  box-shadow: 0 8px 20px rgba(255, 90, 95, 0.55) !important;
 }
 .nav-btn-signup:active {
-  box-shadow: 
-    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
-    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
-    0 1px 0 #9C4500, 
-    0 2px 4px rgba(255, 166, 61, 0.25);
+  box-shadow: 0 2px 8px rgba(255, 90, 95, 0.4) !important;
 }
 
 .nav-btn-join {
-  background: linear-gradient(180deg, #FF85A2 0%, #E6005C 100%) !important; /* Glossy Pink */
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 4px 0 #9E003C, 
-    0 6px 12px rgba(255, 133, 162, 0.25);
+  background: linear-gradient(135deg, #FF9B6A 0%, #FF4F58 100%) !important; /* Sunset Orange */
+  box-shadow: 0 4px 15px rgba(255, 79, 88, 0.4) !important;
 }
 .nav-btn-join:hover {
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 6px 0 #9E003C, 
-    0 8px 16px rgba(255, 133, 162, 0.35);
+  box-shadow: 0 8px 20px rgba(255, 79, 88, 0.55) !important;
 }
 .nav-btn-join:active {
-  box-shadow: 
-    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
-    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
-    0 1px 0 #9E003C, 
-    0 2px 4px rgba(255, 133, 162, 0.25);
+  box-shadow: 0 2px 8px rgba(255, 79, 88, 0.4) !important;
 }
 
 .gear {
@@ -123,51 +79,31 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 0.4rem;
-  padding: 0.45rem 1.2rem !important;
+  padding: 0.5rem 1.4rem !important;
   margin-right: 0.6rem !important;
   height: 40px !important;
-  background: linear-gradient(180deg, #B388FF 0%, #6200EA 100%) !important; /* Glossy Purple */
+  background: linear-gradient(135deg, #00D5FC 0%, #0076FF 100%) !important; /* Cyan-Blue */
   color: white !important;
   font-weight: 800 !important;
   font-size: 12px !important;
-  border-radius: 12px !important;
+  border-radius: 50px !important;
   cursor: pointer;
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 4px 0 #4300A3, 
-    0 6px 12px rgba(179, 136, 255, 0.25);
-  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 4px 15px rgba(0, 118, 255, 0.4) !important;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
   text-decoration: none;
   text-transform: uppercase;
   border: none;
 }
 
-.homework-btn span {
-  font-size: 1.1rem !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .homework-btn:hover {
-  transform: translateY(-2px) scale(1.03);
-  filter: brightness(1.08);
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 6px 0 #4300A3, 
-    0 8px 16px rgba(179, 136, 255, 0.35);
+  transform: translateY(-3px) scale(1.02);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 20px rgba(0, 118, 255, 0.55) !important;
 }
 
 .homework-btn:active {
-  transform: translateY(3px) scale(0.97);
-  box-shadow: 
-    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
-    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
-    0 1px 0 #4300A3, 
-    0 2px 4px rgba(179, 136, 255, 0.2);
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(0, 118, 255, 0.4) !important;
 }
 
 .teachers-btn {
@@ -175,51 +111,31 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 0.4rem;
-  padding: 0.45rem 1.2rem !important;
+  padding: 0.5rem 1.4rem !important;
   margin-right: 0.6rem !important;
   height: 40px !important;
-  background: linear-gradient(180deg, #00D2FF 0%, #008EB8 100%) !important; /* Glossy Cyan */
+  background: linear-gradient(135deg, #FF7B8E 0%, #FF4B5A 100%) !important; /* Pink-Coral */
   color: white !important;
   font-weight: 800 !important;
   font-size: 12px !important;
-  border-radius: 12px !important;
+  border-radius: 50px !important;
   cursor: pointer;
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 4px 0 #005F7A, 
-    0 6px 12px rgba(0, 210, 255, 0.25);
-  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 4px 15px rgba(255, 75, 90, 0.4) !important;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
   text-decoration: none;
   text-transform: uppercase;
   border: none;
 }
 
-.teachers-btn span {
-  font-size: 1.1rem !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .teachers-btn:hover {
-  transform: translateY(-2px) scale(1.03);
-  filter: brightness(1.08);
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 6px 0 #005F7A, 
-    0 8px 16px rgba(0, 210, 255, 0.35);
+  transform: translateY(-3px) scale(1.02);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 20px rgba(255, 75, 90, 0.55) !important;
 }
 
 .teachers-btn:active {
-  transform: translateY(3px) scale(0.97);
-  box-shadow: 
-    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
-    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
-    0 1px 0 #005F7A, 
-    0 2px 4px rgba(0, 210, 255, 0.2);
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(255, 75, 90, 0.4) !important;
 }
 
 .nav-btn-profile {
@@ -227,46 +143,26 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 0.4rem;
-  padding: 0.45rem 1.2rem !important;
+  padding: 0.5rem 1.4rem !important;
   height: 40px !important;
-  background: linear-gradient(180deg, #FFA63D 0%, #D45D00 100%) !important; /* Glossy Orange */
+  background: linear-gradient(135deg, #FF5FA0 0%, #FF356A 100%) !important; /* Magenta-Pink */
   color: white !important;
   font-weight: 800 !important;
-  border-radius: 12px !important;
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 4px 0 #9C4500, 
-    0 6px 12px rgba(255, 166, 61, 0.25);
+  border-radius: 50px !important;
+  box-shadow: 0 4px 15px rgba(255, 53, 106, 0.4) !important;
   text-transform: uppercase;
-  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
-}
-
-.nav-btn-profile span {
-  font-size: 1.1rem !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
 }
 
 .nav-btn-profile:hover {
-  transform: translateY(-2px) scale(1.03);
-  filter: brightness(1.08);
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 6px 0 #9C4500, 
-    0 8px 16px rgba(255, 166, 61, 0.35);
+  transform: translateY(-3px) scale(1.02);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 20px rgba(255, 53, 106, 0.55) !important;
 }
 
 .nav-btn-profile:active {
-  transform: translateY(3px) scale(0.97);
-  box-shadow: 
-    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
-    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
-    0 1px 0 #9C4500, 
-    0 2px 4px rgba(255, 166, 61, 0.25);
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(255, 53, 106, 0.4) !important;
 }
 
 .nav-center-links {
@@ -438,51 +334,31 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 0.4rem;
-  padding: 0.45rem 1.2rem !important;
+  padding: 0.5rem 1.4rem !important;
   margin-right: 0.6rem !important;
   height: 40px !important;
-  background: linear-gradient(180deg, #E040FB 0%, #8C00E0 100%) !important; /* Glossy Pink/Purple */
+  background: linear-gradient(135deg, #CF8FFD 0%, #8E4BFF 100%) !important; /* Lavender-Purple */
   color: white !important;
   font-weight: 800 !important;
   font-size: 12px !important;
-  border-radius: 12px !important;
+  border-radius: 50px !important;
   cursor: pointer;
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 4px 0 #5E0096, 
-    0 6px 12px rgba(224, 64, 251, 0.25);
-  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 4px 15px rgba(142, 75, 255, 0.4) !important;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
   text-decoration: none;
   text-transform: uppercase;
   border: none;
 }
 
-.games-btn span {
-  font-size: 1.1rem !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .games-btn:hover {
-  transform: translateY(-2px) scale(1.03);
-  filter: brightness(1.08);
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 6px 0 #5E0096, 
-    0 8px 16px rgba(224, 64, 251, 0.35);
+  transform: translateY(-3px) scale(1.02);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 20px rgba(142, 75, 255, 0.55) !important;
 }
 
 .games-btn:active {
-  transform: translateY(3px) scale(0.97);
-  box-shadow: 
-    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
-    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
-    0 1px 0 #5E0096, 
-    0 2px 4px rgba(224, 64, 251, 0.2);
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(142, 75, 255, 0.4) !important;
 }
 
 .create-homework-nav-btn {
@@ -490,51 +366,31 @@ nav .nav-container img {
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 0.4rem;
-  padding: 0.45rem 1.2rem !important;
+  padding: 0.5rem 1.4rem !important;
   margin-right: 0.6rem !important;
   height: 40px !important;
-  background: linear-gradient(180deg, #10B981 0%, #047857 100%) !important; /* Glossy Green */
+  background: linear-gradient(135deg, #FFB936 0%, #FF5A5F 100%) !important; /* Orange-Yellow */
   color: white !important;
   font-weight: 800 !important;
   font-size: 12px !important;
-  border-radius: 12px !important;
+  border-radius: 50px !important;
   cursor: pointer;
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 4px 0 #024A35, 
-    0 6px 12px rgba(16, 185, 129, 0.25);
-  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 4px 15px rgba(255, 90, 95, 0.4) !important;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease !important;
   text-decoration: none;
   text-transform: uppercase;
   border: none;
 }
 
-.create-homework-nav-btn span {
-  font-size: 1.1rem !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .create-homework-nav-btn:hover {
-  transform: translateY(-2px) scale(1.03);
-  filter: brightness(1.08);
-  box-shadow: 
-    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
-    0 6px 0 #024A35, 
-    0 8px 16px rgba(16, 185, 129, 0.35);
+  transform: translateY(-3px) scale(1.02);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 20px rgba(255, 90, 95, 0.55) !important;
 }
 
 .create-homework-nav-btn:active {
-  transform: translateY(3px) scale(0.97);
-  box-shadow: 
-    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
-    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
-    0 1px 0 #024A35, 
-    0 2px 4px rgba(16, 185, 129, 0.25);
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(255, 90, 95, 0.4) !important;
 }
 
 /* Special style for Teacher reports button */
@@ -545,35 +401,32 @@ nav .nav-container img {
 /* Dynamic Mobile Responsiveness for all 3D buttons */
 @media only screen and (max-width: 640px) {
   .nav-btn-text {
-    display: none !important;
+    display: inline !important;
   }
   .nav-right-side {
-    gap: 0.3rem !important;
+    gap: 0.25rem !important;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
   .homework-btn, 
   .teachers-btn, 
   .games-btn, 
   .create-homework-nav-btn, 
   .nav-btn {
-    padding: 0 !important;
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
-    margin-right: 0.2rem !important;
-    border-radius: 10px !important;
-    font-size: 1rem !important;
-    gap: 0 !important;
-  }
-  .homework-btn span, 
-  .teachers-btn span, 
-  .games-btn span, 
-  .create-homework-nav-btn span, 
-  .nav-btn span {
-    font-size: 1.15rem !important;
-    margin: 0 !important;
+    padding: 0.3rem 0.5rem !important;
+    width: auto !important;
+    height: 32px !important;
+    min-width: unset !important;
+    margin-right: 0.15rem !important;
+    border-radius: 50px !important;
+    font-size: 9px !important;
+    font-weight: 800 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
   }
   nav .nav-container img {
-    width: 100px !important;
-    max-height: 40px !important;
+    width: 90px !important;
+    max-height: 35px !important;
   }
 }
