@@ -33,15 +33,16 @@ function System() {
     }, [questionTypeID]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const dropdownToggle = (e) => {
+        const card = e.currentTarget
         let top = 50
-        if (e.target.classList.contains('opened')) {
-            const links = e.target.children
+        if (card.classList.contains('opened')) {
+            const links = card.children
             for (let i = 0; i < links.length; i++) {
                 links[i].style.top = '50px';
                 links[i].classList.remove('dwon')
             }
-            e.target.style.height = '50px'
-            e.target.classList.remove('opened')
+            card.style.height = '50px'
+            card.classList.remove('opened')
         } else {
             const allLinks = document.querySelectorAll(".system-subject");
             const allParent = document.querySelectorAll(".system");
@@ -53,7 +54,7 @@ function System() {
                 allParent[i].style.height = '50px';
                 allParent[i].classList.remove('opened')
             }
-            const links = e.target.children
+            const links = card.children
             for (let i = 0; i < links.length; i++) {
                 if (i === 0) {
                     links[i].style.top = `${top}px`;
@@ -65,13 +66,13 @@ function System() {
                 }
             }
             let hight = 0
-            if (e.target.children.length <= 3) {
-                hight = e.target.children.length * 80
+            if (card.children.length <= 3) {
+                hight = card.children.length * 80
             } else {
-                hight = e.target.children.length * 65
+                hight = card.children.length * 65
             }
-            e.target.style.height = `${hight}px`
-            e.target.classList.add('opened')
+            card.style.height = `${hight}px`
+            card.classList.add('opened')
         }
     }
 
@@ -81,6 +82,13 @@ function System() {
             <Navbar />
             <MobileNav role={role} />
             {loading ? <SystemLoading /> : <div className="system-container">
+                <div className="system-instruction-banner">
+                    <span className="banner-icon">💡</span>
+                    <div className="banner-text">
+                        <h4>Click a Book to Start</h4>
+                        <p>Select any of the book cards below to expand its units and start practicing!</p>
+                    </div>
+                </div>
                 {systemData?.map(item => {
                     return (
                         <div key={item._id} className="system" onClick={dropdownToggle}>{translateName(item.systemName)}

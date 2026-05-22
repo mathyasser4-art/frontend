@@ -162,18 +162,7 @@ function StudentDashboard() {
             <MobileNav role="Student" />
             <Navbar />
             
-            {/* Floating Help Button */}
-            <button 
-                className="floating-help-btn"
-                onClick={() => {
-                    soundEffects.playClick();
-                    setShowTutorialModal(true);
-                }}
-                aria-label="Tutorial Video"
-                title="Watch how to solve homework"
-            >
-                Watch how to solve homework
-            </button>
+
 
             <div className="student-dashboard-container">
                 {loading ? <DashboardLoading /> : (

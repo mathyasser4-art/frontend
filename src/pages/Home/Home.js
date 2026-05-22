@@ -65,17 +65,7 @@ function Home() {
     <>
       <MobileNav role={role} />
 
-      {/* Floating Help Button */}
-      {role === 'Teacher' && (
-        <button
-          className="floating-help-btn"
-          onClick={() => { soundEffects.playClick(); setShowTutorialModal(true) }}
-          aria-label="Tutorial Video"
-          title="Watch how to assign homework"
-        >
-          Watch how to assign homework
-        </button>
-      )}
+
 
       <div className='home'>
         <Navbar />
