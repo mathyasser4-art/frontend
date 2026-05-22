@@ -19,6 +19,7 @@ import Subject from './pages/subject/Subject';
 import Teacher from './pages/teacher/Teacher';
 import StudentDashboard from './pages/studentDashboard/StudentDashboard';
 import TeacherDashboard from './pages/teacherDashboard/TeacherDashboard';
+import TeacherRegistrationPage from './pages/teacherRegistrationPage/TeacherRegistrationPage';
 import Assignment from './pages/assignment/Assignment';
 import AssignmentReport from './pages/assignmentReport/AssignmentReport';
 import StudentReport from './pages/studentReport/StudentReport';
@@ -76,6 +77,7 @@ function App() {
       <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/' />} />
       <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/' />} />
       <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/' />} />
+      <Route path='/teacher/registration' element={isAuth && role === 'Teacher' ? <TeacherRegistrationPage /> : <Navigate to='/' />} />
       <Route path='/dashboard/supervisor' element={isAuth && role === 'Supervisor' ? <SupervisorDashboard /> : <Navigate to='/' />} />
       <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth && role === 'Teacher' ? <AssignmentReport /> : <Navigate to='/' />} />
       <Route path='/student/myReport/:assignmentID' element={isAuth && role === 'Student' ? <StudentReport /> : <Navigate to='/' />} />

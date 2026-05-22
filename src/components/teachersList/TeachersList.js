@@ -1,5 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
-import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Trash2, ChevronDown, ChevronUp, Clock, CheckCircle2 } from 'lucide-react';
+import soundEffects from '../../utils/soundEffects';
 import './TeachersList.css';
 
 function TeachersList() {
@@ -24,11 +25,29 @@ function TeachersList() {
         }));
     };
 
+    const toggleStatus = (index) => {
+        const updatedTeachers = [...teachers];
+        const currentStatus = updatedTeachers[index].status || 'under_construction';
+        const newStatus = currentStatus === 'ready' ? 'under_construction' : 'ready';
+        updatedTeachers[index] = {
+            ...updatedTeachers[index],
+            status: newStatus
+        };
+        setTeachers(updatedTeachers);
+        localStorage.setItem('school_teachers', JSON.stringify(updatedTeachers));
+        soundEffects.playClick();
+        window.dispatchEvent(new CustomEvent('teachersUpdated'));
+        window.dispatchEvent(new CustomEvent('teacherDataUpdated'));
+    };
+
     const deleteTeacher = (index) => {
         if (window.confirm('Are you sure you want to delete this teacher record?')) {
             const updatedTeachers = teachers.filter((_, i) => i !== index);
             setTeachers(updatedTeachers);
             localStorage.setItem('school_teachers', JSON.stringify(updatedTeachers));
+            soundEffects.playClick();
+            window.dispatchEvent(new CustomEvent('teachersUpdated'));
+            window.dispatchEvent(new CustomEvent('teacherDataUpdated'));
         }
     };
 
@@ -53,7 +72,19 @@ function TeachersList() {
                         <div key={index} className="teacher-card">
                             <div className="teacher-card-header">
                                 <div className="teacher-info">
-                                    <h3>👨‍🏫 {teacher.teacherName}</h3>
+                                    <div className="teacher-name-status-row">
+                                        <h3>👨‍🏫 {teacher.teacherName}</h3>
+                                        <div 
+                                            className={`school-status-badge ${teacher.status === 'ready' ? 'status-ready' : 'status-pending'}`}
+                                            onClick={() => toggleStatus(index)}
+                                            title="Click to toggle account creation status"
+                                        >
+                                            <span className={`status-dot-indicator ${teacher.status === 'ready' ? 'dot-green' : 'dot-orange'}`}></span>
+                                            <span className="status-text">
+                                                {teacher.status === 'ready' ? 'Ready' : 'Under Construction'}
+                                            </span>
+                                        </div>
+                                    </div>
                                     <p className="teacher-meta">
                                         {teacher.groups.length} group{teacher.groups.length !== 1 ? 's' : ''}
                                     </p>

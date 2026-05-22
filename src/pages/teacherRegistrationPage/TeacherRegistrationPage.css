@@ -1,0 +1,337 @@
+.teacher-reg-page-container {
+  max-width: 1200px;
+  margin: 2.5rem auto;
+  padding: 0 1.5rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.teacher-reg-header {
+  margin-bottom: 2.5rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.teacher-reg-title {
+  font-size: 2.2rem;
+  font-weight: 850;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 6px 0;
+}
+
+.teacher-reg-subtitle {
+  color: #556b82;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+/* Register New Class Button - Modern Premium 3D */
+.btn-register-new {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 12px 24px;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #047857, 0 8px 16px rgba(16, 185, 129, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  gap: 8px;
+}
+
+.btn-register-new:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 6px 0 #047857, 0 12px 20px rgba(16, 185, 129, 0.35);
+}
+
+.btn-register-new:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #047857, 0 3px 6px rgba(16, 185, 129, 0.2);
+}
+
+/* Empty State Card */
+.empty-registrations-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px dashed rgba(16, 185, 129, 0.25);
+  border-radius: 24px;
+  padding: 4rem 2rem;
+  margin-top: 1.5rem;
+}
+
+.empty-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  animation: bounce-icon 3s infinite ease-in-out;
+}
+
+@keyframes bounce-icon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.empty-registrations-card h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.empty-registrations-card p {
+  color: #6b7280;
+  font-size: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Registrations Grid */
+.registrations-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+/* Glassmorphism Card Style */
+.registration-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.registration-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.08);
+}
+
+.registration-card.ready-card {
+  border-left: 6px solid #10b981;
+}
+
+.registration-card.pending-card {
+  border-left: 6px solid #f97316;
+}
+
+.registration-main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.teacher-name-tag {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
+}
+
+.registration-details-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.meta-divider {
+  color: #cbd5e1;
+}
+
+/* Glowing Status Dots and Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending {
+  background: rgba(249, 115, 22, 0.1);
+  color: #ea580c;
+  border: 1px solid rgba(249, 115, 22, 0.15);
+}
+
+.status-ready {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.status-dot-indicator {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.dot-orange {
+  background-color: #f97316;
+  box-shadow: 0 0 10px #f97316;
+  animation: glow-orange 1.8s infinite ease-in-out;
+}
+
+.dot-green {
+  background-color: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: glow-green 1.8s infinite ease-in-out;
+}
+
+@keyframes glow-orange {
+  0%, 100% { box-shadow: 0 0 4px rgba(249, 115, 22, 0.4); transform: scale(1); }
+  50% { box-shadow: 0 0 12px rgba(249, 115, 22, 0.85); transform: scale(1.15); }
+}
+
+@keyframes glow-green {
+  0%, 100% { box-shadow: 0 0 4px rgba(16, 185, 129, 0.4); transform: scale(1); }
+  50% { box-shadow: 0 0 12px rgba(16, 185, 129, 0.85); transform: scale(1.15); }
+}
+
+/* Card Actions */
+.btn-toggle-expand, .btn-delete-record {
+  background: transparent;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-expand {
+  color: #64748b;
+}
+
+.btn-toggle-expand:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1e293b;
+}
+
+.btn-delete-record {
+  color: #ef4444;
+}
+
+.btn-delete-record:hover {
+  background: rgba(239, 68, 68, 0.1);
+  transform: scale(1.05);
+}
+
+/* Inner Registration Body Details */
+.registration-card-body {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  text-align: left;
+}
+
+.groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.group-detail-box {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 14px;
+  padding: 1.2rem;
+}
+
+.group-detail-header {
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.group-tag {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.student-count-tag {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+.group-detail-header h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #334155;
+  margin: 0;
+}
+
+.group-students-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.student-detail-item {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.92rem;
+  color: #334155;
+  font-weight: 500;
+  gap: 8px;
+}
+
+.student-bullet {
+  width: 6px;
+  height: 6px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+}
+
+@media (max-width: 600px) {
+  .teacher-reg-page-container {
+    margin: 1.5rem auto;
+  }
+  
+  .teacher-reg-title {
+    font-size: 1.8rem;
+  }
+
+  .registration-card {
+    padding: 1.2rem;
+  }
+  
+  .student-count-tag {
+    margin-left: 0;
+  }
+
+  .group-students-grid {
+    grid-template-columns: 1fr;
+  }
+}

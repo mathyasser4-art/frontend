@@ -92,7 +92,7 @@ const Navbar = () => {
 
                 <div className='nav-right-side d-flex align-items-center'>
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
-                    {role === 'Teacher' ? <div className="teachers-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}><span>➕</span> ADD STUDENTS</div> : null}
+                    {role === 'Teacher' ? <Link to={'/teacher/registration'} onClick={() => soundEffects.playClick()}><div className="teachers-btn"><span>➕</span> ADD STUDENTS</div></Link> : null}
                     {role === 'Teacher' ? (
                         <div className="create-homework-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateHomework(true); }}>
                             <span>➕</span> CREATE HW
@@ -110,7 +110,7 @@ const Navbar = () => {
                     {isAuth ? (
                       <Link to={'/user/info'} onClick={() => soundEffects.playClick()}>
                         <div className="nav-btn nav-btn-profile">
-                          👤 PROFILE
+                          PROFILE
                         </div>
                       </Link>
                     ) : (

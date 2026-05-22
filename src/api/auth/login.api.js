@@ -5,7 +5,7 @@ const URL = `${API_BASE_URL}/auth/login`;
 const ROLE_ROUTES = {
     School: '/dashboard-school',
     IT: '/dashboard-school',
-    Teacher: '/dashboard/teacher',
+    Teacher: '/',
     Student: '/dashboard/student',
     Supervisor: '/dashboard/supervisor',
 };
