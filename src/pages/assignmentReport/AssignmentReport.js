@@ -8,6 +8,7 @@ import DashboardLoading from '../../components/dashboardLoading/DashboardLoading
 import MathInput from "react-math-keyboard";
 import '../../reusable.css'
 import './AssignmentReport.css'
+import AIAssignmentInsights from '../../components/aiInsights/AIAssignmentInsights'
 
 function AssignmentReport() {
   const [allAnswers, setAllAnswers] = useState([])
@@ -194,6 +195,11 @@ function AssignmentReport() {
                 <p>{time || '—'}</p>
               </div>
             </div>
+
+            {/* AI Diagnostics and Tutoring assistant */}
+            {allAnswers && allAnswers.length > 0 && (
+              <AIAssignmentInsights allAnswers={allAnswers} timeSpent={time} />
+            )}
 
           </div>
         )}

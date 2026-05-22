@@ -1,32 +1,24 @@
 import React, { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import getClass from '../../api/student/getClass.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
-import boyPointing from '../../img/boy-pointing.svg'
-import AssignmentLoading from '../../components/assignmentLoading/AssignmentLoading'
 import getAllAttempts from '../../api/assignment/getAllAttempts.api'
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
 import AttemptHistory from '../../components/attemptHistory/AttemptHistory'
-import { NotebookPen, Brain, ChevronRight, CircleCheck, Gamepad2 } from 'lucide-react'
 import API_BASE_URL from '../../config/api.config'
 import soundEffects from '../../utils/soundEffects'
 import '../../reusable.css'
 import './StudentDashboard.css'
 
 function StudentDashboard() {
-    const { t } = useTranslation()
     const navigate = useNavigate()
     const [teacherList, setTeacherList] = useState([])
     const [allAsignment, setAllAsignment] = useState([])
     const [className, setClassName] = useState('')
     const [loading, setLoading] = useState(true)
-    const [loadingOperation, setLoadingOperation] = useState(false)
-    const [error, setError] = useState(null)
-    const [showHomework, setShowHomework] = useState(false)
-    const [showPracticeOptions, setShowPracticeOptions] = useState(false)
+    const [assignmentsLoading, setAssignmentsLoading] = useState(true)
     const [totalAssignments, setTotalAssignments] = useState(0)
     const [unsolvedAssignments, setUnsolvedAssignments] = useState(0)
     const [showTutorialModal, setShowTutorialModal] = useState(false)
@@ -96,114 +88,75 @@ function StudentDashboard() {
         }
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Fetch unsolved assignment counts for all teachers
+    // Fetch all assignments from all teachers automatically
     useEffect(() => {
-        const fetchAssignmentCounts = async () => {
+        const fetchAllAssignments = async () => {
             if (teacherList && teacherList.length > 0) {
+                setAssignmentsLoading(true)
+                let combinedAssignments = []
                 let totalCount = 0
                 let unsolvedCount = 0
 
-                // Create promises for all teachers
-                const promises = teacherList.map(teacher => {
-                    const Token = localStorage.getItem('O_authWEB')
-                    return fetch(`${API_BASE_URL}/student/getAssignment/${teacher._id}`, {
-                        method: 'get',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'authrization': `pracYas09${Token}`
-                        },
-                    })
-                    .then(response => response.json())
-                    .then(responseJson => {
+                const Token = localStorage.getItem('O_authWEB')
+                const promises = teacherList.map(async (teacher) => {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/student/getAssignment/${teacher._id}`, {
+                            method: 'get',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'authrization': `pracYas09${Token}`
+                            },
+                        })
+                        const responseJson = await response.json()
                         if (responseJson.message === 'success' && responseJson.allAssignment) {
-                            const assignments = responseJson.allAssignment
-                            totalCount += assignments.length
-                            
-                            // Count unsolved assignments (those not completed or not submitted)
-                            const unsolved = assignments.filter(assignment => {
-                                // Assignment is unsolved if student hasn't completed it
-                                // This depends on your API structure - adjust the condition as needed
-                                return !assignment.isCompleted && !assignment.isSubmitted
-                            }).length
-                            
-                            unsolvedCount += unsolved
+                            const assignments = responseJson.allAssignment.map(a => ({
+                                ...a,
+                                teacherName: teacher.userName,
+                                subjectName: teacher?.subject?.schoolSubjectName
+                            }))
+                            combinedAssignments.push(...assignments)
                         }
-                    })
-                    .catch(error => {
-                        console.log('Error fetching assignments:', error)
-                    })
+                    } catch (e) {
+                        console.error('Error fetching assignments for teacher:', teacher.userName, e)
+                    }
                 })
 
-                // Wait for all promises to complete
                 await Promise.all(promises)
-                
+
+                totalCount = combinedAssignments.length
+                unsolvedCount = combinedAssignments.filter(a => !a.isCompleted && !a.isSubmitted).length
+
+                // Sort: In Progress first, then Unsolved, then Completed
+                combinedAssignments.sort((a, b) => {
+                    const aCompleted = a.isCompleted || a.isSubmitted
+                    const bCompleted = b.isCompleted || b.isSubmitted
+                    const aInProgress = !aCompleted && hasInProgress(a._id)
+                    const bInProgress = !bCompleted && hasInProgress(b._id)
+
+                    if (aInProgress && !bInProgress) return -1
+                    if (!aInProgress && bInProgress) return 1
+                    if (!aCompleted && bCompleted) return -1
+                    if (aCompleted && !bCompleted) return 1
+                    
+                    if (a.endDate && b.endDate) {
+                        return new Date(a.endDate) - new Date(b.endDate)
+                    }
+                    return 0
+                })
+
+                setAllAsignment(combinedAssignments)
                 setTotalAssignments(totalCount)
                 setUnsolvedAssignments(unsolvedCount)
-            }
-        }
-
-        fetchAssignmentCounts()
-    }, [teacherList])
-
-    const getAllAssignment = async (teacherID) => {
-        setLoadingOperation(true)
-        setResultsCache({})
-        try {
-            const Token = localStorage.getItem('O_authWEB')
-            const response = await fetch(`${API_BASE_URL}/student/getAssignment/${teacherID}`, {
-                method: 'get',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'authrization': `pracYas09${Token}`
-                }
-            })
-            const responseJson = await response.json()
-            if (responseJson.message === 'success') {
-                setAllAsignment(responseJson.allAssignment)
-                setLoadingOperation(false)
-                // Fetch scores for completed assignments
-                fetchCompletedResults(responseJson.allAssignment)
+                setAssignmentsLoading(false)
+                
+                fetchCompletedResults(combinedAssignments)
             } else {
-                setError(responseJson.message)
-                setLoadingOperation(false)
+                setAssignmentsLoading(false)
             }
-        } catch (err) {
-            setError(err.message)
-            setLoadingOperation(false)
         }
-    }
 
-    const openHomeWorkList = (teacherID) => {
-        getAllAssignment(teacherID)
-        document.querySelector('.assignment-popup').classList.replace('d-none', 'd-flex')
-        setTimeout(() => {
-            document.querySelector('.assignment-popup').classList.remove('class-popup-hide')
-            document.querySelector('.assignment-popup-container').classList.remove('popup-top')
-        }, 50);
-    }
-
-    const closeHomeWorkList = () => {
-        setError(null)
-        document.querySelector('.assignment-popup').classList.add('class-popup-hide')
-        document.querySelector('.assignment-popup-container').classList.add('popup-top')
-        setTimeout(() => {
-            document.querySelector('.assignment-popup').classList.replace('d-flex', 'd-none')
-        }, 300);
-    }
-
-    const openHomeworkSection = () => {
-        setShowHomework(true)
-    }
-
-    const backToMainMenu = () => {
-        setShowHomework(false)
-        setShowPracticeOptions(false)
-        setError(null)
-    }
-
-    const openPracticeOptions = () => {
-        setShowPracticeOptions(true)
-    }
+        fetchAllAssignments()
+    }, [teacherList])
 
     const schoolName = localStorage.getItem('school_name') || '';
     const userName = localStorage.getItem('pp_name') || '';
@@ -231,279 +184,134 @@ function StudentDashboard() {
             </button>
 
             <div className="student-dashboard-container">
-                {loading ? <DashboardLoading /> : 
-                    !showHomework && !showPracticeOptions ? (
-                        // Main Menu - Two Card Layout
-                        <div className="dashboard-main-menu">
-                            <div className="welcome-header">
-                                {className && <h2 className="class-name">Welcome to {className}! 👋</h2>}
-                            </div>
-                            
-                            <div className="dashboard-cards">
-                                {/* Homework Card - Orange */}
-                                <div className="dashboard-card homework-card" onClick={openHomeworkSection}>
-                                    <div className="card-icon-wrapper">
-                                        <NotebookPen size={48} strokeWidth={2} />
-                                    </div>
-                                    
-                                    <div className="card-stats">
-                                        {teacherList && teacherList.length > 0 ? (
-                                            <>
-                                                <div className="stat-item">
-                                                    <span className="stat-number">{unsolvedAssignments > 0 ? unsolvedAssignments : totalAssignments}</span>
-                                                    <span className="stat-label">{unsolvedAssignments > 0 ? 'Unsolved' : 'Total'}</span>
-                                                </div>
-                                                <div className="stat-item">
-                                                    <span className="stat-number">{teacherList.length}</span>
-                                                    <span className="stat-label">Teachers</span>
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <div className="no-data">No assignments yet</div>
-                                        )}
-                                    </div>
-
-                                    <button className={`card-button ${unsolvedAssignments > 0 ? 'pulse-animation' : ''}`}>
-                                        <span className="homework-text">Homework</span>
-                                    </button>
-                                </div>
-
-                                {/* Practice Card - Blue */}
-                                <div onClick={openPracticeOptions} className={`dashboard-card practice-card ${isTopsoroban ? 'topsoroban-practice' : ''}`}>
-                                    <div className="card-icon-wrapper">
-                                        <Brain size={48} strokeWidth={2} />
-                                    </div>
-                                    
-                                    <div className="card-stats">
-                                        <div className="stat-item">
-                                            <span className="stat-label">{t('academy.freeWorksheets')}</span>
-                                        </div>
-                                        <div className="stat-item">
-                                            <span className="stat-label">{isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}</span>
-                                        </div>
-                                    </div>
-
-                                    <button className="card-button">
-                                        <span className="practice-text">Practice</span>
-                                    </button>
-                                </div>
-
-                                {/* Arcade Room Card - Purple/Pink */}
-                                <div onClick={() => navigate('/student/games-menu')} className="dashboard-card game-card">
-                                    <div className="card-icon-wrapper" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #d946ef 100%)' }}>
-                                        <Gamepad2 size={48} strokeWidth={2} color="#fff" />
-                                    </div>
-                                    
-                                    <div className="card-stats">
-                                        <div className="stat-item" style={{ flex: 1, textAlign: 'center' }}>
-                                            <span className="stat-label">Arcade Room</span>
-                                            <span className="stat-label" style={{ fontSize: '0.9rem', color: '#888', marginTop: '4px' }}>Play 5 Educational Games!</span>
-                                        </div>
-                                    </div>
-
-                                    <button className="card-button" style={{ background: 'rgba(217, 70, 239, 0.1)', color: '#d946ef' }}>
-                                        <span className="game-text" style={{ fontWeight: '700' }}>Enter Arcade</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ) : showPracticeOptions ? (
-                        // Practice Options Section
-                        <div className="practice-options-section">
-                            <div className="section-header">
-                                <button onClick={backToMainMenu} className="back-button">
-                                    <i className="fa fa-arrow-left" aria-hidden="true"></i>
-                                    <span>Back</span>
-                                </button>
-                                {isTopsoroban ? (
-                                    <h2>
-                                        <span translate="no" className="notranslate" style={{ textShadow: '0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4)' }}>
-                                            TOPSOROBAN
-                                        </span>
-                                    </h2>
-                                ) : (
-                                    <img 
-                                        src="/img/masterminds_logo.png" 
-                                        alt="MASTERMINDS" 
-                                        className="masterminds-logo-dashboard" 
-                                    />
-                                )}
-                            </div>
-
-                            <div className="practice-options-grid">
-                                <Link to="/system/65a4963482dbaac16d820fc6" className={`practice-option mental-math ${isTopsoroban ? 'topsoroban-red' : ''}`}>
-                                    <div className="practice-option-icon">⚡</div>
-                                    <h3>{t('academy.freeWorksheets')}</h3>
-                                    <p>{t('academy.freeWorksheetsDesc')}</p>
-                                    <button className="practice-option-btn">
-                                        <span>{t('academy.start')}</span>
-                                        <ChevronRight size={20} />
-                                    </button>
-                                </Link>
-
-                                <Link to="/system/65a4964b82dbaac16d820fc8" className={`practice-option masterminds ${isTopsoroban ? 'topsoroban-blue' : ''}`}>
-                                    <div className="practice-option-icon">🧠</div>
-                                    <h3>
-                                        <span translate="no" className="notranslate" style={{ textShadow: '0 0 10px rgba(255, 215, 0, 0.6)' }}>
-                                            {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}
-                                        </span>
-                                    </h3>
-                                    <p>{t('academy.masterMindsDesc')}</p>
-                                    <button className="practice-option-btn">
-                                        <span>{t('academy.start')}</span>
-                                        <ChevronRight size={20} />
-                                    </button>
-                                </Link>
-                            </div>
-                        </div>
-                    ) : (
-                        // Homework Section - Teacher List
-                        <div className="homework-section">
-                            <div className="section-header">
-                                <button onClick={backToMainMenu} className="back-button">
-                                    <i className="fa fa-arrow-left" aria-hidden="true"></i>
-                                    <span>Back</span>
-                                </button>
-                                <h2>My Homework</h2>
-                            </div>
-
-                            {className === '' ? (
-                                <p className='text-red text-center'>You are not placed in any class yet</p>
+                {loading ? <DashboardLoading /> : (
+                    <div className="dashboard-main-menu">
+                        <div className="welcome-header">
+                            <h2 className="welcome-title">Hello, {userName}! 👋</h2>
+                            {className ? (
+                                <p className="class-subtitle">Class: <span className="class-highlight">{className}</span></p>
                             ) : (
-                                <div className="student-dashboard-body">
-                                    <p className="class-info">{className}</p>
-                                    {teacherList?.map(item => {
-                                        return (
-                                            <div key={item._id} onClick={() => openHomeWorkList(item._id)} className="teacher-item">
-                                                <div className="teacher-info">
-                                                    <p className="teacher-name">{item.userName}</p>
-                                                    <p className="subject-name">{item?.subject?.schoolSubjectName}</p>
-                                                </div>
-                                                <ChevronRight size={24} />
-                                            </div>
-                                        )
-                                    })}
-                                </div>
+                                <p className="text-red text-center">You are not placed in any class yet</p>
                             )}
                         </div>
-                    )
-                }
-            </div>
 
-            {/* assignment popup start */}
-            <div className="assignment-popup class-popup-hide d-none justify-content-center align-items-center">
-                <div className='assignment-popup-container popup-top'>
-                    <div className="update-popup-head">
-                        <p>HomeWork</p>
-                        <button onClick={closeHomeWorkList} className="popup-close-btn" aria-label="Close">
-                            <i className="fa fa-times" aria-hidden="true"></i>
-                        </button>
-                    </div>
-                        {loadingOperation ? <AssignmentLoading /> :
-                            allAsignment?.map(item => {
-                                const isCompleted = item.isCompleted || item.isSubmitted;
-                                const inProgress = !isCompleted && hasInProgress(item._id);
-                                const cachedResult = resultsCache[item._id];
+                        {/* Stats Overview Bar */}
+                        <div className="dashboard-stats-row">
+                            <div className="dashboard-stat-card unsolved">
+                                <span className="stat-num">{unsolvedAssignments}</span>
+                                <span className="stat-lbl">Pending Homework</span>
+                            </div>
+                            <div className="dashboard-stat-card completed">
+                                <span className="stat-num">{totalAssignments - unsolvedAssignments}</span>
+                                <span className="stat-lbl">Completed Homework</span>
+                            </div>
+                            <div className="dashboard-stat-card total">
+                                <span className="stat-num">{totalAssignments}</span>
+                                <span className="stat-lbl">Total Assigned</span>
+                            </div>
+                        </div>
 
-                                if (isCompleted) {
+                        {/* Assignment List Header */}
+                        <div className="assignment-list-header">
+                            <h3>📝 Your Homework List</h3>
+                            <p className="list-tagline">Solve pending assignments or review your grades below.</p>
+                        </div>
+
+                        {assignmentsLoading ? (
+                            <DashboardLoading />
+                        ) : allAsignment.length === 0 ? (
+                            <div className="no-assignments-box">
+                                <span className="box-icon">🎉</span>
+                                <h4>All caught up!</h4>
+                                <p>You have no homework assignments at the moment.</p>
+                            </div>
+                        ) : (
+                            <div className="assignments-grid-modern">
+                                {allAsignment.map(item => {
+                                    const isCompleted = item.isCompleted || item.isSubmitted;
+                                    const inProgress = !isCompleted && hasInProgress(item._id);
+                                    const cachedResult = resultsCache[item._id];
+
                                     return (
                                         <div 
                                             key={item._id} 
-                                            className="popup-body assignment-popup-body completed-assignment-card"
-                                            onClick={() => navigate(`/student/myReport/${item._id}`)}
-                                            style={{ cursor: 'pointer' }}
+                                            className={`assignment-card-modern ${isCompleted ? 'completed' : inProgress ? 'in-progress' : 'unsolved'}`}
+                                            onClick={() => {
+                                                if (isCompleted) {
+                                                    soundEffects.playClick();
+                                                    navigate(`/student/myReport/${item._id}`);
+                                                }
+                                            }}
+                                            style={isCompleted ? { cursor: 'pointer' } : {}}
                                         >
-                                            <div className="completed-card-content d-flex align-items-center justify-content-space-between">
-                                                <div className="d-flex align-items-center" style={{ gap: '15px' }}>
-                                                    <CircleCheck size={36} style={{ color: '#10B981', flexShrink: 0 }} strokeWidth={2.5} />
-                                                    <div style={{ textAlign: 'left' }}>
-                                                        <h2 className="completed-assignment-title">{item.title}</h2>
-                                                        <span className="completed-status-badge">COMPLETED</span>
-                                                    </div>
-                                                </div>
-                                                <div className="completed-score-section">
-                                                    {cachedResult ? (
-                                                        <div className="completed-score-badge">
-                                                            <span className="score-label">Score</span>
-                                                            <span className="score-value">
-                                                                {cachedResult.score}<span className="score-total">/{cachedResult.total}</span>
-                                                            </span>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="completed-score-loading">Loading result...</div>
-                                                    )}
-                                                </div>
+                                            <div className="card-top-header">
+                                                <span className="subject-tag">{item.subjectName || 'Math'}</span>
+                                                <span className="teacher-tag">👤 {item.teacherName || 'Teacher'}</span>
                                             </div>
-                                        </div>
-                                    )
-                                }
 
-                                return (
-                                    <div key={item._id} className={`popup-body assignment-popup-body ${inProgress ? 'inprogress-assignment' : ''}`}>
-                                        <div className="assignment-item d-flex align-items-center justify-content-space-between">
-                                            <div className="assignment-content">
-                                                <div className="d-flex align-items-center" style={{ gap: '10px' }}>
-                                                    <h2>{item.title}</h2>
-                                                    {inProgress && (
-                                                        <span className="inprogress-badge">▶ IN PROGRESS</span>
-                                                    )}
+                                            <h4 className="card-assignment-title">{item.title}</h4>
+
+                                            <div className="card-stats-row">
+                                                <div className="card-stat">
+                                                    <span className="card-stat-icon">📋</span>
+                                                    <span className="card-stat-value">{item.questionsNumber || 'Multiple'} Qs</span>
                                                 </div>
-                                                <div className='d-flex align-items-center assignment-body-container'>
-                                                    <div className='assignment-body d-flex align-items-center'>
-                                                        <i className="fa fa-clock-o" aria-hidden="true"></i>
-                                                        <p>{item?.timer ? `${item.timer} Minuts` : 'Open'}</p>
+                                                <div className="card-stat">
+                                                    <span className="card-stat-icon">⏱️</span>
+                                                    <span className="card-stat-value">{item.timer ? `${item.timer} Min` : 'Unlimited'}</span>
+                                                </div>
+                                                <div className="card-stat">
+                                                    <span className="card-stat-icon">🔄</span>
+                                                    <span className="card-stat-value">{item.attemptsNumber || 1} Attempts</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="card-dates">
+                                                {item.startDate && <p><strong>Start:</strong> {item.startDate}</p>}
+                                                {item.endDate && <p><strong>Due:</strong> {item.endDate}</p>}
+                                            </div>
+
+                                            <div className="card-footer-action">
+                                                {isCompleted ? (
+                                                    <div className="completed-action-row">
+                                                        <span className="completed-badge">✓ COMPLETED</span>
+                                                        {cachedResult && (
+                                                            <div className="compact-score-display">
+                                                                <span className="score-val">{cachedResult.score}</span>
+                                                                <span className="score-tot">/{cachedResult.total} pts</span>
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                    <div className='assignment-body d-flex align-items-center'>
-                                                        <i className="fa fa-recycle" aria-hidden="true"></i>
-                                                        <p>{item?.attemptsNumber} Attempts</p>
-                                                    </div>
-                                                </div>
-                                                <div className="assignment-text">
-                                                    <p style={{ fontSize: '16px', color: '#555', lineHeight: '1.6' }}>
-                                                        📝 <strong>{item?.questionsNumber || 'Multiple'} Questions</strong>
-                                                        <br />
-                                                        ⏱️ <strong>Duration:</strong> {item?.timer ? `${item.timer} Minutes` : 'No time limit'}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div className="assignment-poster">
-                                                <img src={boyPointing} alt="Boy pointing illustration" style={{ width: '180px', height: 'auto', transform: 'scaleX(-1)' }} />
-                                            </div>
-                                        </div>
-                                        <div className="assignment-footer d-flex flex-wrap align-items-center justify-content-space-between">
-                                            <div className="text-footer">
-                                                {item?.startDate ? <p>Start Date: {item?.startDate}</p> : null}
-                                                {item?.endDate ? <p>Expiry Date: {item?.endDate}</p> : null}
-                                            </div>
-                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                                {inProgress ? (
-                                                    // IN PROGRESS: Resume button
+                                                ) : inProgress ? (
                                                     <button
-                                                        onClick={() => startCountdown(item._id)}
-                                                        className="assignment-action-btn resume-btn"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            startCountdown(item._id);
+                                                        }}
+                                                        className="assignment-btn resume"
                                                     >
-                                                        ▶ CONTINUE ASSIGNMENT
+                                                        ▶ Resume Homework
                                                     </button>
                                                 ) : (
-                                                    // NOT STARTED: Start button
                                                     <button
-                                                        onClick={() => startCountdown(item._id)}
-                                                        className="assignment-action-btn start-btn"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            startCountdown(item._id);
+                                                        }}
+                                                        className="assignment-btn start"
                                                     >
-                                                        🚀 START ASSIGNMENT!
+                                                        🚀 Start Homework
                                                     </button>
                                                 )}
                                             </div>
                                         </div>
-                                    </div>
-                                )
-                            })
-                        }
-                    {error ? <p className='text-center'>{error}</p> : null}
-                    <button className='button popup-btn' onClick={closeHomeWorkList}>Close</button>
-                </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
-            {/* assignment popup end */}
 
             {/* Tutorial Video Modal */}
             <TutorialVideoModal 

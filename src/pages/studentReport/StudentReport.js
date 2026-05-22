@@ -7,6 +7,7 @@ import MathInput from "react-math-keyboard";
 import API_BASE_URL from '../../config/api.config';
 import '../../reusable.css'
 import '../assignmentReport/AssignmentReport.css'
+import AIAssignmentInsights from '../../components/aiInsights/AIAssignmentInsights'
 
 function StudentReport() {
   const [allAnswers, setAllAnswers] = useState([])
@@ -177,6 +178,11 @@ function StudentReport() {
                 <p>{time || '—'}</p>
               </div>
             </div>
+
+            {/* AI Diagnostics and Tutoring assistant */}
+            {allAnswers && allAnswers.length > 0 && (
+              <AIAssignmentInsights allAnswers={allAnswers} timeSpent={time} />
+            )}
 
             <div className='d-flex justify-content-center mt-4'>
               <Link to='/dashboard/student'>
