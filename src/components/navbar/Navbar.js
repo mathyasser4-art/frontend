@@ -87,7 +87,6 @@ const Navbar = () => {
                         </div>
                     </div>
                     <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">Pricing</Link>
-                    <Link to="/about" onClick={() => soundEffects.playClick()} className="nav-link">About Us</Link>
                     <Link to="/contact" onClick={() => soundEffects.playClick()} className="nav-link">Contact</Link>
                 </div>
 
@@ -99,7 +98,7 @@ const Navbar = () => {
                             <span>➕</span> CREATE HW
                         </div>
                     ) : null}
-                    {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span>📚</span> HOMEWORK</div></Link> : null}
+                    {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn"><span>📚</span> HOMEWORK REPORTS</div></Link> : null}
                     {role === 'Student' ? (
                         <>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn"><span>🎮</span> GAMES</div></Link>

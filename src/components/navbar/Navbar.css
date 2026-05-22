@@ -16,8 +16,8 @@ nav .nav-container img {
 }
 
 .nav-btn {
-  padding: 0.6rem 1.4rem !important;
-  font-size: 15px !important;
+  padding: 0.45rem 1rem !important;
+  font-size: 13px !important;
   font-weight: 700;
   text-align: center;
   color: #fff !important;
@@ -54,14 +54,13 @@ nav .nav-container img {
 .homework-btn {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.5rem 1.1rem !important;
-  margin-right: 1.2rem;
-  gap: 0.8rem;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem !important;
+  margin-right: 0.6rem !important;
   background: #B388FF !important; /* Soft Purple from toolbar palette */
   color: white !important;
   font-weight: 700;
-  font-size: 14px !important;
+  font-size: 12px !important;
   border-radius: 50px;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(179, 136, 255, 0.3);
@@ -71,7 +70,7 @@ nav .nav-container img {
 }
 
 .homework-btn span {
-  font-size: 1.1rem;
+  font-size: 0.95rem !important;
 }
 
 .homework-btn:hover {
@@ -83,14 +82,13 @@ nav .nav-container img {
 .teachers-btn {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.5rem 1.1rem !important;
-  margin-right: 1.2rem;
-  gap: 0.8rem;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem !important;
+  margin-right: 0.6rem !important;
   background: #00C9FF !important; /* Cyan from toolbar */
   color: white !important;
   font-weight: 700;
-  font-size: 14px !important;
+  font-size: 12px !important;
   border-radius: 50px;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0, 201, 255, 0.3);
@@ -100,7 +98,7 @@ nav .nav-container img {
 }
 
 .teachers-btn span {
-  font-size: 1.2rem;
+  font-size: 0.95rem !important;
 }
 
 .teachers-btn:hover {
@@ -131,18 +129,18 @@ nav .nav-container img {
 .nav-center-links {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.8rem;
 }
 
 .nav-link {
   font-family: 'Inter', sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: #334155;
   text-decoration: none;
   transition: all 0.2s ease;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.3rem 0.5rem;
 }
 
 .nav-link:hover {
@@ -295,14 +293,13 @@ nav .nav-container img {
 .games-btn {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.5rem 1.1rem !important;
-  margin-right: 1.2rem;
-  gap: 0.8rem;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem !important;
+  margin-right: 0.6rem !important;
   background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%) !important; /* Soft Purple/Pink gradient */
   color: white !important;
   font-weight: 700;
-  font-size: 14px !important;
+  font-size: 12px !important;
   border-radius: 50px;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(168, 85, 247, 0.3);
@@ -312,7 +309,7 @@ nav .nav-container img {
 }
 
 .games-btn span {
-  font-size: 1.1rem;
+  font-size: 0.95rem !important;
 }
 
 .games-btn:hover {
@@ -341,13 +338,13 @@ nav .nav-container img {
 .create-homework-nav-btn {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.5rem 1.1rem !important;
-  margin-right: 1.2rem;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem !important;
+  margin-right: 0.6rem !important;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   color: white !important;
   font-weight: 700;
-  font-size: 14px !important;
+  font-size: 12px !important;
   border-radius: 50px;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
@@ -357,7 +354,7 @@ nav .nav-container img {
 }
 
 .create-homework-nav-btn span {
-  font-size: 1.1rem;
+  font-size: 0.95rem !important;
 }
 
 .create-homework-nav-btn:hover {
@@ -380,5 +377,11 @@ nav .nav-container img {
     font-size: 9px !important;
     gap: 0.3rem !important;
   }
+}
+
+/* Special style for Teacher reports button */
+.teacher-reports-btn {
+  font-size: 11px !important;
+  padding: 0.4rem 0.75rem !important;
 }
 
