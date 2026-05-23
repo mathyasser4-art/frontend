@@ -133,6 +133,18 @@ function Home() {
               </div>
             </div>
           </div>
+          {/* Scroll Down Arrow (Request 6) */}
+          <div className="scroll-down-arrow" onClick={() => {
+            const el = document.getElementById('academy-section');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}>
+            <span className="scroll-arrow-text">Practice Section</span>
+            <div className="scroll-arrow-chevron">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -182,6 +194,18 @@ function Home() {
                 </button>
                 <div className="btn-subtitle">Play & solve homework</div>
               </div>
+          </div>
+          {/* Scroll Down Arrow Mobile (Request 6) */}
+          <div className="scroll-down-arrow mobile-scroll-arrow" onClick={() => {
+            const el = document.getElementById('academy-section');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}>
+            <span className="scroll-arrow-text">Practice Section</span>
+            <div className="scroll-arrow-chevron">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
           </div>
         </div>
       </div>

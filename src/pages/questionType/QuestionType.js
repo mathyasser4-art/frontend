@@ -17,7 +17,13 @@ function QuestionType() {
                       (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
 
   return (
-    <div className={`questionType ${isTopsoroban ? 'topsoroban-theme' : ''}`}>
+    <div id="academy-section" className={`questionType ${isTopsoroban ? 'topsoroban-theme' : ''}`}>
+      {/* Academy Main Header */}
+      <div className="academy-section-header">
+        <h2 className="academy-main-title">🚀 Start Solving Questions & Playing Games Now!</h2>
+        <p className="academy-main-subtitle">Practice worksheets or play interactive abacus math games</p>
+      </div>
+
       <div className="questionType-container">
         <div className="questionType-title">
           {isTopsoroban ? (
@@ -34,6 +40,9 @@ function QuestionType() {
             />
           )}
           <div className="line" style={{ marginTop: '0.2rem' }}></div>
+          
+          {/* Sub-header above the cards */}
+          <h4 className="cards-selection-title">Choose the type of questions or play games:</h4>
         </div>
         <div className="questionType-options">
           <Link to={'/system/65a4963482dbaac16d820fc6'} className="questionType-option mcq" onClick={() => soundEffects.playClick()}>
@@ -41,7 +50,7 @@ function QuestionType() {
               <Circle size={64} strokeWidth={2} className="mcq-icon" />
             </div>
             <h3 className="option-title">{t('academy.freeWorksheets')}</h3>
-            <p className="option-description">{t('academy.freeWorksheetsDesc')}</p>
+            <img src="/img/mcq_preview.png" alt="Multiple Choice Questions Preview" className="card-preview-screenshot" />
           </Link>
           
           <Link to={'/system/65a4964b82dbaac16d820fc8'} className="questionType-option mastermind" onClick={() => soundEffects.playClick()}>
@@ -53,15 +62,15 @@ function QuestionType() {
                 {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}
               </span>
             </h3>
-            <p className="option-description">{t('academy.masterMindsDesc')}</p>
+            <img src="/img/completion_preview.png" alt="Completion Questions Preview" className="card-preview-screenshot" />
           </Link>
 
-          <Link to={'/student/games-menu'} className="questionType-option" onClick={() => soundEffects.playClick()}>
+          <Link to={'/student/games-menu'} className="questionType-option games-card-option" onClick={() => soundEffects.playClick()}>
             <div className="option-icon-wrapper">
               <Gamepad2 size={64} strokeWidth={2} className="mcq-icon" />
             </div>
             <h3 className="option-title">Fun Games</h3>
-            <p className="option-description">Play interactive educational math games</p>
+            <img src="/img/games/racer_cover.png" alt="Fun Games Preview" className="card-preview-screenshot" />
           </Link>
         </div>
       </div>

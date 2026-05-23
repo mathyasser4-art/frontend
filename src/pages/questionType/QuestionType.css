@@ -431,3 +431,104 @@
 .questionType.topsoroban-theme .option-icon-wrapper {
     background: rgba(255, 255, 255, 0.25);
 }
+
+/* Academy Section Headers & Screenshot Previews */
+.academy-section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.academy-main-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #4c5287;
+    font-family: 'Inter', sans-serif;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.5px;
+}
+
+.academy-main-subtitle {
+    font-size: 18px;
+    color: #64748b;
+    font-weight: 500;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.cards-selection-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #92400e;
+    margin: 1.5rem 0 0.5rem 0;
+    font-family: 'Inter', sans-serif;
+    text-transform: none;
+    letter-spacing: 0;
+    text-shadow: none;
+}
+
+.questionType.topsoroban-theme .cards-selection-title {
+    color: #1e3a8a;
+}
+
+.card-preview-screenshot {
+    width: 100%;
+    max-width: 220px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-top: 1.2rem;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.questionType-option:hover .card-preview-screenshot {
+    transform: scale(1.04);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    border-color: #ffffff;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .academy-main-title {
+        font-size: 26px;
+    }
+    .academy-main-subtitle {
+        font-size: 16px;
+    }
+    .cards-selection-title {
+        font-size: 18px;
+    }
+    .card-preview-screenshot {
+        max-width: 180px;
+        height: 100px;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .academy-main-title {
+        font-size: 22px;
+    }
+    .academy-main-subtitle {
+        font-size: 14px;
+    }
+    .cards-selection-title {
+        font-size: 16px;
+    }
+    .card-preview-screenshot {
+        max-width: 180px;
+        height: 90px;
+    }
+}

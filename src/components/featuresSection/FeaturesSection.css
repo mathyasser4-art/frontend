@@ -265,3 +265,32 @@
 .features-container {
     overflow: visible;
 }
+
+.start-now-features-btn {
+    display: inline-block;
+    margin-top: 1.2rem;
+    padding: 0.8rem 2.2rem;
+    font-size: 16px;
+    font-weight: 800;
+    color: #ffffff;
+    background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    border: 3px solid #ffffff;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(217, 119, 6, 0.35);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.start-now-features-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(217, 119, 6, 0.55);
+    background: linear-gradient(135deg, #fcd34d 0%, #ea580c 100%);
+}
+
+.start-now-features-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+}
