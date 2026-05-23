@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
 
 import MobileNav from '../../components/mobileNav/MobileNav';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import SystemLoading from '../../components/systemLoding/SystemLoading';
 import getUnit from '../../api/unit/getUnit.api';
 import '../../reusable.css'
@@ -16,6 +16,8 @@ function Unit() {
     const { questionTypeID, subjectID } = useParams()
     const isAuth = localStorage.getItem('O_authWEB')
     const role = localStorage.getItem('auth_role')
+    const navigate = useNavigate()
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false)
     
     // Helper function to translate unit/chapter names
     const translateName = (name) => {
@@ -84,6 +86,25 @@ function Unit() {
             <MobileNav role={role} />
             {loading ? <SystemLoading /> : <div className="unit-container">
                 {unitData?.map(item => {
+                    const isTwoRows = item.unitName?.toLowerCase().trim() === '2 rows';
+                    const isLocked = !isAuth && !isTwoRows;
+
+                    if (isLocked) {
+                        return (
+                            <div 
+                                key={item._id} 
+                                className="unit locked" 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowUpgradeModal(true);
+                                }}
+                            >
+                                {translateName(item.unitName)}
+                                <span className="unit-lock-badge">🔒</span>
+                            </div>
+                        )
+                    }
+
                     return (
                         <div key={item._id} className="unit" onClick={dropdownToggle}>{translateName(item.unitName)}
                             {item.chapters?.map(subItem => {
@@ -95,6 +116,29 @@ function Unit() {
                     )
                 })}
             </div>}
+
+            {showUpgradeModal && (
+                <div className="upgrade-overlay" onClick={() => setShowUpgradeModal(false)}>
+                    <div className="upgrade-modal-card" onClick={(e) => e.stopPropagation()}>
+                        <button className="upgrade-close-btn" onClick={() => setShowUpgradeModal(false)}>×</button>
+                        <div className="upgrade-modal-header">
+                            <span className="lock-large-icon">🔒</span>
+                            <h2>Upgrade to Use</h2>
+                        </div>
+                        <p className="upgrade-modal-text">
+                            Guests can only access 2 Rows worksheets under Level 0. Subscribe to unlock 3+ Rows, higher levels, and educational games!
+                        </p>
+                        <div className="upgrade-modal-actions">
+                            <button className="upgrade-btn-primary" onClick={() => { setShowUpgradeModal(false); navigate('/pricing'); }}>
+                                View Pricing Plans
+                            </button>
+                            <button className="upgrade-btn-secondary" onClick={() => { setShowUpgradeModal(false); navigate('/auth/login'); }}>
+                                Log In
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     )
 }

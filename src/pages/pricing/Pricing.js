@@ -145,6 +145,56 @@ function Pricing() {
             </div>
           </div>
 
+          {/* Comparison Table Section */}
+          <div className="comparison-section">
+            <h2 className="comparison-title">Which account type is right for you?</h2>
+            <p className="comparison-subtitle">Compare features between a free normal account and a premium subscription</p>
+            
+            <div className="comparison-table-wrapper">
+              <table className="comparison-table">
+                <thead>
+                  <tr>
+                    <th>Features & Benefits</th>
+                    <th>Normal (Free Trial)</th>
+                    <th>Premium (Paid Plan)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="feature-desc">Level 0 Practice Sheets</td>
+                    <td className="free-cell">1st Sheet Only</td>
+                    <td className="premium-cell">✓ Unlimited Access</td>
+                  </tr>
+                  <tr>
+                    <td className="feature-desc">Level 1 to 5 Sheets</td>
+                    <td className="free-cell">❌ Locked</td>
+                    <td className="premium-cell">✓ Unlimited Access</td>
+                  </tr>
+                  <tr>
+                    <td className="feature-desc">Practice Row Sizes</td>
+                    <td className="free-cell">2 Rows Only</td>
+                    <td className="premium-cell">✓ 3+ Rows (Unlimited)</td>
+                  </tr>
+                  <tr>
+                    <td className="feature-desc">Adventure Games Room</td>
+                    <td className="free-cell">❌ Locked</td>
+                    <td className="premium-cell">✓ Play All Games</td>
+                  </tr>
+                  <tr>
+                    <td className="feature-desc">Personal Progress Tracking</td>
+                    <td className="free-cell">❌ None</td>
+                    <td className="premium-cell">✓ Detailed Analytics</td>
+                  </tr>
+                  <tr>
+                    <td className="feature-desc">Homework Assignments</td>
+                    <td className="free-cell">❌ None</td>
+                    <td className="premium-cell">✓ Complete Assigned Tasks</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <div className="pricing-footer-info">
             <p>Need help choosing? <Link to="/contact">Contact our support team</Link></p>
           </div>

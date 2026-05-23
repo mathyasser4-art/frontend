@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CheckCircle2, Circle, Gamepad2 } from 'lucide-react'
 import soundEffects from '../../utils/soundEffects'
 import '../../reusable.css'
@@ -8,6 +8,9 @@ import './QuestionType.css'
 
 function QuestionType() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const isAuth = localStorage.getItem('O_authWEB')
   
   const schoolName = localStorage.getItem('school_name') || '';
   const userName = localStorage.getItem('pp_name') || '';
@@ -65,15 +68,55 @@ function QuestionType() {
             <img src="/img/completion_preview.png" alt="Completion Questions Preview" className="card-preview-screenshot" />
           </Link>
 
-          <Link to={'/student/games-menu'} className="questionType-option games-card-option" onClick={() => soundEffects.playClick()}>
-            <div className="option-icon-wrapper">
-              <Gamepad2 size={64} strokeWidth={2} className="mcq-icon" />
-            </div>
-            <h3 className="option-title">Fun Games</h3>
-            <img src="/img/games/racer_cover.png" alt="Fun Games Preview" className="card-preview-screenshot" />
-          </Link>
+          {!isAuth ? (
+            <span 
+              className="questionType-option games-card-option locked-card" 
+              onClick={(e) => {
+                e.preventDefault();
+                soundEffects.playClick();
+                setShowUpgradeModal(true);
+              }}
+            >
+              <div className="option-icon-wrapper">
+                <Gamepad2 size={64} strokeWidth={2} className="mcq-icon" />
+              </div>
+              <h3 className="option-title">Fun Games <span className="card-lock-badge">🔒</span></h3>
+              <img src="/img/games/racer_cover.png" alt="Fun Games Preview" className="card-preview-screenshot" />
+            </span>
+          ) : (
+            <Link to={'/student/games-menu'} className="questionType-option games-card-option" onClick={() => soundEffects.playClick()}>
+              <div className="option-icon-wrapper">
+                <Gamepad2 size={64} strokeWidth={2} className="mcq-icon" />
+              </div>
+              <h3 className="option-title">Fun Games</h3>
+              <img src="/img/games/racer_cover.png" alt="Fun Games Preview" className="card-preview-screenshot" />
+            </Link>
+          )}
         </div>
       </div>
+
+      {showUpgradeModal && (
+        <div className="upgrade-overlay" onClick={() => setShowUpgradeModal(false)}>
+          <div className="upgrade-modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="upgrade-close-btn" onClick={() => setShowUpgradeModal(false)}>×</button>
+            <div className="upgrade-modal-header">
+              <span className="lock-large-icon">🔒</span>
+              <h2>Upgrade to Use</h2>
+            </div>
+            <p className="upgrade-modal-text">
+              Guests cannot access the Fun Games room. Subscribe to play all interactive educational games!
+            </p>
+            <div className="upgrade-modal-actions">
+              <button className="upgrade-btn-primary" onClick={() => { setShowUpgradeModal(false); navigate('/pricing'); }}>
+                View Pricing Plans
+              </button>
+              <button className="upgrade-btn-secondary" onClick={() => { setShowUpgradeModal(false); navigate('/auth/login'); }}>
+                Log In
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

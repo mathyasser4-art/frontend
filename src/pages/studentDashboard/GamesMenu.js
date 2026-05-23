@@ -7,13 +7,14 @@ import './GamesMenu.css';
 
 const GamesMenu = () => {
   const navigate = useNavigate();
+  const isAuth = localStorage.getItem('O_authWEB');
 
   return (
     <div className="dashboard-layout">
       <MobileNav role="Student" />
       <Navbar />
       
-      <div className="games-menu-page">
+      <div className={`games-menu-page ${!isAuth ? 'blurred-games-menu' : ''}`}>
         <div className="games-header">
           <button 
             onClick={() => navigate('/dashboard/student')} 
@@ -166,6 +167,31 @@ const GamesMenu = () => {
 
         </div>
       </div>
+
+      {!isAuth && (
+        <div className="upgrade-overlay">
+          <div className="upgrade-modal-card">
+            <div className="upgrade-modal-header">
+              <span className="lock-large-icon">🔒</span>
+              <h2>Upgrade to Use</h2>
+            </div>
+            <p className="upgrade-modal-text">
+              Public guests cannot access the Adventure Games Room. Subscribe to unlock all interactive educational games!
+            </p>
+            <div className="upgrade-modal-actions">
+              <button className="upgrade-btn-primary" onClick={() => navigate('/pricing')}>
+                View Pricing Plans
+              </button>
+              <button className="upgrade-btn-secondary" onClick={() => navigate('/auth/login')}>
+                Log In
+              </button>
+              <button className="upgrade-btn-secondary" style={{ marginTop: '0.25rem' }} onClick={() => navigate('/')}>
+                Back to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

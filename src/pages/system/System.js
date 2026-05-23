@@ -95,8 +95,8 @@ function System() {
                     return (
                         <div key={item._id} className="system" onClick={dropdownToggle}>{translateName(item.systemName)}
                             {item.subjects?.map((subItem, index) => {
-                                const isLevelZero = item.systemName?.toLowerCase() === 'level 0';
-                                const isFreeSheet = isLevelZero && index === 0;
+                                const isFreeSystem = item.systemName?.toLowerCase().trim() === 'basic level' || item.systemName?.toLowerCase().trim() === 'level 0';
+                                const isFreeSheet = isFreeSystem && index === 0;
                                 const isLocked = !isAuth && !isFreeSheet;
 
                                 if (isLocked) {

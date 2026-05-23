@@ -1,4 +1,4 @@
-﻿.unit-container{
+.unit-container{
     padding: 0rem 2.5rem;
     padding-bottom: 4rem;
 }
@@ -69,4 +69,24 @@
     .unit-chapter{
         width: 91%;
     }
+}
+
+/* Locked Unit Style */
+.unit.locked {
+    background: #94a3b8 !important;
+    color: #f1f5f9 !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 1.5rem;
+    box-sizing: border-box;
+}
+
+.unit.locked:hover {
+    background: #64748b !important;
+}
+
+.unit-lock-badge {
+    font-size: 18px;
+    line-height: 1;
 }
