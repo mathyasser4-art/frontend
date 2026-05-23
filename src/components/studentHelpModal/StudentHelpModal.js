@@ -49,7 +49,7 @@ const StudentHelpModal = ({ onClose }) => {
                         <div className="help-feature-card">
                             <BookOpen size={28} className="feat-icon purple-icon" />
                             <h4>Solve Homework</h4>
-                            <p>No more boring worksheets! Finish your teacher's homework assignments directly inside fun games.</p>
+                            <p>No more boring worksheets! Solve your teacher's homework assignments directly on the platform with instant grading.</p>
                         </div>
                         <div className="help-feature-card">
                             <Trophy size={28} className="feat-icon gold-icon" />
@@ -83,8 +83,8 @@ const StudentHelpModal = ({ onClose }) => {
                             <div className="step-card">
                                 <div className="step-number">3</div>
                                 <div className="step-text">
-                                    <strong>Play & Submit</strong>
-                                    <p>Choose an active homework, play the game, and your score will be sent directly to your teacher!</p>
+                                    <strong>Solve & Submit</strong>
+                                    <p>Choose an active homework, solve the questions, and submit your answers directly when you are ready!</p>
                                 </div>
                             </div>
                         </div>

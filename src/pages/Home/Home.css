@@ -802,3 +802,23 @@
         opacity: 1;
     }
 }
+
+/* Show/hide arrows based on screen size */
+@media (max-width: 992px) {
+    .desktop-only-arrow {
+        display: none !important;
+    }
+    .mobile-scroll-arrow {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 993px) {
+    .desktop-only-arrow {
+        display: flex !important;
+        margin-top: 1.5rem;
+    }
+    .mobile-scroll-arrow {
+        display: none !important;
+    }
+}

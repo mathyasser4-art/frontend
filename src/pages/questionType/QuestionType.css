@@ -104,13 +104,13 @@
 .questionType-option {
     background: linear-gradient(135deg, #caa64a 0%, #f6e27a 50%, #b8891f 100%);
     border-radius: 25px;
-    padding: 2.5rem;
+    padding: 2rem 1.2rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     border: 5px solid white;
-    width: 280px;
+    width: 300px;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -169,22 +169,14 @@
 }
 
 .option-title {
-    font-size: 32px;
-    font-weight: 900;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    color: white;
-    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
-    margin: 0;
-}
-
-.option-title {
-    font-size: 32px;
-    font-weight: 600;
+    font-size: 21px;
+    font-weight: 800;
     font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    color: #D4AF37;
+    color: #ffffff;
     text-transform: capitalize;
-    text-shadow: 0 2px 8px rgba(212, 175, 55, 0.5);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     margin: 0;
+    line-height: 1.2;
 }
 
 /* Gold description color now general */
@@ -292,7 +284,7 @@
     }
     
     .option-title {
-        font-size: 28px;
+        font-size: 19px;
     }
     
     .option-description {
@@ -360,7 +352,7 @@
     }
     
     .option-title {
-        font-size: 20px;
+        font-size: 17px;
     }
     
     .option-description {
@@ -474,9 +466,10 @@
 
 .card-preview-screenshot {
     width: 100%;
-    max-width: 220px;
-    height: 120px;
-    object-fit: cover;
+    max-width: 260px;
+    height: 130px;
+    object-fit: contain;
+    background-color: #ffffff;
     border-radius: 12px;
     margin-top: 1.2rem;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
