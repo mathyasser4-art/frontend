@@ -125,6 +125,14 @@ function Pricing() {
                 </div>
               </div>
 
+              <div className="free-trial-highlight-box">
+                <span className="gift-icon">🎁</span>
+                <div className="free-trial-text">
+                  <strong>Free Trial Active!</strong>
+                  <p>1st Worksheet of Level 0 (MCQ & Completion) is 100% free to try!</p>
+                </div>
+              </div>
+
               <ul className="feature-list" style={{ marginTop: '1.5rem' }}>
                 <li><CheckCircle2 size={18} /> Access to All Practice Questions</li>
                 <li><CheckCircle2 size={18} /> Play All Fun Educational Games</li>
