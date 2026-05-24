@@ -2,8 +2,9 @@ import API_BASE_URL from '../../config/api.config';
 
 const getSystem = (setLoading, setSystemData, questionTypeID) => {
     setLoading(true)
-    // Load all systems without filtering by questionTypeID
-    const URL = `${API_BASE_URL}/system/getAllSystem`;
+    const URL = questionTypeID 
+        ? `${API_BASE_URL}/system/getAllSystem/${questionTypeID}`
+        : `${API_BASE_URL}/system/getAllSystem`;
     
     fetch(`${URL}`, {
         method: 'get',

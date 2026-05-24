@@ -756,6 +756,13 @@
     animation: bounceAndFade 2s infinite ease-in-out;
     z-index: 10;
     position: relative;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 0.6rem 1.2rem;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
 }
 
 .scroll-arrow-text {

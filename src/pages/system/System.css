@@ -151,6 +151,17 @@
     line-height: 1;
 }
 
+/* Empty Subject Style */
+.system-subject.empty {
+    opacity: 0.45;
+    background: #e2e8f0 !important;
+    color: #94a3b8 !important;
+    box-shadow: none;
+    pointer-events: none;
+    cursor: not-allowed;
+    user-select: none;
+}
+
 /* Dimmer Upgrade Overlay */
 .upgrade-overlay {
     position: fixed;
