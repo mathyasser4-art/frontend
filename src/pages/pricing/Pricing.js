@@ -77,7 +77,10 @@ function Pricing() {
               <h2>Teacher</h2>
               
               <div className="pricing-table-container">
-                <p className="table-subtitle">Tiered pricing based on student count (EGP per student):</p>
+                <div className="promo-badge-container">
+                  <span className="promo-badge-text">🔥 30% OFF UNTIL END OF MAY</span>
+                </div>
+                <p className="table-subtitle">Tiered pricing per student account:</p>
                 <table className="teacher-tiers-table">
                   <thead>
                     <tr>
@@ -90,35 +93,32 @@ function Pricing() {
                   <tbody>
                     <tr>
                       <td className="tier-name">Up to 10 <span className="category-label">(A)</span></td>
-                      <td>20 EGP</td>
-                      <td>110 EGP</td>
-                      <td>150 EGP</td>
+                      <td><span className="old-price-table">20</span><span className="new-price-table">14 EGP</span></td>
+                      <td><span className="old-price-table">110</span><span className="new-price-table">77 EGP</span></td>
+                      <td><span className="old-price-table">150</span><span className="new-price-table">105 EGP</span></td>
                     </tr>
                     <tr>
                       <td className="tier-name">10 to 20 <span className="category-label">(B)</span></td>
-                      <td>15 EGP</td>
-                      <td>90 EGP</td>
-                      <td>120 EGP</td>
+                      <td><span className="old-price-table">15</span><span className="new-price-table">10.5 EGP</span></td>
+                      <td><span className="old-price-table">90</span><span className="new-price-table">63 EGP</span></td>
+                      <td><span className="old-price-table">120</span><span className="new-price-table">84 EGP</span></td>
                     </tr>
                     <tr>
                       <td className="tier-name">20 to 50 <span className="category-label">(C)</span></td>
-                      <td>12 EGP</td>
-                      <td>70 EGP</td>
-                      <td>100 EGP</td>
+                      <td><span className="old-price-table">12</span><span className="new-price-table">8.4 EGP</span></td>
+                      <td><span className="old-price-table">70</span><span className="new-price-table">49 EGP</span></td>
+                      <td><span className="old-price-table">100</span><span className="new-price-table">70 EGP</span></td>
                     </tr>
                     <tr>
                       <td className="tier-name">50+ <span className="category-label">(D)</span></td>
-                      <td>10 EGP</td>
-                      <td>55 EGP</td>
-                      <td>80 EGP</td>
+                      <td><span className="old-price-table">10</span><span className="new-price-table">7 EGP</span></td>
+                      <td><span className="old-price-table">55</span><span className="new-price-table">38.5 EGP</span></td>
+                      <td><span className="old-price-table">80</span><span className="new-price-table">56 EGP</span></td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              <div className="teacher-bonus">
-                <strong>Bonus:</strong> Get a free account for yourself when you subscribe for 5+ students!
-              </div>
               <p className="section-instructions">
                 Fill the teacher's registration form with desired classes and student names. Accounts delivered in 24 hours.
               </p>

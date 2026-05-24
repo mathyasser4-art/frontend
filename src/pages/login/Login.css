@@ -115,3 +115,66 @@
 .login-footer{
     margin-top: 2rem;
 }
+
+/* Demo badges styling */
+.login-badges-container {
+    margin-top: 1rem;
+    width: 340px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.85);
+    border: 2px dashed rgba(99, 102, 241, 0.35);
+    border-radius: 20px;
+    padding: 0.85rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.badges-title {
+    font-size: 13px !important;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 0.6rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center !important;
+}
+
+.badges-list {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.demo-login-badge {
+    padding: 0.55rem 1rem;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1.5px solid transparent;
+}
+
+.teacher-badge {
+    background: #fff5f7;
+    color: #be185d;
+    border-color: #fbcfe8;
+}
+
+.teacher-badge:hover {
+    background: #fce7f3;
+    transform: translateY(-2.5px);
+    box-shadow: 0 4px 12px rgba(219, 39, 119, 0.15);
+}
+
+.student-badge {
+    background: #f0fdf4;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.student-badge:hover {
+    background: #dcfce7;
+    transform: translateY(-2.5px);
+    box-shadow: 0 4px 12px rgba(22, 101, 52, 0.15);
+}
