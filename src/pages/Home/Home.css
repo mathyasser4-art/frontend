@@ -822,3 +822,34 @@
         display: none !important;
     }
 }
+
+/* Yellow/Gold CTA for Try Demo */
+.yellow-btn {
+    background: linear-gradient(135deg, #fde047 0%, #eab308 100%);
+    box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    color: #1e1b4b !important;
+    animation: ctaPulse 2s infinite;
+}
+
+.yellow-btn:hover {
+    background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(234, 179, 8, 0.5);
+}
+
+.font-bold {
+    font-weight: 700 !important;
+    color: #1e1b4b !important;
+}
+
+@keyframes ctaPulse {
+    0%, 100% {
+        box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
+    }
+    50% {
+        box-shadow: 0 4px 25px rgba(234, 179, 8, 0.7);
+        transform: scale(1.03);
+    }
+}

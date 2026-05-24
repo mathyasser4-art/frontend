@@ -43,7 +43,11 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 const route = ROLE_ROUTES[responseJson.role] || '/';
                 window.location.href = route;
             } else {
-                setError(responseJson.message);
+                let errorMsg = responseJson.message;
+                if (errorMsg === 'This email is not registered' || errorMsg === 'Incorrect password') {
+                    errorMsg = 'Incorrect username or password';
+                }
+                setError(errorMsg);
                 if (typeof showAlert === 'function') {
                     showAlert();
                 }

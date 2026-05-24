@@ -9,6 +9,7 @@ import TeacherTrialModal from '../../components/teacherTrialModal/TeacherTrialMo
 import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVideoModal'
 import TeacherHelpModal from '../../components/teacherHelpModal/TeacherHelpModal'
 import StudentHelpModal from '../../components/studentHelpModal/StudentHelpModal'
+import DemoQuizModal from '../../components/demoQuiz/DemoQuizModal'
 import soundEffects from '../../utils/soundEffects'
 import { GraduationCap, Presentation } from 'lucide-react'
 import '../../reusable.css'
@@ -44,6 +45,7 @@ function Home() {
   const [showTeacherTrialModal, setShowTeacherTrialModal] = useState(false)
   const [showTeacherHelp, setShowTeacherHelp] = useState(false)
   const [showStudentHelp, setShowStudentHelp] = useState(false)
+  const [showDemoQuiz, setShowDemoQuiz] = useState(false)
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const [fading, setFading] = React.useState(false)
 
@@ -105,6 +107,18 @@ function Home() {
                       <span className="btn-text">🎓 I'M A STUDENT</span>
                     </button>
                     <div className="btn-subtitle">Play, practice & solve homework</div>
+                  </div>
+                  <div className="hero-btn-wrapper demo-btn-wrapper-hero">
+                    <button 
+                      className="home-btn yellow-btn"
+                      onClick={() => { 
+                        soundEffects.playClick(); 
+                        setShowDemoQuiz(true);
+                      }}
+                    >
+                      <span className="btn-text">⚡ TRY DEMO</span>
+                    </button>
+                    <div className="btn-subtitle font-bold">Solve a 10s math quiz</div>
                   </div>
                 </div>
               </div>
@@ -195,6 +209,12 @@ function Home() {
                 </button>
                 <div className="btn-subtitle">Play & solve homework</div>
               </div>
+              <div className="hero-btn-wrapper">
+                <button className="home-btn yellow-btn" onClick={() => { soundEffects.playClick(); setShowDemoQuiz(true); }}>
+                  <span className="btn-text">⚡ TRY DEMO</span>
+                </button>
+                <div className="btn-subtitle font-bold">Solve a 10s math quiz</div>
+              </div>
           </div>
           {/* Scroll Down Arrow Mobile (Request 6) */}
           <div className="scroll-down-arrow mobile-scroll-arrow" onClick={() => {
@@ -213,8 +233,11 @@ function Home() {
 
       <QuestionType />
       <FeaturesSection />
+
+      {showDemoQuiz && <DemoQuizModal onClose={() => setShowDemoQuiz(false)} />}
     </>
   )
 }
 
 export default Home
+

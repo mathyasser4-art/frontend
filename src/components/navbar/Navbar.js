@@ -69,7 +69,7 @@ const Navbar = () => {
                         <span className="nav-link">For Teachers ▾</span>
                         <div className="dropdown-menu">
                             <span onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }} className="dropdown-item">Website Explanation</span>
-                            <span onClick={openTeacherForm} className="dropdown-item">Register as Teacher</span>
+                            <span onClick={() => { soundEffects.playClick(); navigate('/teacher/registration'); }} className="dropdown-item">Register as Teacher</span>
                             <span onClick={() => {
                                 soundEffects.playClick();
                                 if (role === 'Teacher' || role === 'School') {

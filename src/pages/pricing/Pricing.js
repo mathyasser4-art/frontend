@@ -95,7 +95,7 @@ function Pricing() {
               <p className="section-instructions">
                 Fill the teacher's registration form with desired classes and student names. Accounts delivered in 24 hours.
               </p>
-              <Link to="/auth/register" className="pricing-btn-new teacher-btn">
+              <Link to="/teacher/registration" className="pricing-btn-new teacher-btn">
                 Register as Teacher
               </Link>
             </div>
