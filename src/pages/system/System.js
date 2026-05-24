@@ -99,19 +99,6 @@ function System() {
                                 const isFreeSheet = isFreeSystem && index === 0;
                                 const isLocked = !isAuth && !isFreeSheet;
 
-                                const isEmpty = !subItem.hasQuestions;
-
-                                if (isEmpty) {
-                                    return (
-                                        <span 
-                                            key={subItem._id} 
-                                            className='system-subject empty'
-                                        >
-                                            {translateName(subItem.subjectName)}
-                                        </span>
-                                    )
-                                }
-
                                 if (isLocked) {
                                     return (
                                         <span 
