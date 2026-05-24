@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '../../components/navbar/Navbar';
 import './Pricing.css';
 import '../../reusable.css';
-import { School, GraduationCap, Users, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { School, GraduationCap, Users, MessageSquare, CheckCircle2, Sparkles, ChevronRight } from 'lucide-react';
 
 function Pricing() {
   return (
@@ -15,6 +15,33 @@ function Pricing() {
           <div className="pricing-header">
             <h1>Join the Abacus Heroes Family! 🚀</h1>
             <p>Choose the path that fits you best and start your journey today</p>
+          </div>
+
+          {/* Demo Accounts Banner */}
+          <div className="demo-accounts-banner">
+            <div className="banner-header">
+              <Sparkles size={24} color="#f59e0b" className="sparkle-icon" />
+              <h3>Instant Demo Preview!</h3>
+            </div>
+            <p className="banner-subtitle">
+              For a limited time, you can log in with our demo accounts to explore all premium features:
+            </p>
+            <div className="credentials-container">
+              <div className="credential-card">
+                <h4>👨‍🏫 Teacher Account</h4>
+                <div className="credential-field">Username: <span>teacher</span></div>
+                <div className="credential-field">Password: <span>1234</span></div>
+              </div>
+              <div className="credential-card">
+                <h4>🎓 Student Account</h4>
+                <div className="credential-field">Username: <span>student</span></div>
+                <div className="credential-field">Password: <span>1234</span></div>
+              </div>
+            </div>
+            <Link to="/auth/login" className="banner-login-btn d-flex align-items-center gap-2">
+              <span>Log In & Try Now</span>
+              <ChevronRight size={18} />
+            </Link>
           </div>
 
           <div className="pricing-grid-new">
@@ -95,9 +122,9 @@ function Pricing() {
               <p className="section-instructions">
                 Fill the teacher's registration form with desired classes and student names. Accounts delivered in 24 hours.
               </p>
-              <a href="https://m.me/abacusheroes" target="_blank" rel="noopener noreferrer" className="pricing-btn-new teacher-btn">
+              <Link to="/contact" className="pricing-btn-new teacher-btn">
                 Message Us
-              </a>
+              </Link>
             </div>
 
             {/* 3. Parent or Student Section */}
@@ -139,9 +166,9 @@ function Pricing() {
                 <li><CheckCircle2 size={18} /> Track Personal Progress</li>
                 <li><CheckCircle2 size={18} /> Daily Challenges & Rewards</li>
               </ul>
-              <a href="https://m.me/abacusheroes" target="_blank" rel="noopener noreferrer" className="pricing-btn-new student-btn">
+              <Link to="/contact" className="pricing-btn-new student-btn">
                 Message Us
-              </a>
+              </Link>
             </div>
           </div>
 
