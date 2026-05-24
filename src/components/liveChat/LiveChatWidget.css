@@ -14,7 +14,7 @@
   color: white;
   border: none;
   box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-  cursor: pointer;
+  cursor: grab;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -74,6 +74,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: grab;
+  user-select: none;
 }
 
 .chat-header h3 {

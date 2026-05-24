@@ -15,6 +15,87 @@ const LiveChatWidget = () => {
   // Use a ref to store sessionId to prevent unnecessary re-renders or stale closures
   const sessionIdRef = useRef(localStorage.getItem('chatSessionId'));
 
+  // Dragging state logic
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const initialOffset = useRef({ x: 0, y: 0 });
+  const isClickRef = useRef(true);
+
+  const handleMouseDown = (e) => {
+    if (e.button !== 0) return;
+    if (e.target.closest('input') || e.target.closest('textarea')) return;
+    if (e.target.closest('.chat-window button')) return;
+
+    setIsDragging(true);
+    isClickRef.current = true;
+    dragStart.current = { x: e.clientX, y: e.clientY };
+    initialOffset.current = { ...position };
+  };
+
+  const handleTouchStart = (e) => {
+    if (e.touches.length !== 1) return;
+    if (e.target.closest('input') || e.target.closest('textarea')) return;
+    if (e.target.closest('.chat-window button')) return;
+
+    setIsDragging(true);
+    isClickRef.current = true;
+    dragStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    initialOffset.current = { ...position };
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e) => {
+      const dx = e.clientX - dragStart.current.x;
+      const dy = e.clientY - dragStart.current.y;
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+        isClickRef.current = false;
+      }
+      setPosition({
+        x: initialOffset.current.x + dx,
+        y: initialOffset.current.y + dy
+      });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - dragStart.current.x;
+      const dy = e.touches[0].clientY - dragStart.current.y;
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+        isClickRef.current = false;
+      }
+      setPosition({
+        x: initialOffset.current.x + dx,
+        y: initialOffset.current.y + dy
+      });
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging]);
+
   useEffect(() => {
     if (!sessionIdRef.current) {
       // Generate a random anonymous ID
@@ -85,10 +166,18 @@ const LiveChatWidget = () => {
   };
 
   return (
-    <div className="live-chat-container">
+    <div 
+      className="live-chat-container"
+      style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+    >
       {isOpen && (
         <div className="chat-window">
-          <div className="chat-header">
+          <div 
+            className="chat-header"
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+            style={{ cursor: isDragging ? 'grabbing' : 'grab', userSelect: 'none', touchAction: 'none' }}
+          >
             <h3>Message Us</h3>
             <button onClick={() => setIsOpen(false)} className="close-btn">
               <X size={20} />
@@ -142,7 +231,17 @@ const LiveChatWidget = () => {
         </div>
       )}
 
-      <button className={`chat-fab ${hasUnread ? 'pulse' : ''}`} onClick={() => setIsOpen(!isOpen)}>
+      <button 
+        className={`chat-fab ${hasUnread ? 'pulse' : ''}`} 
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onClick={(e) => {
+          if (isClickRef.current) {
+            setIsOpen(!isOpen);
+          }
+        }}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'none' }}
+      >
         {isOpen ? <X size={28} /> : <MessageCircle size={28} />}
         {hasUnread && !isOpen && <span className="notification-dot"></span>}
       </button>

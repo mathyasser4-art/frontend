@@ -31,22 +31,56 @@ const TeacherHelpModal = ({ onClose }) => {
 
                     <section className="help-section step-by-step">
                         <h3>🛠️ Step-by-Step Guide for Teachers</h3>
+                        
+                        {/* Step 1 */}
                         <div className="step-item">
                             <span className="step-number">1</span>
-                            <div className="step-desc">
-                                <strong>Enter Question Pages:</strong> Click <strong>"START PRACTICING NOW 🚀"</strong> below or select the **Academy Section** on the home page. Choose a Level/Subject and click a Unit/Chapter to enter its worksheets.
+                            <div className="step-content-box">
+                                <div className="step-desc">
+                                    <strong>Enter Question Pages:</strong> Click <strong>"START PRACTICING NOW 🚀"</strong> below or select the **Academy Section** on the home page. Choose a Level/Subject and click a Unit/Chapter to enter its worksheets.
+                                </div>
+                                <div className="step-media">
+                                    <img src="/img/step1_enter_academy.png" alt="Step 1 Preview" className="step-screenshot-inline" />
+                                </div>
                             </div>
                         </div>
+
+                        {/* Step 2 */}
                         <div className="step-item">
                             <span className="step-number">2</span>
-                            <div className="step-desc">
-                                <strong>Solve & Test Questions:</strong> Use the interactive **Virtual Abacus** and onscreen custom numeric keyboard to practice and test the questions exactly as students see them.
+                            <div className="step-content-box">
+                                <div className="step-desc">
+                                    <strong>Solve & Test Questions:</strong> Use the interactive **Virtual Abacus** and onscreen custom numeric keyboard to practice and test the questions exactly as students see them.
+                                </div>
+                                <div className="step-media">
+                                    <img src="/img/step2_test_solve.png" alt="Step 2 Preview" className="step-screenshot-inline" />
+                                </div>
                             </div>
                         </div>
+
+                        {/* Step 3 */}
                         <div className="step-item">
                             <span className="step-number">3</span>
-                            <div className="step-desc">
-                                <strong>Assign Homework:</strong> While viewing questions, click <strong>"Add to Pocket"</strong> (for individual questions) or <strong>"Add All to Pocket"</strong> (to grab the entire worksheet). Open your **Question Pocket** (bag icon), select your classes, set a title & timer, and click <strong>"Create Assignment"</strong> to instantly assign it!
+                            <div className="step-content-box">
+                                <div className="step-desc">
+                                    <strong>Assign Homework:</strong> While viewing questions, click <strong>"Add to Pocket"</strong> (for individual questions) or <strong>"Add All to Pocket"</strong> (to grab the entire worksheet). Open your **Question Pocket** (bag icon), select your classes, set a title & timer, and click <strong>"Create Assignment"</strong> to instantly assign it!
+                                </div>
+                                <div className="step-media">
+                                    <img src="/img/step3_assign_homework.png" alt="Step 3 Preview" className="step-screenshot-inline" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Step 4 */}
+                        <div className="step-item">
+                            <span className="step-number">4</span>
+                            <div className="step-content-box">
+                                <div className="step-desc">
+                                    <strong>Track Progress & Reports:</strong> Assigned homework is uploaded and sent to your linked students' dashboards. Once they complete the homework, you will instantly receive a detailed report for every student as well as a combined class report with performance insights!
+                                </div>
+                                <div className="step-media">
+                                    <img src="/img/step4_track_reports.png" alt="Step 4 Preview" className="step-screenshot-inline" />
+                                </div>
                             </div>
                         </div>
                     </section>

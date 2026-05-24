@@ -221,7 +221,7 @@
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1.5rem;
 }
 
 .step-item {
@@ -244,16 +244,46 @@
     justify-content: center;
     flex-shrink: 0;
     box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+    margin-top: 2px;
+}
+
+.step-content-box {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    align-items: center;
+    width: 100%;
 }
 
 .step-desc {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #475569;
-    line-height: 1.5;
+    line-height: 1.6;
+    flex: 1;
 }
 
 .step-desc strong {
     color: #0f172a;
+}
+
+.step-media {
+    flex-shrink: 0;
+    width: 220px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 3px solid #ffffff;
+    transition: transform 0.3s ease;
+}
+
+.step-media:hover {
+    transform: scale(1.05);
+}
+
+.step-screenshot-inline {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 .help-btn-secondary.registration-btn {
@@ -264,4 +294,17 @@
 .help-btn-secondary.registration-btn:hover {
     background: #059669;
     box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+}
+
+@media (max-width: 768px) {
+    .step-content-box {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+    }
+    .step-media {
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+    }
 }
