@@ -105,6 +105,20 @@ function Unit() {
                         )
                     }
 
+                    const totalQuestions = item.chapters?.reduce((acc, subItem) => acc + (subItem.questions?.length || 0), 0) || 0;
+                    const isEmpty = totalQuestions === 0;
+
+                    if (isEmpty) {
+                        return (
+                            <div 
+                                key={item._id} 
+                                className="unit empty"
+                            >
+                                {translateName(item.unitName)}
+                            </div>
+                        )
+                    }
+
                     return (
                         <div key={item._id} className="unit" onClick={dropdownToggle}>{translateName(item.unitName)}
                             {item.chapters?.map(subItem => {

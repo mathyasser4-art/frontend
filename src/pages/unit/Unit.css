@@ -90,3 +90,15 @@
     font-size: 18px;
     line-height: 1;
 }
+
+/* Empty Unit Style */
+.unit.empty {
+    opacity: 0.45;
+    background: #f1f5f9 !important;
+    color: #94a3b8 !important;
+    box-shadow: none;
+    pointer-events: none;
+    cursor: not-allowed;
+    user-select: none;
+}
+

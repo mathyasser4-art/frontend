@@ -122,16 +122,19 @@ function FeaturesSection() {
           <div className="feature-content">
             <h3 className="text-3d-glow">{t('featuresSection.competitionsTitle')}</h3>
             <p>{t('featuresSection.competitionsDesc')}</p>
-            <button 
-              className="start-now-features-btn"
-              onClick={() => {
-                const el = document.getElementById('academy-section');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Start Now 🚀
-            </button>
           </div>
+        </div>
+
+        <div className="features-action-wrapper" style={{ display: 'flex', justifyContent: 'center', marginTop: '0.5rem' }}>
+          <button 
+            className="start-now-features-btn"
+            onClick={() => {
+              const el = document.getElementById('academy-section');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            Start Now 🚀
+          </button>
         </div>
 
       </div>

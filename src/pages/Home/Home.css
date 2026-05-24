@@ -759,26 +759,26 @@
 }
 
 .scroll-arrow-text {
-    font-size: 13px;
-    font-weight: 800;
+    font-size: 15px;
+    font-weight: 900;
     color: #5d17eb;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     margin-bottom: 8px;
     font-family: 'Inter', sans-serif;
-    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 1), 0 4px 12px rgba(255, 255, 255, 0.8);
 }
 
 .scroll-arrow-chevron {
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
     background: linear-gradient(135deg, #5d17eb 0%, #a855f7 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(93, 23, 235, 0.4);
-    border: 3px solid #ffffff;
+    box-shadow: 0 6px 20px rgba(93, 23, 235, 0.5);
+    border: 4px solid #ffffff;
     color: #ffffff;
     transition: all 0.3s ease;
 }
