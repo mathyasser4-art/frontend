@@ -63,6 +63,15 @@ function Home() {
     return () => clearInterval(timer)
   }, [])
 
+  React.useEffect(() => {
+    const isAuthUser = localStorage.getItem('O_authWEB');
+    const hasSeenDemo = localStorage.getItem('hasSeenDemoQuiz') === 'true';
+    if (!isAuthUser && !hasSeenDemo) {
+      // Auto open demo quiz overlay for first-time guest visitors
+      setShowDemoQuiz(true);
+    }
+  }, []);
+
   return (
     <>
       <MobileNav role={role} />
@@ -107,18 +116,6 @@ function Home() {
                       <span className="btn-text">🎓 I'M A STUDENT</span>
                     </button>
                     <div className="btn-subtitle">Play, practice & solve homework</div>
-                  </div>
-                  <div className="hero-btn-wrapper demo-btn-wrapper-hero">
-                    <button 
-                      className="home-btn yellow-btn"
-                      onClick={() => { 
-                        soundEffects.playClick(); 
-                        setShowDemoQuiz(true);
-                      }}
-                    >
-                      <span className="btn-text">⚡ TRY DEMO</span>
-                    </button>
-                    <div className="btn-subtitle font-bold">Solve a 10s math quiz</div>
                   </div>
                 </div>
               </div>
@@ -208,12 +205,6 @@ function Home() {
                   <span className="btn-text">🎓 I'M A STUDENT</span>
                 </button>
                 <div className="btn-subtitle">Play & solve homework</div>
-              </div>
-              <div className="hero-btn-wrapper">
-                <button className="home-btn yellow-btn" onClick={() => { soundEffects.playClick(); setShowDemoQuiz(true); }}>
-                  <span className="btn-text">⚡ TRY DEMO</span>
-                </button>
-                <div className="btn-subtitle font-bold">Solve a 10s math quiz</div>
               </div>
           </div>
           {/* Scroll Down Arrow Mobile (Request 6) */}

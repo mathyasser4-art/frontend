@@ -44,12 +44,17 @@ function DemoQuizModal({ onClose }) {
     const navigate = useNavigate();
     const [currentIdx, setCurrentIdx] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
-    const [showAbacus, setShowAbacus] = useState(false);
+    const [showAbacus, setShowAbacus] = useState(true);
     const [wrongSelection, setWrongSelection] = useState(null);
     const [correctSelection, setCorrectSelection] = useState(null);
     const [isFinished, setIsFinished] = useState(false);
 
     const currentQuestion = DEMO_QUESTIONS[currentIdx];
+
+    const handleClose = () => {
+        localStorage.setItem('hasSeenDemoQuiz', 'true');
+        onClose();
+    };
 
     const handleChoiceClick = (choice) => {
         if (wrongSelection || correctSelection || isFinished) return;
@@ -120,18 +125,18 @@ function DemoQuizModal({ onClose }) {
 
     const navigateToRegister = () => {
         soundEffects.playClick();
-        onClose();
-        navigate('/teacher/registration');
+        handleClose();
+        window.open('https://m.me/abacusheroes', '_blank');
     };
 
     const navigateToPricing = () => {
         soundEffects.playClick();
-        onClose();
-        navigate('/pricing');
+        handleClose();
+        window.open('https://m.me/abacusheroes', '_blank');
     };
 
     return (
-        <div className="demo-quiz-overlay" onClick={onClose}>
+        <div className="demo-quiz-overlay" onClick={handleClose}>
             <div className="demo-quiz-card" onClick={(e) => e.stopPropagation()}>
                 
                 {/* Header */}
@@ -143,24 +148,17 @@ function DemoQuizModal({ onClose }) {
                     
                     <div className="demo-header-actions d-flex align-items-center">
                         <div 
-                            title="Open Abacus" 
+                            title="Toggle Abacus" 
                             className="abacus-button" 
                             onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}
                         >
                             <i className="fa fa-calculator" aria-hidden="true"></i>
                         </div>
-                        <button className="demo-close-btn" onClick={onClose}>
+                        <button className="demo-close-btn" onClick={handleClose}>
                             <X size={20} />
                         </button>
                     </div>
                 </div>
-
-                {/* Abacus Simulator */}
-                {showAbacus && (
-                    <div className="demo-abacus-wrapper">
-                        <AbacusSimulator onClose={() => setShowAbacus(false)} />
-                    </div>
-                )}
 
                 {/* Main Content */}
                 {!isFinished ? (
@@ -168,6 +166,13 @@ function DemoQuizModal({ onClose }) {
                         <div className="demo-progress-text">
                             Question {currentIdx + 1} of {DEMO_QUESTIONS.length}
                         </div>
+
+                        {/* Abacus Simulator - Rendered Inline above questions */}
+                        {showAbacus && (
+                            <div className="demo-abacus-inline">
+                                <AbacusSimulator onClose={() => setShowAbacus(false)} />
+                            </div>
+                        )}
                         
                         <div className="demo-question-content d-flex">
                             {/* Vertical math display inside question box */}

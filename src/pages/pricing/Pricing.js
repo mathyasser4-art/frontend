@@ -95,9 +95,9 @@ function Pricing() {
               <p className="section-instructions">
                 Fill the teacher's registration form with desired classes and student names. Accounts delivered in 24 hours.
               </p>
-              <Link to="/teacher/registration" className="pricing-btn-new teacher-btn">
-                Register as Teacher
-              </Link>
+              <a href="https://m.me/abacusheroes" target="_blank" rel="noopener noreferrer" className="pricing-btn-new teacher-btn">
+                Message Us
+              </a>
             </div>
 
             {/* 3. Parent or Student Section */}
@@ -139,9 +139,9 @@ function Pricing() {
                 <li><CheckCircle2 size={18} /> Track Personal Progress</li>
                 <li><CheckCircle2 size={18} /> Daily Challenges & Rewards</li>
               </ul>
-              <Link to="/auth/register" className="pricing-btn-new student-btn">
-                Join as Student
-              </Link>
+              <a href="https://m.me/abacusheroes" target="_blank" rel="noopener noreferrer" className="pricing-btn-new student-btn">
+                Message Us
+              </a>
             </div>
           </div>
 
