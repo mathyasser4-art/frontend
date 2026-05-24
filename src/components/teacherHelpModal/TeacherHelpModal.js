@@ -1,9 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, GraduationCap, CheckCircle, Users, BookOpen } from 'lucide-react';
 import soundEffects from '../../utils/soundEffects';
 import './TeacherHelpModal.css';
 
 const TeacherHelpModal = ({ onClose }) => {
+    const navigate = useNavigate();
+
     return (
         <div className="teacher-help-overlay">
             <div className="teacher-help-card">
@@ -24,6 +27,28 @@ const TeacherHelpModal = ({ onClose }) => {
                             Welcome to the ultimate platform for abacus education! We combine **fun gameplay** with **structured learning**. 
                             Students solve math challenges to progress in games, ensuring constant practice while they have fun.
                         </p>
+                    </section>
+
+                    <section className="help-section step-by-step">
+                        <h3>🛠️ Step-by-Step Guide for Teachers</h3>
+                        <div className="step-item">
+                            <span className="step-number">1</span>
+                            <div className="step-desc">
+                                <strong>Enter Question Pages:</strong> Click <strong>"START PRACTICING NOW 🚀"</strong> below or select the **Academy Section** on the home page. Choose a Level/Subject and click a Unit/Chapter to enter its worksheets.
+                            </div>
+                        </div>
+                        <div className="step-item">
+                            <span className="step-number">2</span>
+                            <div className="step-desc">
+                                <strong>Solve & Test Questions:</strong> Use the interactive **Virtual Abacus** and onscreen custom numeric keyboard to practice and test the questions exactly as students see them.
+                            </div>
+                        </div>
+                        <div className="step-item">
+                            <span className="step-number">3</span>
+                            <div className="step-desc">
+                                <strong>Assign Homework:</strong> While viewing questions, click <strong>"Add to Pocket"</strong> (for individual questions) or <strong>"Add All to Pocket"</strong> (to grab the entire worksheet). Open your **Question Pocket** (bag icon), select your classes, set a title & timer, and click <strong>"Create Assignment"</strong> to instantly assign it!
+                            </div>
+                        </div>
                     </section>
 
                     <div className="help-grid">
@@ -53,6 +78,17 @@ const TeacherHelpModal = ({ onClose }) => {
                         <div className="screenshot-container">
                             <img src="/img/registration_form_real.png" alt="Registration List Preview" className="help-screenshot" />
                             <div className="screenshot-caption">Fill this list to create student accounts instantly!</div>
+                            <button 
+                                className="help-btn-secondary registration-btn" 
+                                style={{ marginTop: '1.2rem', width: '100%', borderRadius: '15px' }}
+                                onClick={() => {
+                                    soundEffects.playClick();
+                                    onClose();
+                                    navigate('/teacher/registration');
+                                }}
+                            >
+                                📋 GO TO REGISTRATION FILE ➜
+                            </button>
                         </div>
                     </section>
 
@@ -77,8 +113,14 @@ const TeacherHelpModal = ({ onClose }) => {
                 </div>
 
                 <div className="help-footer">
-                    <button className="help-btn-primary" onClick={() => { soundEffects.playClick(); onClose(); }}>
-                        GOT IT, THANKS!
+                    <button className="help-btn-primary" onClick={() => { 
+                        soundEffects.playClick(); 
+                        onClose(); 
+                        setTimeout(() => {
+                            document.getElementById('academy-section')?.scrollIntoView({ behavior: 'smooth' });
+                        }, 300);
+                    }}>
+                        START PRACTICING NOW 🚀
                     </button>
                 </div>
             </div>
