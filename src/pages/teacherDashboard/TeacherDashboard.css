@@ -296,3 +296,279 @@
         justify-content: center;
     }
 }
+
+/* =============================================
+   COMPETITION / LIVE BATTLE ARENA PANEL
+   ============================================= */
+.competition-dashboard-panel {
+    margin: 2rem 0 1.5rem 0;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 12px 48px rgba(80, 30, 180, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.comp-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.comp-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.comp-panel-title h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #a78bfa, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.comp-sword-icon {
+    color: #a78bfa;
+    filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.6));
+}
+
+.comp-create-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.5);
+}
+
+.comp-create-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.65);
+    background: linear-gradient(135deg, #6d28d9, #be185d);
+}
+
+/* Create Form Card */
+.comp-create-form-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(167, 139, 250, 0.25);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    animation: slideDownIn 0.3s ease;
+}
+
+@keyframes slideDownIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.comp-create-form-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e0d4ff;
+    margin: 0 0 0.4rem 0;
+}
+
+.comp-form-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 1.2rem;
+}
+
+.comp-form-row {
+    margin-bottom: 1rem;
+}
+
+.comp-form-row label {
+    display: block;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.comp-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(167,139,250,0.35);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.comp-input::placeholder { color: rgba(255,255,255,0.35); }
+.comp-input:focus { border-color: #a78bfa; background: rgba(255,255,255,0.14); }
+
+.comp-error-msg {
+    font-size: 13px;
+    color: #f87171;
+    margin: 0.4rem 0 0.8rem;
+}
+
+.comp-launch-btn {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 18px rgba(124,58,237,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.comp-launch-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(124,58,237,0.65);
+}
+
+.comp-launch-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* My Competitions List */
+.comp-list-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.75);
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.comp-empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255,255,255,0.45);
+}
+
+.comp-empty-icon {
+    color: rgba(167,139,250,0.4);
+    margin-bottom: 0.75rem;
+}
+
+.comp-loading-msg {
+    color: rgba(255,255,255,0.45);
+    font-size: 14px;
+    padding: 1rem;
+}
+
+.comp-items-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comp-item-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.22s ease;
+    cursor: pointer;
+}
+
+.comp-item-card:hover {
+    background: rgba(167,139,250,0.15);
+    border-color: rgba(167,139,250,0.4);
+    transform: translateX(4px);
+    color: #fff;
+    text-decoration: none;
+}
+
+.comp-item-card.status-active {
+    border-left: 4px solid #4ade80;
+    padding-left: 14px;
+}
+
+.comp-item-card.status-lobby {
+    border-left: 4px solid #facc15;
+    padding-left: 14px;
+}
+
+.comp-item-card.status-finished {
+    border-left: 4px solid #94a3b8;
+    padding-left: 14px;
+    opacity: 0.75;
+}
+
+.comp-item-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.comp-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dot-active { background: #4ade80; box-shadow: 0 0 8px #4ade80; animation: blink-dot 1.2s infinite; }
+.dot-lobby  { background: #facc15; box-shadow: 0 0 8px #facc15; }
+.dot-finished { background: #94a3b8; }
+
+@keyframes blink-dot {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+.comp-item-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e0d4ff;
+    margin: 0 0 4px 0;
+}
+
+.comp-item-meta {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    margin: 0;
+}
+
+.comp-arrow {
+    color: rgba(255,255,255,0.35);
+    transition: transform 0.2s;
+}
+
+.comp-item-card:hover .comp-arrow {
+    transform: translateX(4px);
+    color: #a78bfa;
+}
+
+@media (max-width: 600px) {
+    .competition-dashboard-panel {
+        padding: 1.25rem;
+        border-radius: 14px;
+    }
+    .comp-panel-title h2 { font-size: 1.15rem; }
+    .comp-create-btn { padding: 9px 14px; font-size: 13px; }
+}

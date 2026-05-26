@@ -9,6 +9,7 @@ import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVide
 import AttemptHistory from '../../components/attemptHistory/AttemptHistory'
 import API_BASE_URL from '../../config/api.config'
 import soundEffects from '../../utils/soundEffects'
+import { Swords, Zap } from 'lucide-react'
 import '../../reusable.css'
 import './StudentDashboard.css'
 
@@ -29,6 +30,11 @@ function StudentDashboard() {
     const [resultsCache, setResultsCache] = useState({}) // {assignmentId: {score, total}}
     const isAuth = localStorage.getItem('O_authWEB')
     const userID = localStorage.getItem('pp_id') || 'unknown'
+
+    // Competition join states
+    const [compIdInput, setCompIdInput] = useState('')
+    const [joiningComp, setJoiningComp] = useState(false)
+    const [joinCompError, setJoinCompError] = useState(null)
 
     // Check if an assignment has saved progress in localStorage
     const hasInProgress = (assignmentId) => {
@@ -197,6 +203,46 @@ function StudentDashboard() {
                             <h3>📝 Your Homework List</h3>
                             <p className="list-tagline">Solve pending assignments or review your grades below.</p>
                         </div>
+
+                        {/* ===== JOIN LIVE BATTLE SECTION ===== */}
+                        <div className="student-join-battle-panel">
+                            <div className="battle-panel-left">
+                                <div className="battle-panel-icon-ring">
+                                    <Swords size={28} className="battle-sword-icon" />
+                                </div>
+                                <div>
+                                    <h3 className="battle-panel-title">Live Battle Arena</h3>
+                                    <p className="battle-panel-sub">Your teacher started a live competition! Enter the Battle ID to join.</p>
+                                </div>
+                            </div>
+                            <div className="battle-panel-right">
+                                <input
+                                    id="comp-id-join-input"
+                                    type="text"
+                                    className="battle-id-input"
+                                    placeholder="Paste Competition ID here..."
+                                    value={compIdInput}
+                                    onChange={e => { setCompIdInput(e.target.value); setJoinCompError(null); }}
+                                />
+                                {joinCompError && <p className="join-comp-error">{joinCompError}</p>}
+                                <button
+                                    id="join-battle-btn"
+                                    className="battle-join-btn"
+                                    disabled={joiningComp}
+                                    onClick={() => {
+                                        const id = compIdInput.trim();
+                                        if (!id) { setJoinCompError('Please paste a valid Competition ID from your teacher.'); return; }
+                                        soundEffects.playClick();
+                                        setJoiningComp(true);
+                                        navigate(`/student/competition/${id}`);
+                                    }}
+                                >
+                                    <Zap size={16} />
+                                    <span>{joiningComp ? 'Entering Arena...' : 'Join Battle!'}</span>
+                                </button>
+                            </div>
+                        </div>
+                        {/* ===== JOIN LIVE BATTLE SECTION END ===== */}
 
                         {assignmentsLoading ? (
                             <DashboardLoading />

@@ -1824,3 +1824,155 @@
     margin: 0;
 }
 
+/* =============================================
+   JOIN LIVE BATTLE PANEL (Student Dashboard)
+   ============================================= */
+.student-join-battle-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 12px 48px rgba(80, 30, 180, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    flex-wrap: wrap;
+}
+
+.battle-panel-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 220px;
+}
+
+.battle-panel-icon-ring {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 18px rgba(124, 58, 237, 0.5);
+    animation: battle-icon-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes battle-icon-pulse {
+    0%, 100% { box-shadow: 0 4px 18px rgba(124, 58, 237, 0.5); transform: scale(1); }
+    50%      { box-shadow: 0 6px 28px rgba(124, 58, 237, 0.75); transform: scale(1.06); }
+}
+
+.battle-sword-icon {
+    color: #fff;
+}
+
+.battle-panel-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0 0 4px 0;
+    background: linear-gradient(90deg, #a78bfa, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.battle-panel-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.battle-panel-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 260px;
+    justify-content: flex-end;
+}
+
+.battle-id-input {
+    flex: 1;
+    min-width: 180px;
+    padding: 11px 14px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(167,139,250,0.35);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.battle-id-input::placeholder {
+    color: rgba(255,255,255,0.35);
+}
+
+.battle-id-input:focus {
+    border-color: #a78bfa;
+    background: rgba(255,255,255,0.15);
+}
+
+.join-comp-error {
+    font-size: 12px;
+    color: #f87171;
+    margin: 0;
+    width: 100%;
+    text-align: right;
+}
+
+.battle-join-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.5);
+    white-space: nowrap;
+}
+
+.battle-join-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.65);
+    background: linear-gradient(135deg, #6d28d9, #be185d);
+}
+
+.battle-join-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+    .student-join-battle-panel {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+    .battle-panel-right {
+        justify-content: stretch;
+        flex-direction: column;
+    }
+    .battle-id-input {
+        min-width: unset;
+        width: 100%;
+    }
+    .battle-join-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

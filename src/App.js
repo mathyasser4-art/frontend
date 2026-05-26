@@ -42,6 +42,8 @@ import GamesMenu from './pages/studentDashboard/GamesMenu';
 import LiveChatWidget from './components/liveChat/LiveChatWidget';
 import ChatManagement from './pages/dashboardSchool/ChatManagement';
 import ClassHomework from './pages/classHomework/ClassHomework';
+import TeacherCompetitionLobby from './pages/teacherDashboard/TeacherCompetitionLobby';
+import StudentCompetition from './pages/studentDashboard/StudentCompetition';
 
 function App() {
   const isAuth = localStorage.getItem('O_authWEB')
@@ -76,7 +78,9 @@ function App() {
       <Route path='/dashboard-school/chats' element={isAuth && (role === 'School' || role === 'IT') ? <ChatManagement /> : <Navigate to='/' />} />
       <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/' />} />
       <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/' />} />
+      <Route path='/student/competition/:competitionId' element={isAuth && role === 'Student' ? <StudentCompetition /> : <Navigate to='/' />} />
       <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/' />} />
+      <Route path='/teacher/competition/:competitionId' element={isAuth && role === 'Teacher' ? <TeacherCompetitionLobby /> : <Navigate to='/' />} />
       <Route path='/teacher/registration' element={<TeacherRegistrationPage />} />
       <Route path='/dashboard/supervisor' element={isAuth && role === 'Supervisor' ? <SupervisorDashboard /> : <Navigate to='/' />} />
       <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth && role === 'Teacher' ? <AssignmentReport /> : <Navigate to='/' />} />

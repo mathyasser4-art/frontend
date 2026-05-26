@@ -3,9 +3,9 @@ import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import TrialBanner from '../../components/trialBanner/TrialBanner';
 import UpgradePrompt from '../../components/upgradePrompt/UpgradePrompt';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import MathInput from "react-math-keyboard";
-import { X } from 'lucide-react'
+import { X, Swords, Trophy, Plus, ChevronRight } from 'lucide-react'
 import getAssignment from '../../api/teacher/getAssignment.api'
 import getClass from '../../api/teacher/getClass.api';
 import duplicateAssignment from '../../api/assignment/duplicateAssignment.api';
@@ -13,10 +13,12 @@ import removeAssignment from '../../api/assignment/removeAssignment.api';
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import { History } from 'lucide-react'
 import soundEffects from '../../utils/soundEffects'
+import { createCompetition, getTeacherCompetitions } from '../../api/competition/competition.api';
 import '../../reusable.css'
 import './TeacherDashboard.css'
 
 function TeacherDashboard() {
+    const navigate = useNavigate();
     const [studentList, setStudentList] = useState([])
     const [allAsignment, setAllAsignment] = useState([])
     const [questionList, setQuestionList] = useState([])
@@ -39,6 +41,15 @@ function TeacherDashboard() {
     const isAuth = localStorage.getItem('O_authWEB')
     const isTrialMode = localStorage.getItem('isTrialMode') === 'true'
 
+    // Competition states
+    const [myCompetitions, setMyCompetitions] = useState([])
+    const [compLoading, setCompLoading] = useState(true)
+    const [showCreateComp, setShowCreateComp] = useState(false)
+    const [compTitle, setCompTitle] = useState('')
+    const [compTimer, setCompTimer] = useState(300)
+    const [creatingComp, setCreatingComp] = useState(false)
+    const [compError, setCompError] = useState(null)
+
     useEffect(() => {
         const handleGetAssignment = () => {
             getAssignment(setLoading, setAllAsignment, setError)
@@ -48,6 +59,43 @@ function TeacherDashboard() {
             handleGetAssignment()
         }
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Fetch teacher's competitions
+    useEffect(() => {
+        const fetchCompetitions = async () => {
+            try {
+                const res = await getTeacherCompetitions();
+                if (res.message === 'success') {
+                    setMyCompetitions(res.competitions || []);
+                }
+            } catch (e) {
+                console.error('Could not load competitions:', e);
+            } finally {
+                setCompLoading(false);
+            }
+        };
+        if (isAuth) fetchCompetitions();
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleCreateCompetition = async () => {
+        if (!compTitle.trim()) { setCompError('Please enter a competition title.'); return; }
+        setCreatingComp(true);
+        setCompError(null);
+        try {
+            const res = await createCompetition({ title: compTitle, timer: Number(compTimer) });
+            if (res.message === 'success') {
+                soundEffects.playClick();
+                // Navigate directly to the lobby
+                navigate(`/teacher/competition/${res.competition._id}`);
+            } else {
+                setCompError(res.message);
+                setCreatingComp(false);
+            }
+        } catch (e) {
+            setCompError('Failed to create competition. Please try again.');
+            setCreatingComp(false);
+        }
+    };
 
     const openStudentListPopup = (assignmentID) => {
         const findAssignment = allAsignment.filter(e => e._id === assignmentID)[0]
@@ -260,6 +308,100 @@ function TeacherDashboard() {
                     )
                 })}
             </div>
+
+            {/* ========== LIVE COMPETITION PANEL ========== */}
+            <div className="competition-dashboard-panel">
+                <div className="comp-panel-header">
+                    <div className="comp-panel-title">
+                        <Swords size={22} className="comp-sword-icon" />
+                        <h2>Live Battle Arena</h2>
+                    </div>
+                    <button
+                        id="create-competition-btn"
+                        className="comp-create-btn"
+                        onClick={() => { soundEffects.playClick(); setShowCreateComp(s => !s); setCompError(null); }}
+                    >
+                        <Plus size={18} />
+                        <span>Create New Battle</span>
+                    </button>
+                </div>
+
+                {/* Create Competition Form */}
+                {showCreateComp && (
+                    <div className="comp-create-form-card">
+                        <h3>⚔️ Setup a New Competition</h3>
+                        <p className="comp-form-sub">Configure the battle and you will be taken to the lobby. Students join from their dashboard using the competition link.</p>
+                        <div className="comp-form-row">
+                            <label>Battle Title</label>
+                            <input
+                                type="text"
+                                id="comp-title-input"
+                                value={compTitle}
+                                onChange={e => setCompTitle(e.target.value)}
+                                placeholder="e.g. Friday Speed Challenge 🔥"
+                                className="comp-input"
+                            />
+                        </div>
+                        <div className="comp-form-row">
+                            <label>Timer (seconds — e.g. 300 = 5 minutes)</label>
+                            <input
+                                type="number"
+                                id="comp-timer-input"
+                                value={compTimer}
+                                onChange={e => setCompTimer(e.target.value)}
+                                min={30}
+                                max={3600}
+                                className="comp-input"
+                            />
+                        </div>
+                        {compError && <p className="comp-error-msg">{compError}</p>}
+                        <button
+                            id="launch-battle-btn"
+                            className="comp-launch-btn"
+                            onClick={handleCreateCompetition}
+                            disabled={creatingComp}
+                        >
+                            {creatingComp ? <span className="loader"></span> : '🚀 Launch Battle & Enter Lobby'}
+                        </button>
+                    </div>
+                )}
+
+                {/* My Competitions List */}
+                <div className="comp-list-wrapper">
+                    <h3 className="comp-list-title">Your Past Battles</h3>
+                    {compLoading ? (
+                        <div className="comp-loading-msg">Loading battles...</div>
+                    ) : myCompetitions.length === 0 ? (
+                        <div className="comp-empty-state">
+                            <Trophy size={40} className="comp-empty-icon" />
+                            <p>No battles yet. Create your first one above!</p>
+                        </div>
+                    ) : (
+                        <div className="comp-items-grid">
+                            {myCompetitions.map(comp => (
+                                <Link
+                                    key={comp._id}
+                                    to={`/teacher/competition/${comp._id}`}
+                                    className={`comp-item-card status-${comp.status}`}
+                                    onClick={soundEffects.playClick}
+                                >
+                                    <div className="comp-item-info">
+                                        <span className={`comp-status-dot dot-${comp.status}`}></span>
+                                        <div>
+                                            <h4 className="comp-item-title">{comp.title}</h4>
+                                            <p className="comp-item-meta">
+                                                {comp.participants?.length || 0} players • {comp.timer / 60} min
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <ChevronRight size={20} className="comp-arrow" />
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+            {/* ========== LIVE COMPETITION PANEL END ========== */}
 
             {/*student list popup start */}
             <div className="add-to-class-popup student-list-popup class-popup-hide d-none justify-content-center align-items-center">
