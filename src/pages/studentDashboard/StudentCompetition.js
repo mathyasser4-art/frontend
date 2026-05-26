@@ -60,7 +60,18 @@ function StudentCompetition() {
                 const detailsRes = await getCompetitionDetails(competitionId);
                 if (detailsRes.message === 'success') {
                     setCompetition(detailsRes.competition);
-                    setParticipants(detailsRes.competition.participants || []);
+                    setParticipants(prev => {
+                        const dbParticipants = detailsRes.competition.participants || [];
+                        const merged = [...dbParticipants];
+                        prev.forEach(p => {
+                            const pId = p.student?._id || p.student;
+                            const exists = merged.some(dbP => String(dbP.student?._id || dbP.student) === String(pId));
+                            if (!exists) {
+                                merged.push(p);
+                            }
+                        });
+                        return merged;
+                    });
                     setQuestions(detailsRes.competition.questions || []);
                     
                     const compStatus = detailsRes.competition.status;
@@ -91,6 +102,7 @@ function StudentCompetition() {
     useEffect(() => {
         if (!competitionId) return;
 
+        Pusher.logToConsole = true;
         const pusher = new Pusher('18e355bfbafee7a1aa57', {
             cluster: 'eu',
             forceTLS: true
@@ -488,11 +500,13 @@ function StudentCompetition() {
                         <div className="visual-race-track-lanes">
                             {sortedParticipants.slice(0, 4).map((p, idx) => {
                                 const isMe = String(p.student?._id || p.student) === String(studentID);
-                                const progressPercent = totalQuestions > 0 ? (p.score / totalQuestions) * 100 : 0;
+                                const progressPercent = totalQuestions > 0 ? ((p.totalAnswered || 0) / totalQuestions) * 100 : 0;
 
                                 return (
                                     <div key={p.student?._id || idx} className={`lane-row ${isMe ? 'lane-me' : ''}`}>
-                                        <span className="lane-name-lbl">{p.student?.userName}</span>
+                                        <span className="lane-name-lbl">
+                                            {p.student?.userName} ({p.totalAnswered || 0} / {totalQuestions} Solved)
+                                        </span>
                                         <div className="lane-road">
                                             <div 
                                                 className="lane-runner-progress" 

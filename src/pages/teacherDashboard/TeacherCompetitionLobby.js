@@ -25,7 +25,18 @@ function TeacherCompetitionLobby() {
                 const res = await getCompetitionDetails(competitionId);
                 if (res.message === 'success') {
                     setCompetition(res.competition);
-                    setParticipants(res.competition.participants || []);
+                    setParticipants(prev => {
+                        const dbParticipants = res.competition.participants || [];
+                        const merged = [...dbParticipants];
+                        prev.forEach(p => {
+                            const pId = p.student?._id || p.student;
+                            const exists = merged.some(dbP => String(dbP.student?._id || dbP.student) === String(pId));
+                            if (!exists) {
+                                merged.push(p);
+                            }
+                        });
+                        return merged;
+                    });
                     setStatus(res.competition.status || 'lobby');
                     if (res.competition.status === 'finished') {
                         setTriggerConfetti(true);
@@ -47,6 +58,7 @@ function TeacherCompetitionLobby() {
         if (!competitionId) return;
 
         // Initialize Pusher Channels
+        Pusher.logToConsole = true;
         const pusher = new Pusher('18e355bfbafee7a1aa57', {
             cluster: 'eu',
             forceTLS: true
@@ -259,7 +271,7 @@ function TeacherCompetitionLobby() {
 
                         <div className="live-race-track-list">
                             {sortedParticipants.map((p, idx) => {
-                                const scorePercent = totalQuestions > 0 ? (p.score / totalQuestions) * 100 : 0;
+                                const progressPercent = totalQuestions > 0 ? ((p.totalAnswered || 0) / totalQuestions) * 100 : 0;
                                 const isFinished = !!p.finishedAt;
 
                                 return (
@@ -267,12 +279,14 @@ function TeacherCompetitionLobby() {
                                         <div className="racer-rank">#{idx + 1}</div>
                                         <div className="racer-name-tag">
                                             <span className="name">{p.student?.userName}</span>
-                                            <span className="score-ratio">{p.score} / {totalQuestions} Solved</span>
+                                            <span className="score-ratio">
+                                                {p.totalAnswered || 0} / {totalQuestions} Solved ({p.score} Correct, {p.wrongAnswers || 0} Wrong)
+                                            </span>
                                         </div>
                                         <div className="track-lane">
                                             <div 
                                                 className={`racer-progress-bar ${isFinished ? 'finished-bar' : ''}`}
-                                                style={{ width: `${Math.max(8, scorePercent)}%` }}
+                                                style={{ width: `${Math.max(8, progressPercent)}%` }}
                                             >
                                                 <div className="racer-avatar-runner">
                                                     {p.student?.userName?.charAt(0).toUpperCase()}
