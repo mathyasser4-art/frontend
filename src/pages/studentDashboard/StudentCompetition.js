@@ -500,17 +500,19 @@ function StudentCompetition() {
                         <div className="visual-race-track-lanes">
                             {sortedParticipants.slice(0, 4).map((p, idx) => {
                                 const isMe = String(p.student?._id || p.student) === String(studentID);
-                                const progressPercent = totalQuestions > 0 ? ((p.totalAnswered || 0) / totalQuestions) * 100 : 0;
+                                // Use local state for current student (instant), Pusher data for others
+                                const pAnswered = isMe ? totalAnswered : (p.totalAnswered || 0);
+                                const progressPercent = totalQuestions > 0 ? (pAnswered / totalQuestions) * 100 : 0;
 
                                 return (
                                     <div key={p.student?._id || idx} className={`lane-row ${isMe ? 'lane-me' : ''}`}>
                                         <span className="lane-name-lbl">
-                                            {p.student?.userName} ({p.totalAnswered || 0} / {totalQuestions} Solved)
+                                            {p.student?.userName} ({pAnswered} / {totalQuestions} Solved)
                                         </span>
                                         <div className="lane-road">
                                             <div 
                                                 className="lane-runner-progress" 
-                                                style={{ width: `${Math.max(8, progressPercent)}%` }}
+                                                style={{ width: `${pAnswered > 0 ? Math.max(8, progressPercent) : 0}%` }}
                                             >
                                                 <div className="runner-avatar-icon">
                                                     {p.student?.userName?.charAt(0).toUpperCase()}

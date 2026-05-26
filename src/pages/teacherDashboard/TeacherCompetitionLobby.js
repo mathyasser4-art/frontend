@@ -286,7 +286,7 @@ function TeacherCompetitionLobby() {
                                         <div className="track-lane">
                                             <div 
                                                 className={`racer-progress-bar ${isFinished ? 'finished-bar' : ''}`}
-                                                style={{ width: `${Math.max(8, progressPercent)}%` }}
+                                                style={{ width: `${(p.totalAnswered || 0) > 0 ? Math.max(8, progressPercent) : 0}%` }}
                                             >
                                                 <div className="racer-avatar-runner">
                                                     {p.student?.userName?.charAt(0).toUpperCase()}
