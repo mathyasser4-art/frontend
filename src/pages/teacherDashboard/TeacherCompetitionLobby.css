@@ -291,9 +291,27 @@
     border-radius: 16px;
     padding: 15px 20px;
     display: grid;
-    grid-template-columns: 40px 180px 1fr 100px;
+    grid-template-columns: 40px 180px 1fr 100px 100px;
     align-items: center;
     gap: 20px;
+}
+
+.racer-wrong-count {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.racer-wrong-count .wrong-label {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.racer-wrong-count .wrong-value {
+    color: #ef4444;
 }
 
 .racer-rank {
@@ -520,6 +538,16 @@
 .badge-excellent { background: rgba(16, 185, 129, 0.1); color: var(--emerald-green); font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; }
 .badge-competitor { background: rgba(255, 255, 255, 0.05); color: #94a3b8; font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; }
 
+.score-correct {
+    color: var(--emerald-green) !important;
+    font-weight: 700;
+}
+
+.score-wrong {
+    color: #ef4444 !important;
+    font-weight: 700;
+}
+
 .exit-lobby-btn {
     text-decoration: none;
     text-align: center;
@@ -577,6 +605,10 @@
     }
     
     .racer-status-icon {
+        display: none;
+    }
+    
+    .racer-wrong-count {
         display: none;
     }
     

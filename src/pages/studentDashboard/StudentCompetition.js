@@ -24,18 +24,27 @@ function StudentCompetition() {
     const [questions, setQuestions] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answer, setAnswer] = useState('');
-    const [score, setScore] = useState(0);
-    const [checking, setChecking] = useState(false);
-    const [isCorrect, setIsCorrect] = useState(null);
     const [lobbyCountdown, setLobbyCountdown] = useState(null);
     const [timerRemaining, setTimerRemaining] = useState(null);
     const [triggerConfetti, setTriggerConfetti] = useState(false);
+
+    // Homework-style: track answers locally, check in background, show results at end
+    const [answersMap, setAnswersMap] = useState({}); // { questionId: { answer, checked, correct } }
+    const [correctCount, setCorrectCount] = useState(0);
+    const [wrongCount, setWrongCount] = useState(0);
+    const [totalAnswered, setTotalAnswered] = useState(0);
+    const [isCheckingAnswers, setIsCheckingAnswers] = useState(false);
 
     // Badges earned at the end
     const [badges, setBadges] = useState([]);
 
     const studentID = localStorage.getItem('pp_id');
     const studentName = localStorage.getItem('pp_name') || 'Student';
+
+    // Refs to always have latest counts for background score sync
+    const correctCountRef = useRef(0);
+    const wrongCountRef = useRef(0);
+    const totalAnsweredRef = useRef(0);
 
     // Fetch initial details and join lobby
     useEffect(() => {
@@ -44,7 +53,6 @@ function StudentCompetition() {
                 // Join the lobby
                 const joinRes = await joinCompetition(competitionId);
                 if (joinRes.message !== 'success') {
-                    // If already started/finished, we might get an error
                     console.log("Could not join lobby:", joinRes.message);
                 }
 
@@ -65,7 +73,7 @@ function StudentCompetition() {
                         setTimerRemaining(remaining > 0 ? remaining : 0);
                     } else if (compStatus === 'finished') {
                         setTriggerConfetti(true);
-                        calculateBadges(detailsRes.competition.participants || []);
+                        calculateBadges(detailsRes.competition.participants || [], detailsRes.competition.questions?.length || 0);
                     }
                 } else {
                     setError(detailsRes.message);
@@ -95,7 +103,7 @@ function StudentCompetition() {
             setParticipants(prev => {
                 const exists = prev.some(p => String(p.student?._id || p.student) === String(data.studentId));
                 if (exists) return prev;
-                return [...prev, { student: { _id: data.studentId, userName: data.userName }, score: 0 }];
+                return [...prev, { student: { _id: data.studentId, userName: data.userName }, score: 0, totalAnswered: 0, wrongAnswers: 0 }];
             });
         });
 
@@ -107,8 +115,10 @@ function StudentCompetition() {
                     if (String(pId) === String(data.studentId)) {
                         return { 
                             ...p, 
-                            score: data.score, 
-                            finishedAt: data.finished ? new Date() : null 
+                            score: data.score,
+                            totalAnswered: data.totalAnswered,
+                            wrongAnswers: data.wrongAnswers,
+                            finishedAt: data.finished ? new Date() : p.finishedAt 
                         };
                     }
                     return p;
@@ -178,79 +188,151 @@ function StudentCompetition() {
         setAnswer('');
     };
 
-    // Submitting answer to check
-    const handleSubmitAnswer = async () => {
-        if (!answer.trim() || checking) return;
-        setChecking(true);
-
-        const currentQuestion = questions[currentIndex];
-
+    // Background answer check (fire & forget) — like homework flow
+    const syncAnswerWithBackend = async (questionId, questionAnswer) => {
         try {
-            // Check if correct using checkTheAnswer endpoint
-            const res = await fetch(`${API_BASE_URL}/question/checkTheAnswer/${currentQuestion._id}`, {
+            const response = await fetch(`${API_BASE_URL}/question/checkTheAnswer/${questionId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'authrization': `pracYas09${localStorage.getItem('O_authWEB')}`
                 },
-                body: JSON.stringify({ questionAnswer: answer.trim() })
+                body: JSON.stringify({ questionAnswer: questionAnswer.trim() })
             });
-            const resJson = await res.json();
+            const result = await response.json();
+            const isCorrect = result.message === 'success';
 
-            let newScore = score;
-            if (resJson.message === 'success') {
-                soundEffects.playCorrect?.();
-                newScore = score + 1;
-                setScore(newScore);
-                setIsCorrect(true);
+            // Update the answers map
+            setAnswersMap(prev => ({
+                ...prev,
+                [questionId]: { ...prev[questionId], checked: true, correct: isCorrect }
+            }));
+
+            // Update counts
+            if (isCorrect) {
+                correctCountRef.current += 1;
+                setCorrectCount(correctCountRef.current);
             } else {
-                soundEffects.playWrong?.();
-                setIsCorrect(false);
+                wrongCountRef.current += 1;
+                setWrongCount(wrongCountRef.current);
             }
 
-            // Broadcast score update
-            const isLastQuestion = currentIndex === questions.length - 1;
-            await updateLiveScore(competitionId, { 
-                score: newScore, 
-                finished: isLastQuestion 
-            });
-
-            // Transition delay
-            setTimeout(() => {
-                setIsCorrect(null);
-                setAnswer('');
-                setChecking(false);
-                if (isLastQuestion) {
-                    handleFinishExam();
-                } else {
-                    setCurrentIndex(prev => prev + 1);
-                }
-            }, 1000);
-
+            // Broadcast live score update to other participants
+            try {
+                await updateLiveScore(competitionId, {
+                    score: correctCountRef.current,
+                    totalAnswered: totalAnsweredRef.current,
+                    wrongAnswers: wrongCountRef.current,
+                    finished: false
+                });
+            } catch (e) {
+                console.error("Failed to broadcast score:", e);
+            }
         } catch (err) {
-            console.error("Failed to check answer:", err);
-            setChecking(false);
+            console.error('Background sync failed for question', questionId, err);
+            setAnswersMap(prev => ({
+                ...prev,
+                [questionId]: { ...prev[questionId], checked: false, correct: false }
+            }));
         }
     };
 
-    const handleFinishExam = () => {
-        setStatus('finished');
-        setTriggerConfetti(true);
-        // Refresh detail standings to calculate final badge rewards
-        getCompetitionDetails(competitionId).then(res => {
-            if (res.message === 'success') {
-                setParticipants(res.competition.participants || []);
-                calculateBadges(res.competition.participants || []);
-            }
-        });
+    // Submit answer — homework style: save locally, check in background, move to next immediately
+    const handleSubmitAnswer = () => {
+        if (!answer.trim()) return;
+
+        const currentQuestion = questions[currentIndex];
+        
+        // Save answer locally
+        setAnswersMap(prev => ({
+            ...prev,
+            [currentQuestion._id]: { answer: answer.trim(), checked: false, correct: false }
+        }));
+
+        // Increment total answered
+        totalAnsweredRef.current += 1;
+        setTotalAnswered(totalAnsweredRef.current);
+
+        // Fire background check (don't await — student moves on immediately)
+        syncAnswerWithBackend(currentQuestion._id, answer);
+
+        soundEffects.playClick();
+
+        // Move to next question immediately or finish if last
+        const isLastQuestion = currentIndex === questions.length - 1;
+        setAnswer('');
+        
+        if (isLastQuestion) {
+            handleFinishExam();
+        } else {
+            setCurrentIndex(prev => prev + 1);
+        }
     };
 
-    const calculateBadges = (allParticipants) => {
+    // Navigate to a specific question (clicking on question number)
+    const goToQuestion = (index) => {
+        // Save current answer before switching
+        if (answer.trim() && questions[currentIndex]) {
+            const currentQuestion = questions[currentIndex];
+            if (!answersMap[currentQuestion._id]) {
+                setAnswersMap(prev => ({
+                    ...prev,
+                    [currentQuestion._id]: { answer: answer.trim(), checked: false, correct: false }
+                }));
+                totalAnsweredRef.current += 1;
+                setTotalAnswered(totalAnsweredRef.current);
+                syncAnswerWithBackend(currentQuestion._id, answer);
+            }
+        }
+        setCurrentIndex(index);
+        // Restore saved answer if any
+        const targetQ = questions[index];
+        if (targetQ && answersMap[targetQ._id]) {
+            setAnswer(answersMap[targetQ._id].answer || '');
+        } else {
+            setAnswer('');
+        }
+    };
+
+    const handleFinishExam = async () => {
+        setStatus('finished');
+        setTriggerConfetti(true);
+        setIsCheckingAnswers(true);
+
+        // Wait a moment for any pending background checks to complete
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Final score broadcast
+        try {
+            await updateLiveScore(competitionId, {
+                score: correctCountRef.current,
+                totalAnswered: totalAnsweredRef.current,
+                wrongAnswers: wrongCountRef.current,
+                finished: true
+            });
+        } catch (e) {
+            console.error("Failed to broadcast final score:", e);
+        }
+
+        // Refresh detail standings
+        try {
+            const res = await getCompetitionDetails(competitionId);
+            if (res.message === 'success') {
+                setParticipants(res.competition.participants || []);
+                calculateBadges(res.competition.participants || [], res.competition.questions?.length || 0);
+            }
+        } catch (e) {
+            console.error("Failed to refresh standings:", e);
+        }
+
+        setIsCheckingAnswers(false);
+    };
+
+    const calculateBadges = (allParticipants, total) => {
         const myDetails = allParticipants.find(p => String(p.student?._id || p.student) === String(studentID));
         if (!myDetails) return;
 
         const myScore = myDetails.score;
-        const total = questions.length;
         const currentBadges = [];
 
         if (myScore === total && total > 0) {
@@ -386,7 +468,7 @@ function StudentCompetition() {
                 </div>
             )}
 
-            {/* 3. ACTIVE LIVE SOLVING GAME */}
+            {/* 3. ACTIVE LIVE SOLVING GAME — Homework style (no instant correction) */}
             {status === 'active' && currentQuestion && (
                 <div className="active-arena-gameplay-wrapper">
                     {/* Race Track Header */}
@@ -402,7 +484,7 @@ function StudentCompetition() {
                             </span>
                         </div>
 
-                        {/* Top 3 Competitor Visual Progress Bars */}
+                        {/* Top Competitor Visual Progress Bars */}
                         <div className="visual-race-track-lanes">
                             {sortedParticipants.slice(0, 4).map((p, idx) => {
                                 const isMe = String(p.student?._id || p.student) === String(studentID);
@@ -427,6 +509,23 @@ function StudentCompetition() {
                         </div>
                     </div>
 
+                    {/* Question number navigation bar */}
+                    <div className="competition-question-numbers">
+                        {questions.map((q, idx) => {
+                            const isActive = idx === currentIndex;
+                            const hasAnswer = answersMap[q._id] && !isActive;
+                            return (
+                                <p 
+                                    key={q._id || idx}
+                                    className={`${isActive ? 'active-question' : ''} ${hasAnswer ? 'has-answer' : ''}`}
+                                    onClick={() => goToQuestion(idx)}
+                                >
+                                    {idx + 1}
+                                </p>
+                            );
+                        })}
+                    </div>
+
                     <div className="question-solving-box-grid">
                         {/* Question display card */}
                         <div className="solving-question-card-wrapper">
@@ -447,7 +546,7 @@ function StudentCompetition() {
                                     value={answer}
                                     readOnly 
                                     placeholder="?" 
-                                    className={`preview-input ${isCorrect === true ? 'border-success' : isCorrect === false ? 'border-wrong' : ''}`}
+                                    className="preview-input"
                                 />
                             </div>
 
@@ -469,10 +568,18 @@ function StudentCompetition() {
                             <button 
                                 onClick={handleSubmitAnswer}
                                 className="submit-answer-btn-action"
-                                disabled={!answer.trim() || checking}
+                                disabled={!answer.trim()}
                             >
-                                <span>Submit Answer</span>
+                                <span>{currentIndex === questions.length - 1 ? 'Submit & Finish' : 'Next'}</span>
                                 <ArrowRight size={18} />
+                            </button>
+
+                            {/* End Exam button — like homework */}
+                            <button
+                                onClick={handleFinishExam}
+                                className="end-exam-btn-action"
+                            >
+                                End Exam
                             </button>
                         </div>
                     </div>
@@ -487,6 +594,29 @@ function StudentCompetition() {
                             <Trophy size={48} className="gold-trophy" />
                             <h2>Battle Completed!</h2>
                             <p>Here are the final standings of the Abacus Arena</p>
+                        </div>
+
+                        {isCheckingAnswers && (
+                            <div className="checking-overlay">
+                                <div className="loader"></div>
+                                <p>Checking your answers...</p>
+                            </div>
+                        )}
+
+                        {/* Your personal results summary */}
+                        <div className="personal-results-summary">
+                            <div className="result-stat">
+                                <span className="result-label">Correct</span>
+                                <span className="result-value correct-val">{correctCount}</span>
+                            </div>
+                            <div className="result-stat">
+                                <span className="result-label">Wrong</span>
+                                <span className="result-value wrong-val">{wrongCount}</span>
+                            </div>
+                            <div className="result-stat">
+                                <span className="result-label">Unanswered</span>
+                                <span className="result-value unanswered-val">{totalQuestions - totalAnswered}</span>
+                            </div>
                         </div>
 
                         {/* 3D Podium */}
@@ -557,7 +687,8 @@ function StudentCompetition() {
                                     <tr>
                                         <th>Rank</th>
                                         <th>Player</th>
-                                        <th>Solved</th>
+                                        <th>Correct</th>
+                                        <th>Wrong</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -567,7 +698,8 @@ function StudentCompetition() {
                                             <tr key={p.student?._id || idx} className={isMe ? 'row-is-me' : ''}>
                                                 <td><strong>#{idx + 1}</strong></td>
                                                 <td>{p.student?.userName} {isMe && '(You)'}</td>
-                                                <td>{p.score} / {totalQuestions}</td>
+                                                <td className="score-correct">{p.score} / {totalQuestions}</td>
+                                                <td className="score-wrong">{p.wrongAnswers || 0}</td>
                                             </tr>
                                         );
                                     })}

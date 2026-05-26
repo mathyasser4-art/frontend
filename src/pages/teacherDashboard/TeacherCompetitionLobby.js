@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Pusher from 'pusher-js';
 import { getCompetitionDetails, startCompetition, finishCompetition } from '../../api/competition/competition.api';
 import Navbar from '../../components/navbar/Navbar';
@@ -11,7 +11,6 @@ import './TeacherCompetitionLobby.css';
 
 function TeacherCompetitionLobby() {
     const { competitionId } = useParams();
-    const navigate = useNavigate();
     const [competition, setCompetition] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [status, setStatus] = useState('lobby');
@@ -61,7 +60,7 @@ function TeacherCompetitionLobby() {
             setParticipants(prev => {
                 const exists = prev.some(p => String(p.student?._id || p.student) === String(data.studentId));
                 if (exists) return prev;
-                return [...prev, { student: { _id: data.studentId, userName: data.userName }, score: 0 }];
+                return [...prev, { student: { _id: data.studentId, userName: data.userName }, score: 0, totalAnswered: 0, wrongAnswers: 0 }];
             });
         });
 
@@ -74,6 +73,8 @@ function TeacherCompetitionLobby() {
                         return { 
                             ...p, 
                             score: data.score, 
+                            totalAnswered: data.totalAnswered,
+                            wrongAnswers: data.wrongAnswers,
                             finishedAt: data.finished ? new Date() : null 
                         };
                     }
@@ -278,6 +279,10 @@ function TeacherCompetitionLobby() {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="racer-wrong-count">
+                                            <span className="wrong-label">Wrong:</span>
+                                            <strong className="wrong-value">{p.wrongAnswers || 0}</strong>
+                                        </div>
                                         <div className="racer-status-icon">
                                             {isFinished ? (
                                                 <CheckCircle size={22} className="check-success" />
@@ -349,7 +354,8 @@ function TeacherCompetitionLobby() {
                                     <tr>
                                         <th>Rank</th>
                                         <th>Student</th>
-                                        <th>Score</th>
+                                        <th>Correct</th>
+                                        <th>Wrong</th>
                                         <th>Accuracy Status</th>
                                     </tr>
                                 </thead>
@@ -358,7 +364,8 @@ function TeacherCompetitionLobby() {
                                         <tr key={p.student?._id || idx}>
                                             <td><strong>#{idx + 1}</strong></td>
                                             <td>{p.student?.userName}</td>
-                                            <td>{p.score} / {totalQuestions} Correct</td>
+                                            <td className="score-correct">{p.score} / {totalQuestions}</td>
+                                            <td className="score-wrong">{p.wrongAnswers || 0}</td>
                                             <td>
                                                 {p.score === totalQuestions ? (
                                                     <span className="badge-flawless">100% Perfect</span>
