@@ -47,6 +47,7 @@ function TeacherDashboard() {
     const [showCreateComp, setShowCreateComp] = useState(false)
     const [compTitle, setCompTitle] = useState('')
     const [compTimer, setCompTimer] = useState(300)
+    const [compSelectedAssignment, setCompSelectedAssignment] = useState('')
     const [creatingComp, setCreatingComp] = useState(false)
     const [compError, setCompError] = useState(null)
 
@@ -79,10 +80,20 @@ function TeacherDashboard() {
 
     const handleCreateCompetition = async () => {
         if (!compTitle.trim()) { setCompError('Please enter a competition title.'); return; }
+        if (!compSelectedAssignment) { setCompError('Please select a homework assignment to import questions.'); return; }
+        
         setCreatingComp(true);
         setCompError(null);
+
+        const selectedAss = allAsignment.find(a => a._id === compSelectedAssignment);
+        const questionIds = selectedAss ? selectedAss.questions.map(q => q._id || q) : [];
+
         try {
-            const res = await createCompetition({ title: compTitle, timer: Number(compTimer) });
+            const res = await createCompetition({ 
+                title: compTitle, 
+                timer: Number(compTimer),
+                questions: questionIds
+            });
             if (res.message === 'success') {
                 soundEffects.playClick();
                 // Navigate directly to the lobby
@@ -341,6 +352,22 @@ function TeacherDashboard() {
                                 placeholder="e.g. Friday Speed Challenge 🔥"
                                 className="comp-input"
                             />
+                        </div>
+                        <div className="comp-form-row">
+                            <label>Select Homework Assignment (Import Questions)</label>
+                            <select
+                                value={compSelectedAssignment}
+                                onChange={e => setCompSelectedAssignment(e.target.value)}
+                                className="comp-input"
+                                style={{ background: 'rgba(15, 23, 42, 0.9)', color: '#fff', border: '1px solid rgba(167, 139, 250, 0.35)' }}
+                            >
+                                <option value="">-- Choose Homework Assignment --</option>
+                                {allAsignment?.map(item => (
+                                    <option key={item._id} value={item._id}>
+                                        {item.title} ({item.questions?.length || 0} Questions)
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div className="comp-form-row">
                             <label>Timer (seconds — e.g. 300 = 5 minutes)</label>
