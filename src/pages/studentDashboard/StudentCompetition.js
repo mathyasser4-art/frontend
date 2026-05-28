@@ -65,9 +65,33 @@ function StudentCompetition() {
     const totalAnsweredRef = useRef(0);
     const answersMapRef = useRef({});
     const [localFinishedAt, setLocalFinishedAt] = useState(null);
+    const wakeLockRef = useRef(null);
+
+    // Robust, gesture-authorized Screen Wake Lock request helper
+    const requestWakeLock = async () => {
+        try {
+            if ('wakeLock' in navigator && !wakeLockRef.current) {
+                wakeLockRef.current = await navigator.wakeLock.request('screen');
+                console.log('[Wake Lock] Screen Wake Lock acquired successfully with user gesture!');
+                
+                wakeLockRef.current.addEventListener('release', () => {
+                    console.log('[Wake Lock] Screen Wake Lock was released.');
+                    wakeLockRef.current = null;
+                });
+            }
+        } catch (err) {
+            console.warn('[Wake Lock] Failed to acquire Screen Wake Lock:', err);
+        }
+    };
 
     // Automatic Fullscreen Mode Request on mount and user gestures
     useEffect(() => {
+        // Prevent background leaks on mobile screens
+        document.body.style.overflowX = 'hidden';
+        document.documentElement.style.overflowX = 'hidden';
+        const oldBodyBg = document.body.style.background;
+        document.body.style.background = '#090d16'; // Match deep dark blue/purple theme
+
         const enterFullscreen = () => {
             const docEl = document.documentElement;
             if (docEl.requestFullscreen) {
@@ -84,11 +108,10 @@ function StudentCompetition() {
         // Try immediately
         enterFullscreen();
 
-        // Fallback on the first user interaction anywhere in the document
+        // Aggressively attempt fullscreen and wake lock on user clicks/touches (even before game starts!)
         const handleGesture = () => {
             enterFullscreen();
-            document.removeEventListener('click', handleGesture);
-            document.removeEventListener('touchstart', handleGesture);
+            requestWakeLock();
         };
         document.addEventListener('click', handleGesture);
         document.addEventListener('touchstart', handleGesture);
@@ -96,44 +119,43 @@ function StudentCompetition() {
         return () => {
             document.removeEventListener('click', handleGesture);
             document.removeEventListener('touchstart', handleGesture);
+            document.body.style.overflowX = '';
+            document.documentElement.style.overflowX = '';
+            document.body.style.background = oldBodyBg;
         };
     }, []);
 
     // Screen Wake Lock API to prevent device from dimming or going to sleep during active gameplay
     useEffect(() => {
-        let wakeLock = null;
-
-        const requestWakeLock = async () => {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('[Wake Lock] Screen Wake Lock acquired successfully!');
-                }
-            } catch (err) {
-                console.warn('[Wake Lock] Failed to acquire Screen Wake Lock:', err);
-            }
-        };
-
-        // Acquire lock when game becomes active
+        // Acquire lock when game becomes active (will try immediately)
         if (status === 'active') {
             requestWakeLock();
         }
 
         // Re-acquire lock if tab visibility changes (e.g. user goes back to app)
         const handleVisibilityChange = async () => {
-            if (wakeLock !== null && document.visibilityState === 'visible' && status === 'active') {
+            if (document.visibilityState === 'visible' && status === 'active') {
                 await requestWakeLock();
             }
         };
 
+        // Periodic check loop (every 15 seconds) to ensure wake lock is alive during active gameplay
+        const checkInterval = setInterval(() => {
+            if (status === 'active' && !wakeLockRef.current) {
+                requestWakeLock();
+            }
+        }, 15000);
+
         document.addEventListener('visibilitychange', handleVisibilityChange);
 
         return () => {
+            clearInterval(checkInterval);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
-            if (wakeLock !== null) {
-                wakeLock.release()
+            if (wakeLockRef.current) {
+                wakeLockRef.current.release()
                     .then(() => {
-                        console.log('[Wake Lock] Screen Wake Lock released.');
+                        console.log('[Wake Lock] Released on unmount/status change.');
+                        wakeLockRef.current = null;
                     })
                     .catch(() => {});
             }
@@ -291,14 +313,17 @@ function StudentCompetition() {
 
     const handleDigitClick = (digit) => {
         setAnswer(prev => prev + digit);
+        requestWakeLock();
     };
 
     const handleDelete = () => {
         setAnswer(prev => prev.slice(0, -1));
+        requestWakeLock();
     };
 
     const handleClear = () => {
         setAnswer('');
+        requestWakeLock();
     };
 
     // Background answer check (fire & forget) — like homework flow
@@ -366,6 +391,7 @@ function StudentCompetition() {
     // Submit answer — homework style: save locally, check in background, move to next immediately
     const handleSubmitAnswer = () => {
         if (!answer.trim()) return;
+        requestWakeLock();
 
         const currentQuestion = questions[currentIndex];
         

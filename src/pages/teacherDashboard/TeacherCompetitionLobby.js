@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Pusher from 'pusher-js';
 import { getCompetitionDetails, startCompetition, finishCompetition } from '../../api/competition/competition.api';
@@ -7,6 +7,7 @@ import MobileNav from '../../components/mobileNav/MobileNav';
 import { Play, Users, Trophy, Flag, Timer, Award, CheckCircle } from 'lucide-react';
 import soundEffects from '../../utils/soundEffects';
 import Confetti from 'react-confetti';
+import { jsPDF } from 'jspdf';
 import './TeacherCompetitionLobby.css';
 
 // Helper to format elapsed time in minutes, seconds and milliseconds
@@ -36,6 +37,81 @@ function TeacherCompetitionLobby() {
     const [error, setError] = useState(null);
     const [triggerConfetti, setTriggerConfetti] = useState(false);
     const [selectedStudentReport, setSelectedStudentReport] = useState(null);
+
+    const wakeLockRef = useRef(null);
+
+    // Robust, gesture-authorized Screen Wake Lock request helper for teacher
+    const requestWakeLock = async () => {
+        try {
+            if ('wakeLock' in navigator && !wakeLockRef.current) {
+                wakeLockRef.current = await navigator.wakeLock.request('screen');
+                console.log('[Wake Lock Teacher] Screen Wake Lock acquired successfully with user gesture!');
+                
+                wakeLockRef.current.addEventListener('release', () => {
+                    console.log('[Wake Lock Teacher] Screen Wake Lock was released.');
+                    wakeLockRef.current = null;
+                });
+            }
+        } catch (err) {
+            console.warn('[Wake Lock Teacher] Failed to acquire Screen Wake Lock:', err);
+        }
+    };
+
+    useEffect(() => {
+        // Prevent background leaks on phone screens
+        document.body.style.overflowX = 'hidden';
+        document.documentElement.style.overflowX = 'hidden';
+        const oldBodyBg = document.body.style.background;
+        document.body.style.background = '#0f172a'; // Match teacher dark theme background
+
+        // Aggressive Screen Wake Lock on any teacher clicks inside lobby/scoring
+        const handleGesture = () => {
+            requestWakeLock();
+        };
+        document.addEventListener('click', handleGesture);
+        document.addEventListener('touchstart', handleGesture);
+
+        return () => {
+            document.removeEventListener('click', handleGesture);
+            document.removeEventListener('touchstart', handleGesture);
+            document.body.style.overflowX = '';
+            document.documentElement.style.overflowX = '';
+            document.body.style.background = oldBodyBg;
+        };
+    }, []);
+
+    // Screen Wake Lock loop checker for teacher lobby
+    useEffect(() => {
+        if (status === 'active') {
+            requestWakeLock();
+        }
+
+        const handleVisibilityChange = async () => {
+            if (document.visibilityState === 'visible' && status === 'active') {
+                await requestWakeLock();
+            }
+        };
+
+        const checkInterval = setInterval(() => {
+            if (status === 'active' && !wakeLockRef.current) {
+                requestWakeLock();
+            }
+        }, 15000);
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            clearInterval(checkInterval);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            if (wakeLockRef.current) {
+                wakeLockRef.current.release()
+                    .then(() => {
+                        wakeLockRef.current = null;
+                    })
+                    .catch(() => {});
+            }
+        };
+    }, [status]);
 
     // Fetch initial competition details
     useEffect(() => {
@@ -199,6 +275,279 @@ function TeacherCompetitionLobby() {
             }
         } catch (err) {
             console.error("Failed to finish competition:", err);
+        }
+    };
+
+    // HIGHLY PREMIUM MULTI-PAGE COMBINED PDF PERFORMANCE PORTFOLIO GENERATOR
+    const handleExportPDF = () => {
+        try {
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'pt',
+                format: 'a4'
+            });
+
+            const pageHeight = doc.internal.pageSize.height;
+            const pageWidth = doc.internal.pageSize.width;
+            let yPos = 40;
+
+            const checkPageBreak = (neededHeight) => {
+                if (yPos + neededHeight > pageHeight - 50) {
+                    doc.addPage();
+                    yPos = 50;
+                    return true;
+                }
+                return false;
+            };
+
+            const totalQ = competition?.questions?.length || 0;
+
+            // PAGE 1: DEEP SLATE PREMIUM TITLE BANNER
+            doc.setFillColor(30, 41, 59); // Slate-800
+            doc.rect(0, 0, pageWidth, 90, 'F');
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(24);
+            doc.setTextColor(255, 255, 255);
+            doc.text("ABACUS HEROES", 40, 45);
+
+            doc.setFontSize(13);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(148, 163, 184); // Slate-400
+            doc.text("Master Classroom Performance Portfolio", 40, 68);
+
+            yPos = 130;
+
+            // Competition metadata scorecard
+            doc.setFillColor(248, 250, 252);
+            doc.setDrawColor(226, 232, 240);
+            doc.setLineWidth(1);
+            doc.rect(40, yPos - 15, pageWidth - 80, 75, 'FD');
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(11);
+            doc.setTextColor(71, 85, 105);
+            doc.text("Battle Title:", 55, yPos + 5);
+            doc.setFont("helvetica", "normal");
+            doc.text(competition?.title || "Competition Arena", 150, yPos + 5);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Generated on:", 55, yPos + 25);
+            doc.setFont("helvetica", "normal");
+            doc.text(new Date().toLocaleString(), 150, yPos + 25);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Total Questions:", 55, yPos + 45);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${totalQ} Questions`, 150, yPos + 45);
+
+            yPos += 95;
+
+            // CLASSROOM STANDINGS TITLE
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(15);
+            doc.setTextColor(124, 58, 237); // Purple-600
+            doc.text("🏆 Final Standings Leaderboard", 40, yPos);
+            yPos += 25;
+
+            // Table Headers
+            doc.setFillColor(241, 245, 249);
+            doc.rect(40, yPos - 12, pageWidth - 80, 22, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10);
+            doc.setTextColor(71, 85, 105);
+            doc.text("Rank", 50, yPos + 3);
+            doc.text("Student Name", 100, yPos + 3);
+            doc.text("Correct", 240, yPos + 3);
+            doc.text("Wrong", 300, yPos + 3);
+            doc.text("Accuracy", 360, yPos + 3);
+            doc.text("Elapsed Time", 440, yPos + 3);
+            yPos += 22;
+
+            // Sort participants using the robust tie-breaker rules
+            const sorted = [...participants].sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                const aFinished = !!a.finishedAt;
+                const bFinished = !!b.finishedAt;
+                if (aFinished !== bFinished) return bFinished ? 1 : -1;
+                if (a.finishedAt && b.finishedAt) {
+                    const diff = new Date(a.finishedAt) - new Date(b.finishedAt);
+                    if (diff !== 0) return diff;
+                }
+                const aWrong = a.wrongAnswers || 0;
+                const bWrong = b.wrongAnswers || 0;
+                if (aWrong !== bWrong) return aWrong - bWrong;
+                return (b.totalAnswered || 0) - (a.totalAnswered || 0);
+            });
+
+            // Draw Standings Rows
+            sorted.forEach((p, idx) => {
+                checkPageBreak(30);
+
+                // Row line divider
+                doc.setDrawColor(226, 232, 240);
+                doc.setLineWidth(0.5);
+                doc.line(40, yPos + 12, pageWidth - 40, yPos + 12);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(30, 41, 59);
+
+                doc.setFont("helvetica", "bold");
+                doc.text(`#${idx + 1}`, 50, yPos);
+                doc.setFont("helvetica", "normal");
+                doc.text(p.student?.userName || "Unknown Student", 100, yPos);
+                doc.text(`${p.score} / ${totalQ}`, 240, yPos);
+                doc.text(`${p.wrongAnswers || 0}`, 300, yPos);
+                
+                const accuracy = totalQ > 0 ? Math.round((p.score / totalQ) * 100) : 0;
+                doc.text(`${accuracy}%`, 360, yPos);
+
+                // Clean elapsed time display without secondary parenthesized display
+                const rawTime = p.finishedAt && competition?.startedAt
+                    ? new Date(p.finishedAt) - new Date(competition.startedAt)
+                    : null;
+                const mins = rawTime ? Math.floor(rawTime / 60000) : 0;
+                const secs = rawTime ? Math.floor((rawTime % 60000) / 1000) : 0;
+                const ms = rawTime ? rawTime % 1000 : 0;
+                const cleanTimeStr = rawTime !== null 
+                    ? (mins > 0 ? `${mins}m ${secs}s ${ms}ms` : `${secs}s ${ms}ms`) 
+                    : "—";
+
+                doc.text(cleanTimeStr, 440, yPos);
+
+                yPos += 28;
+            });
+
+            // PAGES 2+: INDIVIDUAL DETAILED REPORT PORTFOLIOS
+            sorted.forEach((p) => {
+                doc.addPage();
+                yPos = 40;
+
+                // Student Sub-header Banner
+                doc.setFillColor(124, 58, 237); // Deep Purple
+                doc.rect(0, 0, pageWidth, 75, 'F');
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(18);
+                doc.setTextColor(255, 255, 255);
+                doc.text(`Student Performance: ${p.student?.userName || "Student"}`, 40, 42);
+                
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(224, 242, 254); // Light Sky
+                doc.text(`Email Address: ${p.student?.email || "Student Account"}`, 40, 58);
+
+                yPos = 110;
+
+                // Score metrics box
+                doc.setFillColor(248, 250, 252);
+                doc.setDrawColor(226, 232, 240);
+                doc.setLineWidth(1);
+                doc.rect(40, yPos, pageWidth - 80, 52, 'FD');
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.setTextColor(71, 85, 105);
+                doc.text("Correct", 60, yPos + 20);
+                doc.text("Wrong", 180, yPos + 20);
+                doc.text("Unanswered", 300, yPos + 20);
+                doc.text("Elapsed Time", 420, yPos + 20);
+
+                doc.setFontSize(14);
+                doc.setTextColor(16, 185, 129); // Green
+                doc.text(String(p.score), 60, yPos + 40);
+                doc.setTextColor(239, 68, 68); // Red
+                doc.text(String(p.wrongAnswers || 0), 180, yPos + 40);
+                doc.setTextColor(100, 116, 139); // Slate-500
+                doc.text(String(totalQ - (p.totalAnswered || 0)), 300, yPos + 40);
+                doc.setTextColor(14, 165, 233); // Sky
+
+                const rawTime = p.finishedAt && competition?.startedAt
+                    ? new Date(p.finishedAt) - new Date(competition.startedAt)
+                    : null;
+                const mins = rawTime ? Math.floor(rawTime / 60000) : 0;
+                const secs = rawTime ? Math.floor((rawTime % 60000) / 1000) : 0;
+                const ms = rawTime ? rawTime % 1000 : 0;
+                const cleanTimeStr = rawTime !== null 
+                    ? (mins > 0 ? `${mins}m ${secs}s ${ms}ms` : `${secs}s ${ms}ms`) 
+                    : "—";
+
+                doc.text(cleanTimeStr, 420, yPos + 40);
+
+                yPos += 95;
+
+                // Breakdown section title
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(13);
+                doc.setTextColor(30, 41, 59);
+                doc.text("📋 Detailed Question-by-Question Breakdown", 40, yPos);
+                yPos += 20;
+
+                // Table Headers
+                doc.setFillColor(241, 245, 249);
+                doc.rect(40, yPos - 12, pageWidth - 80, 22, 'F');
+                doc.setFontSize(9);
+                doc.setTextColor(71, 85, 105);
+                doc.text("Q#", 50, yPos + 3);
+                doc.text("Question Text / Formula", 100, yPos + 3);
+                doc.text("Student Answer", 270, yPos + 3);
+                doc.text("Correct Answer", 380, yPos + 3);
+                doc.text("Status", 480, yPos + 3);
+                yPos += 22;
+
+                // Table Rows
+                competition?.questions?.forEach((q, qIdx) => {
+                    checkPageBreak(30);
+
+                    const log = p.answers?.find(
+                        a => String(a.question?._id || a.question) === String(q._id)
+                    );
+                    const isAnswered = !!log;
+                    const isCorrect = isAnswered && log.isCorrect;
+
+                    // Row divider line
+                    doc.setDrawColor(241, 245, 249);
+                    doc.line(40, yPos + 14, pageWidth - 40, yPos + 14);
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(9);
+                    doc.setTextColor(30, 41, 59);
+
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`Q${qIdx + 1}`, 50, yPos);
+                    doc.setFont("helvetica", "normal");
+                    
+                    const qTxt = q.question || "Graphic Question";
+                    doc.text(qTxt, 100, yPos);
+                    
+                    const sAns = isAnswered ? log.studentAnswer : "—";
+                    doc.text(sAns, 270, yPos);
+
+                    const cAns = q.correctAnswer || q.answer?.join(', ') || q.correctPicAnswer || "Check Answer";
+                    doc.text(cAns, 380, yPos);
+
+                    if (isCorrect) {
+                        doc.setTextColor(16, 185, 129);
+                        doc.text("✅ Correct", 480, yPos);
+                    } else if (isAnswered) {
+                        doc.setTextColor(239, 68, 68);
+                        doc.text("❌ Incorrect", 480, yPos);
+                    } else {
+                        doc.setTextColor(148, 163, 184);
+                        doc.text("⚪ Unanswered", 480, yPos);
+                    }
+
+                    yPos += 26;
+                });
+            });
+
+            // Save PDF
+            const compTitle = (competition?.title || "Competition").replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            doc.save(`combined_report_${compTitle}.pdf`);
+        } catch (err) {
+            console.error("Failed to export PDF:", err);
+            alert("Failed to export PDF report. Please try again.");
         }
     };
 
@@ -540,7 +889,14 @@ function TeacherCompetitionLobby() {
                             </table>
                         </div>
 
-                        <div className="action-footer">
+                        <div className="action-footer" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                            <button 
+                                onClick={handleExportPDF} 
+                                className="action-button export-pdf-btn"
+                                style={{ background: 'linear-gradient(to right, var(--emerald-green), #34d399)', boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)' }}
+                            >
+                                📊 Export Combined PDF Report
+                            </button>
                             <Link to="/dashboard/teacher" className="action-button exit-lobby-btn">
                                 Return to Dashboard
                             </Link>
