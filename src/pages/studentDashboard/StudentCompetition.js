@@ -200,6 +200,8 @@ function StudentCompetition() {
             setStatus('countdown');
             setLobbyCountdown(3);
             setTimerRemaining(data.timer);
+            // Save startedAt so elapsed time can be calculated later
+            setCompetition(prev => ({ ...prev, startedAt: data.startedAt }));
         });
 
         // Listen for teacher ending the competition
@@ -382,10 +384,11 @@ function StudentCompetition() {
             console.error("Failed to broadcast final score:", e);
         }
 
-        // Refresh detail standings
+        // Refresh detail standings (including competition.startedAt for elapsed time)
         try {
             const res = await getCompetitionDetails(competitionId);
             if (res.message === 'success') {
+                setCompetition(res.competition);
                 setParticipants(res.competition.participants || []);
                 calculateBadges(res.competition.participants || [], res.competition.questions?.length || 0);
             }

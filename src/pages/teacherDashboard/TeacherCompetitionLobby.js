@@ -81,6 +81,8 @@ function TeacherCompetitionLobby() {
                 const res = await getCompetitionDetails(competitionId);
                 if (res.message === 'success') {
                     const dbParticipants = res.competition.participants || [];
+                    // Sync competition object (ensures startedAt is always fresh)
+                    setCompetition(res.competition);
                     setParticipants(prev => {
                         const merged = [...dbParticipants];
                         prev.forEach(p => {
