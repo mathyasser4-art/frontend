@@ -103,7 +103,7 @@ function StudentCompetition() {
         if (!competitionId) return;
 
         Pusher.logToConsole = true;
-        const pusher = new Pusher('18e355bfbafee7a1aa57', {
+        const pusher = new Pusher('06df370fb33f1263ec1f', {
             cluster: 'eu',
             forceTLS: true
         });
