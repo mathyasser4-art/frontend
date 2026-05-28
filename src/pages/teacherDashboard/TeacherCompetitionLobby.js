@@ -35,6 +35,7 @@ function TeacherCompetitionLobby() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [triggerConfetti, setTriggerConfetti] = useState(false);
+    const [selectedStudentReport, setSelectedStudentReport] = useState(null);
 
     // Fetch initial competition details
     useEffect(() => {
@@ -144,7 +145,8 @@ function TeacherCompetitionLobby() {
                             score: data.score, 
                             totalAnswered: data.totalAnswered,
                             wrongAnswers: data.wrongAnswers,
-                            finishedAt: data.finished ? new Date() : p.finishedAt 
+                            finishedAt: data.finishedAt ? new Date(data.finishedAt) : (data.finished ? new Date() : p.finishedAt),
+                            answers: data.answers || p.answers
                         };
                     }
                     return p;
@@ -396,7 +398,14 @@ function TeacherCompetitionLobby() {
                                     <div key={p.student?._id || idx} className="race-track-row">
                                         <div className="racer-rank">#{idx + 1}</div>
                                         <div className="racer-name-tag">
-                                            <span className="name">{p.student?.userName}</span>
+                                            <span 
+                                                className="name name-clickable" 
+                                                onClick={() => setSelectedStudentReport(p)}
+                                                title="Click to view detailed report card"
+                                                style={{ cursor: 'pointer', textDecoration: 'underline', color: '#38bdf8' }}
+                                            >
+                                                {p.student?.userName} 📊
+                                            </span>
                                             <span className="score-ratio">
                                                 {p.totalAnswered || 0} / {totalQuestions} Solved ({p.score} Correct, {p.wrongAnswers || 0} Wrong)
                                                 {isFinished && competition.startedAt && (
@@ -501,7 +510,16 @@ function TeacherCompetitionLobby() {
                                     {sortedParticipants.map((p, idx) => (
                                         <tr key={p.student?._id || idx}>
                                             <td><strong>#{idx + 1}</strong></td>
-                                            <td>{p.student?.userName}</td>
+                                            <td 
+                                                className="student-name-cell" 
+                                                onClick={() => setSelectedStudentReport(p)}
+                                                title="Click to view detailed report card"
+                                                style={{ cursor: 'pointer', fontWeight: '600' }}
+                                            >
+                                                <span style={{ textDecoration: 'underline', color: '#38bdf8' }}>
+                                                    {p.student?.userName} 📊
+                                                </span>
+                                            </td>
                                             <td className="score-correct">{p.score} / {totalQuestions}</td>
                                             <td className="score-wrong">{p.wrongAnswers || 0}</td>
                                             <td style={{ fontFamily: 'monospace', color: '#38bdf8', fontSize: '13px' }}>
@@ -530,6 +548,102 @@ function TeacherCompetitionLobby() {
                     </div>
                 )}
             </div>
+
+            {/* GORGEOUS PREMIUM DETAIL REPORT MODAL */}
+            {selectedStudentReport && (
+                <div className="report-modal-overlay" onClick={() => setSelectedStudentReport(null)}>
+                    <div className="report-modal-card" onClick={e => e.stopPropagation()}>
+                        <div className="report-modal-header">
+                            <div className="report-student-meta">
+                                <span className="avatar-circle-large">
+                                    {selectedStudentReport.student?.userName?.charAt(0).toUpperCase()}
+                                </span>
+                                <div>
+                                    <h2 style={{ margin: 0 }}>{selectedStudentReport.student?.userName}'s Performance Report</h2>
+                                    <p className="report-email">{selectedStudentReport.student?.email || "Student Account"}</p>
+                                </div>
+                            </div>
+                            <button className="close-modal-btn" onClick={() => setSelectedStudentReport(null)}>&times;</button>
+                        </div>
+
+                        <div className="report-quick-stats">
+                            <div className="q-stat-card bg-correct">
+                                <h3>{selectedStudentReport.score}</h3>
+                                <p>Correct</p>
+                            </div>
+                            <div className="q-stat-card bg-wrong">
+                                <h3>{selectedStudentReport.wrongAnswers || 0}</h3>
+                                <p>Wrong</p>
+                            </div>
+                            <div className="q-stat-card bg-unanswered">
+                                <h3>{totalQuestions - (selectedStudentReport.totalAnswered || 0)}</h3>
+                                <p>Unanswered</p>
+                            </div>
+                            <div className="q-stat-card bg-elapsed">
+                                <h3 style={{ fontSize: '16px', lineHeight: '32px' }}>
+                                    {formatElapsedMs(selectedStudentReport.finishedAt, competition?.startedAt)}
+                                </h3>
+                                <p>Elapsed Time</p>
+                            </div>
+                        </div>
+
+                        <div className="report-questions-scroller">
+                            <h3 style={{ margin: '0 0 15px 0', borderLeft: '4px solid var(--neon-purple)', paddingLeft: '10px' }}>
+                                📋 Detailed Question-by-Question Breakdown
+                            </h3>
+                            <table className="report-details-table">
+                                <thead>
+                                    <tr>
+                                        <th>Q#</th>
+                                        <th>Question</th>
+                                        <th>Student's Answer</th>
+                                        <th>Correct Answer</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {competition?.questions?.map((q, idx) => {
+                                        const log = selectedStudentReport.answers?.find(
+                                            a => String(a.question?._id || a.question) === String(q._id)
+                                        );
+                                        const isAnswered = !!log;
+                                        const isCorrect = isAnswered && log.isCorrect;
+
+                                        return (
+                                            <tr key={q._id || idx} className={isCorrect ? 'row-correct' : isAnswered ? 'row-wrong' : 'row-unanswered'}>
+                                                <td><strong>Q{idx + 1}</strong></td>
+                                                <td>
+                                                    {q.questionPic && (
+                                                        <div className="table-q-pic">
+                                                            <img src={q.questionPic} alt="Graphic" />
+                                                        </div>
+                                                    )}
+                                                    <span className="q-text">{q.question || "Graphic Question"}</span>
+                                                </td>
+                                                <td className="cell-ans font-monospace" style={{ fontWeight: '700' }}>
+                                                    {isAnswered ? log.studentAnswer : <span style={{ color: '#64748b' }}>—</span>}
+                                                </td>
+                                                <td className="cell-ans font-monospace text-emerald">
+                                                    {q.correctAnswer || q.answer?.join(', ') || q.correctPicAnswer || "Check Answer"}
+                                                </td>
+                                                <td>
+                                                    {isCorrect ? (
+                                                        <span className="rep-badge badge-success">✅ Correct</span>
+                                                    ) : isAnswered ? (
+                                                        <span className="rep-badge badge-danger">❌ Incorrect</span>
+                                                    ) : (
+                                                        <span className="rep-badge badge-neutral">⚪ Unanswered</span>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

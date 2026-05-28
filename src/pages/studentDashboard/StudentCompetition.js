@@ -63,6 +63,8 @@ function StudentCompetition() {
     const correctCountRef = useRef(0);
     const wrongCountRef = useRef(0);
     const totalAnsweredRef = useRef(0);
+    const answersMapRef = useRef({});
+    const [localFinishedAt, setLocalFinishedAt] = useState(null);
 
     // Automatic Fullscreen Mode Request on mount and user gestures
     useEffect(() => {
@@ -96,6 +98,47 @@ function StudentCompetition() {
             document.removeEventListener('touchstart', handleGesture);
         };
     }, []);
+
+    // Screen Wake Lock API to prevent device from dimming or going to sleep during active gameplay
+    useEffect(() => {
+        let wakeLock = null;
+
+        const requestWakeLock = async () => {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('[Wake Lock] Screen Wake Lock acquired successfully!');
+                }
+            } catch (err) {
+                console.warn('[Wake Lock] Failed to acquire Screen Wake Lock:', err);
+            }
+        };
+
+        // Acquire lock when game becomes active
+        if (status === 'active') {
+            requestWakeLock();
+        }
+
+        // Re-acquire lock if tab visibility changes (e.g. user goes back to app)
+        const handleVisibilityChange = async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible' && status === 'active') {
+                await requestWakeLock();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            if (wakeLock !== null) {
+                wakeLock.release()
+                    .then(() => {
+                        console.log('[Wake Lock] Screen Wake Lock released.');
+                    })
+                    .catch(() => {});
+            }
+        };
+    }, [status]);
 
     // Fetch initial details and join lobby
     useEffect(() => {
@@ -273,10 +316,14 @@ function StudentCompetition() {
             const isCorrect = result.message === 'success';
 
             // Update the answers map
-            setAnswersMap(prev => ({
-                ...prev,
-                [questionId]: { ...prev[questionId], checked: true, correct: isCorrect }
-            }));
+            setAnswersMap(prev => {
+                const updated = {
+                    ...prev,
+                    [questionId]: { ...prev[questionId], checked: true, correct: isCorrect }
+                };
+                answersMapRef.current = updated;
+                return updated;
+            });
 
             // Update counts
             if (isCorrect) {
@@ -293,17 +340,26 @@ function StudentCompetition() {
                     score: correctCountRef.current,
                     totalAnswered: totalAnsweredRef.current,
                     wrongAnswers: wrongCountRef.current,
-                    finished: false
+                    finished: false,
+                    answers: Object.entries(answersMapRef.current).map(([qId, data]) => ({
+                        question: qId,
+                        studentAnswer: data.answer || "",
+                        isCorrect: !!data.correct
+                    }))
                 });
             } catch (e) {
                 console.error("Failed to broadcast score:", e);
             }
         } catch (err) {
             console.error('Background sync failed for question', questionId, err);
-            setAnswersMap(prev => ({
-                ...prev,
-                [questionId]: { ...prev[questionId], checked: false, correct: false }
-            }));
+            setAnswersMap(prev => {
+                const updated = {
+                    ...prev,
+                    [questionId]: { ...prev[questionId], checked: false, correct: false }
+                };
+                answersMapRef.current = updated;
+                return updated;
+            });
         }
     };
 
@@ -314,10 +370,14 @@ function StudentCompetition() {
         const currentQuestion = questions[currentIndex];
         
         // Save answer locally
-        setAnswersMap(prev => ({
-            ...prev,
-            [currentQuestion._id]: { answer: answer.trim(), checked: false, correct: false }
-        }));
+        setAnswersMap(prev => {
+            const updated = {
+                ...prev,
+                [currentQuestion._id]: { answer: answer.trim(), checked: false, correct: false }
+            };
+            answersMapRef.current = updated;
+            return updated;
+        });
 
         // Increment total answered
         totalAnsweredRef.current += 1;
@@ -345,10 +405,14 @@ function StudentCompetition() {
         if (answer.trim() && questions[currentIndex]) {
             const currentQuestion = questions[currentIndex];
             if (!answersMap[currentQuestion._id]) {
-                setAnswersMap(prev => ({
-                    ...prev,
-                    [currentQuestion._id]: { answer: answer.trim(), checked: false, correct: false }
-                }));
+                setAnswersMap(prev => {
+                    const updated = {
+                        ...prev,
+                        [currentQuestion._id]: { answer: answer.trim(), checked: false, correct: false }
+                    };
+                    answersMapRef.current = updated;
+                    return updated;
+                });
                 totalAnsweredRef.current += 1;
                 setTotalAnswered(totalAnsweredRef.current);
                 syncAnswerWithBackend(currentQuestion._id, answer);
@@ -365,6 +429,8 @@ function StudentCompetition() {
     };
 
     const handleFinishExam = async () => {
+        const now = new Date();
+        setLocalFinishedAt(now);
         setStatus('finished');
         setTriggerConfetti(true);
         setIsCheckingAnswers(true);
@@ -378,7 +444,12 @@ function StudentCompetition() {
                 score: correctCountRef.current,
                 totalAnswered: totalAnsweredRef.current,
                 wrongAnswers: wrongCountRef.current,
-                finished: true
+                finished: true,
+                answers: Object.entries(answersMapRef.current).map(([qId, data]) => ({
+                    question: qId,
+                    studentAnswer: data.answer || "",
+                    isCorrect: !!data.correct
+                }))
             });
         } catch (e) {
             console.error("Failed to broadcast final score:", e);
@@ -580,18 +651,17 @@ function StudentCompetition() {
                             </span>
                         </div>
 
-                        {/* Top Competitor Visual Progress Bars */}
+                        {/* Only the logged-in student's own progress bar */}
                         <div className="visual-race-track-lanes">
-                            {sortedParticipants.slice(0, 4).map((p, idx) => {
-                                const isMe = String(p.student?._id || p.student) === String(studentID);
-                                // Use local state for current student (instant), Pusher data for others
-                                const pAnswered = isMe ? totalAnswered : (p.totalAnswered || 0);
+                            {(() => {
+                                const pName = studentName;
+                                const pAnswered = totalAnswered;
                                 const progressPercent = totalQuestions > 0 ? (pAnswered / totalQuestions) * 100 : 0;
 
                                 return (
-                                    <div key={p.student?._id || idx} className={`lane-row ${isMe ? 'lane-me' : ''}`}>
-                                        <span className="lane-name-lbl">
-                                            {p.student?.userName} ({pAnswered} / {totalQuestions} Solved)
+                                    <div className="lane-row lane-me" style={{ maxWidth: '600px', margin: '0 auto' }}>
+                                        <span className="lane-name-lbl" style={{ textAlign: 'center', display: 'block', width: '100%' }}>
+                                            <strong>Your Progress:</strong> {pAnswered} / {totalQuestions} Solved
                                         </span>
                                         <div className="lane-road">
                                             <div 
@@ -599,13 +669,13 @@ function StudentCompetition() {
                                                 style={{ width: `${pAnswered > 0 ? Math.max(8, progressPercent) : 0}%` }}
                                             >
                                                 <div className="runner-avatar-icon">
-                                                    {p.student?.userName?.charAt(0).toUpperCase()}
+                                                    {pName?.charAt(0).toUpperCase()}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 );
-                            })}
+                            })()}
                         </div>
                     </div>
 
@@ -714,8 +784,9 @@ function StudentCompetition() {
                                 <span className="result-value" style={{ color: '#38bdf8', fontSize: '20px', fontWeight: '800', marginTop: '6px' }}>
                                     {(() => {
                                         const myDetails = participants.find(p => String(p.student?._id || p.student) === String(studentID));
-                                        return myDetails && myDetails.finishedAt && competition?.startedAt
-                                            ? formatElapsedMs(myDetails.finishedAt, competition.startedAt)
+                                        const finishedVal = myDetails?.finishedAt || localFinishedAt;
+                                        return finishedVal && competition?.startedAt
+                                            ? formatElapsedMs(finishedVal, competition.startedAt)
                                             : "—";
                                     })()}
                                 </span>
@@ -805,7 +876,7 @@ function StudentCompetition() {
                                                 <td className="score-correct">{p.score} / {totalQuestions}</td>
                                                 <td className="score-wrong">{p.wrongAnswers || 0}</td>
                                                 <td style={{ fontFamily: 'monospace', color: '#38bdf8', fontSize: '13px' }}>
-                                                    {formatElapsedMs(p.finishedAt, competition?.startedAt)}
+                                                    {formatElapsedMs(isMe ? (p.finishedAt || localFinishedAt) : p.finishedAt, competition?.startedAt)}
                                                 </td>
                                             </tr>
                                         );
