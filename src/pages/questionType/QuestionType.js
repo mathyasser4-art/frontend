@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom';
 import { CheckCircle2, Circle, Gamepad2, Swords } from 'lucide-react'
 import soundEffects from '../../utils/soundEffects'
+import CreateCompetitionModal from '../../components/navbar/CreateCompetitionModal';
 import '../../reusable.css'
 import './QuestionType.css'
 
@@ -10,6 +11,7 @@ function QuestionType() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [showCreateCompetition, setShowCreateCompetition] = useState(false)
   
   // Battle arena join state
   const [showJoinBattleModal, setShowJoinBattleModal] = useState(false)
@@ -130,9 +132,24 @@ function QuestionType() {
               <h3 className="option-title">Live Battles</h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
             </span>
+          ) : userRole === 'Teacher' ? (
+            <span 
+              className="questionType-option battle-card-option" 
+              onClick={() => {
+                soundEffects.playClick();
+                setShowCreateCompetition(true);
+              }}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className="option-icon-wrapper">
+                <Swords size={64} strokeWidth={2} className="mcq-icon" style={{ color: '#fff' }} />
+              </div>
+              <h3 className="option-title">Live Battles</h3>
+              <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
+            </span>
           ) : (
             <Link 
-              to={userRole === 'Teacher' ? '/dashboard/teacher' : '/dashboard-school'} 
+              to="/dashboard-school" 
               className="questionType-option battle-card-option" 
               onClick={() => soundEffects.playClick()}
             >
@@ -238,6 +255,12 @@ function QuestionType() {
             </div>
           </div>
         </div>
+      )}
+
+      {showCreateCompetition && (
+        <CreateCompetitionModal
+          onClose={() => setShowCreateCompetition(false)}
+        />
       )}
     </div>
   )
