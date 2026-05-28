@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Home from './pages/Home/Home'
 import Login from './pages/login/Login'
 import Register from './pages/register/Register'
@@ -48,6 +48,7 @@ import StudentCompetition from './pages/studentDashboard/StudentCompetition';
 function App() {
   const isAuth = localStorage.getItem('O_authWEB')
   const role = localStorage.getItem('auth_role')
+  const location = useLocation()
 
   useEffect(() => {
     localStorage.removeItem('cartona')
@@ -100,7 +101,7 @@ function App() {
       <Route path='/student/games-menu' element={<GamesMenu />} />
 
       </Routes>
-      {(!role || role === 'Student') && <LiveChatWidget />}
+      {location.pathname === '/' && (!role || role === 'Student') && <LiveChatWidget />}
     </>
   )
 }

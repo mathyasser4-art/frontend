@@ -46,6 +46,39 @@ function StudentCompetition() {
     const wrongCountRef = useRef(0);
     const totalAnsweredRef = useRef(0);
 
+    // Automatic Fullscreen Mode Request on mount and user gestures
+    useEffect(() => {
+        const enterFullscreen = () => {
+            const docEl = document.documentElement;
+            if (docEl.requestFullscreen) {
+                docEl.requestFullscreen().catch(() => {});
+            } else if (docEl.webkitRequestFullscreen) {
+                docEl.webkitRequestFullscreen();
+            } else if (docEl.mozRequestFullScreen) {
+                docEl.mozRequestFullScreen();
+            } else if (docEl.msRequestFullscreen) {
+                docEl.msRequestFullscreen();
+            }
+        };
+
+        // Try immediately
+        enterFullscreen();
+
+        // Fallback on the first user interaction anywhere in the document
+        const handleGesture = () => {
+            enterFullscreen();
+            document.removeEventListener('click', handleGesture);
+            document.removeEventListener('touchstart', handleGesture);
+        };
+        document.addEventListener('click', handleGesture);
+        document.addEventListener('touchstart', handleGesture);
+
+        return () => {
+            document.removeEventListener('click', handleGesture);
+            document.removeEventListener('touchstart', handleGesture);
+        };
+    }, []);
+
     // Fetch initial details and join lobby
     useEffect(() => {
         const initLobby = async () => {
@@ -419,8 +452,8 @@ function StudentCompetition() {
 
     return (
         <div className="student-competition-global">
-            <MobileNav role="Student" />
-            <Navbar />
+            {status === 'lobby' && <MobileNav role="Student" />}
+            {status === 'lobby' && <Navbar />}
 
             {triggerConfetti && <Confetti recycle={false} numberOfPieces={300} />}
 
@@ -436,16 +469,7 @@ function StudentCompetition() {
                             </div>
                         </header>
 
-                        <div className="arena-split-layout">
-                            {/* Warm-up Arena */}
-                            <div className="warmup-station-panel">
-                                <h3>🖐️ Warm-up Station</h3>
-                                <p className="subtitle">Slide abacus beads to warm up your fingers while waiting!</p>
-                                <div className="abacus-embed-container">
-                                    <AbacusSimulator />
-                                </div>
-                            </div>
-
+                        <div className="lobby-centered-layout">
                             {/* Active Student List */}
                             <div className="competitors-list-panel">
                                 <h3>⚔️ Connected Combatants ({participants.length})</h3>
@@ -593,14 +617,6 @@ function StudentCompetition() {
                             >
                                 <span>{currentIndex === questions.length - 1 ? 'Submit & Finish' : 'Next'}</span>
                                 <ArrowRight size={18} />
-                            </button>
-
-                            {/* End Exam button — like homework */}
-                            <button
-                                onClick={handleFinishExam}
-                                className="end-exam-btn-action"
-                            >
-                                End Exam
                             </button>
                         </div>
                     </div>

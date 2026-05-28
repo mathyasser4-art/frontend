@@ -203,38 +203,74 @@ function TeacherCompetitionLobby() {
                         <h1>{competition.title}</h1>
                         <p className="subtitle">Live Battle Arena Host Dashboard</p>
                         
-                        <div className="battle-id-badge" style={{
-                            marginTop: '15px',
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: '10px',
-                            padding: '8px 15px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '10px'
-                        }}>
-                            <span style={{ fontSize: '13px', color: '#a78bfa', fontWeight: 'bold' }}>BATTLE ID:</span>
-                            <span style={{ fontFamily: 'monospace', fontSize: '14px', letterSpacing: '0.05em' }}>{competitionId}</span>
-                            <button
-                                onClick={() => {
-                                    navigator.clipboard.writeText(competitionId);
-                                    soundEffects.playClick();
-                                    alert("Battle ID copied! Share it with your students.");
-                                }}
-                                style={{
-                                    background: 'linear-gradient(135deg, #7c3aed, #db2777)',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    color: '#fff',
-                                    padding: '4px 10px',
-                                    fontSize: '11px',
-                                    fontWeight: 'bold',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 2px 8px rgba(124, 58, 237, 0.3)'
-                                }}
-                            >
-                                Copy
-                            </button>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'center' }}>
+                            <div className="battle-id-badge" style={{
+                                marginTop: '15px',
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '10px',
+                                padding: '8px 15px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '10px'
+                            }}>
+                                <span style={{ fontSize: '13px', color: '#a78bfa', fontWeight: 'bold' }}>BATTLE ID:</span>
+                                <span style={{ fontFamily: 'monospace', fontSize: '14px', letterSpacing: '0.05em' }}>{competitionId}</span>
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(competitionId);
+                                        soundEffects.playClick();
+                                        alert("Battle ID copied! Share it with your students.");
+                                    }}
+                                    style={{
+                                        background: 'linear-gradient(135deg, #7c3aed, #db2777)',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        color: '#fff',
+                                        padding: '4px 10px',
+                                        fontSize: '11px',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 2px 8px rgba(124, 58, 237, 0.3)'
+                                    }}
+                                >
+                                    Copy ID
+                                </button>
+                            </div>
+
+                            <div className="invite-link-badge" style={{
+                                marginTop: '15px',
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '10px',
+                                padding: '8px 15px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '10px'
+                            }}>
+                                <span style={{ fontSize: '13px', color: '#ec4899', fontWeight: 'bold' }}>INVITE LINK:</span>
+                                <button
+                                    onClick={() => {
+                                        const inviteLink = `${window.location.origin}/student/competition/${competitionId}`;
+                                        navigator.clipboard.writeText(inviteLink);
+                                        soundEffects.playClick();
+                                        alert("Invite Link copied! Share it with your students.");
+                                    }}
+                                    style={{
+                                        background: 'linear-gradient(135deg, #ec4899, #f43f5e)',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        color: '#fff',
+                                        padding: '4px 10px',
+                                        fontSize: '11px',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 2px 8px rgba(236, 72, 153, 0.3)'
+                                    }}
+                                >
+                                    Copy Invite Link
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div className="header-stats">

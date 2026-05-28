@@ -813,17 +813,104 @@
     font-weight: 700;
 }
 
+.lobby-centered-layout {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
 @media (max-width: 900px) {
     .arena-split-layout {
         grid-template-columns: 1fr;
     }
     
+    .lobby-centered-layout {
+        max-width: 100%;
+    }
+    
+    .active-arena-gameplay-wrapper {
+        margin: 10px auto;
+        gap: 12px;
+        padding: 0 10px;
+    }
+    
+    .game-race-track-header {
+        padding: 10px 15px;
+        gap: 10px;
+    }
+    
+    .visual-race-track-lanes {
+        gap: 6px;
+    }
+    
+    .lane-row {
+        grid-template-columns: 90px 1fr;
+        gap: 10px;
+        padding: 4px 8px;
+    }
+    
+    .lane-name-lbl {
+        font-size: 11px;
+    }
+    
+    .lane-road {
+        height: 6px;
+    }
+    
+    .runner-avatar-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 8px;
+        right: -6px;
+        top: -5px;
+    }
+    
+    .competition-question-numbers {
+        gap: 6px;
+        padding: 6px 4px;
+        margin-bottom: 6px;
+    }
+    
+    .competition-question-numbers p {
+        min-width: 32px;
+        height: 32px;
+        font-size: 13px;
+        border-radius: 6px;
+    }
+    
     .question-solving-box-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
     }
     
     .solving-question-card-wrapper {
-        min-height: 260px;
-        padding: 20px;
+        min-height: 140px;
+        padding: 15px;
+    }
+    
+    .raw-question-text {
+        font-size: 28px;
+    }
+    
+    .input-solving-keyboard-wrapper {
+        padding: 15px;
+        gap: 12px;
+    }
+    
+    .preview-input {
+        font-size: 24px;
+        padding: 8px;
+    }
+    
+    .key-btn {
+        height: 44px;
+        font-size: 16px;
+        border-radius: 8px;
+    }
+    
+    .submit-answer-btn-action {
+        padding: 12px;
+        font-size: 14px;
     }
 }
+
