@@ -51,9 +51,14 @@ function StudentCompetition() {
         const initLobby = async () => {
             try {
                 // Join the lobby
+                console.log('[Competition] Joining competition:', competitionId);
+                console.log('[Competition] API Base URL:', API_BASE_URL);
                 const joinRes = await joinCompetition(competitionId);
+                console.log('[Competition] Join response:', JSON.stringify(joinRes));
                 if (joinRes.message !== 'success') {
-                    console.log("Could not join lobby:", joinRes.message);
+                    console.warn("[Competition] Could not join lobby:", joinRes.message);
+                } else {
+                    console.log('[Competition] Successfully joined lobby!');
                 }
 
                 // Fetch details

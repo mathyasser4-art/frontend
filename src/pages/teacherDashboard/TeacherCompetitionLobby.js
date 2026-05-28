@@ -53,6 +53,43 @@ function TeacherCompetitionLobby() {
         fetchDetails();
     }, [competitionId]);
 
+    // Polling fallback: re-fetch participants every 5 seconds while in lobby/active state
+    // This guarantees the teacher sees new students even if Pusher events are missed
+    useEffect(() => {
+        if (!competitionId || status === 'finished') return;
+
+        const pollInterval = setInterval(async () => {
+            try {
+                const res = await getCompetitionDetails(competitionId);
+                if (res.message === 'success') {
+                    const dbParticipants = res.competition.participants || [];
+                    setParticipants(prev => {
+                        const merged = [...dbParticipants];
+                        prev.forEach(p => {
+                            const pId = p.student?._id || p.student;
+                            const exists = merged.some(dbP => String(dbP.student?._id || dbP.student) === String(pId));
+                            if (!exists) {
+                                merged.push(p);
+                            }
+                        });
+                        return merged;
+                    });
+                    // Also sync status from DB
+                    if (res.competition.status && res.competition.status !== status) {
+                        setStatus(res.competition.status);
+                        if (res.competition.status === 'finished') {
+                            setTriggerConfetti(true);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Polling error:', err);
+            }
+        }, 5000);
+
+        return () => clearInterval(pollInterval);
+    }, [competitionId, status]);
+
     // Pusher real-time bindings
     useEffect(() => {
         if (!competitionId) return;
