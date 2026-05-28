@@ -425,6 +425,46 @@ function StudentCompetition() {
         }
     };
 
+    // Option selection for MCQ and Graph questions (auto-submits and auto-advances)
+    const handleOptionSelect = (selectedVal) => {
+        const currentQuestion = questions[currentIndex];
+        if (!currentQuestion) return;
+
+        soundEffects.playClick();
+        setAnswer(selectedVal);
+        requestWakeLock();
+
+        // Save answer locally immediately
+        setAnswersMap(prev => {
+            const updated = {
+                ...prev,
+                [currentQuestion._id]: { answer: selectedVal.trim(), checked: false, correct: false }
+            };
+            answersMapRef.current = updated;
+            return updated;
+        });
+
+        // Increment total answered if not already answered
+        if (!answersMap[currentQuestion._id]) {
+            totalAnsweredRef.current += 1;
+            setTotalAnswered(totalAnsweredRef.current);
+        }
+
+        // Fire background check immediately
+        syncAnswerWithBackend(currentQuestion._id, selectedVal);
+
+        // Auto-advance with 300ms visual select feedback delay
+        setTimeout(() => {
+            const isLastQuestion = currentIndex === questions.length - 1;
+            setAnswer('');
+            if (isLastQuestion) {
+                handleFinishExam();
+            } else {
+                setCurrentIndex(prev => prev + 1);
+            }
+        }, 320);
+    };
+
     // Navigate to a specific question (clicking on question number)
     const goToQuestion = (index) => {
         // Save current answer before switching
@@ -736,39 +776,89 @@ function StudentCompetition() {
 
                         {/* Answer Input Panel */}
                         <div className="input-solving-keyboard-wrapper">
-                            <div className="answer-preview-screen">
-                                <input 
-                                    type="text" 
-                                    value={answer}
-                                    readOnly 
-                                    placeholder="?" 
-                                    className="preview-input"
-                                />
-                            </div>
+                            {currentQuestion?.typeOfAnswer === 'MCQ' ? (
+                                <div className="mcq-battle-wrapper">
+                                    <h3 className="mcq-battle-title">🎯 Choose your answer:</h3>
+                                    <div className="mcq-battle-options-layout">
+                                        {currentQuestion.wrongAnswer?.map((item, index) => {
+                                            const isSelected = answer === item;
+                                            return (
+                                                <button
+                                                    key={item}
+                                                    type="button"
+                                                    onClick={() => handleOptionSelect(item)}
+                                                    className={`mcq-battle-choice ${isSelected ? 'selected' : ''}`}
+                                                >
+                                                    <span className="choice-indicator">
+                                                        {isSelected ? '✓' : String.fromCharCode(65 + index)}
+                                                    </span>
+                                                    <span className="choice-text">{item}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ) : currentQuestion?.typeOfAnswer === 'Graph' ? (
+                                <div className="mcq-battle-wrapper">
+                                    <h3 className="mcq-battle-title">📊 Choose your answer graph:</h3>
+                                    <div className="graph-battle-options-layout">
+                                        {currentQuestion.wrongPicAnswer?.map((item, index) => {
+                                            const isSelected = answer === item;
+                                            return (
+                                                <button
+                                                    key={item}
+                                                    type="button"
+                                                    onClick={() => handleOptionSelect(item)}
+                                                    className={`graph-battle-choice ${isSelected ? 'selected' : ''}`}
+                                                >
+                                                    <div className="graph-choice-img-wrapper">
+                                                        <img src={item} alt={`Option ${index + 1}`} />
+                                                    </div>
+                                                    <span className="choice-indicator">
+                                                        {isSelected ? '✓' : String.fromCharCode(65 + index)}
+                                                    </span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="answer-preview-screen">
+                                        <input 
+                                            type="text" 
+                                            value={answer}
+                                            readOnly 
+                                            placeholder="?" 
+                                            className="preview-input"
+                                        />
+                                    </div>
 
-                            <div className="custom-game-keyboard">
-                                {[7, 8, 9, 4, 5, 6, 1, 2, 3].map(digit => (
+                                    <div className="custom-game-keyboard">
+                                        {[7, 8, 9, 4, 5, 6, 1, 2, 3].map(digit => (
+                                            <button 
+                                                key={digit} 
+                                                onClick={() => handleDigitClick(digit.toString())}
+                                                className="key-btn digit-key"
+                                            >
+                                                {digit}
+                                            </button>
+                                        ))}
+                                        <button onClick={() => handleDigitClick('0')} className="key-btn digit-key">0</button>
+                                        <button onClick={handleDelete} className="key-btn action-key-clear">⌫</button>
+                                        <button onClick={handleClear} className="key-btn action-key-clear">C</button>
+                                    </div>
+
                                     <button 
-                                        key={digit} 
-                                        onClick={() => handleDigitClick(digit.toString())}
-                                        className="key-btn digit-key"
+                                        onClick={handleSubmitAnswer}
+                                        className="submit-answer-btn-action"
+                                        disabled={!answer.trim()}
                                     >
-                                        {digit}
+                                        <span>{currentIndex === questions.length - 1 ? 'Submit & Finish' : 'Next'}</span>
+                                        <ArrowRight size={18} />
                                     </button>
-                                ))}
-                                <button onClick={() => handleDigitClick('0')} className="key-btn digit-key">0</button>
-                                <button onClick={handleDelete} className="key-btn action-key-clear">⌫</button>
-                                <button onClick={handleClear} className="key-btn action-key-clear">C</button>
-                            </div>
-
-                            <button 
-                                onClick={handleSubmitAnswer}
-                                className="submit-answer-btn-action"
-                                disabled={!answer.trim()}
-                            >
-                                <span>{currentIndex === questions.length - 1 ? 'Submit & Finish' : 'Next'}</span>
-                                <ArrowRight size={18} />
-                            </button>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

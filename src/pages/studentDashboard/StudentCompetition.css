@@ -918,3 +918,177 @@
     }
 }
 
+/* MCQ and Graph PVP Options Styling */
+.mcq-battle-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.mcq-battle-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mcq-battle-options-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.mcq-battle-choice {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 14px 20px;
+    color: #e2e8f0;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    outline: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.mcq-battle-choice:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(139, 92, 246, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.mcq-battle-choice:active {
+    transform: translateY(0);
+}
+
+.mcq-battle-choice.selected {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: var(--neon-purple);
+    color: white;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.35);
+}
+
+.choice-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    font-size: 13px;
+    font-weight: 800;
+    color: #cbd5e1;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+}
+
+.mcq-battle-choice.selected .choice-indicator {
+    background: var(--neon-purple);
+    border-color: var(--neon-purple);
+    color: white;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+}
+
+.choice-text {
+    flex-grow: 1;
+}
+
+/* Graph Options List */
+.graph-battle-options-layout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+}
+
+.graph-battle-choice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 16px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.graph-battle-choice:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(139, 92, 246, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.graph-battle-choice.selected {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.35);
+}
+
+.graph-choice-img-wrapper {
+    width: 100%;
+    height: 120px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.graph-choice-img-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.graph-battle-choice.selected .choice-indicator {
+    background: var(--neon-purple);
+    border-color: var(--neon-purple);
+    color: white;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+}
+
+@media only screen and (max-width: 600px) {
+    .graph-battle-options-layout {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .graph-choice-img-wrapper {
+        height: 100px;
+    }
+    
+    .mcq-battle-choice {
+        font-size: 15px;
+        padding: 10px 14px;
+        gap: 10px;
+    }
+    
+    .choice-indicator {
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
+    }
+}
+
+

@@ -411,6 +411,13 @@
     box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
 }
 
+/* Orange Battle Card */
+.questionType.topsoroban-theme .questionType-option.battle-card-option {
+    background: linear-gradient(135deg, #f97316 0%, #fdba74 100%);
+    border-color: #ffffff;
+    box-shadow: 0 10px 25px rgba(249, 115, 22, 0.3);
+}
+
 .questionType.topsoroban-theme .option-title {
     color: #ffffff;
     text-shadow: 0 2px 4px rgba(0,0,0,0.2);

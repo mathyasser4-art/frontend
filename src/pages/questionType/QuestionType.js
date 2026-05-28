@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle2, Circle, Gamepad2 } from 'lucide-react'
+import { CheckCircle2, Circle, Gamepad2, Swords } from 'lucide-react'
 import soundEffects from '../../utils/soundEffects'
 import '../../reusable.css'
 import './QuestionType.css'
@@ -10,6 +10,13 @@ function QuestionType() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  
+  // Battle arena join state
+  const [showJoinBattleModal, setShowJoinBattleModal] = useState(false)
+  const [compIdInput, setCompIdInput] = useState('')
+  const [joinCompError, setJoinCompError] = useState(null)
+  const [joiningComp, setJoiningComp] = useState(false)
+
   const isAuth = localStorage.getItem('O_authWEB')
   
   const schoolName = localStorage.getItem('school_name') || '';
@@ -92,6 +99,50 @@ function QuestionType() {
               <img src="/img/games/racer_cover.png" alt="Fun Games Preview" className="card-preview-screenshot" />
             </Link>
           )}
+
+          {/* Card 4: Live Arena Battles */}
+          {!isAuth ? (
+            <span 
+              className="questionType-option battle-card-option locked-card" 
+              onClick={(e) => {
+                e.preventDefault();
+                soundEffects.playClick();
+                setShowUpgradeModal(true);
+              }}
+            >
+              <div className="option-icon-wrapper">
+                <Swords size={64} strokeWidth={2} className="mcq-icon" />
+              </div>
+              <h3 className="option-title">Live Battles <span className="card-lock-badge">🔒</span></h3>
+              <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
+            </span>
+          ) : userRole === 'Student' ? (
+            <span 
+              className="questionType-option battle-card-option" 
+              onClick={() => {
+                soundEffects.playClick();
+                setShowJoinBattleModal(true);
+              }}
+            >
+              <div className="option-icon-wrapper">
+                <Swords size={64} strokeWidth={2} className="mcq-icon" style={{ color: '#fff' }} />
+              </div>
+              <h3 className="option-title">Live Battles</h3>
+              <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
+            </span>
+          ) : (
+            <Link 
+              to={userRole === 'Teacher' ? '/dashboard/teacher' : '/dashboard-school'} 
+              className="questionType-option battle-card-option" 
+              onClick={() => soundEffects.playClick()}
+            >
+              <div className="option-icon-wrapper">
+                <Swords size={64} strokeWidth={2} className="mcq-icon" />
+              </div>
+              <h3 className="option-title">Live Battles</h3>
+              <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
+            </Link>
+          )}
         </div>
       </div>
 
@@ -112,6 +163,77 @@ function QuestionType() {
               </button>
               <button className="upgrade-btn-secondary" onClick={() => { setShowUpgradeModal(false); navigate('/auth/login'); }}>
                 Log In
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showJoinBattleModal && (
+        <div className="upgrade-overlay" onClick={() => { setShowJoinBattleModal(false); setJoinCompError(null); }}>
+          <div className="upgrade-modal-card battle-join-popup-card animate-comp-pop-in" onClick={(e) => e.stopPropagation()}>
+            <button className="upgrade-close-btn" onClick={() => { setShowJoinBattleModal(false); setJoinCompError(null); }}>×</button>
+            <div className="upgrade-modal-header">
+              <span className="lock-large-icon">⚔️</span>
+              <h2>Enter Battle Arena</h2>
+            </div>
+            <p className="upgrade-modal-text">
+              Your teacher started a live battle! Paste the Competition ID below to enter the arena and compete:
+            </p>
+            <div className="battle-join-input-box" style={{ margin: '1.5rem 0', width: '100%' }}>
+              <input
+                type="text"
+                className="battle-id-input-field"
+                placeholder="Paste Competition ID here..."
+                value={compIdInput}
+                onChange={e => { setCompIdInput(e.target.value); setJoinCompError(null); }}
+                style={{
+                  width: '100%',
+                  padding: '14px 20px',
+                  borderRadius: '12px',
+                  border: '2px solid rgba(0,0,0,0.1)',
+                  fontSize: '16px',
+                  textAlign: 'center',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
+              {joinCompError && (
+                <p className="battle-error-message" style={{ color: '#ef4444', fontSize: '14px', marginTop: '8px', fontWeight: '600' }}>
+                  ⚠️ {joinCompError}
+                </p>
+              )}
+            </div>
+            <div className="upgrade-modal-actions" style={{ width: '100%', display: 'flex', gap: '12px' }}>
+              <button 
+                className="upgrade-btn-primary" 
+                disabled={joiningComp}
+                onClick={() => {
+                  const id = compIdInput.trim();
+                  if (!id) { setJoinCompError('Please paste a valid Competition ID from your teacher.'); return; }
+                  soundEffects.playClick();
+                  
+                  // Eagerly trigger automatic fullscreen using active user gesture
+                  const docEl = document.documentElement;
+                  if (docEl.requestFullscreen) {
+                      docEl.requestFullscreen().catch(() => {});
+                  } else if (docEl.webkitRequestFullscreen) {
+                      docEl.webkitRequestFullscreen();
+                  }
+
+                  setJoiningComp(true);
+                  navigate(`/student/competition/${id}`);
+                }}
+                style={{ flex: 1 }}
+              >
+                {joiningComp ? 'Entering Arena...' : 'Join Battle! ⚔️'}
+              </button>
+              <button 
+                className="upgrade-btn-secondary" 
+                onClick={() => { setShowJoinBattleModal(false); setJoinCompError(null); }}
+                style={{ flex: '0 0 auto' }}
+              >
+                Cancel
               </button>
             </div>
           </div>
