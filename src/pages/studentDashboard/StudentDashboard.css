@@ -1976,3 +1976,244 @@
         justify-content: center;
     }
 }
+
+/* =============================================================
+   PREMIUM DUAL ACTIONS GRID (GAME ROOM & BATTLE ARENA SIDE-BY-SIDE)
+   ============================================================= */
+.student-dashboard-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.premium-action-card {
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    min-height: 220px;
+    box-sizing: border-box;
+}
+
+.premium-action-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 48px rgba(124, 58, 237, 0.3);
+}
+
+.premium-action-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Card Specific Themes */
+.game-room-card {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.game-room-card:hover {
+    box-shadow: 0 20px 48px rgba(99, 102, 241, 0.35);
+}
+
+.battle-arena-card {
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.battle-arena-card:hover {
+    box-shadow: 0 20px 48px rgba(139, 92, 246, 0.35);
+}
+
+/* Card Header Components */
+.card-header-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.card-icon-ring {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.game-room-card .card-icon-ring {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+}
+
+.battle-arena-card .card-icon-ring {
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+    animation: battle-icon-pulse 2.5s ease-in-out infinite;
+}
+
+.card-badge {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.game-room-card .card-badge {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.battle-arena-card .card-badge {
+    background: rgba(219, 39, 119, 0.2);
+    color: #fbcfe8;
+    border: 1px solid rgba(219, 39, 119, 0.3);
+}
+
+.card-title-text h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0;
+    color: #fff !important;
+}
+
+.game-room-card .card-title-text h3 {
+    background: linear-gradient(90deg, #93c5fd, #67e8f9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.battle-arena-card .card-title-text h3 {
+    background: linear-gradient(90deg, #c084fc, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.card-desc-text {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0 0 16px 0;
+    line-height: 1.5;
+}
+
+/* Card Button Actions */
+.card-action-box {
+    margin-top: auto;
+}
+
+.premium-action-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 12px;
+    border: none;
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.game-room-card .premium-action-btn {
+    background: linear-gradient(135deg, #2563eb, #0891b2);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+}
+
+.game-room-card .premium-action-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.55);
+}
+
+.battle-arena-card .premium-action-btn {
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+}
+
+.battle-arena-card .premium-action-btn:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.55);
+}
+
+/* Battle Card Form Elements */
+.battle-inputs-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.battle-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.battle-id-input-field {
+    flex: 1;
+    padding: 11px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.battle-id-input-field::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.battle-id-input-field:focus {
+    border-color: #c084fc;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.battle-error-message {
+    font-size: 11px;
+    color: #f87171;
+    margin: 0;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .student-dashboard-actions-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .premium-action-card {
+        padding: 1.5rem;
+        min-height: 190px;
+    }
+}
+

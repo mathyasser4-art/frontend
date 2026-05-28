@@ -452,7 +452,62 @@ nav .nav-container img {
 }
 
 .teacher-reports-btn {
-  font-size: 11px !important;
+  font-size: 10px !important;
+  padding: 0.45rem 0.7rem !important;
+}
+
+/* Compact all teacher buttons slightly so the battle button fits */
+.create-homework-nav-btn,
+.homework-btn,
+.teachers-btn {
+  font-size: 10px !important;
+  padding: 0.4rem 0.8rem !important;
+}
+
+.create-battle-nav-btn {
+  display: inline-flex !important;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem !important;
+  margin-right: 0.5rem !important;
+  height: 40px !important;
+  background: linear-gradient(180deg, #FF6B6B 0%, #C0392B 100%) !important; /* Glossy Red */
+  color: white !important;
+  font-weight: 800 !important;
+  font-size: 10px !important;
+  border-radius: 12px !important;
+  cursor: pointer;
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.45), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 4px 0 #8B1A1A, 
+    0 6px 12px rgba(255, 107, 107, 0.3);
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
+  text-decoration: none;
+  text-transform: uppercase;
+  border: none;
+  white-space: nowrap;
+}
+
+.create-battle-nav-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.08);
+  box-shadow: 
+    inset 2px 3px 4px rgba(255, 255, 255, 0.5), 
+    inset -2px -3px 5px rgba(0, 0, 0, 0.4), 
+    0 6px 0 #8B1A1A, 
+    0 8px 16px rgba(255, 107, 107, 0.4);
+}
+
+.create-battle-nav-btn:active {
+  transform: translateY(3px) scale(0.97);
+  box-shadow: 
+    inset 1px 2px 2px rgba(255, 255, 255, 0.3), 
+    inset -1px -2px 3px rgba(0, 0, 0, 0.4), 
+    0 1px 0 #8B1A1A, 
+    0 2px 4px rgba(255, 107, 107, 0.25);
 }
 
 /* Dynamic Mobile Responsiveness for all 3D buttons */
@@ -480,7 +535,8 @@ nav .nav-container img {
   .homework-btn, 
   .teachers-btn, 
   .games-btn, 
-  .create-homework-nav-btn, 
+  .create-homework-nav-btn,
+  .create-battle-nav-btn,
   .nav-btn,
   .nav-btn-profile {
     padding: 0.2rem 0.45rem !important;

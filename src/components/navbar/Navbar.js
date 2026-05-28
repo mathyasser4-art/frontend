@@ -9,6 +9,7 @@ import TeacherRegistration from '../teacherRegistration/TeacherRegistration'
 import TeacherHelpModal from '../teacherHelpModal/TeacherHelpModal'
 import StudentHelpModal from '../studentHelpModal/StudentHelpModal'
 import CreateHomeworkModal from './CreateHomeworkModal'
+import CreateCompetitionModal from './CreateCompetitionModal'
 import TutorialVideoModal from '../tutorialVideoModal/TutorialVideoModal'
 import '../../reusable.css'
 import './Navbar.css'
@@ -22,6 +23,7 @@ const Navbar = () => {
     const [showTeacherHelp, setShowTeacherHelp] = useState(false)
     const [showStudentHelp, setShowStudentHelp] = useState(false)
     const [showCreateHomework, setShowCreateHomework] = useState(false)
+    const [showCreateCompetition, setShowCreateCompetition] = useState(false)
     const [showTutorialVideo, setShowTutorialVideo] = useState(false)
     const [tutorialRole, setTutorialRole] = useState('Teacher')
 
@@ -110,6 +112,11 @@ const Navbar = () => {
                             CREATE HW
                         </div>
                     ) : null}
+                    {role === 'Teacher' ? (
+                        <div className="create-battle-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateCompetition(true); }}>
+                            ⚔️ BATTLE
+                        </div>
+                    ) : null}
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn">HOMEWORK REPORTS</div></Link> : null}
                     {role === 'Student' ? (
                         <>
@@ -160,6 +167,11 @@ const Navbar = () => {
             {showCreateHomework && (
                 <CreateHomeworkModal
                     onClose={() => setShowCreateHomework(false)}
+                />
+            )}
+            {showCreateCompetition && (
+                <CreateCompetitionModal
+                    onClose={() => setShowCreateCompetition(false)}
                 />
             )}
             {showTutorialVideo && (

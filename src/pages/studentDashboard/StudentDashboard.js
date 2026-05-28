@@ -9,7 +9,7 @@ import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVide
 import AttemptHistory from '../../components/attemptHistory/AttemptHistory'
 import API_BASE_URL from '../../config/api.config'
 import soundEffects from '../../utils/soundEffects'
-import { Swords, Zap } from 'lucide-react'
+import { Swords, Zap, Gamepad } from 'lucide-react'
 import '../../reusable.css'
 import './StudentDashboard.css'
 
@@ -204,45 +204,89 @@ function StudentDashboard() {
                             <p className="list-tagline">Solve pending assignments or review your grades below.</p>
                         </div>
 
-                        {/* ===== JOIN LIVE BATTLE SECTION ===== */}
-                        <div className="student-join-battle-panel">
-                            <div className="battle-panel-left">
-                                <div className="battle-panel-icon-ring">
-                                    <Swords size={28} className="battle-sword-icon" />
-                                </div>
+                        {/* ===== PREMIUM DUAL ACTION CARDS (GAME ROOM & BATTLE ARENA SIDE-BY-SIDE) ===== */}
+                        <div className="student-dashboard-actions-grid">
+                            
+                            {/* Card 1: Adventure Game Room */}
+                            <div className="premium-action-card game-room-card">
+                                <span className="card-badge">Level Up!</span>
                                 <div>
-                                    <h3 className="battle-panel-title">Live Battle Arena</h3>
-                                    <p className="battle-panel-sub">Your teacher started a live competition! Enter the Battle ID to join.</p>
+                                    <div className="card-header-row">
+                                        <div className="card-icon-ring">
+                                            <Gamepad size={24} style={{ color: '#fff' }} />
+                                        </div>
+                                        <div className="card-title-text">
+                                            <h3>Adventure Games</h3>
+                                        </div>
+                                    </div>
+                                    <p className="card-desc-text">
+                                        Enter the magical games arena, play fun abacus adventure games, and climb the scoreboard!
+                                    </p>
+                                </div>
+                                <div className="card-action-box">
+                                    <button 
+                                        className="premium-action-btn"
+                                        onClick={() => {
+                                            soundEffects.playClick();
+                                            navigate('/student/games-menu');
+                                        }}
+                                    >
+                                        <span>Enter Game Room 🎮</span>
+                                    </button>
                                 </div>
                             </div>
-                            <div className="battle-panel-right">
-                                <input
-                                    id="comp-id-join-input"
-                                    type="text"
-                                    className="battle-id-input"
-                                    placeholder="Paste Competition ID here..."
-                                    value={compIdInput}
-                                    onChange={e => { setCompIdInput(e.target.value); setJoinCompError(null); }}
-                                />
-                                {joinCompError && <p className="join-comp-error">{joinCompError}</p>}
-                                <button
-                                    id="join-battle-btn"
-                                    className="battle-join-btn"
-                                    disabled={joiningComp}
-                                    onClick={() => {
-                                        const id = compIdInput.trim();
-                                        if (!id) { setJoinCompError('Please paste a valid Competition ID from your teacher.'); return; }
-                                        soundEffects.playClick();
-                                        setJoiningComp(true);
-                                        navigate(`/student/competition/${id}`);
-                                    }}
-                                >
-                                    <Zap size={16} />
-                                    <span>{joiningComp ? 'Entering Arena...' : 'Join Battle!'}</span>
-                                </button>
+
+                            {/* Card 2: Live Battle Arena */}
+                            <div className="premium-action-card battle-arena-card">
+                                <span className="card-badge">Live PVP</span>
+                                <div>
+                                    <div className="card-header-row">
+                                        <div className="card-icon-ring">
+                                            <Swords size={24} style={{ color: '#fff' }} />
+                                        </div>
+                                        <div className="card-title-text">
+                                            <h3>Live Battle Arena</h3>
+                                        </div>
+                                    </div>
+                                    <p className="card-desc-text">
+                                        Your teacher started a live battle! Paste the Competition ID here to join the race.
+                                    </p>
+                                </div>
+                                <div className="card-action-box">
+                                    <div className="battle-inputs-wrapper">
+                                        <div className="battle-input-row">
+                                            <input
+                                                id="comp-id-join-input"
+                                                type="text"
+                                                className="battle-id-input-field"
+                                                placeholder="Paste Competition ID here..."
+                                                value={compIdInput}
+                                                onChange={e => { setCompIdInput(e.target.value); setJoinCompError(null); }}
+                                            />
+                                            <button
+                                                id="join-battle-btn"
+                                                className="premium-action-btn"
+                                                style={{ width: 'auto', flexShrink: 0 }}
+                                                disabled={joiningComp}
+                                                onClick={() => {
+                                                    const id = compIdInput.trim();
+                                                    if (!id) { setJoinCompError('Please paste a valid Competition ID from your teacher.'); return; }
+                                                    soundEffects.playClick();
+                                                    setJoiningComp(true);
+                                                    navigate(`/student/competition/${id}`);
+                                                }}
+                                            >
+                                                <Zap size={14} />
+                                                <span>{joiningComp ? 'Entering...' : 'Join!'}</span>
+                                            </button>
+                                        </div>
+                                        {joinCompError && <p className="battle-error-message">{joinCompError}</p>}
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
-                        {/* ===== JOIN LIVE BATTLE SECTION END ===== */}
+                        {/* ===== PREMIUM DUAL ACTION CARDS END ===== */}
 
                         {assignmentsLoading ? (
                             <DashboardLoading />

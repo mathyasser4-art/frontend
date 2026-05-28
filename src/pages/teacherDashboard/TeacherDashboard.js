@@ -5,7 +5,7 @@ import TrialBanner from '../../components/trialBanner/TrialBanner';
 import UpgradePrompt from '../../components/upgradePrompt/UpgradePrompt';
 import { Link, useNavigate } from 'react-router-dom'
 import MathInput from "react-math-keyboard";
-import { X, Swords, Trophy, Plus, ChevronRight } from 'lucide-react'
+import { X, Swords, Trophy, ChevronRight } from 'lucide-react'
 import getAssignment from '../../api/teacher/getAssignment.api'
 import getClass from '../../api/teacher/getClass.api';
 import duplicateAssignment from '../../api/assignment/duplicateAssignment.api';
@@ -13,7 +13,8 @@ import removeAssignment from '../../api/assignment/removeAssignment.api';
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import { History } from 'lucide-react'
 import soundEffects from '../../utils/soundEffects'
-import { createCompetition, getTeacherCompetitions } from '../../api/competition/competition.api';
+import { getTeacherCompetitions } from '../../api/competition/competition.api';
+import CreateCompetitionModal from '../../components/navbar/CreateCompetitionModal';
 import '../../reusable.css'
 import './TeacherDashboard.css'
 
@@ -45,11 +46,6 @@ function TeacherDashboard() {
     const [myCompetitions, setMyCompetitions] = useState([])
     const [compLoading, setCompLoading] = useState(true)
     const [showCreateComp, setShowCreateComp] = useState(false)
-    const [compTitle, setCompTitle] = useState('')
-    const [compTimer, setCompTimer] = useState(300)
-    const [compSelectedAssignment, setCompSelectedAssignment] = useState('')
-    const [creatingComp, setCreatingComp] = useState(false)
-    const [compError, setCompError] = useState(null)
 
     useEffect(() => {
         const handleGetAssignment = () => {
@@ -78,34 +74,10 @@ function TeacherDashboard() {
         if (isAuth) fetchCompetitions();
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleCreateCompetition = async () => {
-        if (!compTitle.trim()) { setCompError('Please enter a competition title.'); return; }
-        if (!compSelectedAssignment) { setCompError('Please select a homework assignment to import questions.'); return; }
-        
-        setCreatingComp(true);
-        setCompError(null);
-
-        const selectedAss = allAsignment.find(a => a._id === compSelectedAssignment);
-        const questionIds = selectedAss ? selectedAss.questions.map(q => q._id || q) : [];
-
-        try {
-            const res = await createCompetition({ 
-                title: compTitle, 
-                timer: Number(compTimer),
-                questions: questionIds
-            });
-            if (res.message === 'success') {
-                soundEffects.playClick();
-                // Navigate directly to the lobby
-                navigate(`/teacher/competition/${res.competition._id}`);
-            } else {
-                setCompError(res.message);
-                setCreatingComp(false);
-            }
-        } catch (e) {
-            setCompError('Failed to create competition. Please try again.');
-            setCreatingComp(false);
-        }
+    const handleCreateCompetition = (newComp) => {
+        // Called after CreateCompetitionModal successfully creates a competition
+        // The modal navigates to the lobby itself, but we refresh the list
+        setMyCompetitions(prev => [newComp, ...prev]);
     };
 
     const openStudentListPopup = (assignmentID) => {
@@ -330,68 +302,11 @@ function TeacherDashboard() {
                     <button
                         id="create-competition-btn"
                         className="comp-create-btn"
-                        onClick={() => { soundEffects.playClick(); setShowCreateComp(s => !s); setCompError(null); }}
+                        onClick={() => { soundEffects.playClick(); setShowCreateComp(true); }}
                     >
-                        <Plus size={18} />
-                        <span>Create New Battle</span>
+                        ⚔️ Create New Battle
                     </button>
                 </div>
-
-                {/* Create Competition Form */}
-                {showCreateComp && (
-                    <div className="comp-create-form-card">
-                        <h3>⚔️ Setup a New Competition</h3>
-                        <p className="comp-form-sub">Configure the battle and you will be taken to the lobby. Students join from their dashboard using the competition link.</p>
-                        <div className="comp-form-row">
-                            <label>Battle Title</label>
-                            <input
-                                type="text"
-                                id="comp-title-input"
-                                value={compTitle}
-                                onChange={e => setCompTitle(e.target.value)}
-                                placeholder="e.g. Friday Speed Challenge 🔥"
-                                className="comp-input"
-                            />
-                        </div>
-                        <div className="comp-form-row">
-                            <label>Select Homework Assignment (Import Questions)</label>
-                            <select
-                                value={compSelectedAssignment}
-                                onChange={e => setCompSelectedAssignment(e.target.value)}
-                                className="comp-input"
-                                style={{ background: 'rgba(15, 23, 42, 0.9)', color: '#fff', border: '1px solid rgba(167, 139, 250, 0.35)' }}
-                            >
-                                <option value="">-- Choose Homework Assignment --</option>
-                                {allAsignment?.map(item => (
-                                    <option key={item._id} value={item._id}>
-                                        {item.title} ({item.questions?.length || 0} Questions)
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="comp-form-row">
-                            <label>Timer (seconds — e.g. 300 = 5 minutes)</label>
-                            <input
-                                type="number"
-                                id="comp-timer-input"
-                                value={compTimer}
-                                onChange={e => setCompTimer(e.target.value)}
-                                min={30}
-                                max={3600}
-                                className="comp-input"
-                            />
-                        </div>
-                        {compError && <p className="comp-error-msg">{compError}</p>}
-                        <button
-                            id="launch-battle-btn"
-                            className="comp-launch-btn"
-                            onClick={handleCreateCompetition}
-                            disabled={creatingComp}
-                        >
-                            {creatingComp ? <span className="loader"></span> : '🚀 Launch Battle & Enter Lobby'}
-                        </button>
-                    </div>
-                )}
 
                 {/* My Competitions List */}
                 <div className="comp-list-wrapper">
@@ -429,6 +344,13 @@ function TeacherDashboard() {
                 </div>
             </div>
             {/* ========== LIVE COMPETITION PANEL END ========== */}
+
+            {/* Create Competition Modal */}
+            {showCreateComp && (
+                <CreateCompetitionModal
+                    onClose={() => setShowCreateComp(false)}
+                />
+            )}
 
             {/*student list popup start */}
             <div className="add-to-class-popup student-list-popup class-popup-hide d-none justify-content-center align-items-center">
