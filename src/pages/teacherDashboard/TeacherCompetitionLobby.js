@@ -9,6 +9,24 @@ import soundEffects from '../../utils/soundEffects';
 import Confetti from 'react-confetti';
 import './TeacherCompetitionLobby.css';
 
+// Helper to format elapsed time in minutes, seconds and milliseconds
+const formatElapsedMs = (finishedAt, startedAt) => {
+    if (!finishedAt || !startedAt) return "—";
+    const diffMs = new Date(finishedAt) - new Date(startedAt);
+    if (diffMs < 0) return "—";
+    
+    const mins = Math.floor(diffMs / 60000);
+    const secs = Math.floor((diffMs % 60000) / 1000);
+    const ms = diffMs % 1000;
+    
+    let formatted = "";
+    if (mins > 0) {
+        formatted += `${mins}m `;
+    }
+    formatted += `${secs}s ${ms}ms`;
+    return `${formatted} (${diffMs.toLocaleString()} ms)`;
+};
+
 function TeacherCompetitionLobby() {
     const { competitionId } = useParams();
     const [competition, setCompetition] = useState(null);
@@ -124,7 +142,7 @@ function TeacherCompetitionLobby() {
                             score: data.score, 
                             totalAnswered: data.totalAnswered,
                             wrongAnswers: data.wrongAnswers,
-                            finishedAt: data.finished ? new Date() : null 
+                            finishedAt: data.finished ? new Date() : p.finishedAt 
                         };
                     }
                     return p;
@@ -379,6 +397,11 @@ function TeacherCompetitionLobby() {
                                             <span className="name">{p.student?.userName}</span>
                                             <span className="score-ratio">
                                                 {p.totalAnswered || 0} / {totalQuestions} Solved ({p.score} Correct, {p.wrongAnswers || 0} Wrong)
+                                                {isFinished && competition.startedAt && (
+                                                    <span style={{ display: 'block', fontSize: '11px', color: '#10b981', marginTop: '3px', fontWeight: 'bold' }}>
+                                                        ⏱️ {formatElapsedMs(p.finishedAt, competition.startedAt)}
+                                                    </span>
+                                                )}
                                             </span>
                                         </div>
                                         <div className="track-lane">
@@ -460,7 +483,7 @@ function TeacherCompetitionLobby() {
                         </div>
 
                         <div className="all-rankings-table-wrapper">
-                            <h3>Final Leaderboard Standings</h3>
+                            <h3>Final Leaderboard Standings & Time Reports</h3>
                             <table className="final-scoreboard-table">
                                 <thead>
                                     <tr>
@@ -468,6 +491,7 @@ function TeacherCompetitionLobby() {
                                         <th>Student</th>
                                         <th>Correct</th>
                                         <th>Wrong</th>
+                                        <th>Elapsed Time (ms)</th>
                                         <th>Accuracy Status</th>
                                     </tr>
                                 </thead>
@@ -478,6 +502,9 @@ function TeacherCompetitionLobby() {
                                             <td>{p.student?.userName}</td>
                                             <td className="score-correct">{p.score} / {totalQuestions}</td>
                                             <td className="score-wrong">{p.wrongAnswers || 0}</td>
+                                            <td style={{ fontFamily: 'monospace', color: '#38bdf8', fontSize: '13px' }}>
+                                                {formatElapsedMs(p.finishedAt, competition.startedAt)}
+                                            </td>
                                             <td>
                                                 {p.score === totalQuestions ? (
                                                     <span className="badge-flawless">100% Perfect</span>

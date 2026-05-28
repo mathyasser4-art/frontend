@@ -11,6 +11,24 @@ import { Award, Trophy, Users, Timer, HelpCircle, ArrowRight, Zap, Target, Star 
 import API_BASE_URL from '../../config/api.config';
 import './StudentCompetition.css';
 
+// Helper to format elapsed time in minutes, seconds and milliseconds
+const formatElapsedMs = (finishedAt, startedAt) => {
+    if (!finishedAt || !startedAt) return "—";
+    const diffMs = new Date(finishedAt) - new Date(startedAt);
+    if (diffMs < 0) return "—";
+    
+    const mins = Math.floor(diffMs / 60000);
+    const secs = Math.floor((diffMs % 60000) / 1000);
+    const ms = diffMs % 1000;
+    
+    let formatted = "";
+    if (mins > 0) {
+        formatted += `${mins}m `;
+    }
+    formatted += `${secs}s ${ms}ms`;
+    return `${formatted}`;
+};
+
 function StudentCompetition() {
     const { competitionId } = useParams();
     const navigate = useNavigate();
@@ -688,6 +706,17 @@ function StudentCompetition() {
                                 <span className="result-label">Unanswered</span>
                                 <span className="result-value unanswered-val">{totalQuestions - totalAnswered}</span>
                             </div>
+                            <div className="result-stat">
+                                <span className="result-label">Elapsed Time</span>
+                                <span className="result-value" style={{ color: '#38bdf8', fontSize: '20px', fontWeight: '800', marginTop: '6px' }}>
+                                    {(() => {
+                                        const myDetails = participants.find(p => String(p.student?._id || p.student) === String(studentID));
+                                        return myDetails && myDetails.finishedAt && competition?.startedAt
+                                            ? formatElapsedMs(myDetails.finishedAt, competition.startedAt)
+                                            : "—";
+                                    })()}
+                                </span>
+                            </div>
                         </div>
 
                         {/* 3D Podium */}
@@ -752,7 +781,7 @@ function StudentCompetition() {
 
                         {/* Leaderboard standing */}
                         <div className="ranking-table-list-scores">
-                            <h3>Lobby Leaderboard</h3>
+                            <h3>Lobby Leaderboard & Time Reports</h3>
                             <table className="student-final-scores-table">
                                 <thead>
                                     <tr>
@@ -760,6 +789,7 @@ function StudentCompetition() {
                                         <th>Player</th>
                                         <th>Correct</th>
                                         <th>Wrong</th>
+                                        <th>Elapsed Time</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -771,6 +801,9 @@ function StudentCompetition() {
                                                 <td>{p.student?.userName} {isMe && '(You)'}</td>
                                                 <td className="score-correct">{p.score} / {totalQuestions}</td>
                                                 <td className="score-wrong">{p.wrongAnswers || 0}</td>
+                                                <td style={{ fontFamily: 'monospace', color: '#38bdf8', fontSize: '13px' }}>
+                                                    {formatElapsedMs(p.finishedAt, competition?.startedAt)}
+                                                </td>
                                             </tr>
                                         );
                                     })}
