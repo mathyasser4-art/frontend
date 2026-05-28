@@ -186,8 +186,33 @@ function TeacherCompetitionLobby() {
 
     const totalQuestions = competition.questions?.length || 0;
 
-    // Helper to sort participants by score desc
-    const sortedParticipants = [...participants].sort((a, b) => b.score - a.score);
+    // Helper to sort participants with tie-breakers (highest score, finish speed, accuracy)
+    const sortedParticipants = [...participants].sort((a, b) => {
+        if (b.score !== a.score) {
+            return b.score - a.score;
+        }
+        
+        // Tie-breaker 1: Finished vs Unfinished
+        const aFinished = !!a.finishedAt;
+        const bFinished = !!b.finishedAt;
+        if (aFinished && !bFinished) return -1;
+        if (!aFinished && bFinished) return 1;
+        
+        // Tie-breaker 2: Speed (earlier finishedAt first)
+        if (aFinished && bFinished) {
+            return new Date(a.finishedAt) - new Date(b.finishedAt);
+        }
+        
+        // Tie-breaker 3: Accuracy (fewer wrong answers first)
+        const aWrong = a.wrongAnswers || 0;
+        const bWrong = b.wrongAnswers || 0;
+        if (aWrong !== bWrong) {
+            return aWrong - bWrong;
+        }
+        
+        // Tie-breaker 4: Pace (more total answered first)
+        return (b.totalAnswered || 0) - (a.totalAnswered || 0);
+    });
     const podiumWinners = sortedParticipants.slice(0, 3);
 
     return (

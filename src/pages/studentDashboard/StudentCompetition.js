@@ -392,8 +392,25 @@ function StudentCompetition() {
             currentBadges.push({ name: "Arena Combatant", desc: "Solved at least 1 question correctly", icon: <Star size={24} /> });
         }
         
-        // Find if we are in the top 3
-        const sorted = [...allParticipants].sort((a, b) => b.score - a.score);
+        // Find if we are in the top 3 with tie-breakers
+        const sorted = [...allParticipants].sort((a, b) => {
+            if (b.score !== a.score) {
+                return b.score - a.score;
+            }
+            const aFinished = !!a.finishedAt;
+            const bFinished = !!b.finishedAt;
+            if (aFinished && !bFinished) return -1;
+            if (!aFinished && bFinished) return 1;
+            if (aFinished && bFinished) {
+                return new Date(a.finishedAt) - new Date(b.finishedAt);
+            }
+            const aWrong = a.wrongAnswers || 0;
+            const bWrong = b.wrongAnswers || 0;
+            if (aWrong !== bWrong) {
+                return aWrong - bWrong;
+            }
+            return (b.totalAnswered || 0) - (a.totalAnswered || 0);
+        });
         const rank = sorted.findIndex(p => String(p.student?._id || p.student) === String(studentID)) + 1;
 
         if (rank === 1) {
@@ -417,7 +434,24 @@ function StudentCompetition() {
     if (!competition) return <div className="error-container"><p>Competition not found.</p></div>;
 
     const totalQuestions = questions.length;
-    const sortedParticipants = [...participants].sort((a, b) => b.score - a.score);
+    const sortedParticipants = [...participants].sort((a, b) => {
+        if (b.score !== a.score) {
+            return b.score - a.score;
+        }
+        const aFinished = !!a.finishedAt;
+        const bFinished = !!b.finishedAt;
+        if (aFinished && !bFinished) return -1;
+        if (!aFinished && bFinished) return 1;
+        if (aFinished && bFinished) {
+            return new Date(a.finishedAt) - new Date(b.finishedAt);
+        }
+        const aWrong = a.wrongAnswers || 0;
+        const bWrong = b.wrongAnswers || 0;
+        if (aWrong !== bWrong) {
+            return aWrong - bWrong;
+        }
+        return (b.totalAnswered || 0) - (a.totalAnswered || 0);
+    });
     const podiumWinners = sortedParticipants.slice(0, 3);
     const currentQuestion = questions[currentIndex];
 
