@@ -515,23 +515,33 @@ nav .nav-container img {
   nav .nav-container {
     padding: 0.15rem 0.4rem !important;
     height: auto !important;
-    min-height: 40px !important;
+    min-height: 38px !important;
   }
 
   nav .nav-container img {
-    width: 75px !important;
-    max-height: 26px !important;
+    width: 90px !important; /* Increased logo size slightly on mobile */
+    max-height: 25px !important;
   }
 
   .nav-right-side {
     gap: 0.05rem !important;
     display: flex !important;
     flex-wrap: nowrap !important; /* Keep buttons in one horizontal line */
-    align-items: center;
-    justify-content: flex-end;
+    align-items: center !important;
+    justify-content: flex-end !important;
   }
 
-  /* Scale down buttons to fit horizontally */
+  /* Core fix to align buttons inside Link components perfectly with sibling div buttons */
+  .nav-right-side a {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Scale down buttons to fit horizontally even better */
   .homework-btn, 
   .teachers-btn, 
   .games-btn, 
@@ -539,17 +549,17 @@ nav .nav-container img {
   .create-battle-nav-btn,
   .nav-btn,
   .nav-btn-profile {
-    padding: 0.1rem 0.3rem !important;
+    padding: 0.08rem 0.2rem !important;
     width: auto !important;
-    height: 22px !important;
+    height: 18px !important; /* Decreased size even more */
     min-width: unset !important;
     margin-right: 0.04rem !important;
-    border-radius: 5px !important; /* Scaled down for smaller height */
-    font-size: 7px !important;
+    border-radius: 4px !important; /* Scaled down for smaller height */
+    font-size: 6px !important; /* Decreased font size even more */
     font-weight: 800 !important;
     display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
+    align-items: center !important;
+    justify-content: center !important;
     white-space: nowrap !important;
   }
 
@@ -713,12 +723,12 @@ nav .nav-container img {
 @media only screen and (max-width: 480px) {
   nav .nav-container {
     padding: 0.1rem 0.3rem !important;
-    min-height: 32px !important;
+    min-height: 34px !important;
   }
 
   nav .nav-container img {
-    width: 60px !important;
-    max-height: 20px !important;
+    width: 80px !important; /* Increased logo size on smaller devices */
+    max-height: 22px !important;
   }
 
   .homework-btn, 
@@ -728,22 +738,22 @@ nav .nav-container img {
   .create-battle-nav-btn,
   .nav-btn,
   .nav-btn-profile {
-    padding: 0.08rem 0.2rem !important;
-    height: 18px !important;
-    font-size: 6px !important;
-    border-radius: 4px !important;
+    padding: 0.06rem 0.15rem !important;
+    height: 15px !important; /* Decreased size even more */
+    font-size: 5px !important;
+    border-radius: 3px !important;
   }
 }
 
 @media only screen and (max-width: 360px) {
   nav .nav-container {
     padding: 0.08rem 0.2rem !important;
-    min-height: 26px !important;
+    min-height: 30px !important;
   }
 
   nav .nav-container img {
-    width: 50px !important;
-    max-height: 16px !important;
+    width: 70px !important; /* Increased logo size on tiny devices */
+    max-height: 18px !important;
   }
 
   .homework-btn, 
@@ -753,9 +763,9 @@ nav .nav-container img {
   .create-battle-nav-btn,
   .nav-btn,
   .nav-btn-profile {
-    padding: 0.05rem 0.15rem !important;
-    height: 15px !important;
-    font-size: 5px !important;
-    border-radius: 3px !important;
+    padding: 0.04rem 0.1rem !important;
+    height: 13px !important; /* Decreased size even more */
+    font-size: 4px !important;
+    border-radius: 2px !important;
   }
 }
