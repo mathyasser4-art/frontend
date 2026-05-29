@@ -515,16 +515,16 @@ nav .nav-container img {
   nav .nav-container {
     padding: 0.3rem 0.6rem !important;
     height: auto !important;
-    min-height: 60px !important;
+    min-height: 52px !important;
   }
 
   nav .nav-container img {
-    width: 90px !important;
-    max-height: 35px !important;
+    width: 85px !important;
+    max-height: 30px !important;
   }
 
   .nav-right-side {
-    gap: 0.15rem !important;
+    gap: 0.08rem !important;
     display: flex !important;
     flex-wrap: nowrap !important; /* Keep buttons in one horizontal line */
     align-items: center;
@@ -539,13 +539,13 @@ nav .nav-container img {
   .create-battle-nav-btn,
   .nav-btn,
   .nav-btn-profile {
-    padding: 0.2rem 0.45rem !important;
+    padding: 0.15rem 0.35rem !important;
     width: auto !important;
-    height: 28px !important;
+    height: 24px !important;
     min-width: unset !important;
-    margin-right: 0.1rem !important;
-    border-radius: 8px !important; /* Scaled down from 12px for smaller height */
-    font-size: 8.5px !important;
+    margin-right: 0.05rem !important;
+    border-radius: 6px !important; /* Scaled down from 12px for smaller height */
+    font-size: 7.5px !important;
     font-weight: 800 !important;
     display: inline-flex !important;
     align-items: center;
@@ -574,6 +574,28 @@ nav .nav-container img {
       inset -0.5px -1px 1.5px rgba(0, 0, 0, 0.4), 
       0 0.5px 0 #005F7A, 
       0 1px 2px rgba(0, 210, 255, 0.25) !important;
+  }
+
+  .create-battle-nav-btn {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.45), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 2px 0 #8B1A1A, 
+      0 3px 6px rgba(255, 107, 107, 0.3) !important;
+  }
+  .create-battle-nav-btn:hover {
+    box-shadow: 
+      inset 1px 1.5px 2px rgba(255, 255, 255, 0.5), 
+      inset -1px -1.5px 2.5px rgba(0, 0, 0, 0.4), 
+      0 3px 0 #8B1A1A, 
+      0 4px 8px rgba(255, 107, 107, 0.4) !important;
+  }
+  .create-battle-nav-btn:active {
+    box-shadow: 
+      inset 0.5px 1px 1px rgba(255, 255, 255, 0.3), 
+      inset -0.5px -1px 1.5px rgba(0, 0, 0, 0.4), 
+      0 0.5px 0 #8B1A1A, 
+      0 1px 2px rgba(255, 107, 107, 0.25) !important;
   }
 
   .nav-btn-signup, .nav-btn-profile {
@@ -690,36 +712,40 @@ nav .nav-container img {
 /* Extra small devices - further scaling down to fit horizontally */
 @media only screen and (max-width: 480px) {
   nav .nav-container img {
-    width: 80px !important;
-    max-height: 30px !important;
+    width: 75px !important;
+    max-height: 25px !important;
   }
 
   .homework-btn, 
   .teachers-btn, 
   .games-btn, 
   .create-homework-nav-btn, 
+  .create-battle-nav-btn,
   .nav-btn,
   .nav-btn-profile {
-    padding: 0.15rem 0.35rem !important;
-    height: 26px !important;
-    font-size: 8px !important;
+    padding: 0.1rem 0.25rem !important;
+    height: 20px !important;
+    font-size: 6.8px !important;
+    border-radius: 5px !important;
   }
 }
 
 @media only screen and (max-width: 360px) {
   nav .nav-container img {
-    width: 70px !important;
+    width: 65px !important;
+    max-height: 22px !important;
   }
 
   .homework-btn, 
   .teachers-btn, 
   .games-btn, 
   .create-homework-nav-btn, 
+  .create-battle-nav-btn,
   .nav-btn,
   .nav-btn-profile {
-    padding: 0.15rem 0.25rem !important;
-    height: 24px !important;
-    font-size: 7.5px !important;
-    border-radius: 6px !important;
+    padding: 0.08rem 0.2rem !important;
+    height: 18px !important;
+    font-size: 6px !important;
+    border-radius: 4px !important;
   }
 }
