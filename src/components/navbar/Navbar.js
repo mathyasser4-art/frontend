@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import Pusher from 'pusher-js';
 import logo from '../../logo.png'
 import profileImg from '../../img/avatar-profile.png'
 import school from '../../img/school-avatar.png'
@@ -26,6 +27,50 @@ const Navbar = () => {
     const [showCreateCompetition, setShowCreateCompetition] = useState(false)
     const [showTutorialVideo, setShowTutorialVideo] = useState(false)
     const [tutorialRole, setTutorialRole] = useState('Teacher')
+    const [activeBattleNotification, setActiveBattleNotification] = useState(null)
+
+    // Global real-time listener for live battle creations (exclusive to logged-in students)
+    useEffect(() => {
+        if (isAuth && role === 'Student') {
+            const pusher = new Pusher('06df370fb33f1263ec1f', {
+                cluster: 'eu'
+            });
+
+            const channel = pusher.subscribe('global-battle-arena');
+            
+            channel.bind('battle-created', (data) => {
+                console.log('[NOTIFICATION] Global live battle event received:', data);
+                
+                // Set the notification details in state
+                setActiveBattleNotification({
+                    competitionId: data.competitionId,
+                    title: data.title,
+                    teacherName: data.teacherName
+                });
+
+                // Play a warm click sound to notify student
+                try {
+                    soundEffects.playClick();
+                } catch (e) {}
+            });
+
+            // Set up a 60 seconds auto-dismiss timer whenever a battle is received
+            let dismissTimer;
+            channel.bind('battle-created', () => {
+                clearTimeout(dismissTimer);
+                dismissTimer = setTimeout(() => {
+                    setActiveBattleNotification(null);
+                }, 60000); // 60 seconds auto-dismiss
+            });
+
+            return () => {
+                clearTimeout(dismissTimer);
+                channel.unbind_all();
+                channel.unsubscribe();
+                pusher.disconnect();
+            };
+        }
+    }, [isAuth, role]);
 
     const openTeacherForm = () => {
         soundEffects.playClick()
@@ -180,6 +225,54 @@ const Navbar = () => {
                     onClose={() => setShowTutorialVideo(false)}
                     role={tutorialRole}
                 />
+            )}
+
+            {/* Premium real-time student overlay battle thinking bubble notification */}
+            {activeBattleNotification && (
+                <div className="battle-notification-bubble-overlay animate-bubble-pop-in">
+                    <div className="bubble-content">
+                        <button 
+                            className="bubble-close-x" 
+                            onClick={() => setActiveBattleNotification(null)}
+                            title="Dismiss Notification"
+                        >
+                            ×
+                        </button>
+                        <div className="bubble-header-row">
+                            <span className="bubble-icon-battle">⚔️</span>
+                            <span className="bubble-title-text">Battle Arena Calling!</span>
+                        </div>
+                        <p className="bubble-message-text">
+                            Teacher <strong>{activeBattleNotification.teacherName}</strong> started a live battle:<br/>
+                            <span className="bubble-battle-title">"{activeBattleNotification.title}"</span>
+                        </p>
+                        <button 
+                            className="bubble-join-action-btn"
+                            onClick={() => {
+                                const compId = activeBattleNotification.competitionId;
+                                setActiveBattleNotification(null);
+                                
+                                // Eagerly trigger automatic fullscreen using active user gesture
+                                const docEl = document.documentElement;
+                                if (docEl.requestFullscreen) {
+                                    docEl.requestFullscreen().catch(() => {});
+                                } else if (docEl.webkitRequestFullscreen) {
+                                    docEl.webkitRequestFullscreen();
+                                }
+                                
+                                // Route directly to the competition page
+                                navigate(`/student/competition/${compId}`);
+                            }}
+                        >
+                            Join the Battle Now! ⚔️
+                        </button>
+                    </div>
+                    <div className="bubble-thinking-dots">
+                        <span className="dot dot-1"></span>
+                        <span className="dot dot-2"></span>
+                        <span className="dot dot-3"></span>
+                    </div>
+                </div>
             )}
         </nav >
     );
