@@ -9,6 +9,7 @@ import soundEffects from '../../utils/soundEffects';
 import Confetti from 'react-confetti';
 import { jsPDF } from 'jspdf';
 import './TeacherCompetitionLobby.css';
+import CertificateModal from '../../components/certificate/CertificateModal';
 
 // Helper to format elapsed time in minutes, seconds and milliseconds
 const formatElapsedMs = (finishedAt, startedAt) => {
@@ -37,6 +38,8 @@ function TeacherCompetitionLobby() {
     const [error, setError] = useState(null);
     const [triggerConfetti, setTriggerConfetti] = useState(false);
     const [selectedStudentReport, setSelectedStudentReport] = useState(null);
+    const [selectedCertStudent, setSelectedCertStudent] = useState(null);
+    const [isBulkCertOpen, setIsBulkCertOpen] = useState(false);
 
     const wakeLockRef = useRef(null);
 
@@ -853,6 +856,7 @@ function TeacherCompetitionLobby() {
                                         <th>Wrong</th>
                                         <th>Elapsed Time (ms)</th>
                                         <th>Accuracy Status</th>
+                                        <th>Certificate</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -883,6 +887,34 @@ function TeacherCompetitionLobby() {
                                                     <span className="badge-competitor">Participant</span>
                                                 )}
                                             </td>
+                                            <td>
+                                                {idx < 10 ? (
+                                                    <button
+                                                        onClick={() => setSelectedCertStudent({
+                                                            userName: p.student?.userName,
+                                                            rank: idx + 1,
+                                                            score: p.score
+                                                        })}
+                                                        className="print-single-cert-btn"
+                                                        style={{
+                                                            background: 'linear-gradient(135deg, #7c3aed, #db2777)',
+                                                            border: 'none',
+                                                            borderRadius: '6px',
+                                                            color: '#fff',
+                                                            padding: '5px 12px',
+                                                            fontSize: '11px',
+                                                            fontWeight: 'bold',
+                                                            cursor: 'pointer',
+                                                            boxShadow: '0 2px 8px rgba(124, 58, 237, 0.3)',
+                                                            transition: 'all 0.2s ease'
+                                                        }}
+                                                    >
+                                                        🎓 Award Cert
+                                                    </button>
+                                                ) : (
+                                                    <span style={{ color: '#64748b', fontSize: '11px' }}>—</span>
+                                                )}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -897,6 +929,15 @@ function TeacherCompetitionLobby() {
                             >
                                 📊 Export Combined PDF Report
                             </button>
+                            {participants.length > 0 && (
+                                <button 
+                                    onClick={() => setIsBulkCertOpen(true)} 
+                                    className="action-button bulk-cert-btn"
+                                    style={{ background: 'linear-gradient(to right, #7c3aed, #a78bfa)', boxShadow: '0 4px 20px rgba(124, 58, 237, 0.4)' }}
+                                >
+                                    🏆 Print Top 10 Certificates
+                                </button>
+                            )}
                             <Link to="/dashboard/teacher" className="action-button exit-lobby-btn">
                                 Return to Dashboard
                             </Link>
@@ -1000,6 +1041,28 @@ function TeacherCompetitionLobby() {
                     </div>
                 </div>
             )}
+
+            {/* Certificate Preview and Printing Modals */}
+            <CertificateModal
+                isOpen={!!selectedCertStudent}
+                onClose={() => setSelectedCertStudent(null)}
+                studentName={selectedCertStudent?.userName}
+                rank={selectedCertStudent?.rank}
+                score={selectedCertStudent?.score}
+                totalQuestions={totalQuestions}
+                competitionTitle={competition?.title}
+                teacherName={localStorage.getItem('pp_name') || 'Instructor'}
+                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() !== 'topsoroban'}
+            />
+
+            <CertificateModal
+                isOpen={isBulkCertOpen}
+                onClose={() => setIsBulkCertOpen(false)}
+                competitionTitle={competition?.title}
+                teacherName={localStorage.getItem('pp_name') || 'Instructor'}
+                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() !== 'topsoroban'}
+                bulkStudents={sortedParticipants.slice(0, 10)}
+            />
         </div>
     );
 }

@@ -4,12 +4,12 @@ import Pusher from 'pusher-js';
 import { getCompetitionDetails, joinCompetition, updateLiveScore } from '../../api/competition/competition.api';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
-import AbacusSimulator from '../../components/abacus/AbacusSimulator';
 import soundEffects from '../../utils/soundEffects';
 import Confetti from 'react-confetti';
-import { Award, Trophy, Users, Timer, HelpCircle, ArrowRight, Zap, Target, Star } from 'lucide-react';
+import { Award, Trophy, Timer, HelpCircle, ArrowRight, Target, Star } from 'lucide-react';
 import API_BASE_URL from '../../config/api.config';
 import './StudentCompetition.css';
+import CertificateModal from '../../components/certificate/CertificateModal';
 
 // Helper to format elapsed time in minutes, seconds and milliseconds
 const formatElapsedMs = (finishedAt, startedAt) => {
@@ -55,6 +55,7 @@ function StudentCompetition() {
 
     // Badges earned at the end
     const [badges, setBadges] = useState([]);
+    const [isCertOpen, setIsCertOpen] = useState(false);
 
     const studentID = localStorage.getItem('pp_id');
     const studentName = localStorage.getItem('pp_name') || 'Student';
@@ -611,6 +612,8 @@ function StudentCompetition() {
         return (b.totalAnswered || 0) - (a.totalAnswered || 0);
     });
     const podiumWinners = sortedParticipants.slice(0, 3);
+    const myRank = sortedParticipants.findIndex(p => String(p.student?._id || p.student) === String(studentID)) + 1;
+    const myDetails = sortedParticipants.find(p => String(p.student?._id || p.student) === String(studentID));
     const currentQuestion = questions[currentIndex];
 
     // Helper to render current question
@@ -969,6 +972,55 @@ function StudentCompetition() {
                             </div>
                         )}
 
+                        {/* Certificate of Achievement Earned Banner for Top 10 */}
+                        {myRank > 0 && myRank <= 10 && (
+                            <div className="personal-certificate-earned-banner" style={{
+                                margin: '25px 0',
+                                padding: '25px',
+                                background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(219, 39, 119, 0.15) 100%)',
+                                border: '2px solid rgba(124, 58, 237, 0.3)',
+                                borderRadius: '16px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: '15px',
+                                textAlign: 'center',
+                                boxShadow: '0 8px 32px rgba(124, 58, 237, 0.15)'
+                            }}>
+                                <span style={{ fontSize: '42px', filter: 'drop-shadow(0 0 10px rgba(251, 191, 36, 0.5))' }}>🎓</span>
+                                <div>
+                                    <h3 style={{ margin: '0 0 8px 0', color: '#f8fafc', fontSize: '20px', fontFamily: "'Outfit', sans-serif", fontWeight: '700' }}>
+                                        You Earned a Certificate of Achievement!
+                                    </h3>
+                                    <p style={{ margin: 0, color: '#cbd5e1', fontSize: '14px', lineHeight: '1.5' }}>
+                                        Congratulations! You finished in <strong>#{myRank} Place</strong> in this epic battle arena. 
+                                        A professional print-ready Certificate of Excellence has been awarded to you.
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setIsCertOpen(true)}
+                                    className="claim-certificate-btn-action"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #7c3aed, #db2777)',
+                                        color: '#fff',
+                                        border: 'none',
+                                        padding: '12px 30px',
+                                        borderRadius: '10px',
+                                        fontSize: '14px',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 15px rgba(124, 58, 237, 0.4)',
+                                        transition: 'all 0.2s ease',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '10px'
+                                    }}
+                                >
+                                    🏆 View & Print My Certificate
+                                </button>
+                            </div>
+                        )}
+
                         {/* Leaderboard standing */}
                         <div className="ranking-table-list-scores">
                             <h3>Lobby Leaderboard & Time Reports</h3>
@@ -1012,6 +1064,19 @@ function StudentCompetition() {
                     </div>
                 </div>
             )}
+
+            {/* Certificate Preview Modal */}
+            <CertificateModal
+                isOpen={isCertOpen}
+                onClose={() => setIsCertOpen(false)}
+                studentName={studentName}
+                rank={myRank}
+                score={myDetails?.score}
+                totalQuestions={totalQuestions}
+                competitionTitle={competition?.title}
+                teacherName={competition?.createdBy?.userName || 'Arena Director'}
+                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() !== 'topsoroban'}
+            />
         </div>
     );
 }

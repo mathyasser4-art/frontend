@@ -1091,4 +1091,30 @@
     }
 }
 
+/* Animated glowing certificate banner styling */
+.personal-certificate-earned-banner {
+    animation: pulseGlow 2.5s infinite ease-in-out;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.personal-certificate-earned-banner:hover {
+    transform: translateY(-3px) scale(1.005);
+}
+
+.claim-certificate-btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6) !important;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 8px 32px rgba(124, 58, 237, 0.15);
+        border-color: rgba(124, 58, 237, 0.3);
+    }
+    50% {
+        box-shadow: 0 8px 32px rgba(219, 39, 119, 0.30);
+        border-color: rgba(219, 39, 119, 0.5);
+    }
+}
+
 
