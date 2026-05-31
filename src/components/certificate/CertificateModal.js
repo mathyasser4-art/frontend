@@ -126,7 +126,7 @@ function CertificateModal({
                                 </div>
                                 <div className="cert-logo-container right-logo">
                                     {isMasterminds ? (
-                                        <img src="/img/masterminds_logo.png" alt="Masterminds Logo" className="logo-masterminds" />
+                                        <img src="/img/masterminds_logo_certificate.png" alt="Masterminds Logo" className="logo-masterminds" />
                                     ) : (
                                         <div className="logo-spacer"></div>
                                     )}
