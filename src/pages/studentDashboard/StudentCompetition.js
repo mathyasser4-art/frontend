@@ -10,6 +10,7 @@ import { Award, Trophy, Timer, HelpCircle, ArrowRight, Target, Star } from 'luci
 import API_BASE_URL from '../../config/api.config';
 import './StudentCompetition.css';
 import CertificateModal from '../../components/certificate/CertificateModal';
+import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 
 // Helper to format elapsed time in minutes, seconds and milliseconds
 const formatElapsedMs = (finishedAt, startedAt) => {
@@ -194,7 +195,7 @@ function StudentCompetition() {
                         });
                         return merged;
                     });
-                    setQuestions(detailsRes.competition.questions || []);
+                    setQuestions(adjustQuestionOrderAndShuffleMCQ(detailsRes.competition.questions || []));
                     
                     const compStatus = detailsRes.competition.status;
                     setStatus(compStatus);

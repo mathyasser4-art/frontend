@@ -1,4 +1,5 @@
 import API_BASE_URL from '../../config/api.config';
+import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 
 const URL = `${API_BASE_URL}/student/assignmentDetails`;
 const Token = localStorage.getItem('O_authWEB')
@@ -30,18 +31,16 @@ const assignmentDetails = (setLoading, setOperationError, setQuestionData, setTh
                     setLoading(false)
                 }, 2000);
                 let allQuestion = responseJson.assignment.questions
+                
+                // Minimize choice index and answer repetitions, and dynamically randomize MCQ and Graph options
+                allQuestion = adjustQuestionOrderAndShuffleMCQ(allQuestion);
+
                 const numbers = []
                 let totalSummation = 0
                 for (let index = 0; index < allQuestion.length; index++) {
                     numbers.push(index + 1)
                     const element = allQuestion[index];
                     totalSummation += element.questionPoints
-                    if (element.typeOfAnswer === 'Graph') {
-                        const randomNum = Math.floor(Math.random() * 4); // This will give you a random number between 0 and 3
-                        const oldAnswer = element.wrongPicAnswer
-                        const newAnswer = [...oldAnswer.slice(0, randomNum), element.correctPicAnswer, ...oldAnswer.slice(randomNum)];
-                        allQuestion[index].wrongPicAnswer = newAnswer
-                    }
                 }
                 setTotalSummation(totalSummation)
                 setQuestionData(allQuestion)

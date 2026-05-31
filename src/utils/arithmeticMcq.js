@@ -17,15 +17,33 @@ export function generateArithmeticMcq(level, optionsCount = 4) {
   };
 
   const { min, max } = ranges[lvl] || ranges['0'];
-  const operator = Math.random() > 0.5 ? '+' : '-';
-  let a = Math.floor(Math.random() * (max - min + 1)) + min;
-  let b = Math.floor(Math.random() * (max - min + 1)) + min;
+  const lastQ = __debugHistory[0];
+  const secondLastQ = __debugHistory[1];
 
-  if (operator === '-' && a < b) {
-    const t = a; a = b; b = t;
+  let guardGen = 0;
+  let a = 0, b = 0, operator = '+', answer = 0;
+  while (guardGen < 30) {
+    operator = Math.random() > 0.5 ? '+' : '-';
+    a = Math.floor(Math.random() * (max - min + 1)) + min;
+    b = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    if (operator === '-' && a < b) {
+      const t = a; a = b; b = t;
+    }
+
+    answer = operator === '+' ? a + b : a - b;
+
+    // Check history to avoid 3-in-a-row correct answer value
+    const lastAns = lastQ ? lastQ.answer : null;
+    const secondLastAns = secondLastQ ? secondLastQ.answer : null;
+
+    if (lastAns !== null && secondLastAns !== null && lastAns === secondLastAns && answer === lastAns) {
+      guardGen++;
+      continue;
+    }
+    break;
   }
 
-  const answer = operator === '+' ? a + b : a - b;
   const text = `${a} ${operator} ${b} = ?`;
 
   const opts = [answer];
@@ -39,11 +57,37 @@ export function generateArithmeticMcq(level, optionsCount = 4) {
   }
   while (opts.length < optionsCount) opts.push(answer + opts.length + 1);
 
-  opts.sort(() => Math.random() - 0.5);
-  // Defensive: ensure answer is present and options are unique
-  const uniq = Array.from(new Set(opts));
-  while (uniq.length < optionsCount) uniq.push(answer + uniq.length + 1);
-  const finalOptions = uniq.slice(0, optionsCount).sort(() => Math.random() - 0.5);
+  // Filter unique incorrect options
+  const uniqWrong = Array.from(new Set(opts.filter(o => o !== answer)));
+  while (uniqWrong.length < optionsCount - 1) {
+    uniqWrong.push(answer + uniqWrong.length + 2);
+  }
+  const wrongOptions = uniqWrong.slice(0, optionsCount - 1);
+
+  // Choose index for correct answer to prevent 3-in-a-row same position
+  const lastCorrectIdx = lastQ ? lastQ.options.indexOf(lastQ.answer) : -1;
+  const secondLastCorrectIdx = secondLastQ ? secondLastQ.options.indexOf(secondLastQ.answer) : -1;
+
+  const allIndices = Array.from({ length: optionsCount }, (_, idx) => idx);
+  let allowedIndices = allIndices;
+
+  if (lastCorrectIdx !== -1 && secondLastCorrectIdx !== -1 && lastCorrectIdx === secondLastCorrectIdx) {
+    allowedIndices = allIndices.filter(idx => idx !== lastCorrectIdx);
+  }
+
+  const chosenIndex = allowedIndices[Math.floor(Math.random() * allowedIndices.length)];
+
+  // Assemble choices
+  const finalOptions = [];
+  let wrongInserted = 0;
+  for (let idx = 0; idx < optionsCount; idx++) {
+    if (idx === chosenIndex) {
+      finalOptions.push(answer);
+    } else {
+      finalOptions.push(wrongOptions[wrongInserted++]);
+    }
+  }
+
   const result = { text, answer, options: finalOptions };
 
   // #region agent log
