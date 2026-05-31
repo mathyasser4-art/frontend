@@ -14,6 +14,7 @@ import CreateCompetitionModal from './CreateCompetitionModal'
 import TutorialVideoModal from '../tutorialVideoModal/TutorialVideoModal'
 import '../../reusable.css'
 import './Navbar.css'
+import { SHOW_PRICING } from '../../config/api.config'
 
 const Navbar = () => {
     const { t } = useTranslation();
@@ -145,7 +146,7 @@ const Navbar = () => {
                             }} className="dropdown-item">Videos</span>
                         </div>
                     </div>
-                    <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">Pricing</Link>
+                    {SHOW_PRICING && <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">Pricing</Link>}
                     <Link to="/contact" onClick={() => soundEffects.playClick()} className="nav-link">Contact</Link>
                 </div>
 
@@ -179,11 +180,13 @@ const Navbar = () => {
                       </Link>
                     ) : (
                         <>
-                            <Link to={'/pricing'} onClick={() => soundEffects.playClick()}>
-                                <div className="nav-btn nav-btn-join" style={{ marginRight: '15px' }}>
-                                    {t('home.joinNow')}
-                                </div>
-                            </Link>
+                            {SHOW_PRICING && (
+                                <Link to={'/pricing'} onClick={() => soundEffects.playClick()}>
+                                    <div className="nav-btn nav-btn-join" style={{ marginRight: '15px' }}>
+                                        {t('home.joinNow')}
+                                    </div>
+                                </Link>
+                            )}
                             <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}>
                                 <div className="nav-btn">
                                     {t('common.login')}

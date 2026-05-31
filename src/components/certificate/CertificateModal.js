@@ -57,10 +57,10 @@ function CertificateModal({
         if (rankNum === 1) {
             return {
                 themeClass: 'theme-gold',
-                awardTitle: 'CHAMPIONSHIP GOLD AWARD',
+                awardTitle: 'CHAMPION GOLD AWARD',
                 sealIcon: '🏆',
                 badgeText: '1st Place',
-                motivation: 'For achieving the ultimate glory of 1st Place! Your unmatched calculation speed and flawless mental concentration have crowned you the Champion of the Arena.'
+                motivation: 'For winning 1st Place! Your amazing math speed and great focus crowned you the Champion.'
             };
         } else if (rankNum === 2) {
             return {
@@ -68,7 +68,7 @@ function CertificateModal({
                 awardTitle: 'EXCELLENCE SILVER AWARD',
                 sealIcon: '🥈',
                 badgeText: '2nd Place',
-                motivation: 'For an outstanding podium finish! Your exceptional mathematical precision and rapid responses have placed you among the calculation elite.'
+                motivation: 'For an outstanding podium finish! Your quick speed and math accuracy placed you among the top winners.'
             };
         } else if (rankNum === 3) {
             return {
@@ -76,7 +76,7 @@ function CertificateModal({
                 awardTitle: 'EXCELLENCE BRONZE AWARD',
                 sealIcon: '🥉',
                 badgeText: '3rd Place',
-                motivation: 'For an outstanding podium finish! Your exceptional mathematical precision and rapid responses have placed you among the calculation elite.'
+                motivation: 'For an outstanding podium finish! Your quick speed and math accuracy placed you among the top winners.'
             };
         } else {
             return {
@@ -84,7 +84,7 @@ function CertificateModal({
                 awardTitle: 'ELITE FINALIST AWARD',
                 sealIcon: '✨',
                 badgeText: `Top 10 (#${rankNum})`,
-                motivation: 'For earning a distinguished position in the Top 10! Your stellar performance, dedication, and mental arithmetic prowess shine brightly.'
+                motivation: 'For finishing in the Top 10! Your great effort, practice, and smart math skills shine brightly.'
             };
         }
     };
@@ -138,7 +138,7 @@ function CertificateModal({
                                 <div className="award-badge">{badgeText}</div>
                                 <h1 className="cert-main-title">{awardTitle}</h1>
                                 
-                                <p className="presented-to">This is proudly presented to</p>
+                                <p className="presented-to">This certificate is proudly presented to</p>
                                 
                                 <h2 className="recipient-name" translate="no" className="notranslate">
                                     {name}
@@ -151,10 +151,10 @@ function CertificateModal({
                                 </p>
 
                                 <div className="battle-metadata">
-                                    In recognition of your exceptional speed, mental focus, and math intelligence in the live arena battle: 
+                                    For showing outstanding speed, focus, and math skills in the live battle: 
                                     <strong translate="no" className="notranslate"> "{competitionTitle || 'Abacus Arena Battle'}"</strong>
                                     {sScore !== undefined && totalQuestions !== undefined && (
-                                        <span> solving <strong>{sScore} out of {totalQuestions}</strong> questions correctly!</span>
+                                        <span> by solving <strong>{sScore} out of {totalQuestions}</strong> questions correctly!</span>
                                     )}
                                 </div>
                             </section>

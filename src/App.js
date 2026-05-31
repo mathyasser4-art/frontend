@@ -30,6 +30,7 @@ import TeacherAssignmentReports from './components/teacherReports/TeacherAssignm
 import StudentHistory from './components/studentHistory/StudentHistory';
 import Pricing from './pages/pricing/Pricing';
 import MathRacer from './pages/games/MathRacer';
+import { SHOW_PRICING } from './config/api.config';
 import SuperMarioGame from './pages/games/SuperMarioGame';
 import CaveRunner from './pages/games/CaveRunner';
 import MazeGame from './pages/games/MazeGame';
@@ -88,7 +89,7 @@ function App() {
       <Route path='/student/myReport/:assignmentID' element={isAuth && role === 'Student' ? <StudentReport /> : <Navigate to='/' />} />
       <Route path="/assignment/:assignmentID/reports" element={<TeacherAssignmentReports />} />
       <Route path='/teacher/student/:studentID/history' element={isAuth ? <StudentHistory /> : <Navigate to='/' />} />
-      <Route path='/pricing' element={<Pricing />} />
+      <Route path='/pricing' element={SHOW_PRICING ? <Pricing /> : <Navigate to='/contact' />} />
       <Route path='/student/games/math-racer' element={<MathRacer />} />
       <Route path='/student/games/super-mario' element={<SuperMarioGame />} />
       <Route path='/student/games/cave-runner' element={<CaveRunner />} />

@@ -565,9 +565,8 @@
         height: 0 !important;
     }
 
-    /* Hide all top-level application containers and other page wrappers */
-    body > div:not(.cert-modal-overlay),
-    #root > div:not(.cert-modal-overlay),
+    /* Hide all top-level application containers and other page wrappers, but allow React root to render */
+    body > div:not(#root):not(.cert-modal-overlay),
     .teacher-competition-lobby-global > *:not(.cert-modal-overlay),
     .student-competition-global > *:not(.cert-modal-overlay),
     .navbar,
