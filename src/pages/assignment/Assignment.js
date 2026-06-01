@@ -69,6 +69,50 @@ function Assignment() {
   // Track if exam was completed
   const [examCompleted, setExamCompleted] = useState(false)
 
+  const [flaggedQuestions, setFlaggedQuestions] = useState({});
+  const [showReportDropdown, setShowReportDropdown] = useState(false);
+  const reportRef = useRef(null);
+
+  const handleReportQuestion = async (issueType) => {
+    if (!thisQuestion?._id) return;
+    soundEffects.playClick();
+    try {
+      const response = await fetch(`${API_BASE_URL}/question/report-error`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'authrization': `pracYas09${localStorage.getItem('O_authWEB')}`
+        },
+        body: JSON.stringify({
+          questionID: thisQuestion._id,
+          issueType: issueType,
+          teacherComment: `Reported as ${issueType} by teacher in assignment`
+        })
+      });
+      const data = await response.json();
+      if (data.message === 'success') {
+        setFlaggedQuestions(prev => ({
+          ...prev,
+          [thisQuestion._id]: data.status === 'reported' ? issueType : null
+        }));
+      }
+    } catch (err) {
+      console.error('Failed to report question:', err);
+    }
+    setShowReportDropdown(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (reportRef.current && !reportRef.current.contains(event.target)) {
+        setShowReportDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+
   // Attempt tracking
   const [currentAttempt, setCurrentAttempt] = useState(null)
   const [totalAttempts, setTotalAttempts] = useState(null)
@@ -1368,6 +1412,34 @@ function Assignment() {
                 <div title="Open Abacus" className="abacus-button" onClick={() => setShowAbacus(!showAbacus)}>
                   <Calculator size={24} strokeWidth={2.5} style={{ color: '#65C6EE' }} />
                 </div>
+                {role === 'Teacher' && thisQuestion && (
+                  <div ref={reportRef} style={{ position: 'relative', display: 'inline-block' }}>
+                    <div 
+                      title="Report Question Error"
+                      className={`report-error-button ${flaggedQuestions[thisQuestion._id] ? 'flagged-' + flaggedQuestions[thisQuestion._id] : ''}`} 
+                      onClick={() => { soundEffects.playClick(); setShowReportDropdown(!showReportDropdown); }}
+                    >
+                      <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                    </div>
+                    {showReportDropdown && (
+                      <div className="report-dropdown">
+                        <button 
+                          className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'answer' ? 'active' : ''}`}
+                          onClick={() => handleReportQuestion('answer')}
+                        >
+                          🔴 Wrong Answer
+                        </button>
+                        <button 
+                          className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'skill' ? 'active' : ''}`}
+                          onClick={() => handleReportQuestion('skill')}
+                        >
+                          🟠 Wrong Skill
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {time !== 0 && !examCompleted ? (
                   <div className="timer">
                     <MyTimer

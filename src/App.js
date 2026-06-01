@@ -42,7 +42,9 @@ import AbacusMatchGame from './pages/games/AbacusMatchGame';
 import GamesMenu from './pages/studentDashboard/GamesMenu';
 import LiveChatWidget from './components/liveChat/LiveChatWidget';
 import ChatManagement from './pages/dashboardSchool/ChatManagement';
+import ReportedQuestions from './pages/dashboardSchool/ReportedQuestions';
 import ClassHomework from './pages/classHomework/ClassHomework';
+
 import TeacherCompetitionLobby from './pages/teacherDashboard/TeacherCompetitionLobby';
 import StudentCompetition from './pages/studentDashboard/StudentCompetition';
 
@@ -78,6 +80,8 @@ function App() {
       <Route path='/dashboard-school/it' element={isAuth && (role === 'School' || role === 'IT') ? <IT /> : <Navigate to='/' />} />
       <Route path='/dashboard-school/supervisor' element={isAuth && (role === 'School' || role === 'IT') ? <Supervisor /> : <Navigate to='/' />} />
       <Route path='/dashboard-school/chats' element={isAuth && (role === 'School' || role === 'IT') ? <ChatManagement /> : <Navigate to='/' />} />
+      <Route path='/dashboard-school/reported-questions' element={isAuth && (role === 'School' || role === 'IT') ? <ReportedQuestions /> : <Navigate to='/' />} />
+
       <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/' />} />
       <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/' />} />
       <Route path='/student/competition/:competitionId' element={isAuth && role === 'Student' ? <StudentCompetition /> : <Navigate to='/' />} />

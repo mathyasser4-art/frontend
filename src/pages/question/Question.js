@@ -116,6 +116,49 @@ function Question() {
     const [flashSpeed, setFlashSpeed] = useState(1.0); // Default 1 second
     const [hasFlashedOnce, setHasFlashedOnce] = useState(false); // Track if flashing has started at least once
 
+    const [flaggedQuestions, setFlaggedQuestions] = useState({});
+    const [showReportDropdown, setShowReportDropdown] = useState(false);
+    const reportRef = useRef(null);
+
+    const handleReportQuestion = async (issueType) => {
+        if (!thisQuestion?._id) return;
+        soundEffects.playClick();
+        try {
+            const response = await fetch(`${API_BASE_URL}/question/report-error`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authrization': `pracYas09${localStorage.getItem('O_authWEB')}`
+                },
+                body: JSON.stringify({
+                    questionID: thisQuestion._id,
+                    issueType: issueType,
+                    teacherComment: `Reported as ${issueType} by teacher`
+                })
+            });
+            const data = await response.json();
+            if (data.message === 'success') {
+                setFlaggedQuestions(prev => ({
+                    ...prev,
+                    [thisQuestion._id]: data.status === 'reported' ? issueType : null
+                }));
+            }
+        } catch (err) {
+            console.error('Failed to report question:', err);
+        }
+        setShowReportDropdown(false);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (reportRef.current && !reportRef.current.contains(event.target)) {
+                setShowReportDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const [questionData, setQuestionData] = useState();
     const [thisQuestion, setThisQuestion] = useState();
     const [numberOfQuestion, setNumberOfQuestion] = useState([]);
@@ -137,6 +180,7 @@ function Question() {
 
     const audioRefCorrect = useRef(null);
     const audioRefWrong = useRef(null);
+
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -853,6 +897,33 @@ function Question() {
                                 <div title={t('questionPage.openAbacus')} className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
                                     <i className="fa fa-calculator" aria-hidden="true"></i>
                                 </div>
+                                {role === 'Teacher' && thisQuestion && (
+                                    <div ref={reportRef} style={{ position: 'relative' }}>
+                                        <div 
+                                            title={t('questionPage.reportError', 'Report Question Error')} 
+                                            className={`report-error-button ${flaggedQuestions[thisQuestion._id] ? 'flagged-' + flaggedQuestions[thisQuestion._id] : ''}`} 
+                                            onClick={() => { soundEffects.playClick(); setShowReportDropdown(!showReportDropdown); }}
+                                        >
+                                            <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                        </div>
+                                        {showReportDropdown && (
+                                            <div className="report-dropdown">
+                                                <button 
+                                                    className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'answer' ? 'active' : ''}`}
+                                                    onClick={() => handleReportQuestion('answer')}
+                                                >
+                                                    🔴 {t('questionPage.wrongAnswer', 'Wrong Answer')}
+                                                </button>
+                                                <button 
+                                                    className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'skill' ? 'active' : ''}`}
+                                                    onClick={() => handleReportQuestion('skill')}
+                                                >
+                                                    🟠 {t('questionPage.wrongSkill', 'Wrong Skill')}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                                 {role === 'Teacher' && (
                                     <div 
                                         title={t('questionPage.addAllToPocket')} 
@@ -872,6 +943,7 @@ function Question() {
                                     </div>
                                 )}
                             </div>
+
                         </div>
 
                         {showAbacus && <AbacusSimulator onClose={() => setShowAbacus(false)} />}
