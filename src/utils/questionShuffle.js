@@ -77,6 +77,11 @@ export function adjustQuestionOrderAndShuffleMCQ(questions) {
         const q = processedQuestions[i];
 
         if (q.typeOfAnswer === 'MCQ' && Array.isArray(q.wrongAnswer) && q.wrongAnswer.length > 0) {
+            if (!q.correctAnswer) {
+                // If correct answer is hidden (student view), just shuffle the existing choices
+                q.wrongAnswer = [...q.wrongAnswer].sort(() => Math.random() - 0.5);
+                continue;
+            }
             const correctVal = normalize(q.correctAnswer || "");
 
             // Extract unique options from wrongAnswer
@@ -124,6 +129,11 @@ export function adjustQuestionOrderAndShuffleMCQ(questions) {
             lastCorrectIdx = chosenIndex;
 
         } else if (q.typeOfAnswer === 'Graph' && Array.isArray(q.wrongPicAnswer) && q.wrongPicAnswer.length > 0) {
+            if (!q.correctPicAnswer) {
+                // If correct graph is hidden (student view), just shuffle the existing choices
+                q.wrongPicAnswer = [...q.wrongPicAnswer].sort(() => Math.random() - 0.5);
+                continue;
+            }
             const correctVal = normalize(q.correctPicAnswer || "");
 
             let uniquePics = Array.from(new Set(q.wrongPicAnswer.map(normalize)));
