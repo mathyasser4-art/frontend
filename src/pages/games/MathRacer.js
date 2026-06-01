@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
-import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal } from 'lucide-react';
+import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal, Users, Copy, ArrowRight, ShieldAlert } from 'lucide-react';
 import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import ArithmeticMcqDebugPanel from '../../components/debug/ArithmeticMcqDebugPanel';
+import Pusher from 'pusher-js';
+import API_BASE_URL from '../../config/api.config';
 import './MathRacer.css';
 
 const F1CarSVG = ({ color, name, isBoosting }) => (
@@ -61,22 +63,219 @@ const F1CarSVG = ({ color, name, isBoosting }) => (
 function MathRacer() {
   const navigate = useNavigate();
   const containerRef = useRef(null);
-  const [gameState, setGameState] = useState('menu'); // 'menu', 'playing', 'gameover'
+
+  // Matchmaking & Multiplayer States
+  const [gameMode, setGameMode] = useState('single'); // 'single' or 'multi'
+  const [multiRole, setMultiRole] = useState(null); // 'host' or 'guest'
+  const [roomId, setRoomId] = useState('');
+  const [inputRoomId, setInputRoomId] = useState('');
+  const [players, setPlayers] = useState([]); // [{ id, name, color, distance, score, finished, time, isBoosting }]
+  const [lobbyStatus, setLobbyStatus] = useState('');
+  const [isCopied, setIsCopied] = useState(false);
+
+  // User Credentials
+  const myName = localStorage.getItem('pp_name') || 'Racer ' + Math.floor(100 + Math.random() * 900);
+  const myId = localStorage.getItem('pp_id') || 'usr_' + Math.random().toString(36).substr(2, 9);
+  
+  const F1_COLORS = ['#3b82f6', '#f43f5e', '#8b5cf6', '#10b981', '#fbbf24'];
+
+  const [gameState, setGameState] = useState('menu'); // 'menu', 'lobby', 'playing', 'gameover'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy', 'medium', 'hard'
   const [score, setScore] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [currentProblem, setCurrentProblem] = useState({ text: '', answer: 0, options: [] });
   const [feedback, setFeedback] = useState(null); // 'correct', 'wrong', null
   
-  // Race Distances
+  // Race Distances (Single player only fallback)
   const [playerDistance, setPlayerDistance] = useState(0);
   const [bot1Distance, setBot1Distance] = useState(0);
   const [bot2Distance, setBot2Distance] = useState(0);
   
   const RACE_LENGTH = 200;
   
-  const inputRef = useRef(null);
   const timerRef = useRef(null);
+  const pusherRef = useRef(null);
+  const channelRef = useRef(null);
+
+  // Clean up socket subscriptions on unmount
+  useEffect(() => {
+    return () => {
+      disconnectPusher();
+    };
+  }, []);
+
+  const disconnectPusher = () => {
+    if (channelRef.current) {
+      channelRef.current.unbind_all();
+    }
+    if (pusherRef.current) {
+      pusherRef.current.disconnect();
+      pusherRef.current = null;
+    }
+  };
+
+  // Helper to trigger socket event broadcast via backend proxy route
+  const broadcastPusherEvent = async (roomCode, eventName, eventData) => {
+    try {
+      await fetch(`${API_BASE_URL}/competition/mathracer/trigger`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          channelName: `mathracer-${roomCode}`,
+          eventName,
+          eventData
+        })
+      });
+    } catch (err) {
+      console.error(`[MULTIPLAYER] Failed to broadcast ${eventName}:`, err);
+    }
+  };
+
+  // Initialize Pusher subscriptions and bind events
+  const initPusherMultiplayer = (roomCode, roleType) => {
+    disconnectPusher();
+    setLobbyStatus('Connecting to server...');
+
+    const pusher = new Pusher('06df370fb33f1263ec1f', {
+      cluster: 'eu'
+    });
+    pusherRef.current = pusher;
+
+    const channelName = `mathracer-${roomCode}`;
+    const channel = pusher.subscribe(channelName);
+    channelRef.current = channel;
+
+    pusher.connection.bind('connected', () => {
+      setLobbyStatus('Connected! Waiting for racers...');
+    });
+
+    pusher.connection.bind('error', () => {
+      setLobbyStatus('Connection error. Please try again.');
+    });
+
+    if (roleType === 'host') {
+      const hostPlayer = {
+        id: myId,
+        name: myName,
+        color: F1_COLORS[0],
+        distance: 0,
+        score: 0,
+        finished: false,
+        time: null,
+        isBoosting: false
+      };
+      setPlayers([hostPlayer]);
+
+      // Host listens for new players joining
+      channel.bind('student-joined', (data) => {
+        soundEffects.playClick();
+        setPlayers(prev => {
+          if (prev.some(p => p.id === data.id)) return prev;
+
+          const nextColor = F1_COLORS[prev.length % F1_COLORS.length];
+          const newPlayer = {
+            id: data.id,
+            name: data.name,
+            color: nextColor,
+            distance: 0,
+            score: 0,
+            finished: false,
+            time: null,
+            isBoosting: false
+          };
+          const updated = [...prev, newPlayer];
+          
+          // Broadcast full lobby roster back to all guest players
+          broadcastPusherEvent(roomCode, 'sync-lobby', { players: updated });
+          return updated;
+        });
+      });
+
+      // Host listens to score/distance updates from active guest players
+      channel.bind('player-progress', (data) => {
+        setPlayers(prev => prev.map(p => 
+          p.id === data.id ? { ...p, distance: data.distance, score: data.score, isBoosting: !!data.isBoosting } : p
+        ));
+      });
+
+      // Host listens to finished signal from active guest players
+      channel.bind('player-finished', (data) => {
+        setPlayers(prev => prev.map(p => 
+          p.id === data.id ? { ...p, finished: true, time: data.time } : p
+        ));
+      });
+
+    } else {
+      // Guest player listens to full lobby syncing from the host
+      channel.bind('sync-lobby', (data) => {
+        console.log('[LOBBY] Synced roster from host:', data);
+        setPlayers(data.players);
+      });
+
+      // Guest listens to host's race start trigger
+      channel.bind('start-game', (data) => {
+        setDifficulty(data.difficulty);
+        setGameState('playing');
+        setScore(0);
+        setTimeElapsed(0);
+        setPlayerDistance(0);
+        setFeedback(null);
+        generateProblem(data.difficulty);
+      });
+
+      // Guest listens to score/distance updates from host/other guests
+      channel.bind('player-progress', (data) => {
+        setPlayers(prev => prev.map(p => 
+          p.id === data.id ? { ...p, distance: data.distance, score: data.score, isBoosting: !!data.isBoosting } : p
+        ));
+      });
+
+      // Guest listens to finished signals from host/other guests
+      channel.bind('player-finished', (data) => {
+        setPlayers(prev => prev.map(p => 
+          p.id === data.id ? { ...p, finished: true, time: data.time } : p
+        ));
+      });
+
+      // Immediately notify host that we entered the room
+      setTimeout(() => {
+        broadcastPusherEvent(roomCode, 'student-joined', {
+          id: myId,
+          name: myName
+        });
+      }, 800);
+    }
+  };
+
+  // Host Action: Create lobby
+  const handleCreateRoom = () => {
+    soundEffects.playClick();
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    setRoomId(code);
+    setMultiRole('host');
+    setGameState('lobby');
+    initPusherMultiplayer(code, 'host');
+  };
+
+  // Guest Action: Enter lobby code and join
+  const handleJoinRoom = () => {
+    if (!inputRoomId.trim()) return;
+    soundEffects.playClick();
+    const code = inputRoomId.trim();
+    setRoomId(code);
+    setMultiRole('guest');
+    setGameState('lobby');
+    initPusherMultiplayer(code, 'guest');
+  };
+
+  const copyRoomCode = () => {
+    soundEffects.playClick();
+    navigator.clipboard.writeText(roomId);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   // Generate a random addition/subtraction MCQ problem (always consistent).
   const generateProblem = (diff) => {
@@ -138,6 +337,24 @@ function MathRacer() {
     generateProblem(selectedLevel);
   };
 
+  // Host Action: Trigger race start for all players
+  const handleHostStartRace = (selectedLevel) => {
+    if (players.length < 1) return; // Allow practice alone, or multiple
+    soundEffects.playClick();
+    setDifficulty(selectedLevel);
+    
+    // Broadcast start race config to all guests
+    broadcastPusherEvent(roomId, 'start-game', { difficulty: selectedLevel });
+    
+    // Initialize host gameplay
+    setScore(0);
+    setTimeElapsed(0);
+    setPlayerDistance(0);
+    setGameState('playing');
+    setFeedback(null);
+    generateProblem(selectedLevel);
+  };
+
   const endGame = () => {
     soundEffects.playEndSound();
     setGameState('gameover');
@@ -152,37 +369,63 @@ function MathRacer() {
         setTimeElapsed((prev) => prev + 1);
       }, 1000);
       
-      // Bot movement & Win Check (10 times per second)
-      const botInterval = setInterval(() => {
-        setBot1Distance(prev => {
-          const newDist = prev + (difficulty === 'easy' ? 0.15 : difficulty === 'medium' ? 0.22 : 0.28) + (Math.random() * 0.05);
-          if (newDist >= RACE_LENGTH) endGame();
-          return newDist;
-        });
-        setBot2Distance(prev => {
-          const newDist = prev + (difficulty === 'easy' ? 0.18 : difficulty === 'medium' ? 0.25 : 0.32) + (Math.random() * 0.05);
-          if (newDist >= RACE_LENGTH) endGame();
-          return newDist;
-        });
-        setPlayerDistance(prev => {
-          if (prev >= RACE_LENGTH) endGame();
-          return prev;
-        });
-      }, 100);
-      
-      if (inputRef.current) inputRef.current.focus();
+      // Bot movement & Win Check (10 times per second) - only in Single Player VS Bots
+      let botInterval;
+      if (gameMode === 'single') {
+        botInterval = setInterval(() => {
+          setBot1Distance(prev => {
+            const newDist = prev + (difficulty === 'easy' ? 0.15 : difficulty === 'medium' ? 0.22 : 0.28) + (Math.random() * 0.05);
+            if (newDist >= RACE_LENGTH) endGame();
+            return newDist;
+          });
+          setBot2Distance(prev => {
+            const newDist = prev + (difficulty === 'easy' ? 0.18 : difficulty === 'medium' ? 0.25 : 0.32) + (Math.random() * 0.05);
+            if (newDist >= RACE_LENGTH) endGame();
+            return newDist;
+          });
+          setPlayerDistance(prev => {
+            if (prev >= RACE_LENGTH) endGame();
+            return prev;
+          });
+        }, 100);
+      }
       
       return () => {
         clearInterval(timerRef.current);
-        clearInterval(botInterval);
+        if (botInterval) clearInterval(botInterval);
       };
     }
-  }, [gameState]);
+  }, [gameState, gameMode, difficulty]);
 
-  // No longer need to keep input focused since we use buttons
+  // Real-time Multiplayer Distance Synchronizer
   useEffect(() => {
-    // Empty effect to replace the old one
-  }, [gameState]);
+    if (gameState === 'playing' && gameMode === 'multi' && roomId) {
+      // Synchronize player distance with others in room
+      broadcastPusherEvent(roomId, 'player-progress', {
+        id: myId,
+        distance: playerDistance,
+        score: score,
+        isBoosting: feedback === 'correct'
+      });
+
+      // Victory Check
+      if (playerDistance >= RACE_LENGTH) {
+        const finalTime = `${timeElapsed}s`;
+        
+        broadcastPusherEvent(roomId, 'player-finished', {
+          id: myId,
+          time: finalTime
+        });
+
+        // Mark ourselves as completed locally
+        setPlayers(prev => prev.map(p => 
+          p.id === myId ? { ...p, finished: true, time: finalTime, distance: playerDistance } : p
+        ));
+
+        endGame();
+      }
+    }
+  }, [playerDistance, gameState, gameMode, roomId]);
 
   const handleOptionClick = (selectedOpt) => {
     if (selectedOpt === currentProblem.answer) {
@@ -197,10 +440,20 @@ function MathRacer() {
   const handleCorrectAnswer = () => {
     soundEffects.playCorrect();
     setScore(prev => prev + 10);
+    
     setPlayerDistance(prev => {
-      const jumpDist = difficulty === 'easy' ? 15 : difficulty === 'medium' ? 12 : 10;
-      return prev + jumpDist;
+      const jumpDist = difficulty === 'easy' || difficulty === '0' ? 15 : difficulty === 'medium' || difficulty === '1' ? 12 : 10;
+      const newDistance = prev + jumpDist;
+      
+      // Update our local visual lane coordinates
+      if (gameMode === 'multi') {
+        setPlayers(prevPlayers => prevPlayers.map(p => 
+          p.id === myId ? { ...p, distance: newDistance, score: score + 10 } : p
+        ));
+      }
+      return newDistance;
     });
+    
     setFeedback('correct');
     
     setTimeout(() => {
@@ -211,10 +464,24 @@ function MathRacer() {
 
   // Determine Placement
   const getPlacement = () => {
-    let place = 1;
-    if (bot1Distance > playerDistance) place++;
-    if (bot2Distance > playerDistance) place++;
-    return place;
+    if (gameMode === 'single') {
+      let place = 1;
+      if (bot1Distance > playerDistance) place++;
+      if (bot2Distance > playerDistance) place++;
+      return place;
+    } else {
+      // Count how many players have a greater distance or completed faster
+      const sorted = [...players].sort((a, b) => {
+        if (a.finished && !b.finished) return -1;
+        if (!a.finished && b.finished) return 1;
+        if (a.finished && b.finished) {
+          return parseInt(a.time) - parseInt(b.time);
+        }
+        return b.distance - a.distance;
+      });
+      const myRank = sorted.findIndex(p => p.id === myId) + 1;
+      return myRank || 1;
+    }
   };
 
   const getVisualPosition = (distance) => {
@@ -230,6 +497,25 @@ function MathRacer() {
     return visual;
   };
 
+  // Lobby cleanup when leaving waiting lobby
+  const handleLeaveLobby = () => {
+    soundEffects.playClick();
+    disconnectPusher();
+    setGameState('menu');
+  };
+
+  // Get final placement list for podium
+  const getPodiumList = () => {
+    return [...players].sort((a, b) => {
+      if (a.finished && !b.finished) return -1;
+      if (!a.finished && b.finished) return 1;
+      if (a.finished && b.finished) {
+        return parseInt(a.time) - parseInt(b.time);
+      }
+      return b.distance - a.distance;
+    });
+  };
+
   return (
     <>
       <MobileNav role="Student" />
@@ -238,7 +524,7 @@ function MathRacer() {
       
       <div className="math-racer-container">
         <div className="racer-header">
-          <button onClick={() => navigate(-1)} className="back-button">
+          <button onClick={() => { soundEffects.playClick(); navigate(-1); }} className="back-button">
             <ChevronLeft size={20} />
             <span>Back</span>
           </button>
@@ -250,23 +536,153 @@ function MathRacer() {
             <div className="racer-logo">
               <F1CarSVG color="#3b82f6" name="" />
             </div>
-            <h3>Select Difficulty to Race!</h3>
-            <p>Compete against AI racers on the endless highway. Solve math problems correctly to accelerate your car and take 1st place!</p>
             
-            <div className="difficulty-buttons">
-              <button className="diff-btn easy" onClick={() => startGame('0')}>
-                Level 0
+            {/* Premium Lobby Selection Tabs */}
+            <div className="game-mode-tabs">
+              <button 
+                className={`mode-tab ${gameMode === 'single' ? 'active' : ''}`}
+                onClick={() => { soundEffects.playClick(); setGameMode('single'); }}
+              >
+                🤖 Single Player VS Bots
               </button>
-              <button className="diff-btn medium" onClick={() => startGame('1')}>
-                Level 1
-              </button>
-              <button className="diff-btn hard" onClick={() => startGame('2')}>
-                Level 2
-              </button>
-              <button className="diff-btn hard" style={{background: '#4f46e5'}} onClick={() => startGame('3')}>
-                Level 3
+              <button 
+                className={`mode-tab ${gameMode === 'multi' ? 'active' : ''}`}
+                onClick={() => { soundEffects.playClick(); setGameMode('multi'); }}
+              >
+                👥 Real-Time Multiplayer VS Friends
               </button>
             </div>
+
+            {gameMode === 'single' ? (
+              <div className="single-player-setup">
+                <h3>Select Difficulty to Race!</h3>
+                <p>Compete against AI racers on the endless highway. Solve math problems correctly to accelerate your car and take 1st place!</p>
+                
+                <div className="difficulty-buttons">
+                  <button className="diff-btn easy" onClick={() => startGame('0')}>
+                    Level 0
+                  </button>
+                  <button className="diff-btn medium" onClick={() => startGame('1')}>
+                    Level 1
+                  </button>
+                  <button className="diff-btn hard" onClick={() => startGame('2')}>
+                    Level 2
+                  </button>
+                  <button className="diff-btn hard" style={{background: '#4f46e5'}} onClick={() => startGame('3')}>
+                    Level 3
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="multi-player-setup">
+                <h3>Challenge Friends in Real-Time!</h3>
+                <p>Host your own private F1 room and share your code, or enter a friend's room code to start the high-speed competition!</p>
+                
+                <div className="multiplayer-actions-panel">
+                  <div className="host-section-card">
+                    <h4>Host a New Match</h4>
+                    <p>Start a racing room and invite up to 4 competitors!</p>
+                    <button className="btn-multi-host" onClick={handleCreateRoom}>
+                      🚀 Host a Race
+                    </button>
+                  </div>
+                  
+                  <div className="join-divider">
+                    <span>OR</span>
+                  </div>
+
+                  <div className="join-section-card">
+                    <h4>Join Existing Match</h4>
+                    <p>Enter your competitor's room code to connect:</p>
+                    <div className="join-input-group">
+                      <input 
+                        type="text" 
+                        placeholder="Enter 4-Digit Code"
+                        maxLength="4"
+                        value={inputRoomId}
+                        onChange={(e) => setInputRoomId(e.target.value)}
+                        className="multi-join-input"
+                      />
+                      <button className="btn-multi-join" onClick={handleJoinRoom}>
+                        Join Roster
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ============================================================
+           MULTIPLAYER LOBBY SCREEN (LOBBY WAITING SCREEN)
+           ============================================================ */}
+        {gameState === 'lobby' && (
+          <div className="racer-lobby-panel">
+            <div className="lobby-header-row">
+              <h3>🏁 Match Roster Lobby</h3>
+              <button className="btn-leave-lobby" onClick={handleLeaveLobby}>
+                Exit Lobby
+              </button>
+            </div>
+
+            <div className="room-code-display-card">
+              <span className="room-label">ROOM ENTRY CODE</span>
+              <div className="code-badge-group">
+                <span className="room-code-value">{roomId}</span>
+                <button className="btn-copy-code" onClick={copyRoomCode}>
+                  {isCopied ? 'Copied! ✓' : <><Copy size={16} /> Copy Code</>}
+                </button>
+              </div>
+              <p className="server-status-label">🚦 {lobbyStatus}</p>
+            </div>
+
+            <div className="lobby-players-grid">
+              <h4>Connected Racers ({players.length} / 4)</h4>
+              <div className="roster-list">
+                {players.map((player, idx) => (
+                  <div key={player.id || idx} className="roster-player-item">
+                    <div className="player-badge-color" style={{ backgroundColor: player.color }}></div>
+                    <div className="player-profile-detail">
+                      <span className="roster-player-name">{player.name}</span>
+                      <span className="roster-player-rank">{idx === 0 ? '🏁 Room Host' : '🔥 Contender'}</span>
+                    </div>
+                    <span className="ready-indicator">Ready to Race ✓</span>
+                  </div>
+                ))}
+                {players.length === 0 && (
+                  <div className="empty-roster-state">
+                    <i className="fa fa-spinner fa-spin"></i>
+                    <p>Entering the room roster...</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {multiRole === 'host' ? (
+              <div className="host-launch-panel">
+                <h4>Select Difficulty & Launch Race:</h4>
+                <div className="difficulty-buttons">
+                  <button className="diff-btn easy" onClick={() => handleHostStartRace('0')}>
+                    🚀 Launch Level 0
+                  </button>
+                  <button className="diff-btn medium" onClick={() => handleHostStartRace('1')}>
+                    🚀 Launch Level 1
+                  </button>
+                  <button className="diff-btn hard" onClick={() => handleHostStartRace('2')}>
+                    🚀 Launch Level 2
+                  </button>
+                  <button className="diff-btn hard" style={{background: '#4f46e5'}} onClick={() => handleHostStartRace('3')}>
+                    🚀 Launch Level 3
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="guest-waiting-panel">
+                <div className="guest-spinner"></div>
+                <p>Waiting for Host to launch the F1 race...</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -307,26 +723,55 @@ function MathRacer() {
                   <div className="finish-line-checkered"></div>
                 </div>
                 
-                {/* Lane 1: Bot 1 */}
-                <div className="lane">
-                  <div className="lane-marker"></div>
-                  <div className="racer-car bot-car" style={{ left: `${getVisualPosition(bot1Distance)}%` }}>
-                    <F1CarSVG color="#f43f5e" name="Bot 1" />
-                  </div>
-                </div>
-                {/* Lane 2: Player */}
-                <div className="lane player-lane">
-                  <div className="lane-marker"></div>
-                  <div className={`racer-car player-car ${feedback === 'correct' ? 'accelerating' : ''} ${feedback === 'wrong' ? 'stalling' : ''}`} style={{ left: `${getVisualPosition(playerDistance)}%` }}>
-                    <F1CarSVG color="#3b82f6" name="You" isBoosting={feedback === 'correct'} />
-                  </div>
-                </div>
-                {/* Lane 3: Bot 2 */}
-                <div className="lane">
-                  <div className="racer-car bot-car" style={{ left: `${getVisualPosition(bot2Distance)}%` }}>
-                    <F1CarSVG color="#8b5cf6" name="Bot 2" />
-                  </div>
-                </div>
+                {gameMode === 'single' ? (
+                  <>
+                    {/* Lane 1: Bot 1 */}
+                    <div className="lane">
+                      <div className="lane-marker"></div>
+                      <div className="racer-car bot-car" style={{ left: `${getVisualPosition(bot1Distance)}%` }}>
+                        <F1CarSVG color="#f43f5e" name="Bot 1" />
+                      </div>
+                    </div>
+                    {/* Lane 2: Player */}
+                    <div className="lane player-lane">
+                      <div className="lane-marker"></div>
+                      <div className={`racer-car player-car ${feedback === 'correct' ? 'accelerating' : ''} ${feedback === 'wrong' ? 'stalling' : ''}`} style={{ left: `${getVisualPosition(playerDistance)}%` }}>
+                        <F1CarSVG color="#3b82f6" name="You" isBoosting={feedback === 'correct'} />
+                      </div>
+                    </div>
+                    {/* Lane 3: Bot 2 */}
+                    <div className="lane">
+                      <div className="racer-car bot-car" style={{ left: `${getVisualPosition(bot2Distance)}%` }}>
+                        <F1CarSVG color="#8b5cf6" name="Bot 2" />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  /* ============================================================
+                     MULTIPLAYER REAL-TIME DYNAMIC ROSTER LANES
+                     ============================================================ */
+                  players.map((player, idx) => {
+                    const isMe = player.id === myId;
+                    const carDistance = isMe ? playerDistance : player.distance;
+                    const visualLeft = getVisualPosition(carDistance);
+                    
+                    return (
+                      <div key={player.id || idx} className={`lane ${isMe ? 'player-lane' : ''}`}>
+                        <div className="lane-marker"></div>
+                        <div 
+                          className={`racer-car ${isMe ? 'player-car' : 'bot-car'} ${isMe && feedback === 'correct' ? 'accelerating' : ''} ${isMe && feedback === 'wrong' ? 'stalling' : ''}`} 
+                          style={{ left: `${visualLeft}%` }}
+                        >
+                          <F1CarSVG 
+                            color={player.color} 
+                            name={isMe ? `${player.name} (You)` : player.name} 
+                            isBoosting={isMe ? feedback === 'correct' : !!player.isBoosting} 
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
 
@@ -351,23 +796,56 @@ function MathRacer() {
           <div className="racer-gameover">
             <h2>Race Finished! 🏁</h2>
             
-            <div className="results-podium">
-              <div className="final-placement">
-                <Medal size={40} color="#10b981" />
-                <h3>{getPlacement()}{getPlacement() === 1 ? 'st' : getPlacement() === 2 ? 'nd' : 'rd'} Place</h3>
+            {gameMode === 'single' ? (
+              <div className="results-podium">
+                <div className="final-placement">
+                  <Medal size={40} color="#10b981" />
+                  <h3>{getPlacement()}{getPlacement() === 1 ? 'st' : getPlacement() === 2 ? 'nd' : 'rd'} Place</h3>
+                </div>
+                <div className="final-score">
+                  <Trophy size={40} color="#f59e0b" />
+                  <h3>{score}</h3>
+                  <p>Points</p>
+                </div>
               </div>
-              <div className="final-score">
-                <Trophy size={40} color="#f59e0b" />
-                <h3>{score}</h3>
-                <p>Points</p>
+            ) : (
+              /* ============================================================
+                 MULTIPLAYER REAL-TIME PODIUM LEADERBOARD
+                 ============================================================ */
+              <div className="multiplayer-leaderboard-card">
+                <h3>🏆 Final Roster Leaderboard</h3>
+                <div className="leaderboard-list">
+                  {getPodiumList().map((player, idx) => {
+                    const rank = idx + 1;
+                    const isMe = player.id === myId;
+                    return (
+                      <div key={player.id || idx} className={`leaderboard-item rank-${rank} ${isMe ? 'highlight-me' : ''}`}>
+                        <div className="rank-number">{rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}</div>
+                        <div className="player-info">
+                          <span className="player-name">{player.name} {isMe && '(You)'}</span>
+                          <span className="player-score">Score: {player.score} pts</span>
+                        </div>
+                        <div className="finish-time-badge">
+                          {player.finished ? `🏁 ${player.time}` : '🚗 Racing...'}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
             
             <div className="gameover-actions">
-              <button className="play-again-btn" onClick={() => startGame(difficulty)}>
-                <RefreshCcw size={20} /> Race Again
-              </button>
-              <button className="menu-btn" onClick={() => setGameState('menu')}>
+              {gameMode === 'single' ? (
+                <button className="play-again-btn" onClick={() => startGame(difficulty)}>
+                  <RefreshCcw size={20} /> Race Again
+                </button>
+              ) : (
+                <button className="play-again-btn" onClick={() => { soundEffects.playClick(); setGameState('lobby'); }}>
+                  <Users size={20} /> Back to Lobby
+                </button>
+              )}
+              <button className="menu-btn" onClick={() => { soundEffects.playClick(); disconnectPusher(); setGameState('menu'); }}>
                 Main Menu
               </button>
             </div>
