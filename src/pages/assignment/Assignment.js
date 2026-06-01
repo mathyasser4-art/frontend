@@ -128,6 +128,7 @@ function Assignment() {
   const userID = localStorage.getItem('pp_id') || 'unknown';
   const progressKey = `assignment_progress_${assignmentID}_${userID}`;
   const initialized = useRef(false);
+  const hasSubmittedRef = useRef(false);
   const [time, setTime] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
   const navigate = useNavigate()
@@ -1069,26 +1070,52 @@ function Assignment() {
     soundEffects.playEndSound();
     setStopTimer(true);
     setShowKeyboard(false);
+    
+    // Calculate elapsed time based on total time and remaining time
+    // The timer shows REMAINING time, we need ELAPSED time
+    const timerElement = document.querySelector('.timer .time_item');
+    let elapsedTime = '0:00';
+    
+    if (timerElement) {
+      const allTimeItems = document.querySelectorAll('.timer .time_item');
+      if (allTimeItems.length >= 2) {
+        const remainingMinutes = parseInt(allTimeItems[0].textContent) || 0;
+        const remainingSeconds = parseInt(allTimeItems[1].textContent) || 0;
+        
+        // Calculate elapsed time
+        const totalTimeInSeconds = totalTime * 60;
+        const remainingTimeInSeconds = (remainingMinutes * 60) + remainingSeconds;
+        const elapsedTimeInSeconds = totalTimeInSeconds - remainingTimeInSeconds;
+        
+        const elapsedMinutes = Math.floor(elapsedTimeInSeconds / 60);
+        const elapsedSecs = elapsedTimeInSeconds % 60;
+        elapsedTime = `${elapsedMinutes}:${String(elapsedSecs).padStart(2, '0')}`;
+        
+        console.log('Manual end exam - Total time:', totalTime, 'minutes');
+        console.log('Manual end exam - Remaining:', remainingMinutes, 'minutes', remainingSeconds, 'seconds');
+        console.log('Manual end exam - Elapsed time:', elapsedTime);
+      }
+    }
+    
+    setTimeSpent(elapsedTime);
     setExamCompleted(true);
     
     // Clear saved progress on manual end
     clearSavedProgress();
     
-    // If there is NO time limit, we submit directly with '0:00'
-    // If there IS a time limit, setting setStopTimer(true) will trigger the MyTimer component
-    // to calculate the exact elapsed time and call handleGetResult() -> checkAllAnswers() automatically!
-    if (totalTime === 0) {
-      console.log('Manual end exam - No time limit, submitting directly.');
-      setTimeSpent('0:00');
-      setIsCheckingAnswers(true);
-      checkAllAnswers('0:00');
-    } else {
-      console.log('Manual end exam - Timer active. Let MyTimer calculate time and submit.');
-    }
+    // Start checking all answers
+    setIsCheckingAnswers(true);
+    checkAllAnswers(elapsedTime);
   }
 
   // Check all answers including unanswered ones
   const checkAllAnswers = async (finalTime) => {
+    if (hasSubmittedRef.current) {
+      console.log('=== checkAllAnswers IGNORED - already submitted ===');
+      return;
+    }
+    hasSubmittedRef.current = true;
+
     console.log('=== checkAllAnswers START ===');
     console.log('Final time:', finalTime);
     console.log('Assignment ID:', assignmentID);
