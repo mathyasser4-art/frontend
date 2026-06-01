@@ -1527,13 +1527,13 @@ function Assignment() {
               <div className='mcq-container'>
                 <h3 className='mcq-title'>Choose your answer:</h3>
                 <div className='mcq-answer-layout'>
-                  {thisQuestion.wrongAnswer?.map((item, index) => (
-                    <label key={item} className={`mcq-choice ${answer === item ? 'selected' : ''}`}>
+                  {thisQuestion.wrongAnswer?.filter(item => item && String(item).trim() !== '').map((item, index) => (
+                    <label key={item} className={`mcq-choice ${answer && answer === item ? 'selected' : ''}`}>
                       <input 
                         type='radio' 
                         value={item} 
                         name={`mcq_${thisQuestion._id}`} 
-                        checked={answer === item}
+                        checked={answer && answer === item}
                         onChange={e => handleChecked(e.target.value)} 
                       />
                       <span className='mcq-text'>{item}</span>
