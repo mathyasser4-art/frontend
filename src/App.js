@@ -39,6 +39,7 @@ import CartoonAirplanesGame from './pages/games/CartoonAirplanesGame';
 import SudokuGame from './pages/games/SudokuGame';
 import KenKenGame from './pages/games/KenKenGame';
 import AbacusMatchGame from './pages/games/AbacusMatchGame';
+import TanksGame from './pages/games/TanksGame';
 import GamesMenu from './pages/studentDashboard/GamesMenu';
 import LiveChatWidget from './components/liveChat/LiveChatWidget';
 import ChatManagement from './pages/dashboardSchool/ChatManagement';
@@ -103,6 +104,7 @@ function App() {
       <Route path='/student/games/sudoku' element={<SudokuGame />} />
       <Route path='/student/games/kenken' element={<KenKenGame />} />
       <Route path='/student/games/abacus-match' element={<AbacusMatchGame />} />
+      <Route path='/student/games/tanks' element={<TanksGame />} />
       <Route path='/student/games-menu' element={<GamesMenu />} />
 
       </Routes>
