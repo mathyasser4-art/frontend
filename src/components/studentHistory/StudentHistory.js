@@ -94,6 +94,22 @@ function StudentHistory() {
     }
   };
 
+  const formatTimeSpent = (timeStr) => {
+    if (!timeStr || timeStr === '0:00' || timeStr === '0 00' || timeStr === '00:00' || timeStr === '—') {
+      return 'Untimed';
+    }
+    if (timeStr.includes('m') || timeStr.includes('s')) return timeStr;
+
+    const parts = timeStr.split(/[:\s]+/);
+    if (parts.length === 2) {
+      const minutes = parseInt(parts[0], 10) || 0;
+      const seconds = parseInt(parts[1], 10) || 0;
+      if (minutes === 0 && seconds === 0) return 'Untimed';
+      return `${minutes}m ${seconds}s`;
+    }
+    return timeStr;
+  };
+
   const getGradeLetter = (percentage) => {
     if (percentage >= 90) return 'A';
     if (percentage >= 80) return 'B';
@@ -295,7 +311,7 @@ function StudentHistory() {
                         </span>
                         <span className="meta-item">
                           <Clock size={14} />
-                          Time: {assignment.timeSpent || '0:00'}
+                          Time: {formatTimeSpent(assignment.timeSpent)}
                         </span>
                       </div>
 

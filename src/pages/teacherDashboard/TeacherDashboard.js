@@ -273,18 +273,17 @@ function TeacherDashboard() {
                                 </div>
                             </div>
                             <div className="assignment-icon d-flex align-items-center">
-                                <i onClick={() => openStudentListPopup(item._id)} className="fa fa-eye" aria-hidden="true" title="View Students"></i>
-                                <i onClick={() => openReassignPopup(item.questions, item._id)} className="fa fa-copy" aria-hidden="true" title="Re-assign Assignment (Create New Copy)"></i>
-                                
-                                {/* ADDED: PDF Reports Button */}
+                                {/* Sleek textual Reports Hub button */}
                                 <Link 
                                     to={`/assignment/${item._id}/reports`} 
-                                    className="pdf-reports-btn"
-                                    title="Student PDF Reports"
+                                    className="reports-hub-btn d-flex align-items-center"
+                                    title="Homework Reports Hub (Detailed, Combined & Historical)"
+                                    onClick={() => soundEffects.playClick()}
                                 >
-                                    <i className="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                    <i className="fa fa-bar-chart" aria-hidden="true" style={{marginRight: '6px'}}></i> Reports
                                 </Link>
-                                
+
+                                <i onClick={() => openReassignPopup(item.questions, item._id)} className="fa fa-copy" aria-hidden="true" title="Re-assign Assignment (Create New Copy)"></i>
                                 <i onClick={() => openRemovePopup(item._id)} className="fa fa-trash" aria-hidden="true" title="Delete Assignment"></i>
                             </div>
                         </div>

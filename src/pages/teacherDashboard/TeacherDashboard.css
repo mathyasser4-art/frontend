@@ -52,24 +52,40 @@
         padding-bottom: 6.5rem;
     }
 }
-/* PDF Reports Button Styles */
-.pdf-reports-btn {
-    color: #dc3545;
+/* Unified Reports Hub Button Styles */
+.reports-hub-btn {
+    color: #28a745;
+    background-color: #e8f5e9;
+    border: 1.5px solid #c2f0c2;
+    font-weight: 600;
     text-decoration: none;
-    padding: 8px;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    display: flex;
+    padding: 6px 14px;
+    border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin: 0 5px;
+    margin: 0 8px;
+    font-size: 13.5px !important;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.08);
 }
 
-.pdf-reports-btn:hover {
-    background-color: #dc3545;
-    color: white;
+.reports-hub-btn:hover {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    border-color: #28a745;
+    color: white !important;
+    text-decoration: none;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    box-shadow: 0 6px 15px rgba(40, 167, 69, 0.25);
+}
+
+.reports-hub-btn i {
+    font-size: 14px !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: inherit !important;
 }
 
 .assignment-info {

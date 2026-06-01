@@ -50,6 +50,22 @@ function AssignmentReport() {
     }
   }, [time, assignmentID])
 
+  const formatTimeSpent = (timeStr) => {
+    if (!timeStr || timeStr === '0:00' || timeStr === '0 00' || timeStr === '00:00' || timeStr === '—') {
+      return 'Untimed';
+    }
+    if (timeStr.includes('m') || timeStr.includes('s')) return timeStr;
+
+    const parts = timeStr.split(/[:\s]+/);
+    if (parts.length === 2) {
+      const minutes = parseInt(parts[0], 10) || 0;
+      const seconds = parseInt(parts[1], 10) || 0;
+      if (minutes === 0 && seconds === 0) return 'Untimed';
+      return `${minutes}m ${seconds}s`;
+    }
+    return timeStr;
+  };
+
   const openModelAnswer = (imgURL) => {
     setImgURL(imgURL)
     document.querySelector('.model-answer-popup').classList.replace('d-none', 'd-flex')
@@ -192,7 +208,7 @@ function AssignmentReport() {
               </div>
               <div className="timer d-flex align-items-center">
                 <h4>Time:</h4>
-                <p>{time || '—'}</p>
+                <p>{formatTimeSpent(time)}</p>
               </div>
             </div>
 
