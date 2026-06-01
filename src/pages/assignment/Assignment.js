@@ -1358,7 +1358,7 @@ function Assignment() {
           <div className="question-content-wrapper d-flex">
             <div className="question-form">
             <div className="question-form-head d-flex justify-content-space-between align-items-center">
-              <p className="question-progress-label">{currentQuestionLabel}</p>
+              <p className="question-progress-label notranslate" translate="no">{currentQuestionLabel}</p>
               <div className="end-head d-flex align-items-center">
                 {role === 'Teacher' && thisQuestion && (
                   <div ref={reportRef} style={{ position: 'relative', display: 'inline-block' }}>
@@ -1451,7 +1451,7 @@ function Assignment() {
 
 
                 {time !== 0 && !examCompleted ? (
-                  <div className="timer">
+                  <div className="timer notranslate" translate="no">
                     <MyTimer
                       expiryTimestamp={time}
                       handleGetResult={handleGetResult}
@@ -1460,11 +1460,11 @@ function Assignment() {
                     />
                   </div>
                 ) : examCompleted ? (
-                  <div className="timer">
+                  <div className="timer notranslate" translate="no">
                     <span>Completed: {timeSpent}</span>
                   </div>
                 ) : (
-                  <div className="timer">{totalTime === 0 ? "No time limit" : "Loading timer..."}</div>
+                  <div className="timer notranslate" translate="no">{totalTime === 0 ? "No time limit" : "Loading timer..."}</div>
                 )}
               </div>
             </div>
