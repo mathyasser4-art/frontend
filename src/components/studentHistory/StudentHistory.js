@@ -153,7 +153,7 @@ function StudentHistory() {
       <div className="student-history-container">
         <nav>
           <div className='nav-container d-flex justify-content-space-between align-items-center'>
-            <Link to={'/'}><img src="/logo-Photoroom.png" alt="Logo" /></Link>
+            <Link to={'/'}><img src="/logo.png" alt="Logo" /></Link>
             <div className='nav-right-side d-flex align-items-center'>
               <Link to={'/dashboard/teacher'} className="back-btn">
                 <ArrowLeft size={16} /> Back to Dashboard
@@ -176,7 +176,7 @@ function StudentHistory() {
       <div className="student-history-container">
         <nav>
           <div className='nav-container d-flex justify-content-space-between align-items-center'>
-            <Link to={'/'}><img src="/logo-Photoroom.png" alt="Logo" /></Link>
+            <Link to={'/'}><img src="/logo.png" alt="Logo" /></Link>
             <div className='nav-right-side d-flex align-items-center'>
               <Link to={'/dashboard/teacher'} className="back-btn">
                 <ArrowLeft size={16} /> Back to Dashboard
@@ -213,7 +213,7 @@ function StudentHistory() {
     <div className="student-history-container">
       <nav>
         <div className='nav-container d-flex justify-content-space-between align-items-center'>
-          <Link to={'/'}><img src="/logo-Photoroom.png" alt="Logo" /></Link>
+          <Link to={'/'}><img src="/logo.png" alt="Logo" /></Link>
           <div className='nav-right-side d-flex align-items-center'>
             <Link to={'/dashboard/teacher'} className="back-btn">
               <ArrowLeft size={16} /> Back to Dashboard
