@@ -854,8 +854,36 @@ function Question() {
                         <div className='question-form-head d-flex justify-content-space-between align-items-center'>
                             <p>Q{thisQuestionNumber}/{questionData?.length || 0}</p>
                             <div className='end-head d-flex align-items-center'>
+                                {role === 'Teacher' && thisQuestion && (
+                                    <div ref={reportRef} style={{ position: 'relative' }}>
+                                        <div 
+                                            title={t('questionPage.reportError', 'Report Question Error')} 
+                                            className={`report-error-button ${flaggedQuestions[thisQuestion._id] ? 'flagged-' + flaggedQuestions[thisQuestion._id] : ''}`} 
+                                            onClick={() => { soundEffects.playClick(); setShowReportDropdown(!showReportDropdown); }}
+                                        >
+                                            <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                        </div>
+                                        {showReportDropdown && (
+                                            <div className="report-dropdown">
+                                                <button 
+                                                    className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'answer' ? 'active' : ''}`}
+                                                    onClick={() => handleReportQuestion('answer')}
+                                                >
+                                                    🔴 {t('questionPage.wrongAnswer', 'Wrong Answer')}
+                                                </button>
+                                                <button 
+                                                    className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'skill' ? 'active' : ''}`}
+                                                    onClick={() => handleReportQuestion('skill')}
+                                                >
+                                                    🟠 {t('questionPage.wrongSkill', 'Wrong Skill')}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                                 <button
                                     type="button"
+
                                     title={t('questionPage.downloadWorksheet', 'Download Worksheet PDF')}
                                     className="worksheet-print-btn"
                                     onClick={downloadWorksheetPDF}
@@ -897,34 +925,8 @@ function Question() {
                                 <div title={t('questionPage.openAbacus')} className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
                                     <i className="fa fa-calculator" aria-hidden="true"></i>
                                 </div>
-                                {role === 'Teacher' && thisQuestion && (
-                                    <div ref={reportRef} style={{ position: 'relative' }}>
-                                        <div 
-                                            title={t('questionPage.reportError', 'Report Question Error')} 
-                                            className={`report-error-button ${flaggedQuestions[thisQuestion._id] ? 'flagged-' + flaggedQuestions[thisQuestion._id] : ''}`} 
-                                            onClick={() => { soundEffects.playClick(); setShowReportDropdown(!showReportDropdown); }}
-                                        >
-                                            <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                                        </div>
-                                        {showReportDropdown && (
-                                            <div className="report-dropdown">
-                                                <button 
-                                                    className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'answer' ? 'active' : ''}`}
-                                                    onClick={() => handleReportQuestion('answer')}
-                                                >
-                                                    🔴 {t('questionPage.wrongAnswer', 'Wrong Answer')}
-                                                </button>
-                                                <button 
-                                                    className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'skill' ? 'active' : ''}`}
-                                                    onClick={() => handleReportQuestion('skill')}
-                                                >
-                                                    🟠 {t('questionPage.wrongSkill', 'Wrong Skill')}
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
                                 {role === 'Teacher' && (
+
                                     <div 
                                         title={t('questionPage.addAllToPocket')} 
                                         className="pocket-all-button" 

@@ -148,6 +148,28 @@ const ReportedQuestions = () => {
                         <div className="q-preview-box">
                           {report.question ? renderQuestionText(report.question.question) : 'Question deleted'}
                         </div>
+                        {report.question && (
+                          <div style={{ marginTop: '8px', fontSize: '11px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                              Lvl {report.question.level}
+                            </span>
+                            {report.question.chapter?.chapterName && (
+                              <span style={{ background: '#f3e8ff', color: '#6b21a8', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }} title="Chapter">
+                                📖 {report.question.chapter.chapterName}
+                              </span>
+                            )}
+                            {report.question.chapter?.unit?.unitName && (
+                              <span style={{ background: '#ecfdf5', color: '#065f46', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }} title="Unit">
+                                🧩 {report.question.chapter.unit.unitName}
+                              </span>
+                            )}
+                            {report.question.chapter?.unit?.subject?.subjectName && (
+                              <span style={{ background: '#fff7ed', color: '#9a3412', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }} title="Subject">
+                                📚 {report.question.chapter.unit.subject.subjectName}
+                              </span>
+                            )}
+                          </div>
+                        )}
                         {report.question?.questionPic && (
                           <div className="img-preview-row">
                             <img src={report.question.questionPic} alt="Question helper" className="mini-pic" />

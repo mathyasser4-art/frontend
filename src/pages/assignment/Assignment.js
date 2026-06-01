@@ -1353,7 +1353,35 @@ function Assignment() {
             <div className="question-form-head d-flex justify-content-space-between align-items-center">
               <p className="question-progress-label">{currentQuestionLabel}</p>
               <div className="end-head d-flex align-items-center">
+                {role === 'Teacher' && thisQuestion && (
+                  <div ref={reportRef} style={{ position: 'relative', display: 'inline-block' }}>
+                    <div 
+                      title="Report Question Error"
+                      className={`report-error-button ${flaggedQuestions[thisQuestion._id] ? 'flagged-' + flaggedQuestions[thisQuestion._id] : ''}`} 
+                      onClick={() => { soundEffects.playClick(); setShowReportDropdown(!showReportDropdown); }}
+                    >
+                      <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                    </div>
+                    {showReportDropdown && (
+                      <div className="report-dropdown">
+                        <button 
+                          className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'answer' ? 'active' : ''}`}
+                          onClick={() => handleReportQuestion('answer')}
+                        >
+                          🔴 Wrong Answer
+                        </button>
+                        <button 
+                          className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'skill' ? 'active' : ''}`}
+                          onClick={() => handleReportQuestion('skill')}
+                        >
+                          🟠 Wrong Skill
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
                 {!examCompleted && !showCheckingOverlay && (
+
                   <button
                     type="button"
                     title="End Assignment"
@@ -1412,33 +1440,8 @@ function Assignment() {
                 <div title="Open Abacus" className="abacus-button" onClick={() => setShowAbacus(!showAbacus)}>
                   <Calculator size={24} strokeWidth={2.5} style={{ color: '#65C6EE' }} />
                 </div>
-                {role === 'Teacher' && thisQuestion && (
-                  <div ref={reportRef} style={{ position: 'relative', display: 'inline-block' }}>
-                    <div 
-                      title="Report Question Error"
-                      className={`report-error-button ${flaggedQuestions[thisQuestion._id] ? 'flagged-' + flaggedQuestions[thisQuestion._id] : ''}`} 
-                      onClick={() => { soundEffects.playClick(); setShowReportDropdown(!showReportDropdown); }}
-                    >
-                      <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                    </div>
-                    {showReportDropdown && (
-                      <div className="report-dropdown">
-                        <button 
-                          className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'answer' ? 'active' : ''}`}
-                          onClick={() => handleReportQuestion('answer')}
-                        >
-                          🔴 Wrong Answer
-                        </button>
-                        <button 
-                          className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'skill' ? 'active' : ''}`}
-                          onClick={() => handleReportQuestion('skill')}
-                        >
-                          🟠 Wrong Skill
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+
+
 
                 {time !== 0 && !examCompleted ? (
                   <div className="timer">
