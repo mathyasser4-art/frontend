@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import logo from '../../logo.png';
 import avatarExam from '../../img/avatar-exam.png';
@@ -105,6 +105,7 @@ const normalizeToWesternDigits = (str) => {
 
 function Question() {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     
     // State for Abacus visibility
     const [showAbacus, setShowAbacus] = useState(false);
@@ -883,13 +884,29 @@ function Question() {
                                 )}
                                 <button
                                     type="button"
-
                                     title={t('questionPage.downloadWorksheet', 'Download Worksheet PDF')}
                                     className="worksheet-print-btn"
                                     onClick={downloadWorksheetPDF}
                                     disabled={!questionData?.length}
                                 >
                                     <Printer size={18} color="#fff" />
+                                </button>
+                                <button
+                                    type="button"
+                                    title={t('questionPage.gamify', 'Gamify with Math Racer')}
+                                    className="gamify-button"
+                                    onClick={() => {
+                                        soundEffects.playClick();
+                                        navigate('/student/games/math-racer', {
+                                            state: {
+                                                customQuestions: questionData,
+                                                chapterName: chapterID
+                                            }
+                                        });
+                                    }}
+                                    disabled={!questionData?.length}
+                                >
+                                    🏎️ Gamify
                                 </button>
                                 <div
                                     title={isFullscreen ? t('questionPage.exitFullscreen', 'Exit Fullscreen') : t('questionPage.fullscreen', 'Fullscreen')}

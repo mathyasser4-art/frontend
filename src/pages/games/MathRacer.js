@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
@@ -60,9 +60,51 @@ const F1CarSVG = ({ color, name, isBoosting }) => (
   </div>
 );
 
+
+const parseGridRows = (questionText) => {
+    if (!questionText) return null;
+    const trimmed = String(questionText).trim();
+    if (!trimmed.startsWith('[')) return null;
+    try {
+        const rows = JSON.parse(trimmed);
+        if (!Array.isArray(rows) || rows.length === 0) return null;
+        const first = rows[0];
+        if (
+            first.op !== undefined || first.OP !== undefined ||
+            first.val !== undefined || first.VAL !== undefined
+        ) return rows;
+    } catch (e) {}
+    return null;
+};
+
+const getRowOp  = (row) => (row.op  !== undefined ? row.op  : (row.OP  !== undefined ? row.OP  : ''));
+const getRowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
+
+const sanitizeForPusher = (questions) => {
+  if (!questions) return null;
+  return questions.map(q => ({
+    _id: q._id,
+    question: q.question,
+    typeOfAnswer: q.typeOfAnswer,
+    wrongAnswer: q.wrongAnswer || [],
+    wrongPicAnswer: q.wrongPicAnswer || [],
+    questionPic: q.questionPic || '',
+    correctAnswer: q.correctAnswer || '',
+    correctPicAnswer: q.correctPicAnswer || '',
+    answer: q.answer || []
+  }));
+};
+
 function MathRacer() {
   const navigate = useNavigate();
+  const location = useLocation();
   const containerRef = useRef(null);
+
+  // Custom Questions States
+  const [customQuestions, setCustomQuestions] = useState(location.state?.customQuestions || null);
+  const [chapterName, setChapterName] = useState(location.state?.chapterName || '');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [essayAnswer, setEssayAnswer] = useState('');
 
   // Matchmaking & Multiplayer States
   const [gameMode, setGameMode] = useState('single'); // 'single' or 'multi'
@@ -188,7 +230,11 @@ function MathRacer() {
           const updated = [...prev, newPlayer];
           
           // Broadcast full lobby roster back to all guest players
-          broadcastPusherEvent(roomCode, 'sync-lobby', { players: updated });
+          broadcastPusherEvent(roomCode, 'sync-lobby', { 
+            players: updated,
+            hasCustomQuestions: !!customQuestions,
+            chapterName: chapterName
+          });
           return updated;
         });
       });
@@ -212,6 +258,9 @@ function MathRacer() {
       channel.bind('sync-lobby', (data) => {
         console.log('[LOBBY] Synced roster from host:', data);
         setPlayers(data.players);
+        if (data.hasCustomQuestions) {
+          setChapterName(data.chapterName || '');
+        }
       });
 
       // Guest listens to host's race start trigger
@@ -222,7 +271,14 @@ function MathRacer() {
         setTimeElapsed(0);
         setPlayerDistance(0);
         setFeedback(null);
-        generateProblem(data.difficulty);
+        setCurrentQuestionIndex(0);
+        setEssayAnswer('');
+        if (data.customQuestions) {
+          setCustomQuestions(data.customQuestions);
+          generateProblem(data.difficulty, 0, data.customQuestions);
+        } else {
+          generateProblem(data.difficulty, 0, null);
+        }
       });
 
       // Guest listens to score/distance updates from host/other guests
@@ -277,8 +333,39 @@ function MathRacer() {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  // Generate a random addition/subtraction MCQ problem (always consistent).
-  const generateProblem = (diff) => {
+  // Generate a random addition/subtraction MCQ problem (always consistent), or load a custom question.
+  const generateProblem = (diff, index = currentQuestionIndex, questions = customQuestions) => {
+    if (questions && questions.length > 0) {
+      const qIndex = index % questions.length;
+      const q = questions[qIndex];
+      
+      let text = '';
+      const gridRows = parseGridRows(q.question);
+      if (gridRows) {
+        text = 'ABACUS_GRID';
+      } else {
+        text = q.question || '';
+      }
+      
+      let options = [];
+      if (q.typeOfAnswer === 'MCQ' && Array.isArray(q.wrongAnswer)) {
+        options = q.wrongAnswer;
+      } else if (q.typeOfAnswer === 'Graph' && Array.isArray(q.wrongPicAnswer)) {
+        options = q.wrongPicAnswer;
+      }
+
+      setCurrentProblem({
+        text,
+        options,
+        answer: q.correctAnswer || (q.answer && q.answer[0]) || q.correctPicAnswer || '',
+        typeOfAnswer: q.typeOfAnswer,
+        gridRows: gridRows || null,
+        questionPic: q.questionPic || '',
+        _id: q._id
+      });
+      return;
+    }
+
     let num1, num2, operator, answer;
     
     // Keep levels mapped to tighter/wider ranges.
@@ -334,7 +421,9 @@ function MathRacer() {
     setBot2Distance(0);
     setGameState('playing');
     setFeedback(null);
-    generateProblem(selectedLevel);
+    setCurrentQuestionIndex(0);
+    setEssayAnswer('');
+    generateProblem(selectedLevel, 0, customQuestions);
   };
 
   // Host Action: Trigger race start for all players
@@ -344,7 +433,10 @@ function MathRacer() {
     setDifficulty(selectedLevel);
     
     // Broadcast start race config to all guests
-    broadcastPusherEvent(roomId, 'start-game', { difficulty: selectedLevel });
+    broadcastPusherEvent(roomId, 'start-game', { 
+      difficulty: selectedLevel,
+      customQuestions: customQuestions ? sanitizeForPusher(customQuestions) : null
+    });
     
     // Initialize host gameplay
     setScore(0);
@@ -352,7 +444,9 @@ function MathRacer() {
     setPlayerDistance(0);
     setGameState('playing');
     setFeedback(null);
-    generateProblem(selectedLevel);
+    setCurrentQuestionIndex(0);
+    setEssayAnswer('');
+    generateProblem(selectedLevel, 0, customQuestions);
   };
 
   const endGame = () => {
@@ -428,8 +522,36 @@ function MathRacer() {
   }, [playerDistance, gameState, gameMode, roomId]);
 
   const handleOptionClick = (selectedOpt) => {
-    if (selectedOpt === currentProblem.answer) {
+    const normalize = (val) => String(val !== undefined && val !== null ? val : "").trim();
+    if (normalize(selectedOpt) === normalize(currentProblem.answer)) {
       handleCorrectAnswer();
+    } else {
+      soundEffects.playWrong();
+      setFeedback('wrong');
+      setTimeout(() => setFeedback(null), 800);
+    }
+  };
+
+  const handleEssaySubmit = (val = essayAnswer) => {
+    const normalizeDigits = (str) => {
+      if (!str) return '';
+      const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+      return String(str)
+        .replace(/[٠١٢٣٤٥٦٧٨٩]/g, d => ARABIC_DIGITS.indexOf(d).toString())
+        .trim();
+    };
+
+    const normAnswer = normalizeDigits(val);
+    const activeQ = customQuestions ? customQuestions[currentQuestionIndex % customQuestions.length] : null;
+    const correctAnswersList = activeQ && Array.isArray(activeQ.answer)
+      ? activeQ.answer
+      : [currentProblem.answer];
+
+    const isCorrect = correctAnswersList.map(normalizeDigits).includes(normAnswer);
+
+    if (isCorrect) {
+      handleCorrectAnswer();
+      setEssayAnswer('');
     } else {
       soundEffects.playWrong();
       setFeedback('wrong');
@@ -457,7 +579,13 @@ function MathRacer() {
     setFeedback('correct');
     
     setTimeout(() => {
-      generateProblem(difficulty);
+      if (customQuestions && customQuestions.length > 0) {
+        const nextIndex = currentQuestionIndex + 1;
+        setCurrentQuestionIndex(nextIndex);
+        generateProblem(difficulty, nextIndex, customQuestions);
+      } else {
+        generateProblem(difficulty);
+      }
       setFeedback(null);
     }, 200);
   };
@@ -536,6 +664,18 @@ function MathRacer() {
             <div className="racer-logo">
               <F1CarSVG color="#3b82f6" name="" />
             </div>
+
+            {customQuestions && (
+              <div className="custom-race-banner">
+                <span className="banner-badge">🏁 CUSTOM CHAPTER RACE</span>
+                <p className="banner-title">
+                  Playing with questions from <strong>Chapter {chapterName}</strong> ({customQuestions.length} questions)
+                </p>
+                <button className="clear-custom-btn" onClick={() => setCustomQuestions(null)}>
+                  Clear Custom Questions
+                </button>
+              </div>
+            )}
             
             {/* Premium Lobby Selection Tabs */}
             <div className="game-mode-tabs">
@@ -625,6 +765,12 @@ function MathRacer() {
                 Exit Lobby
               </button>
             </div>
+
+            {chapterName && (
+              <div className="lobby-custom-badge">
+                🏎️ Custom Race: Chapter {chapterName}
+              </div>
+            )}
 
             <div className="room-code-display-card">
               <span className="room-label">ROOM ENTRY CODE</span>
@@ -775,19 +921,105 @@ function MathRacer() {
               </div>
             </div>
 
-            <div className={`problem-container ${feedback}`}>
-              <div className="problem-text">{currentProblem.text}</div>
-              <div className="math-racer-options">
-                {currentProblem.options && currentProblem.options.map((opt, i) => (
-                  <button 
-                    key={i} 
-                    className="racer-option-btn"
-                    onClick={() => handleOptionClick(opt)}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
+            <div className={`problem-container ${feedback} ${currentProblem.typeOfAnswer || ''}`}>
+              
+              {/* Optional Question Image */}
+              {currentProblem.questionPic && (
+                <div className="racer-question-image-wrapper">
+                  <img src={currentProblem.questionPic} alt="Question Diagram" className="racer-question-image" />
+                </div>
+              )}
+
+              {/* Problem Content */}
+              {currentProblem.text === 'ABACUS_GRID' && currentProblem.gridRows ? (
+                <div className="racer-abacus-grid-view">
+                  <table className="racer-abacus-display-table">
+                    <tbody>
+                      {currentProblem.gridRows.map((row, i) => (
+                        <tr key={i}>
+                          <td className="op-cell">{getRowOp(row)}</td>
+                          <td className="val-cell">{getRowVal(row)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="problem-text">{currentProblem.text}</div>
+              )}
+
+              {/* Answer Inputs / Choices */}
+              {currentProblem.typeOfAnswer === 'Essay' ? (
+                /* ==========================================
+                   ESSAY / NUMERIC keypad input view
+                   ========================================== */
+                <div className="racer-essay-input-container">
+                  <div className="racer-essay-input-row">
+                    <input 
+                      type="text" 
+                      value={essayAnswer} 
+                      readOnly 
+                      placeholder="Type Answer..." 
+                      className="racer-essay-input"
+                    />
+                    <button 
+                      onClick={() => handleEssaySubmit(essayAnswer)} 
+                      className="racer-essay-submit-btn"
+                    >
+                      OK
+                    </button>
+                  </div>
+                  
+                  {/* Visual keypad grid */}
+                  <div className="racer-keypad">
+                    {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'].map(num => (
+                      <button 
+                        key={num} 
+                        onClick={() => setEssayAnswer(prev => prev + num)}
+                        className="racer-keypad-btn digit"
+                      >
+                        {num}
+                      </button>
+                    ))}
+                    <button 
+                      onClick={() => setEssayAnswer(prev => prev.slice(0, -1))}
+                      className="racer-keypad-btn clear"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              ) : currentProblem.typeOfAnswer === 'Graph' ? (
+                /* ==========================================
+                   GRAPH image choices
+                   ========================================== */
+                <div className="math-racer-graph-options">
+                  {currentProblem.options && currentProblem.options.map((opt, i) => (
+                    <button 
+                      key={i} 
+                      className="racer-graph-option-btn"
+                      onClick={() => handleOptionClick(opt)}
+                    >
+                      <img src={opt} alt={`Graph choice ${i + 1}`} />
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                /* ==========================================
+                   MCQ (or standard arithmetic fallback)
+                   ========================================== */
+                <div className="math-racer-options">
+                  {currentProblem.options && currentProblem.options.map((opt, i) => (
+                    <button 
+                      key={i} 
+                      className="racer-option-btn"
+                      onClick={() => handleOptionClick(opt)}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

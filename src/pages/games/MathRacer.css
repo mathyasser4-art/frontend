@@ -1068,3 +1068,223 @@
   .multiplayer-leaderboard-card { padding: 1rem; margin-bottom: 1.5rem; }
 }
 
+/* Custom Race Banner */
+.custom-race-banner {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border: 2px solid #f59e0b;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.custom-race-banner .banner-badge {
+  background: #f59e0b;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.custom-race-banner .banner-title {
+  color: #78350f;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.clear-custom-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.2s;
+}
+.clear-custom-btn:hover {
+  background: #dc2626;
+}
+
+/* Lobby Custom Badge */
+.lobby-custom-badge {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border: 1px solid #10b981;
+  color: #065f46;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+/* Abacus Grid View */
+.racer-abacus-grid-view {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.racer-abacus-display-table {
+  border-collapse: collapse;
+  border: 3px solid #1e293b;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.racer-abacus-display-table td {
+  padding: 10px 18px;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #1e293b;
+  text-align: center;
+}
+.racer-abacus-display-table tr {
+  border-bottom: 2px solid #e2e8f0;
+}
+.racer-abacus-display-table tr:last-child {
+  border-bottom: none;
+  border-top: 3px solid #1e293b;
+}
+.racer-abacus-display-table .op-cell {
+  color: #64748b;
+  width: 40px;
+}
+.racer-abacus-display-table .val-cell {
+  min-width: 80px;
+}
+
+/* Essay Numeric Input Keypad */
+.racer-essay-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 320px;
+}
+.racer-essay-input-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+.racer-essay-input {
+  flex: 1;
+  padding: 12px;
+  border: 3px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1e293b;
+  text-align: center;
+  outline: none;
+}
+.racer-essay-input:focus {
+  border-color: #3b82f6;
+}
+.racer-essay-submit-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.racer-essay-submit-btn:active {
+  transform: scale(0.95);
+}
+.racer-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+.racer-keypad-btn {
+  padding: 14px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  box-shadow: 0 3px 0 #cbd5e1;
+}
+.racer-keypad-btn:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+.racer-keypad-btn.digit {
+  background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+}
+.racer-keypad-btn.digit:hover {
+  background: #e2e8f0;
+}
+.racer-keypad-btn.clear {
+  background: linear-gradient(to bottom, #fee2e2, #fecaca);
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  box-shadow: 0 3px 0 #fca5a5;
+}
+.racer-keypad-btn.clear:hover {
+  background: #fca5a5;
+}
+
+/* Graph options */
+.math-racer-graph-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 500px;
+}
+.racer-graph-option-btn {
+  background: white;
+  border: 3px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.racer-graph-option-btn:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+.racer-graph-option-btn img {
+  max-width: 100%;
+  max-height: 120px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+/* Question Images inside Racer */
+.racer-question-image-wrapper {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.racer-question-image {
+  max-width: 90%;
+  max-height: 140px;
+  border-radius: 12px;
+  object-fit: contain;
+  border: 2px solid #e2e8f0;
+}
+
+
