@@ -906,7 +906,7 @@ function Question() {
                                     }}
                                     disabled={!questionData?.length}
                                 >
-                                    🏎️ Gamify
+                                    <i className="fa fa-gamepad" aria-hidden="true"></i>
                                 </button>
                                 <div
                                     title={isFullscreen ? t('questionPage.exitFullscreen', 'Exit Fullscreen') : t('questionPage.fullscreen', 'Fullscreen')}

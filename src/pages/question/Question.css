@@ -1401,7 +1401,7 @@ input[type="radio"] {
     .question-form {
         width: 100%;
         min-height: 35vh;
-        max-height: 50vh;
+        max-height: none;
     }
 
     .mcq-container,
@@ -1465,7 +1465,7 @@ input[type="radio"] {
 
     .question-form {
         min-height: 32vh;
-        max-height: 48vh;
+        max-height: none;
         padding: 0.9rem 1rem;
     }
     
@@ -1573,7 +1573,7 @@ input[type="radio"] {
         width: 100%;
         padding: 0.8rem 0.9rem;
         min-height: 30vh;
-        max-height: 45vh;
+        max-height: none;
         border-radius: 18px;
     }
 
@@ -1892,7 +1892,7 @@ input[type="radio"] {
     .question-form {
         padding: 0.7rem 0.8rem;
         min-height: 28vh;
-        max-height: 42vh;
+        max-height: none;
         border-radius: 15px;
     }
     
@@ -2063,7 +2063,7 @@ input[type="radio"] {
     .question-form {
         width: 100%;
         min-height: 35vh;
-        max-height: 50vh;
+        max-height: none;
     }
 
     .question-form-body {
@@ -2157,7 +2157,7 @@ input[type="radio"] {
     .question-form {
         width: 100%;
         min-height: 60vh;
-        max-height: 70vh;
+        max-height: none;
     }
 
     .question-form-body {
@@ -2275,7 +2275,8 @@ input[type="radio"] {
     .flash-mode-button,
     .abacus-button,
     .add-question-icon,
-    .all-question-icon {
+    .all-question-icon,
+    .gamify-button {
         width: 38px;
         height: 38px;
         margin-right: 0.45rem;
@@ -2288,7 +2289,8 @@ input[type="radio"] {
     .flash-mode-button,
     .abacus-button,
     .add-question-icon,
-    .all-question-icon {
+    .all-question-icon,
+    .gamify-button {
         width: 34px;
         height: 34px;
         margin-right: 0.35rem;
@@ -2417,32 +2419,40 @@ input[type="radio"] {
 
 /* Gamify Button Styling */
 .gamify-button {
-    cursor: pointer;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, #FF512F, #DD2476);
-    box-shadow: 0 4px 10px rgba(221, 36, 118, 0.35);
-    border-radius: 8px;
-    margin-right: 8px;
-    transition: all 0.3s ease;
+    width: 42px;
+    height: 42px;
+    margin-right: 0.65rem;
+    border: none;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: bold;
-    border: none;
-    gap: 4px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+    box-shadow: 0 8px 18px rgba(221, 36, 118, 0.28);
+    color: #fff;
+    text-decoration: none;
 }
 
-.gamify-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(221, 36, 118, 0.45);
+.gamify-button:hover:not(:disabled) {
+    transform: scale(1.06);
+    box-shadow: 0 10px 20px rgba(221, 36, 118, 0.4);
+    color: #fff;
+}
+
+.gamify-button:active:not(:disabled) {
+    transform: scale(0.95);
 }
 
 .gamify-button:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
-    transform: none;
+}
+
+.gamify-button i {
+    color: #ffffff !important;
+    font-size: 16px;
 }
 
 
