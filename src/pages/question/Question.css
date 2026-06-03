@@ -120,6 +120,12 @@ body {
     font-weight: 600;
 }
 
+.end-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .end-head p {
     font-size: 14px;
     color: #559367;
@@ -255,21 +261,12 @@ body {
 
 /* Pocket Button Styling */
 .pocket-button {
-    cursor: pointer;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, #b088f9, #da9ff9);
-    box-shadow: 0 4px 10px rgba(176, 136, 249, 0.35);
-    border-radius: 8px;
-    margin-right: 8px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: linear-gradient(135deg, #b088f9, #da9ff9) !important;
+    box-shadow: 0 8px 18px rgba(176, 136, 249, 0.28);
 }
 
 .pocket-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(176, 136, 249, 0.45);
+    box-shadow: 0 10px 20px rgba(176, 136, 249, 0.4);
 }
 
 .pocket-button i {
@@ -278,21 +275,12 @@ body {
 }
 
 .pocket-all-button {
-    cursor: pointer;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    box-shadow: 0 4px 10px rgba(240, 147, 251, 0.35);
-    border-radius: 8px;
-    margin-right: 8px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+    box-shadow: 0 8px 18px rgba(240, 147, 251, 0.28);
 }
 
 .pocket-all-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(142, 45, 226, 0.45);
+    box-shadow: 0 10px 20px rgba(240, 147, 251, 0.4);
 }
 
 .pocket-all-button i {
@@ -2227,10 +2215,11 @@ input[type="radio"] {
 .flash-mode-button,
 .abacus-button,
 .add-question-icon,
-.all-question-icon {
-    width: 42px;
-    height: 42px;
-    margin-right: 0.65rem;
+.all-question-icon,
+.pocket-button,
+.pocket-all-button {
+    width: 40px;
+    height: 40px;
     border: none;
     border-radius: 50%;
     display: flex;
@@ -2249,9 +2238,10 @@ input[type="radio"] {
 .flash-mode-button:hover,
 .abacus-button:hover,
 .add-question-icon:hover,
-.all-question-icon:hover {
+.all-question-icon:hover,
+.pocket-button:hover,
+.pocket-all-button:hover {
     transform: scale(1.06);
-    box-shadow: 0 10px 20px rgba(31, 41, 55, 0.4);
     color: #fff;
 }
 
@@ -2260,7 +2250,9 @@ input[type="radio"] {
 .flash-mode-button:active,
 .abacus-button:active,
 .add-question-icon:active,
-.all-question-icon:active {
+.all-question-icon:active,
+.pocket-button:active,
+.pocket-all-button:active {
     transform: scale(0.95);
 }
 
@@ -2270,48 +2262,80 @@ input[type="radio"] {
 }
 
 @media only screen and (max-width: 768px) {
+    .end-head {
+        gap: 6px;
+    }
     .worksheet-print-btn,
     .fullscreen-button,
     .flash-mode-button,
     .abacus-button,
     .add-question-icon,
     .all-question-icon,
-    .gamify-button {
-        width: 38px;
-        height: 38px;
-        margin-right: 0.45rem;
+    .gamify-button,
+    .pocket-button,
+    .pocket-all-button,
+    .report-error-button {
+        width: 32px;
+        height: 32px;
+    }
+    .report-error-wrapper {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 200;
+        margin-right: 0;
+    }
+    .question-form-head {
+        position: relative;
+        padding-right: 48px;
     }
 }
 
 @media only screen and (max-width: 480px) {
+    .end-head {
+        gap: 4px;
+    }
     .worksheet-print-btn,
     .fullscreen-button,
     .flash-mode-button,
     .abacus-button,
     .add-question-icon,
     .all-question-icon,
-    .gamify-button {
-        width: 34px;
-        height: 34px;
-        margin-right: 0.35rem;
+    .gamify-button,
+    .pocket-button,
+    .pocket-all-button,
+    .report-error-button {
+        width: 28px;
+        height: 28px;
+    }
+    .report-error-wrapper {
+        top: 10px;
+        right: 10px;
+    }
+    .question-form-head {
+        padding-right: 40px;
     }
 }
 
 /* Question Report / Red Light Warning Button */
+.report-error-wrapper {
+    position: relative;
+    display: flex;
+}
+
 .report-error-button {
     cursor: pointer;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, #747d8c, #2f3542);
-    box-shadow: 0 4px 10px rgba(116, 125, 140, 0.35);
-    border-radius: 8px;
-    margin-right: 8px;
-    transition: all 0.3s ease;
+    border: none;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    width: 42px;
-    height: 42px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: linear-gradient(135deg, #747d8c, #2f3542);
+    box-shadow: 0 8px 18px rgba(47, 53, 66, 0.28);
+    color: #fff;
+    width: 40px;
+    height: 40px;
 }
 
 .report-error-button:hover {
@@ -2401,27 +2425,10 @@ input[type="radio"] {
     color: #1e90ff;
 }
 
-@media only screen and (max-width: 768px) {
-    .report-error-button {
-        width: 38px;
-        height: 38px;
-        margin-right: 0.45rem;
-    }
-}
-
-@media only screen and (max-width: 480px) {
-    .report-error-button {
-        width: 34px;
-        height: 34px;
-        margin-right: 0.35rem;
-    }
-}
-
 /* Gamify Button Styling */
 .gamify-button {
-    width: 42px;
-    height: 42px;
-    margin-right: 0.65rem;
+    width: 40px;
+    height: 40px;
     border: none;
     border-radius: 50%;
     display: flex;

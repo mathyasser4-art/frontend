@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Play, RotateCcw, Heart, ShieldAlert, Award, Sun } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Heart, ShieldAlert, Award, Sun } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
@@ -9,86 +8,119 @@ import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import './CaveRunner.css';
 
 // ── 3D Components ────────────────────────────────────────────────────────────
 
-// Beautiful Procedural Bunny fallback
-function ProceduralBunny() {
+// Beautiful Procedural Bunny - Slim, cute, and animated!
+function ProceduralBunny({ isRunning, isJumping, isFalling }) {
+  const frontLeftLegRef = useRef();
+  const frontRightLegRef = useRef();
+  const backLeftLegRef = useRef();
+  const backRightLegRef = useRef();
+
+  useFrame((state) => {
+    if (!isRunning) {
+      if (frontLeftLegRef.current) frontLeftLegRef.current.rotation.z = 0;
+      if (frontRightLegRef.current) frontRightLegRef.current.rotation.z = 0;
+      if (backLeftLegRef.current) backLeftLegRef.current.rotation.z = 0;
+      if (backRightLegRef.current) backRightLegRef.current.rotation.z = 0;
+      return;
+    }
+    const t = state.clock.getElapsedTime();
+    const swing = Math.sin(t * 16) * 0.6; // Energetic leg swing
+    if (frontLeftLegRef.current) frontLeftLegRef.current.rotation.z = swing;
+    if (frontRightLegRef.current) frontRightLegRef.current.rotation.z = -swing;
+    if (backLeftLegRef.current) backLeftLegRef.current.rotation.z = -swing;
+    if (backRightLegRef.current) backRightLegRef.current.rotation.z = swing;
+  });
+
   return (
     <group>
-      {/* Body */}
-      <mesh position={[0, 0.45, 0]} castShadow>
-        <sphereGeometry args={[0.5, 32, 32]} />
+      {/* Body - Slim Ellipsoid */}
+      <mesh position={[0, 0.5, 0]} scale={[1.3, 0.9, 0.7]} castShadow>
+        <sphereGeometry args={[0.4, 32, 32]} />
         <meshStandardMaterial color="#ffffff" roughness={0.8} />
       </mesh>
-      {/* Head */}
-      <mesh position={[0.4, 0.8, 0]} castShadow>
-        <sphereGeometry args={[0.3, 32, 32]} />
+      {/* Head - Slightly forward */}
+      <mesh position={[0.36, 0.82, 0]} castShadow>
+        <sphereGeometry args={[0.22, 32, 32]} />
         <meshStandardMaterial color="#ffffff" roughness={0.8} />
       </mesh>
-      {/* Ears */}
-      <mesh position={[0.35, 1.25, 0.08]} rotation={[0, 0, -0.4]} castShadow>
-        <cylinderGeometry args={[0.04, 0.06, 0.5, 8]} />
+      {/* Ears - Long and slim */}
+      <mesh position={[0.28, 1.25, 0.07]} rotation={[0, 0, -0.35]} castShadow>
+        <cylinderGeometry args={[0.02, 0.03, 0.7, 16]} />
         <meshStandardMaterial color="#ffffff" roughness={0.8} />
       </mesh>
-      <mesh position={[0.35, 1.25, -0.08]} rotation={[0, 0, -0.4]} castShadow>
-        <cylinderGeometry args={[0.04, 0.06, 0.5, 8]} />
+      <mesh position={[0.28, 1.25, -0.07]} rotation={[0, 0, -0.35]} castShadow>
+        <cylinderGeometry args={[0.02, 0.03, 0.7, 16]} />
         <meshStandardMaterial color="#ffffff" roughness={0.8} />
       </mesh>
       {/* Pink Inner Ears */}
-      <mesh position={[0.36, 1.25, 0.08]} rotation={[0, 0, -0.4]} scale={[0.5, 0.9, 0.5]}>
-        <cylinderGeometry args={[0.04, 0.06, 0.5, 8]} />
+      <mesh position={[0.29, 1.25, 0.07]} rotation={[0, 0, -0.35]} scale={[0.5, 0.9, 0.5]}>
+        <cylinderGeometry args={[0.02, 0.03, 0.7, 16]} />
         <meshStandardMaterial color="#fda4af" roughness={0.8} />
       </mesh>
-      <mesh position={[0.36, 1.25, -0.08]} rotation={[0, 0, -0.4]} scale={[0.5, 0.9, 0.5]}>
-        <cylinderGeometry args={[0.04, 0.06, 0.5, 8]} />
+      <mesh position={[0.29, 1.25, -0.07]} rotation={[0, 0, -0.35]} scale={[0.5, 0.9, 0.5]}>
+        <cylinderGeometry args={[0.02, 0.03, 0.7, 16]} />
         <meshStandardMaterial color="#fda4af" roughness={0.8} />
       </mesh>
       {/* Nose */}
-      <mesh position={[0.68, 0.76, 0]}>
-        <sphereGeometry args={[0.04, 16, 16]} />
+      <mesh position={[0.58, 0.78, 0]}>
+        <sphereGeometry args={[0.035, 16, 16]} />
         <meshStandardMaterial color="#f43f5e" />
       </mesh>
       {/* Eyes */}
-      <mesh position={[0.55, 0.88, 0.12]}>
-        <sphereGeometry args={[0.035, 16, 16]} />
+      <mesh position={[0.47, 0.88, 0.08]}>
+        <sphereGeometry args={[0.028, 16, 16]} />
         <meshStandardMaterial color="#0f172a" roughness={0.2} />
       </mesh>
-      <mesh position={[0.55, 0.88, -0.12]}>
-        <sphereGeometry args={[0.035, 16, 16]} />
+      <mesh position={[0.47, 0.88, -0.08]}>
+        <sphereGeometry args={[0.028, 16, 16]} />
         <meshStandardMaterial color="#0f172a" roughness={0.2} />
       </mesh>
       {/* Tail */}
-      <mesh position={[-0.48, 0.45, 0]} castShadow>
-        <sphereGeometry args={[0.16, 16, 16]} />
+      <mesh position={[-0.48, 0.5, 0]} castShadow>
+        <sphereGeometry args={[0.12, 16, 16]} />
         <meshStandardMaterial color="#f1f5f9" roughness={0.9} />
       </mesh>
+
+      {/* 4 Animated Legs */}
+      {/* Front Left Leg */}
+      <group ref={frontLeftLegRef} position={[0.2, 0.22, 0.15]}>
+        <mesh position={[0, -0.12, 0]} castShadow>
+          <cylinderGeometry args={[0.04, 0.03, 0.24, 16]} />
+          <meshStandardMaterial color="#f8fafc" roughness={0.8} />
+        </mesh>
+      </group>
+      {/* Front Right Leg */}
+      <group ref={frontRightLegRef} position={[0.2, 0.22, -0.15]}>
+        <mesh position={[0, -0.12, 0]} castShadow>
+          <cylinderGeometry args={[0.04, 0.03, 0.24, 16]} />
+          <meshStandardMaterial color="#f8fafc" roughness={0.8} />
+        </mesh>
+      </group>
+      {/* Back Left Leg */}
+      <group ref={backLeftLegRef} position={[-0.2, 0.22, 0.15]}>
+        <mesh position={[0, -0.12, 0]} castShadow>
+          <cylinderGeometry args={[0.045, 0.03, 0.24, 16]} />
+          <meshStandardMaterial color="#f8fafc" roughness={0.8} />
+        </mesh>
+      </group>
+      {/* Back Right Leg */}
+      <group ref={backRightLegRef} position={[-0.2, 0.22, -0.15]}>
+        <mesh position={[0, -0.12, 0]} castShadow>
+          <cylinderGeometry args={[0.045, 0.03, 0.24, 16]} />
+          <meshStandardMaterial color="#f8fafc" roughness={0.8} />
+        </mesh>
+      </group>
     </group>
   );
 }
 
 // 3D Bunny Character loader with animation bobbing and dynamic jump/fall heights
 function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning }) {
-  const [model, setModel] = useState(null);
-  const [loadError, setLoadError] = useState(false);
   const groupRef = useRef();
-
-  useEffect(() => {
-    const loader = new GLTFLoader();
-    loader.load(
-      'https://raw.githubusercontent.com/naveen-kumawat/Skating-bunny/master/rabbit6.glb',
-      (gltf) => {
-        setModel(gltf.scene);
-      },
-      undefined,
-      (err) => {
-        console.warn('Failed to load online 3D bunny model, using procedural fallback.', err);
-        setLoadError(true);
-      }
-    );
-  }, []);
 
   useFrame((state) => {
     if (!groupRef.current) return;
@@ -121,11 +153,7 @@ function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning
 
   return (
     <group ref={groupRef} position={[-3, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-      {model && !loadError ? (
-        <primitive object={model} scale={1.8} />
-      ) : (
-        <ProceduralBunny />
-      )}
+      <ProceduralBunny isRunning={isRunning} isJumping={isJumping} isFalling={isFalling} />
     </group>
   );
 }
@@ -250,7 +278,7 @@ function Carrot3D({ position }) {
   );
 }
 
-// 3D Environment with ground track, ambient lighting, and parallax scrolling background stalactites
+// 3D Environment with ground track, ambient lighting, and parallax scrolling background hills/trees
 function CaveEnvironment({ speed, isRunning }) {
   const [pillars, setPillars] = useState([
     { id: 1, x: -10, z: -1.8, scale: 1.2, color: '#334155' },
@@ -271,41 +299,41 @@ function CaveEnvironment({ speed, isRunning }) {
 
   return (
     <group>
-      {/* Ground runway */}
+      {/* Ground runway - Green Grass */}
       <mesh position={[0, -0.2, 0]} receiveShadow>
         <boxGeometry args={[35, 0.4, 3]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.9} />
+        <meshStandardMaterial color="#22c55e" roughness={0.9} />
       </mesh>
 
-      {/* Side Track Border Grid */}
+      {/* Side Track Border Grid - Wood Brown */}
       <mesh position={[0, -0.05, 1.35]} receiveShadow>
         <boxGeometry args={[35, 0.1, 0.15]} />
-        <meshStandardMaterial color="#0f172a" roughness={0.9} />
+        <meshStandardMaterial color="#854d0e" roughness={0.8} />
       </mesh>
       <mesh position={[0, -0.05, -1.35]} receiveShadow>
         <boxGeometry args={[35, 0.1, 0.15]} />
-        <meshStandardMaterial color="#0f172a" roughness={0.9} />
+        <meshStandardMaterial color="#854d0e" roughness={0.8} />
       </mesh>
 
-      {/* Back Cave Wall backdrop */}
-      <mesh position={[0, 4.5, -2.5]} receiveShadow>
-        <boxGeometry args={[40, 10, 0.8]} />
-        <meshStandardMaterial color="#090d16" roughness={0.95} />
-      </mesh>
-
-      {/* Parallax background pillars */}
+      {/* Parallax background hills/trees */}
       {pillars.map(p => (
-        <group key={p.id} position={[p.x, 2.2, p.z]} scale={p.scale}>
-          {/* Top Stalactite */}
-          <mesh position={[0, 1.5, 0]} rotation={[Math.PI, 0, 0]} castShadow>
-            <coneGeometry args={[0.35, 2.0, 6]} />
-            <meshStandardMaterial color={p.color} roughness={0.95} />
+        <group key={p.id} position={[p.x, 0.4, p.z]} scale={p.scale}>
+          {/* Green Hill */}
+          <mesh castShadow receiveShadow>
+            <coneGeometry args={[1.6, 2.2, 5]} />
+            <meshStandardMaterial color="#4ade80" roughness={0.9} />
           </mesh>
-          {/* Bottom Stalagmite */}
-          <mesh position={[0, -2.2, 0]} castShadow>
-            <coneGeometry args={[0.42, 1.8, 6]} />
-            <meshStandardMaterial color={p.color} roughness={0.95} />
-          </mesh>
+          {/* Pine tree on the hill */}
+          <group position={[0, 1.0, 0.1]} scale={0.4}>
+            <mesh castShadow>
+              <cylinderGeometry args={[0.1, 0.15, 0.8, 8]} />
+              <meshStandardMaterial color="#78350f" />
+            </mesh>
+            <mesh position={[0, 0.8, 0]} castShadow>
+              <coneGeometry args={[0.6, 1.2, 8]} />
+              <meshStandardMaterial color="#166534" />
+            </mesh>
+          </group>
         </group>
       ))}
     </group>
@@ -317,7 +345,6 @@ function CaveEnvironment({ speed, isRunning }) {
 const BunnyRun = () => {
   const navigate = useNavigate();
   const containerRef = useRef(null);
-  const { t } = useTranslation();
 
   const [gameState, setGameState] = useState('menu');
   const [score, setScore] = useState(0);
@@ -572,15 +599,16 @@ const BunnyRun = () => {
             <Canvas
               shadows
               camera={{ position: [0, 2.3, 7.5], fov: 45 }}
-              style={{ position: 'absolute', inset: 0, zIndex: 3, background: '#110c1a' }}
+              style={{ position: 'absolute', inset: 0, zIndex: 3, background: '#bae6fd' }}
             >
-              {/* Cave Atmosphere Lighting */}
-              <ambientLight intensity={0.42} />
+              {/* Morning Sunshine Lighting */}
+              <ambientLight intensity={0.75} color="#f0fdf4" />
               
               {/* Spotlight focus tracking track */}
               <directionalLight 
-                position={[5, 12, 6]} 
-                intensity={1.2} 
+                position={[8, 15, 6]} 
+                intensity={1.5} 
+                color="#fef08a"
                 castShadow 
                 shadow-mapSize-width={1024} 
                 shadow-mapSize-height={1024} 
@@ -591,9 +619,9 @@ const BunnyRun = () => {
                 shadow-camera-bottom={-8}
               />
 
-              <pointLight color="#818cf8" intensity={1.5} distance={10} position={[-3, 2, 1]} />
+              <pointLight color="#bae6fd" intensity={0.8} distance={15} position={[-3, 4, 2]} />
 
-              {/* 3D Cave Environment Ground Runway and Parallax background stalactites */}
+              {/* 3D Morning Environment Ground Runway and Parallax background hills/trees */}
               <CaveEnvironment speed={speed} isRunning={gameState === 'playing' && !isWaitingForAnswer && !isFalling} />
 
               {/* 3D Bunny Character (Loaded model with procedural fallback) */}

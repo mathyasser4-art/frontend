@@ -873,7 +873,7 @@ function Question() {
                             <p>Q{thisQuestionNumber}/{questionData?.length || 0}</p>
                             <div className='end-head d-flex align-items-center'>
                                 {role === 'Teacher' && thisQuestion && (
-                                    <div ref={reportRef} style={{ position: 'relative' }}>
+                                    <div ref={reportRef} className="report-error-wrapper">
                                         <div 
                                             title={t('questionPage.reportError', 'Report Question Error')} 
                                             className={`report-error-button ${flaggedQuestions[thisQuestion._id] ? 'flagged-' + flaggedQuestions[thisQuestion._id] : ''}`} 

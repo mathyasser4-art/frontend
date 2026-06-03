@@ -29,23 +29,6 @@ const GamesMenu = () => {
 
         <div className="games-grid-premium">
           
-          {/* Math Tanks */}
-          <div className="game-item-container" onClick={() => navigate('/student/games/tanks')}>
-            <div className="game-card-premium">
-              <div className="card-image-wrapper">
-                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🚀</div>
-                <div className="card-overlay">
-                  <div className="overlay-content">
-                    <h3>Math Tanks</h3>
-                    <p>Aim, solve, and blast rivals in the arena!</p>
-                    <button className="play-hover-btn">PLAY NOW</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <h3 className="game-card-title">Math Tanks</h3>
-          </div>
-
           {/* Math Racer */}
           <div className="game-item-container" onClick={() => navigate('/student/games/math-racer')}>
             <div className="game-card-premium">
@@ -163,6 +146,23 @@ const GamesMenu = () => {
               </div>
             </div>
             <h3 className="game-card-title">Abacus Match</h3>
+          </div>
+
+          {/* Math Tanks */}
+          <div className="game-item-container" onClick={() => navigate('/student/games/tanks')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🚀</div>
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <h3>Math Tanks</h3>
+                    <p>Aim, solve, and blast rivals in the arena!</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 className="game-card-title">Math Tanks</h3>
           </div>
 
         </div>
