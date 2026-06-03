@@ -346,7 +346,7 @@ function Assignment() {
     if (grid) {
       rawLines.push(...grid.map(row => `${rowOp(row)} ${rowVal(row)}`.trim()));
     } else if (question?.question) {
-      rawLines.push(...String(question.question).split('\n').filter(line => line.trim()));
+      rawLines.push(...String(formatQuestionText(question.question)).split('\n').filter(line => line.trim()));
     }
 
     if (question?.typeOfAnswer === 'MCQ' && Array.isArray(question?.wrongAnswer)) {
@@ -547,6 +547,20 @@ function Assignment() {
     return (!op || op.trim() === '') ? '+' : op;
   };
   const rowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
+
+  const formatQuestionText = (text) => {
+    if (!text) return '';
+    const trimmed = String(text).trim();
+    if (trimmed.startsWith('[')) return text;
+    
+    return String(text).split('\n').map(line => {
+      const trimmedLine = line.trim();
+      if (/^[\d٠-٩]+(?:[.,][\d٠-٩]+)?$/.test(trimmedLine)) {
+        return '+' + trimmedLine;
+      }
+      return line;
+    }).join('\n');
+  };
   const totalQuestionCount = questionData?.length || 0;
   const currentQuestionLabel = totalQuestionCount
     ? `Q${thisQuestionNumber}/${totalQuestionCount}`
@@ -557,7 +571,7 @@ function Assignment() {
     if (!thisQuestion?.question) return [];
     const grid = parseAbacusGrid(thisQuestion.question);
     if (grid) return grid.map(row => `${rowOp(row)} ${rowVal(row)}`);
-    return thisQuestion.question.split('\n').filter(line => line.trim());
+    return formatQuestionText(thisQuestion.question).split('\n').filter(line => line.trim());
   };
 
   const renderQuestion = () => {
@@ -579,7 +593,7 @@ function Assignment() {
         </div>
       );
     }
-    return <pre>{thisQuestion.question}</pre>;
+    return <pre>{formatQuestionText(thisQuestion.question)}</pre>;
   };
 
   const toggleFullscreen = () => {

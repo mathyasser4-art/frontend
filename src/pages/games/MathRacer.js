@@ -83,6 +83,20 @@ const getRowOp  = (row) => {
 };
 const getRowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
 
+const formatQuestionText = (text) => {
+    if (!text) return '';
+    const trimmed = String(text).trim();
+    if (trimmed.startsWith('[')) return text;
+    
+    return String(text).split('\n').map(line => {
+        const trimmedLine = line.trim();
+        if (/^[\d٠-٩]+(?:[.,][\d٠-٩]+)?$/.test(trimmedLine)) {
+            return '+' + trimmedLine;
+        }
+        return line;
+    }).join('\n');
+};
+
 const sanitizeForPusher = (questions) => {
   if (!questions) return null;
   return questions.map(q => ({
@@ -311,7 +325,7 @@ function MathRacer() {
   // Host Action: Create lobby
   const handleCreateRoom = () => {
     soundEffects.playClick();
-    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    const code = Math.floor(10 + Math.random() * 90).toString();
     setRoomId(code);
     setMultiRole('host');
     setGameState('lobby');
@@ -358,7 +372,7 @@ function MathRacer() {
       }
 
       setCurrentProblem({
-        text,
+        text: text === 'ABACUS_GRID' ? 'ABACUS_GRID' : formatQuestionText(text),
         options,
         answer: q.correctAnswer || (q.answer && q.answer[0]) || q.correctPicAnswer || '',
         typeOfAnswer: q.typeOfAnswer,
@@ -782,8 +796,8 @@ function MathRacer() {
                     <div className="join-input-group">
                       <input 
                         type="text" 
-                        placeholder="Enter 4-Digit Code"
-                        maxLength="4"
+                        placeholder="Enter 2-Digit Code"
+                        maxLength="2"
                         value={inputRoomId}
                         onChange={(e) => setInputRoomId(e.target.value)}
                         className="multi-join-input"
@@ -1003,7 +1017,7 @@ function MathRacer() {
                   </table>
                 </div>
               ) : (
-                <div className="problem-text">{currentProblem.text}</div>
+                <div className="problem-text" style={{ whiteSpace: 'pre-wrap' }}>{currentProblem.text}</div>
               )}
 
               {/* Answer Inputs / Choices */}

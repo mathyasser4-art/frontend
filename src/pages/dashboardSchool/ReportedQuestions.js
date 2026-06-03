@@ -27,6 +27,20 @@ const getRowOp  = (row) => {
 };
 const getRowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
 
+const formatQuestionText = (text) => {
+    if (!text) return '';
+    const trimmed = String(text).trim();
+    if (trimmed.startsWith('[')) return text;
+    
+    return String(text).split('\n').map(line => {
+        const trimmedLine = line.trim();
+        if (/^[\d٠-٩]+(?:[.,][\d٠-٩]+)?$/.test(trimmedLine)) {
+            return '+' + trimmedLine;
+        }
+        return line;
+    }).join('\n');
+};
+
 const renderQuestionText = (questionText) => {
     const gridRows = parseGridRows(questionText);
     if (gridRows) {
@@ -45,7 +59,7 @@ const renderQuestionText = (questionText) => {
             </div>
         );
     }
-    return <pre className="raw-text-mini">{questionText}</pre>;
+    return <pre className="raw-text-mini">{formatQuestionText(questionText)}</pre>;
 };
 
 const ReportedQuestions = () => {

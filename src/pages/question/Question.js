@@ -45,6 +45,20 @@ const getRowOp  = (row) => {
 };
 const getRowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
 
+const formatQuestionText = (text) => {
+    if (!text) return '';
+    const trimmed = String(text).trim();
+    if (trimmed.startsWith('[')) return text;
+    
+    return String(text).split('\n').map(line => {
+        const trimmedLine = line.trim();
+        if (/^[\d٠-٩]+(?:[.,][\d٠-٩]+)?$/.test(trimmedLine)) {
+            return '+' + trimmedLine;
+        }
+        return line;
+    }).join('\n');
+};
+
 const renderQuestion = (question) => {
     const gridRows = parseGridRows(question?.question);
     if (gridRows) {
@@ -63,7 +77,7 @@ const renderQuestion = (question) => {
             </div>
         );
     }
-    return <pre>{question?.question}</pre>;
+    return <pre>{formatQuestionText(question?.question)}</pre>;
 };
 
 // Helper functions for PDF worksheet generation
@@ -74,7 +88,7 @@ const buildWorksheetLines = (question, index, pdf, maxWidth) => {
     if (grid) {
         rawLines.push(...grid.map(row => `${getRowOp(row)} ${getRowVal(row)}`.trim()));
     } else if (question?.question) {
-        rawLines.push(...String(question.question).split('\n').filter(line => line.trim()));
+        rawLines.push(...String(formatQuestionText(question.question)).split('\n').filter(line => line.trim()));
     }
 
     if (question?.typeOfAnswer === 'MCQ' && Array.isArray(question?.wrongAnswer)) {
@@ -411,7 +425,7 @@ function Question() {
         if (!thisQuestion?.question) return [];
         const gridRows = parseGridRows(thisQuestion.question);
         if (gridRows) return gridRows.map(row => `${getRowOp(row)}${getRowVal(row)}`);
-        return thisQuestion.question.split('\n').filter(line => line.trim());
+        return formatQuestionText(thisQuestion.question).split('\n').filter(line => line.trim());
     };
 
     const toggleFullscreen = () => {
