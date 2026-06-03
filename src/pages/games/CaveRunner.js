@@ -8,6 +8,7 @@ import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
 
 import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF, useAnimations } from '@react-three/drei';
 import './CaveRunner.css';
 
 // ── 3D Components ────────────────────────────────────────────────────────────
@@ -118,15 +119,14 @@ function ProceduralBunny({ isRunning, isJumping, isFalling }) {
   );
 }
 
-// 3D Bunny Character loader with animation bobbing and dynamic jump/fall heights
-function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning }) {
+// A simple fallback for the procedural bunny animation during loading
+function ProceduralFallback({ isRunning, isJumping, isFalling, jumpStartTime, fallStartTime }) {
   const groupRef = useRef();
 
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
 
-    // Position Y (Jump logic)
     if (isJumping) {
       const elapsed = (Date.now() - jumpStartTime) / 700;
       if (elapsed >= 0 && elapsed <= 1) {
@@ -142,8 +142,6 @@ function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning
     } else {
       groupRef.current.position.y = 0;
       groupRef.current.rotation.z = 0;
-      
-      // Running bobbing animation
       if (isRunning) {
         groupRef.current.position.y = Math.abs(Math.sin(t * 14)) * 0.18;
         groupRef.current.rotation.z = Math.sin(t * 14) * 0.05;
@@ -157,6 +155,83 @@ function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning
     </group>
   );
 }
+
+// 3D Character loader with animation rigging using the custom GLB model
+function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning }) {
+  const groupRef = useRef();
+
+  const { scene, animations } = useGLTF('/models/Cube Guy Character.glb');
+  const { actions } = useAnimations(animations, groupRef);
+
+  useEffect(() => {
+    if (!actions || Object.keys(actions).length === 0) return;
+    
+    // Stop all actions first
+    Object.values(actions).forEach(action => action.stop());
+
+    let activeAction = null;
+    if (isFalling) {
+      activeAction = actions['CharacterArmature|CharacterArmature|CharacterArmature|Death'];
+    } else if (isJumping) {
+      activeAction = actions['CharacterArmature|CharacterArmature|CharacterArmature|Jump'];
+    } else if (isRunning) {
+      activeAction = actions['CharacterArmature|CharacterArmature|CharacterArmature|Run'];
+    } else {
+      activeAction = actions['CharacterArmature|CharacterArmature|CharacterArmature|Idle'];
+    }
+
+    if (activeAction) {
+      activeAction.reset().fadeIn(0.15).play();
+    }
+  }, [isRunning, isJumping, isFalling, actions]);
+
+  useEffect(() => {
+    if (scene) {
+      scene.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+    }
+  }, [scene]);
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+
+    // Position Y (Jump logic)
+    if (isJumping) {
+      const elapsed = (Date.now() - jumpStartTime) / 700;
+      if (elapsed >= 0 && elapsed <= 1) {
+        groupRef.current.position.y = Math.sin(elapsed * Math.PI) * 2.8;
+        groupRef.current.rotation.z = 0;
+      }
+    } else if (isFalling) {
+      const elapsed = (Date.now() - fallStartTime) / 600;
+      if (elapsed >= 0 && elapsed <= 1) {
+        groupRef.current.position.y = Math.max(0, 0.45 - elapsed * 1.5);
+        groupRef.current.rotation.z = 0;
+      }
+    } else {
+      groupRef.current.position.y = 0;
+      groupRef.current.rotation.z = 0;
+    }
+  });
+
+  return (
+    <group ref={groupRef} position={[-3, 0, 0]}>
+      <primitive 
+        object={scene} 
+        scale={1.3} 
+        position={[0, 0.05, 0]} 
+        rotation={[0, Math.PI / 2, 0]} 
+      />
+    </group>
+  );
+}
+
+// Preload the model to prevent initial load latency
+useGLTF.preload('/models/Cube Guy Character.glb');
 
 // 3D Rock obstacle
 function Rock3D({ position }) {
@@ -625,13 +700,25 @@ const BunnyRun = () => {
               <CaveEnvironment speed={speed} isRunning={gameState === 'playing' && !isWaitingForAnswer && !isFalling} />
 
               {/* 3D Bunny Character (Loaded model with procedural fallback) */}
-              <Bunny3D 
-                isJumping={isJumping} 
-                jumpStartTime={jumpStartTime} 
-                isFalling={isFalling} 
-                fallStartTime={fallStartTime}
-                isRunning={gameState === 'playing' && !isWaitingForAnswer && !isFalling} 
-              />
+              <React.Suspense
+                fallback={
+                  <ProceduralFallback
+                    isJumping={isJumping}
+                    jumpStartTime={jumpStartTime}
+                    isFalling={isFalling}
+                    fallStartTime={fallStartTime}
+                    isRunning={gameState === 'playing' && !isWaitingForAnswer && !isFalling}
+                  />
+                }
+              >
+                <Bunny3D 
+                  isJumping={isJumping} 
+                  jumpStartTime={jumpStartTime} 
+                  isFalling={isFalling} 
+                  fallStartTime={fallStartTime}
+                  isRunning={gameState === 'playing' && !isWaitingForAnswer && !isFalling} 
+                />
+              </React.Suspense>
 
               {/* 3D Active Obstacles (Rock, Tree, Fire) */}
               {!isWaitingForAnswer && (
