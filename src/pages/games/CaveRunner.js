@@ -222,8 +222,8 @@ function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning
     <group ref={groupRef} position={[-3, 0, 0]}>
       <primitive 
         object={scene} 
-        scale={1.3} 
-        position={[0, 0.05, 0]} 
+        scale={0.3} 
+        position={[0, 0.01, 0]} 
         rotation={[0, Math.PI / 2, 0]} 
       />
     </group>
@@ -388,6 +388,12 @@ function CaveEnvironment({ speed, isRunning }) {
       <mesh position={[0, -0.05, -1.35]} receiveShadow>
         <boxGeometry args={[35, 0.1, 0.15]} />
         <meshStandardMaterial color="#854d0e" roughness={0.8} />
+      </mesh>
+
+      {/* Large Grass Field Plane stretching far to cover the bottom horizon */}
+      <mesh position={[0, -0.21, -10]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial color="#4ade80" roughness={0.95} />
       </mesh>
 
       {/* Parallax background hills/trees */}
