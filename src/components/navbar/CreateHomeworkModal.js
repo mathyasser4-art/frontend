@@ -314,7 +314,7 @@ function CreateHomeworkModal({ onClose }) {
                                     <div className="type-icon-circle completion-icon-bg">
                                         <CheckCircle2 size={40} className="type-icon" />
                                     </div>
-                                    <h3>Completion (MasterMinds)</h3>
+                                    <h3>Completion</h3>
                                     <p>Students write the numeric/final answer directly.</p>
                                     <button className="select-type-action-btn">Choose Completion <ChevronRight size={16} /></button>
                                 </div>

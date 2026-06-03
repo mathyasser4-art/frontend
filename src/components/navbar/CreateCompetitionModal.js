@@ -232,7 +232,7 @@ function CreateCompetitionModal({ onClose }) {
                                     <div className="comp-type-icon-circle comp-completion-bg">
                                         <CheckCircle2 size={40} className="comp-type-icon" />
                                     </div>
-                                    <h3>Completion (MasterMinds)</h3>
+                                    <h3>Completion</h3>
                                     <p>Students type the numeric answer directly.</p>
                                     <button className="comp-type-select-btn">Choose Completion <ChevronRight size={16} /></button>
                                 </div>

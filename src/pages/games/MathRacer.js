@@ -590,6 +590,34 @@ function MathRacer() {
     }, 200);
   };
 
+  // Handle physical keyboard inputs for essay answers
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (gameState !== 'playing' || currentProblem.typeOfAnswer !== 'Essay') {
+        return;
+      }
+      // If typing in another input, ignore
+      if (document.activeElement && document.activeElement.tagName === 'INPUT' && !document.activeElement.classList.contains('racer-essay-input')) {
+        return;
+      }
+
+      if (e.key >= '0' && e.key <= '9') {
+        setEssayAnswer(prev => prev + e.key);
+      } else if (e.key === 'Backspace') {
+        setEssayAnswer(prev => prev.slice(0, -1));
+      } else if (e.key === 'Enter') {
+        handleEssaySubmit();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState, currentProblem.typeOfAnswer, essayAnswer]);
+
+
   // Determine Placement
   const getPlacement = () => {
     if (gameMode === 'single') {
@@ -695,23 +723,37 @@ function MathRacer() {
 
             {gameMode === 'single' ? (
               <div className="single-player-setup">
-                <h3>Select Difficulty to Race!</h3>
-                <p>Compete against AI racers on the endless highway. Solve math problems correctly to accelerate your car and take 1st place!</p>
-                
-                <div className="difficulty-buttons">
-                  <button className="diff-btn easy" onClick={() => startGame('0')}>
-                    Level 0
-                  </button>
-                  <button className="diff-btn medium" onClick={() => startGame('1')}>
-                    Level 1
-                  </button>
-                  <button className="diff-btn hard" onClick={() => startGame('2')}>
-                    Level 2
-                  </button>
-                  <button className="diff-btn hard" style={{background: '#4f46e5'}} onClick={() => startGame('3')}>
-                    Level 3
-                  </button>
-                </div>
+                {customQuestions ? (
+                  <>
+                    <h3>Start Custom Race!</h3>
+                    <p>Compete against AI racers on the endless highway using the questions loaded from the custom set.</p>
+                    <div className="difficulty-buttons">
+                      <button className="diff-btn easy" style={{ width: '100%', maxWidth: '300px' }} onClick={() => startGame('easy')}>
+                        🏎️ Start Custom Race
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3>Select Difficulty to Race!</h3>
+                    <p>Compete against AI racers on the endless highway. Solve math problems correctly to accelerate your car and take 1st place!</p>
+                    
+                    <div className="difficulty-buttons">
+                      <button className="diff-btn easy" onClick={() => startGame('0')}>
+                        Level 0
+                      </button>
+                      <button className="diff-btn medium" onClick={() => startGame('1')}>
+                        Level 1
+                      </button>
+                      <button className="diff-btn hard" onClick={() => startGame('2')}>
+                        Level 2
+                      </button>
+                      <button className="diff-btn hard" style={{background: '#4f46e5'}} onClick={() => startGame('3')}>
+                        Level 3
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <div className="multi-player-setup">
@@ -807,21 +849,34 @@ function MathRacer() {
 
             {multiRole === 'host' ? (
               <div className="host-launch-panel">
-                <h4>Select Difficulty & Launch Race:</h4>
-                <div className="difficulty-buttons">
-                  <button className="diff-btn easy" onClick={() => handleHostStartRace('0')}>
-                    🚀 Launch Level 0
-                  </button>
-                  <button className="diff-btn medium" onClick={() => handleHostStartRace('1')}>
-                    🚀 Launch Level 1
-                  </button>
-                  <button className="diff-btn hard" onClick={() => handleHostStartRace('2')}>
-                    🚀 Launch Level 2
-                  </button>
-                  <button className="diff-btn hard" style={{background: '#4f46e5'}} onClick={() => handleHostStartRace('3')}>
-                    🚀 Launch Level 3
-                  </button>
-                </div>
+                {customQuestions ? (
+                  <>
+                    <h4>Launch Custom Race:</h4>
+                    <div className="difficulty-buttons">
+                      <button className="diff-btn easy" style={{ width: '100%', maxWidth: '300px' }} onClick={() => handleHostStartRace('easy')}>
+                        🚀 Launch Custom Race
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h4>Select Difficulty & Launch Race:</h4>
+                    <div className="difficulty-buttons">
+                      <button className="diff-btn easy" onClick={() => handleHostStartRace('0')}>
+                        🚀 Launch Level 0
+                      </button>
+                      <button className="diff-btn medium" onClick={() => handleHostStartRace('1')}>
+                        🚀 Launch Level 1
+                      </button>
+                      <button className="diff-btn hard" onClick={() => handleHostStartRace('2')}>
+                        🚀 Launch Level 2
+                      </button>
+                      <button className="diff-btn hard" style={{background: '#4f46e5'}} onClick={() => handleHostStartRace('3')}>
+                        🚀 Launch Level 3
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <div className="guest-waiting-panel">
