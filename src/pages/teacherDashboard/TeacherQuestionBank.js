@@ -51,6 +51,34 @@ function TeacherQuestionBank() {
 
     const fileInputRef = useRef(null);
 
+    const loadChapterQuestions = useCallback(() => {
+        setLoading(true);
+        setErrorMsg(null);
+        const Token = localStorage.getItem('O_authWEB');
+        const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${selectedChapter._id}`;
+        
+        fetch(URL, {
+            method: 'get',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+            },
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                if (responseJson.message === 'success') {
+                    setQuestions(responseJson.chapter?.questions || []);
+                } else {
+                    setErrorMsg(responseJson.message);
+                }
+                setLoading(false);
+            })
+            .catch((error) => {
+                setErrorMsg(error.message);
+                setLoading(false);
+            });
+    }, [selectedChapter]);
+
     // Fetch systems when question type changes
     useEffect(() => {
         if (questionTypeID) {
@@ -79,34 +107,6 @@ function TeacherQuestionBank() {
             loadChapterQuestions();
         }
     }, [selectedChapter, loadChapterQuestions]);
-
-    const loadChapterQuestions = useCallback(() => {
-        setLoading(true);
-        setErrorMsg(null);
-        const Token = localStorage.getItem('O_authWEB');
-        const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${selectedChapter._id}`;
-        
-        fetch(URL, {
-            method: 'get',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
-            },
-        })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                if (responseJson.message === 'success') {
-                    setQuestions(responseJson.chapter?.questions || []);
-                } else {
-                    setErrorMsg(responseJson.message);
-                }
-                setLoading(false);
-            })
-            .catch((error) => {
-                setErrorMsg(error.message);
-                setLoading(false);
-            });
-    }, [selectedChapter]);
 
     const handleSelectSubject = (subject) => {
         soundEffects.playClick();

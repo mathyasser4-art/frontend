@@ -123,7 +123,7 @@ body {
 .end-head {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px; /* Closer together */
 }
 
 .end-head p {
@@ -150,7 +150,7 @@ body {
     background: linear-gradient(135deg, #4FACFE, #00F2FE);
     box-shadow: 0 4px 10px rgba(79, 172, 254, 0.35);
     border-radius: 8px;
-    margin-right: 8px;
+    margin-right: 0;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -165,7 +165,7 @@ body {
 @media only screen and (max-width: 600px) {
     .fullscreen-button {
         padding: 6px 10px;
-        margin-right: 4px;
+        margin-right: 0;
     }
 }
 
@@ -176,7 +176,7 @@ body {
     background: linear-gradient(135deg, #FA709A, #FEE140);
     box-shadow: 0 4px 10px rgba(250, 112, 154, 0.35);
     border-radius: 8px;
-    margin-right: 8px;
+    margin-right: 0;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -203,7 +203,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-right: 12px;
+    margin-right: 0;
     font-size: 14px;
 }
 
@@ -242,7 +242,7 @@ body {
     background: linear-gradient(135deg, #43E97B, #38F9D7);
     box-shadow: 0 4px 10px rgba(67, 233, 123, 0.35);
     border-radius: 8px;
-    margin-right: 8px;
+    margin-right: 0;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -2263,7 +2263,7 @@ input[type="radio"] {
 
 @media only screen and (max-width: 768px) {
     .end-head {
-        gap: 6px;
+        gap: 4px;
     }
     .worksheet-print-btn,
     .fullscreen-button,
@@ -2293,7 +2293,7 @@ input[type="radio"] {
 
 @media only screen and (max-width: 480px) {
     .end-head {
-        gap: 4px;
+        gap: 3px;
     }
     .worksheet-print-btn,
     .fullscreen-button,
