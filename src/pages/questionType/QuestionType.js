@@ -70,8 +70,8 @@ function QuestionType() {
             <div className="option-icon-wrapper">
               <BookOpen size={64} strokeWidth={2} className="resources-icon" style={{ color: '#3b82f6' }} />
             </div>
-            <h3 className="option-title">Resources</h3>
-            <img src="/img/mcq_preview.png" alt="Pre-made Resources Preview" className="card-preview-screenshot" />
+            <h3 className="option-title">Worksheets</h3>
+            <img src="/img/mcq_preview.png" alt="Pre-made Worksheets Preview" className="card-preview-screenshot" />
           </span>
           
           {(userRole === 'Teacher' || userRole === 'School' || userRole === 'Admin') && (
@@ -276,7 +276,7 @@ function QuestionType() {
             <button className="upgrade-close-btn" onClick={() => setShowResourcesModal(false)}>×</button>
             <div className="upgrade-modal-header">
               <span className="lock-large-icon">📚</span>
-              <h2>{t('academy.resources', 'Pre-made Resources')}</h2>
+              <h2>{t('academy.worksheets', 'Pre-made Worksheets')}</h2>
             </div>
             <p className="upgrade-modal-text">
               Select the format of the pre-made question sheets to start practicing:
