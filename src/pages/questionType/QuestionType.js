@@ -57,6 +57,8 @@ function QuestionType() {
           {/* Sub-header above the cards */}
           <h4 className="cards-selection-title">Choose the type of questions or play games:</h4>
         </div>
+
+        <div className="questionType-options">
           <span 
             className="questionType-option resources-card" 
             onClick={() => {
