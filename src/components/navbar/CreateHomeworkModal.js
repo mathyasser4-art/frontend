@@ -23,6 +23,10 @@ function CreateHomeworkModal({ onClose }) {
     const [unitData, setUnitData] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    // Custom Worksheets states
+    const [customChapters, setCustomChapters] = useState([]);
+    const [loadingCustom, setLoadingCustom] = useState(false);
+
     // New states for Assignment Details
     const [selectedChapter, setSelectedChapter] = useState(null);
     const [chapterQuestions, setChapterQuestions] = useState([]);
@@ -41,17 +45,45 @@ function CreateHomeworkModal({ onClose }) {
 
     // Load systems when we select the type
     useEffect(() => {
-        if (questionTypeID) {
+        if (questionTypeID && questionTypeID !== 'custom') {
             getSystem(setLoading, setSystemData, questionTypeID);
         }
     }, [questionTypeID]);
 
     // Load units when we select a subject
     useEffect(() => {
-        if (selectedSubject) {
+        if (selectedSubject && questionTypeID !== 'custom') {
             getUnit(setLoading, setUnitData, questionTypeID, selectedSubject._id);
         }
     }, [selectedSubject, questionTypeID]);
+
+    // Load custom worksheets when selected
+    useEffect(() => {
+        if (questionTypeID === 'custom') {
+            setLoadingCustom(true);
+            const Token = localStorage.getItem('O_authWEB');
+            fetch(`${API_BASE_URL}/chapter/custom`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.message === 'success') {
+                        setCustomChapters(data.chapters || []);
+                    } else {
+                        setErrorMsg(data.message);
+                    }
+                    setLoadingCustom(false);
+                })
+                .catch(err => {
+                    setErrorMsg(err.message);
+                    setLoadingCustom(false);
+                });
+        }
+    }, [questionTypeID]);
 
     // Load classes when the modal mounts
     useEffect(() => {
@@ -96,10 +128,14 @@ function CreateHomeworkModal({ onClose }) {
         soundEffects.playClick();
         if (type === 'mcq') {
             setQuestionTypeID('65a4963482dbaac16d820fc6');
-        } else {
+            setStep('system');
+        } else if (type === 'completion') {
             setQuestionTypeID('65a4964b82dbaac16d820fc8');
+            setStep('system');
+        } else if (type === 'custom') {
+            setQuestionTypeID('custom');
+            setStep('custom-worksheets');
         }
-        setStep('system');
     };
 
     const handleSelectSubject = (subject) => {
@@ -112,16 +148,36 @@ function CreateHomeworkModal({ onClose }) {
         soundEffects.playClick();
         setSelectedChapter(chapter);
         setStep('details');
+        if (chapter.format) {
+            setQuestionTypeID(chapter.format === 'MCQ' ? '65a4963482dbaac16d820fc6' : '65a4964b82dbaac16d820fc8');
+        }
+    };
+
+    const handleSelectCustomChapter = (chapter) => {
+        soundEffects.playClick();
+        setSelectedChapter(chapter);
+        setStep('details');
+        if (chapter.format) {
+            setQuestionTypeID(chapter.format === 'MCQ' ? '65a4963482dbaac16d820fc6' : '65a4964b82dbaac16d820fc8');
+        }
     };
 
     const handleBack = () => {
         soundEffects.playClick();
         if (step === 'details') {
-            setStep('unit');
+            if (questionTypeID === 'custom') {
+                setStep('custom-worksheets');
+            } else {
+                setStep('unit');
+            }
             setSelectedChapter(null);
             setChapterQuestions([]);
             setErrorMsg(null);
             setSuccessMsg(null);
+        } else if (step === 'custom-worksheets') {
+            setStep('type');
+            setQuestionTypeID('');
+            setCustomChapters([]);
         } else if (step === 'unit') {
             setStep('system');
             setSelectedSubject(null);
@@ -276,19 +332,33 @@ function CreateHomeworkModal({ onClose }) {
                         <div className="step-num">1</div>
                         <span>Type</span>
                     </div>
-                    <div className="progress-connector"></div>
-                    <div className={`progress-step ${step === 'system' ? 'active' : ''} ${step === 'unit' || step === 'details' ? 'completed' : ''}`}>
-                        <div className="step-num">2</div>
-                        <span>System & Subject</span>
-                    </div>
-                    <div className="progress-connector"></div>
-                    <div className={`progress-step ${step === 'unit' ? 'active' : ''} ${step === 'details' ? 'completed' : ''}`}>
-                        <div className="step-num">3</div>
-                        <span>Unit & Chapter</span>
-                    </div>
+                    
+                    {questionTypeID !== 'custom' ? (
+                        <>
+                            <div className="progress-connector"></div>
+                            <div className={`progress-step ${step === 'system' ? 'active' : ''} ${step === 'unit' || step === 'details' ? 'completed' : ''}`}>
+                                <div className="step-num">2</div>
+                                <span>System & Subject</span>
+                            </div>
+                            <div className="progress-connector"></div>
+                            <div className={`progress-step ${step === 'unit' ? 'active' : ''} ${step === 'details' ? 'completed' : ''}`}>
+                                <div className="step-num">3</div>
+                                <span>Unit & Chapter</span>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="progress-connector"></div>
+                            <div className={`progress-step ${step === 'custom-worksheets' ? 'active' : ''} ${step === 'details' ? 'completed' : ''}`}>
+                                <div className="step-num">2</div>
+                                <span>Custom Worksheet</span>
+                            </div>
+                        </>
+                    )}
+                    
                     <div className="progress-connector"></div>
                     <div className={`progress-step ${step === 'details' ? 'active' : ''}`}>
-                        <div className="step-num">4</div>
+                        <div className="step-num">{questionTypeID !== 'custom' ? 4 : 3}</div>
                         <span>Details</span>
                     </div>
                 </div>
@@ -305,7 +375,7 @@ function CreateHomeworkModal({ onClose }) {
                     {!loading && step === 'type' && (
                         <div className="wizard-step-container step-type">
                             <p className="step-instruction">Select the format of the questions for this homework:</p>
-                            <div className="type-options-grid">
+                            <div className="type-options-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                                 <div className="type-card mcq-card" onClick={() => handleSelectType('mcq')}>
                                     <div className="type-icon-circle mcq-icon-bg">
                                         <Circle size={40} className="type-icon" />
@@ -322,7 +392,50 @@ function CreateHomeworkModal({ onClose }) {
                                     <p>Students write the numeric/final answer directly.</p>
                                     <button className="select-type-action-btn">Choose Completion <ChevronRight size={16} /></button>
                                 </div>
+                                <div className="type-card custom-worksheets-card" onClick={() => handleSelectType('custom')}>
+                                    <div className="type-icon-circle custom-icon-bg" style={{ background: 'rgba(124, 58, 237, 0.1)' }}>
+                                        <BookOpen size={40} className="type-icon" style={{ color: '#7c3aed' }} />
+                                    </div>
+                                    <h3>My Custom Worksheets</h3>
+                                    <p>Assign worksheets you created from scratch.</p>
+                                    <button className="select-type-action-btn">Choose Custom <ChevronRight size={16} /></button>
+                                </div>
                             </div>
+                        </div>
+                    )}
+
+                    {!loading && step === 'custom-worksheets' && (
+                        <div className="wizard-step-container step-custom-worksheets">
+                            <p className="step-instruction">Select one of your custom worksheets to assign:</p>
+                            {loadingCustom ? (
+                                <div className="wizard-loader">
+                                    <div className="spinner"></div>
+                                    <p>Loading custom worksheets...</p>
+                                </div>
+                            ) : customChapters.length === 0 ? (
+                                <div className="wizard-empty-state">
+                                    <p>No custom worksheets found. Go to "Create Questions" to make one first!</p>
+                                </div>
+                            ) : (
+                                <div className="custom-worksheets-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                                    {customChapters.map((ws) => (
+                                        <div 
+                                            key={ws._id} 
+                                            className="type-card" 
+                                            onClick={() => handleSelectCustomChapter(ws)}
+                                            style={{ padding: '1.25rem', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', background: '#fff' }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                                <span style={{ fontSize: '18px' }}>📄</span>
+                                                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: '#1e293b' }}>{ws.chapterName}</h3>
+                                            </div>
+                                            <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>
+                                                Format: {ws.format} • {ws.questions?.length || 0} Questions
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
 

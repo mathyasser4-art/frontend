@@ -23,6 +23,14 @@ function TeacherQuestionBank() {
     const [selectedUnitId, setSelectedUnitId] = useState(null);
     const [selectedChapter, setSelectedChapter] = useState(null);
 
+    // Custom worksheets states
+    const [sidebarTab, setSidebarTab] = useState('system'); // 'system' | 'custom'
+    const [customChapters, setCustomChapters] = useState([]);
+    const [loadingCustomChapters, setLoadingCustomChapters] = useState(false);
+    const [showWorksheetModal, setShowWorksheetModal] = useState(false);
+    const [worksheetTitle, setWorksheetTitle] = useState('');
+    const [worksheetFormat, setWorksheetFormat] = useState('MCQ');
+
     // Question Loading States
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -108,6 +116,112 @@ function TeacherQuestionBank() {
         }
     }, [selectedChapter, loadChapterQuestions]);
 
+    const loadCustomChapters = useCallback(() => {
+        setLoadingCustomChapters(true);
+        const Token = localStorage.getItem('O_authWEB');
+        fetch(`${API_BASE_URL}/chapter/custom`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.message === 'success') {
+                    setCustomChapters(data.chapters || []);
+                } else {
+                    setErrorMsg(data.message);
+                }
+                setLoadingCustomChapters(false);
+            })
+            .catch(err => {
+                setErrorMsg(err.message);
+                setLoadingCustomChapters(false);
+            });
+    }, []);
+
+    useEffect(() => {
+        if (sidebarTab === 'custom') {
+            loadCustomChapters();
+        }
+    }, [sidebarTab, loadCustomChapters]);
+
+    const handleCreateWorksheet = (e) => {
+        e.preventDefault();
+        if (!worksheetTitle.trim()) {
+            setErrorMsg('Worksheet title is required');
+            return;
+        }
+        soundEffects.playClick();
+        setOperationLoading(true);
+        setErrorMsg(null);
+        const Token = localStorage.getItem('O_authWEB');
+        fetch(`${API_BASE_URL}/chapter/custom`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+            },
+            body: JSON.stringify({
+                chapterName: worksheetTitle.trim(),
+                format: worksheetFormat
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                setOperationLoading(false);
+                if (data.message === 'success') {
+                    setSuccessMsg('Worksheet created successfully!');
+                    setWorksheetTitle('');
+                    setShowWorksheetModal(false);
+                    loadCustomChapters();
+                    setTimeout(() => setSuccessMsg(null), 3000);
+                } else {
+                    setErrorMsg(data.message);
+                }
+            })
+            .catch(err => {
+                setOperationLoading(false);
+                setErrorMsg(err.message);
+            });
+    };
+
+    const handleDeleteWorksheet = (e, chapterID) => {
+        e.stopPropagation();
+        if (!window.confirm('Are you sure you want to delete this worksheet and all its questions?')) return;
+        soundEffects.playClick();
+        setOperationLoading(true);
+        setErrorMsg(null);
+        const Token = localStorage.getItem('O_authWEB');
+        fetch(`${API_BASE_URL}/chapter/custom/${chapterID}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setOperationLoading(false);
+                if (data.message === 'success') {
+                    setSuccessMsg('Worksheet deleted successfully!');
+                    if (selectedChapter?._id === chapterID) {
+                        setSelectedChapter(null);
+                        setQuestions([]);
+                    }
+                    loadCustomChapters();
+                    setTimeout(() => setSuccessMsg(null), 3000);
+                } else {
+                    setErrorMsg(data.message);
+                }
+            })
+            .catch(err => {
+                setOperationLoading(false);
+                setErrorMsg(err.message);
+            });
+    };
+
     const handleSelectSubject = (subject) => {
         soundEffects.playClick();
         setSelectedSubject(subject);
@@ -116,6 +230,9 @@ function TeacherQuestionBank() {
     const handleSelectChapter = (chapter) => {
         soundEffects.playClick();
         setSelectedChapter(chapter);
+        if (chapter.format) {
+            setQuestionTypeID(chapter.format === 'MCQ' ? '65a4963482dbaac16d820fc6' : '65a4964b82dbaac16d820fc8');
+        }
     };
 
     const toggleSystemExpand = (systemId) => {
@@ -324,95 +441,159 @@ function TeacherQuestionBank() {
                 <div className="qb-main-grid">
                     {/* Left Column: System/Subject/Chapter Selector */}
                     <div className="qb-selector-sidebar">
-                        {/* 1. Question Type Switcher */}
-                        <div className="qb-type-switcher">
+                        {/* Segmented Control Tabs */}
+                        <div className="qb-sidebar-tabs">
                             <button 
-                                className={`type-switch-btn ${questionTypeID === '65a4963482dbaac16d820fc6' ? 'active' : ''}`}
-                                onClick={() => { soundEffects.playClick(); setQuestionTypeID('65a4963482dbaac16d820fc6'); }}
+                                className={`sidebar-tab-btn ${sidebarTab === 'system' ? 'active' : ''}`}
+                                onClick={() => { soundEffects.playClick(); setSidebarTab('system'); setSelectedChapter(null); setQuestions([]); }}
                             >
-                                <Circle size={16} /> MCQ Format
+                                📚 Books
                             </button>
                             <button 
-                                className={`type-switch-btn ${questionTypeID === '65a4964b82dbaac16d820fc8' ? 'active' : ''}`}
-                                onClick={() => { soundEffects.playClick(); setQuestionTypeID('65a4964b82dbaac16d820fc8'); }}
+                                className={`sidebar-tab-btn ${sidebarTab === 'custom' ? 'active' : ''}`}
+                                onClick={() => { soundEffects.playClick(); setSidebarTab('custom'); setSelectedChapter(null); setQuestions([]); }}
                             >
-                                <CheckCircle2 size={16} /> Completion Format
+                                📁 Worksheets
                             </button>
                         </div>
 
-                        {/* 2. Systems Accordion */}
-                        <div className="qb-systems-list">
-                            <h3>Choose Book & Unit</h3>
-                            {loading && systemData.length === 0 ? (
-                                <div className="qb-loading-state">Loading books...</div>
-                            ) : systemData.length === 0 ? (
-                                <div className="qb-empty-state">No systems found.</div>
-                            ) : (
-                                systemData.map((system) => {
-                                    const isExpanded = selectedSystemId === system._id;
-                                    return (
-                                        <div key={system._id} className={`system-node ${isExpanded ? 'expanded' : ''}`}>
-                                            <div className="system-node-header" onClick={() => toggleSystemExpand(system._id)}>
-                                                <span>{translateName(system.systemName)}</span>
-                                                <ChevronDown size={16} className="arrow-icon" />
-                                            </div>
-                                            {isExpanded && (
-                                                <div className="system-node-content">
-                                                    {system.subjects?.map((subject) => {
-                                                        const isSubActive = selectedSubject?._id === subject._id;
-                                                        return (
-                                                            <div 
-                                                                key={subject._id} 
-                                                                className={`subject-node-item ${isSubActive ? 'active' : ''}`}
-                                                                onClick={() => handleSelectSubject(subject)}
-                                                            >
-                                                                <BookOpen size={14} />
-                                                                <span>{translateName(subject.subjectName)}</span>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })
-                            )}
-                        </div>
+                        {sidebarTab === 'system' ? (
+                            <>
+                                {/* 1. Question Type Switcher */}
+                                <div className="qb-type-switcher">
+                                    <button 
+                                        className={`type-switch-btn ${questionTypeID === '65a4963482dbaac16d820fc6' ? 'active' : ''}`}
+                                        onClick={() => { soundEffects.playClick(); setQuestionTypeID('65a4963482dbaac16d820fc6'); }}
+                                    >
+                                        <Circle size={16} /> MCQ Format
+                                    </button>
+                                    <button 
+                                        className={`type-switch-btn ${questionTypeID === '65a4964b82dbaac16d820fc8' ? 'active' : ''}`}
+                                        onClick={() => { soundEffects.playClick(); setQuestionTypeID('65a4964b82dbaac16d820fc8'); }}
+                                    >
+                                        <CheckCircle2 size={16} /> Completion Format
+                                    </button>
+                                </div>
 
-                        {/* 3. Units & Chapters List */}
-                        {selectedSubject && (
-                            <div className="qb-units-list animate-slide-in">
-                                <h3>Units in {translateName(selectedSubject.subjectName)}</h3>
-                                {unitData.length === 0 ? (
-                                    <div className="qb-empty-state">No units found.</div>
-                                ) : (
-                                    unitData.map((unit) => {
-                                        const isExpanded = selectedUnitId === unit._id;
-                                        return (
-                                            <div key={unit._id} className={`unit-node ${isExpanded ? 'expanded' : ''}`}>
-                                                <div className="unit-node-header" onClick={() => toggleUnitExpand(unit._id)}>
-                                                    <span>{translateName(unit.unitName)}</span>
-                                                    <ChevronDown size={16} className="arrow-icon" />
-                                                </div>
-                                                {isExpanded && (
-                                                    <div className="unit-node-content">
-                                                        {unit.chapters?.map((chapter) => {
-                                                            const isChActive = selectedChapter?._id === chapter._id;
-                                                            return (
-                                                                <div 
-                                                                    key={chapter._id} 
-                                                                    className={`chapter-node-item ${isChActive ? 'active' : ''}`}
-                                                                    onClick={() => handleSelectChapter(chapter)}
-                                                                >
-                                                                    📄 {translateName(chapter.chapterName)}
-                                                                </div>
-                                                            );
-                                                        })}
+                                {/* 2. Systems Accordion */}
+                                <div className="qb-systems-list">
+                                    <h3>Choose Book & Unit</h3>
+                                    {loading && systemData.length === 0 ? (
+                                        <div className="qb-loading-state">Loading books...</div>
+                                    ) : systemData.length === 0 ? (
+                                        <div className="qb-empty-state">No systems found.</div>
+                                    ) : (
+                                        systemData.map((system) => {
+                                            const isExpanded = selectedSystemId === system._id;
+                                            return (
+                                                <div key={system._id} className={`system-node ${isExpanded ? 'expanded' : ''}`}>
+                                                    <div className="system-node-header" onClick={() => toggleSystemExpand(system._id)}>
+                                                        <span>{translateName(system.systemName)}</span>
+                                                        <ChevronDown size={16} className="arrow-icon" />
                                                     </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })
+                                                    {isExpanded && (
+                                                        <div className="system-node-content">
+                                                            {system.subjects?.map((subject) => {
+                                                                const isSubActive = selectedSubject?._id === subject._id;
+                                                                return (
+                                                                    <div 
+                                                                        key={subject._id} 
+                                                                        className={`subject-node-item ${isSubActive ? 'active' : ''}`}
+                                                                        onClick={() => handleSelectSubject(subject)}
+                                                                    >
+                                                                        <BookOpen size={14} />
+                                                                        <span>{translateName(subject.subjectName)}</span>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+
+                                {/* 3. Units & Chapters List */}
+                                {selectedSubject && (
+                                    <div className="qb-units-list animate-slide-in">
+                                        <h3>Units in {translateName(selectedSubject.subjectName)}</h3>
+                                        {unitData.length === 0 ? (
+                                            <div className="qb-empty-state">No units found.</div>
+                                        ) : (
+                                            unitData.map((unit) => {
+                                                const isExpanded = selectedUnitId === unit._id;
+                                                return (
+                                                    <div key={unit._id} className={`unit-node ${isExpanded ? 'expanded' : ''}`}>
+                                                        <div className="unit-node-header" onClick={() => toggleUnitExpand(unit._id)}>
+                                                            <span>{translateName(unit.unitName)}</span>
+                                                            <ChevronDown size={16} className="arrow-icon" />
+                                                        </div>
+                                                        {isExpanded && (
+                                                            <div className="unit-node-content">
+                                                                {unit.chapters?.map((chapter) => {
+                                                                    const isChActive = selectedChapter?._id === chapter._id;
+                                                                    return (
+                                                                        <div 
+                                                                            key={chapter._id} 
+                                                                            className={`chapter-node-item ${isChActive ? 'active' : ''}`}
+                                                                            onClick={() => handleSelectChapter(chapter)}
+                                                                        >
+                                                                            📄 {translateName(chapter.chapterName)}
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="qb-custom-worksheets-list animate-slide-in">
+                                <button 
+                                    className="qb-create-worksheet-btn" 
+                                    onClick={() => { soundEffects.playClick(); setShowWorksheetModal(true); }}
+                                >
+                                    <Plus size={16} /> Create Worksheet
+                                </button>
+                                
+                                {loadingCustomChapters ? (
+                                    <div className="qb-loading-state">Loading worksheets...</div>
+                                ) : customChapters.length === 0 ? (
+                                    <div className="qb-empty-state">No worksheets found. Create one above!</div>
+                                ) : (
+                                    <div className="custom-worksheets-items">
+                                        {customChapters.map((ws) => {
+                                            const isActive = selectedChapter?._id === ws._id;
+                                            return (
+                                                <div 
+                                                    key={ws._id}
+                                                    className={`custom-worksheet-item ${isActive ? 'active' : ''}`}
+                                                    onClick={() => handleSelectChapter(ws)}
+                                                >
+                                                    <div className="worksheet-item-info">
+                                                        <span className="worksheet-item-title">
+                                                            📄 {ws.chapterName}
+                                                        </span>
+                                                        <span className="worksheet-item-meta">
+                                                            Format: {ws.format} • {ws.questions?.length || 0} Qs
+                                                        </span>
+                                                    </div>
+                                                    <button 
+                                                        onClick={(e) => handleDeleteWorksheet(e, ws._id)} 
+                                                        className="worksheet-item-delete"
+                                                        title="Delete Worksheet"
+                                                    >
+                                                        <Trash2 size={15} />
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 )}
                             </div>
                         )}
@@ -433,11 +614,24 @@ function TeacherQuestionBank() {
                             <div className="qb-questions-list-wrapper">
                                 <div className="qb-list-header">
                                     <div className="chapter-badge">
-                                        📄 {translateName(selectedChapter.chapterName)}
+                                        📄 {translateName(selectedChapter.chapterName)} {selectedChapter.format ? `(${selectedChapter.format})` : ''}
                                     </div>
-                                    <button className="qb-add-question-btn" onClick={handleOpenCreateModal}>
-                                        <Plus size={16} /> Add Custom Question
-                                    </button>
+                                    <div className="qb-header-actions" style={{ display: 'flex', gap: '10px' }}>
+                                        {questions.length > 0 && (
+                                            <button 
+                                                className="qb-play-btn"
+                                                onClick={() => {
+                                                    soundEffects.playClick();
+                                                    navigate(`/question/${selectedChapter._id}/${questionTypeID}/custom`);
+                                                }}
+                                            >
+                                                👁️ Preview / Play
+                                            </button>
+                                        )}
+                                        <button className="qb-add-question-btn" onClick={handleOpenCreateModal}>
+                                            <Plus size={16} /> Add Custom Question
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {loading ? (
@@ -677,6 +871,65 @@ function TeacherQuestionBank() {
                                     disabled={operationLoading}
                                 >
                                     {operationLoading ? <span className="qb-loader-small"></span> : 'Save Question'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Custom Worksheet Creation Modal */}
+            {showWorksheetModal && (
+                <div className="qb-modal-overlay" onClick={() => setShowWorksheetModal(false)}>
+                    <div className="qb-modal-card animate-pop-in" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+                        <div className="qb-modal-header">
+                            <h2>✨ Create Worksheet</h2>
+                            <button className="qb-modal-close" onClick={() => setShowWorksheetModal(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleCreateWorksheet} className="qb-modal-form">
+                            <div className="form-group">
+                                <label>Worksheet Title <span className="required-star">*</span></label>
+                                <input 
+                                    type="text" 
+                                    value={worksheetTitle} 
+                                    onChange={e => setWorksheetTitle(e.target.value)} 
+                                    placeholder="e.g. Weekly Math Test 1"
+                                    required
+                                    style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.15)', boxSizing: 'border-box' }}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Question Format <span className="required-star">*</span></label>
+                                <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
+                                    <label style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '6px', padding: '12px', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '10px', cursor: 'pointer', background: worksheetFormat === 'MCQ' ? 'rgba(59,130,246,0.08)' : 'transparent', borderColor: worksheetFormat === 'MCQ' ? '#3b82f6' : 'rgba(0,0,0,0.12)' }}>
+                                        <input 
+                                            type="radio" 
+                                            name="wsFormat" 
+                                            value="MCQ" 
+                                            checked={worksheetFormat === 'MCQ'}
+                                            onChange={() => setWorksheetFormat('MCQ')}
+                                        />
+                                        <span>MCQ</span>
+                                    </label>
+                                    <label style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '6px', padding: '12px', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '10px', cursor: 'pointer', background: worksheetFormat === 'Completion' ? 'rgba(59,130,246,0.08)' : 'transparent', borderColor: worksheetFormat === 'Completion' ? '#3b82f6' : 'rgba(0,0,0,0.12)' }}>
+                                        <input 
+                                            type="radio" 
+                                            name="wsFormat" 
+                                            value="Completion" 
+                                            checked={worksheetFormat === 'Completion'}
+                                            onChange={() => setWorksheetFormat('Completion')}
+                                        />
+                                        <span>Completion</span>
+                                    </label>
+                                </div>
+                            </div>
+                            {errorMsg && <div className="form-error-banner" style={{ marginTop: '10px' }}>{errorMsg}</div>}
+                            <div className="form-actions-row" style={{ marginTop: '20px' }}>
+                                <button type="button" className="form-cancel-btn" onClick={() => setShowWorksheetModal(false)}>Cancel</button>
+                                <button type="submit" className="form-submit-btn" disabled={operationLoading}>
+                                    {operationLoading ? <span className="qb-loader-small"></span> : 'Create'}
                                 </button>
                             </div>
                         </form>

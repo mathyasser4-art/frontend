@@ -5,9 +5,13 @@ const URL = `${API_BASE_URL}/chapter/getChapterQuestion`;
 
 const getQuestion = (setLoading, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, chapterID) => {
     setLoading(true)
+    const Token = localStorage.getItem('O_authWEB');
     fetch(`${URL}/${chapterID}`, {
         method: 'get',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+        },
     })
         .then((response) => response.json())
         .then((responseJson) => {

@@ -1110,7 +1110,7 @@ function Question() {
                             <tbody><tr><td>{answeredQuestions}</td><td>{points}</td><td>{totalSummation}</td></tr></tbody>
                         </table>
                     </div>
-                    <Link to={`/Unit/${questionTypeID}/${subjectID}`} onClick={() => soundEffects.playClick()}><button className='button popup-btn'>Close</button></Link>
+                    <Link to={subjectID === 'custom' ? '/teacher/question-bank' : `/Unit/${questionTypeID}/${subjectID}`} onClick={() => soundEffects.playClick()}><button className='button popup-btn'>Close</button></Link>
                 </div>
             </div>
             

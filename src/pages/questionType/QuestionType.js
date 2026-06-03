@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle2, Circle, Gamepad2, Swords } from 'lucide-react'
+import { CheckCircle2, Circle, Gamepad2, Swords, BookOpen, Plus } from 'lucide-react'
 import soundEffects from '../../utils/soundEffects'
 import CreateCompetitionModal from '../../components/navbar/CreateCompetitionModal';
 import '../../reusable.css'
@@ -12,6 +12,7 @@ function QuestionType() {
   const navigate = useNavigate()
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [showCreateCompetition, setShowCreateCompetition] = useState(false)
+  const [showResourcesModal, setShowResourcesModal] = useState(false)
   
   // Battle arena join state
   const [showJoinBattleModal, setShowJoinBattleModal] = useState(false)
@@ -56,26 +57,30 @@ function QuestionType() {
           {/* Sub-header above the cards */}
           <h4 className="cards-selection-title">Choose the type of questions or play games:</h4>
         </div>
-        <div className="questionType-options">
-          <Link to={'/system/65a4963482dbaac16d820fc6'} className="questionType-option mcq" onClick={() => soundEffects.playClick()}>
+          <span 
+            className="questionType-option resources-card" 
+            onClick={() => {
+              soundEffects.playClick();
+              setShowResourcesModal(true);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="option-icon-wrapper">
-              <Circle size={64} strokeWidth={2} className="mcq-icon" />
+              <BookOpen size={64} strokeWidth={2} className="resources-icon" style={{ color: '#3b82f6' }} />
             </div>
-            <h3 className="option-title">{t('academy.freeWorksheets')}</h3>
-            <img src="/img/mcq_preview.png" alt="Multiple Choice Questions Preview" className="card-preview-screenshot" />
-          </Link>
+            <h3 className="option-title">Resources</h3>
+            <img src="/img/mcq_preview.png" alt="Pre-made Resources Preview" className="card-preview-screenshot" />
+          </span>
           
-          <Link to={'/system/65a4964b82dbaac16d820fc8'} className="questionType-option mastermind" onClick={() => soundEffects.playClick()}>
-            <div className="option-icon-wrapper">
-              <CheckCircle2 size={64} strokeWidth={2} className="completion-icon" />
-            </div>
-            <h3 className="option-title">
-              <span translate="no" className="notranslate">
-                {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}
-              </span>
-            </h3>
-            <img src="/img/completion_preview.png" alt="Completion Questions Preview" className="card-preview-screenshot" />
-          </Link>
+          {(userRole === 'Teacher' || userRole === 'School' || userRole === 'Admin') && (
+            <Link to={'/teacher/question-bank'} className="questionType-option create-questions-card" onClick={() => soundEffects.playClick()}>
+              <div className="option-icon-wrapper">
+                <Plus size={64} strokeWidth={2} className="create-icon" style={{ color: '#eab308' }} />
+              </div>
+              <h3 className="option-title">Create Questions</h3>
+              <img src="/img/create_questions_cover.png" alt="Create Questions Preview" className="card-preview-screenshot" />
+            </Link>
+          )}
 
           {!isAuth ? (
             <span 
@@ -261,6 +266,73 @@ function QuestionType() {
         <CreateCompetitionModal
           onClose={() => setShowCreateCompetition(false)}
         />
+      )}
+
+      {showResourcesModal && (
+        <div className="upgrade-overlay" onClick={() => setShowResourcesModal(false)}>
+          <div className="upgrade-modal-card resources-select-modal animate-comp-pop-in" onClick={(e) => e.stopPropagation()}>
+            <button className="upgrade-close-btn" onClick={() => setShowResourcesModal(false)}>×</button>
+            <div className="upgrade-modal-header">
+              <span className="lock-large-icon">📚</span>
+              <h2>{t('academy.resources', 'Pre-made Resources')}</h2>
+            </div>
+            <p className="upgrade-modal-text">
+              Select the format of the pre-made question sheets to start practicing:
+            </p>
+            <div className="resources-options-grid" style={{ display: 'flex', gap: '1.5rem', margin: '2rem 0', width: '100%' }}>
+              <div 
+                className="resource-type-option mcq-select" 
+                onClick={() => {
+                  soundEffects.playClick();
+                  setShowResourcesModal(false);
+                  navigate('/system/65a4963482dbaac16d820fc6');
+                }}
+                style={{
+                  flex: 1,
+                  padding: '24px 16px',
+                  borderRadius: '16px',
+                  border: '2px solid rgba(0,0,0,0.08)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div style={{ background: 'rgba(101, 198, 238, 0.1)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                  <Circle size={32} color="#65C6EE" strokeWidth={2.5} />
+                </div>
+                <h4 style={{ margin: '0 0 6px', fontSize: '18px', color: 'var(--text-color, #333)' }}>{t('academy.freeWorksheets')}</h4>
+                <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>Multiple Choice questions</p>
+              </div>
+              <div 
+                className="resource-type-option completion-select" 
+                onClick={() => {
+                  soundEffects.playClick();
+                  setShowResourcesModal(false);
+                  navigate('/system/65a4964b82dbaac16d820fc8');
+                }}
+                style={{
+                  flex: 1,
+                  padding: '24px 16px',
+                  borderRadius: '16px',
+                  border: '2px solid rgba(0,0,0,0.08)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div style={{ background: 'rgba(248, 117, 170, 0.1)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                  <CheckCircle2 size={32} color="#F875AA" strokeWidth={2.5} />
+                </div>
+                <h4 style={{ margin: '0 0 6px', fontSize: '18px', color: 'var(--text-color, #333)' }}>
+                  {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}
+                </h4>
+                <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>Completion/direct entry questions</p>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

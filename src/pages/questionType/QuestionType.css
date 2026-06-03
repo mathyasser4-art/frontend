@@ -539,3 +539,19 @@
         height: 90px;
     }
 }
+
+/* Resources select modal option hover effects */
+.resource-type-option {
+    transition: all 0.3s ease;
+}
+
+.resource-type-option:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    border-color: #3b82f6 !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.resource-type-option.completion-select:hover {
+    border-color: #f875aa !important;
+}
