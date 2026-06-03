@@ -30,7 +30,7 @@ import TeacherAssignmentReports from './components/teacherReports/TeacherAssignm
 import StudentHistory from './components/studentHistory/StudentHistory';
 import Pricing from './pages/pricing/Pricing';
 import MathRacer from './pages/games/MathRacer';
-import { SHOW_PRICING } from './config/api.config';
+import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from './config/api.config';
 import SuperMarioGame from './pages/games/SuperMarioGame';
 import CaveRunner from './pages/games/CaveRunner';
 import MazeGame from './pages/games/MazeGame';
@@ -89,7 +89,7 @@ function App() {
       <Route path='/student/competition/:competitionId' element={isAuth && role === 'Student' ? <StudentCompetition /> : <Navigate to='/' />} />
       <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/' />} />
       <Route path='/teacher/competition/:competitionId' element={isAuth && role === 'Teacher' ? <TeacherCompetitionLobby /> : <Navigate to='/' />} />
-      <Route path='/teacher/question-bank' element={isAuth && role === 'Teacher' ? <TeacherQuestionBank /> : <Navigate to='/' />} />
+      <Route path='/teacher/question-bank' element={isAuth && role === 'Teacher' && ENABLE_CUSTOM_QUESTION_BANK ? <TeacherQuestionBank /> : <Navigate to='/' />} />
       <Route path='/teacher/registration' element={<TeacherRegistrationPage />} />
       <Route path='/dashboard/supervisor' element={isAuth && role === 'Supervisor' ? <SupervisorDashboard /> : <Navigate to='/' />} />
       <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth && role === 'Teacher' ? <AssignmentReport /> : <Navigate to='/' />} />

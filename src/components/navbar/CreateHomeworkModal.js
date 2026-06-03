@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import getSystem from '../../api/system/getSystem.api';
 import getUnit from '../../api/unit/getUnit.api';
 import getClass from '../../api/teacher/getClass.api';
-import API_BASE_URL from '../../config/api.config';
+import API_BASE_URL, { ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config';
 import soundEffects from '../../utils/soundEffects';
 import './CreateHomeworkModal.css';
 
@@ -392,14 +392,16 @@ function CreateHomeworkModal({ onClose }) {
                                     <p>Students write the numeric/final answer directly.</p>
                                     <button className="select-type-action-btn">Choose Completion <ChevronRight size={16} /></button>
                                 </div>
-                                <div className="type-card custom-worksheets-card" onClick={() => handleSelectType('custom')}>
-                                    <div className="type-icon-circle custom-icon-bg" style={{ background: 'rgba(124, 58, 237, 0.1)' }}>
-                                        <BookOpen size={40} className="type-icon" style={{ color: '#7c3aed' }} />
+                                {ENABLE_CUSTOM_QUESTION_BANK && (
+                                    <div className="type-card custom-worksheets-card" onClick={() => handleSelectType('custom')}>
+                                        <div className="type-icon-circle custom-icon-bg" style={{ background: 'rgba(124, 58, 237, 0.1)' }}>
+                                            <BookOpen size={40} className="type-icon" style={{ color: '#7c3aed' }} />
+                                        </div>
+                                        <h3>My Custom Worksheets</h3>
+                                        <p>Assign worksheets you created from scratch.</p>
+                                        <button className="select-type-action-btn">Choose Custom <ChevronRight size={16} /></button>
                                     </div>
-                                    <h3>My Custom Worksheets</h3>
-                                    <p>Assign worksheets you created from scratch.</p>
-                                    <button className="select-type-action-btn">Choose Custom <ChevronRight size={16} /></button>
-                                </div>
+                                )}
                             </div>
                         </div>
                     )}

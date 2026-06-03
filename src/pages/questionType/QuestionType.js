@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CheckCircle2, Circle, Gamepad2, Swords, BookOpen, Plus } from 'lucide-react'
 import soundEffects from '../../utils/soundEffects'
 import CreateCompetitionModal from '../../components/navbar/CreateCompetitionModal';
+import { ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
 import '../../reusable.css'
 import './QuestionType.css'
 
@@ -59,29 +60,55 @@ function QuestionType() {
         </div>
 
         <div className="questionType-options">
-          <span 
-            className="questionType-option resources-card" 
-            onClick={() => {
-              soundEffects.playClick();
-              setShowResourcesModal(true);
-            }}
-            style={{ cursor: 'pointer' }}
-          >
-            <div className="option-icon-wrapper">
-              <BookOpen size={64} strokeWidth={2} className="resources-icon" style={{ color: '#3b82f6' }} />
-            </div>
-            <h3 className="option-title">Worksheets</h3>
-            <img src="/img/mcq_preview.png" alt="Pre-made Worksheets Preview" className="card-preview-screenshot" />
-          </span>
-          
-          {(userRole === 'Teacher' || userRole === 'School' || userRole === 'Admin') && (
-            <Link to={'/teacher/question-bank'} className="questionType-option create-questions-card" onClick={() => soundEffects.playClick()}>
-              <div className="option-icon-wrapper">
-                <Plus size={64} strokeWidth={2} className="create-icon" style={{ color: '#eab308' }} />
-              </div>
-              <h3 className="option-title">Create Questions</h3>
-              <img src="/img/create_questions_cover.png" alt="Create Questions Preview" className="card-preview-screenshot" />
-            </Link>
+          {ENABLE_CUSTOM_QUESTION_BANK ? (
+            <>
+              <span 
+                className="questionType-option resources-card" 
+                onClick={() => {
+                  soundEffects.playClick();
+                  setShowResourcesModal(true);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="option-icon-wrapper">
+                  <BookOpen size={64} strokeWidth={2} className="resources-icon" style={{ color: '#3b82f6' }} />
+                </div>
+                <h3 className="option-title">Worksheets</h3>
+                <img src="/img/mcq_preview.png" alt="Pre-made Worksheets Preview" className="card-preview-screenshot" />
+              </span>
+              
+              {(userRole === 'Teacher' || userRole === 'School' || userRole === 'Admin') && (
+                <Link to={'/teacher/question-bank'} className="questionType-option create-questions-card" onClick={() => soundEffects.playClick()}>
+                  <div className="option-icon-wrapper">
+                    <Plus size={64} strokeWidth={2} className="create-icon" style={{ color: '#eab308' }} />
+                  </div>
+                  <h3 className="option-title">Create Questions</h3>
+                  <img src="/img/create_questions_cover.png" alt="Create Questions Preview" className="card-preview-screenshot" />
+                </Link>
+              )}
+            </>
+          ) : (
+            <>
+              <Link to={'/system/65a4963482dbaac16d820fc6'} className="questionType-option mcq" onClick={() => soundEffects.playClick()}>
+                <div className="option-icon-wrapper">
+                  <Circle size={64} strokeWidth={2} className="mcq-icon" />
+                </div>
+                <h3 className="option-title">{t('academy.freeWorksheets')}</h3>
+                <img src="/img/mcq_preview.png" alt="Multiple Choice Questions Preview" className="card-preview-screenshot" />
+              </Link>
+              
+              <Link to={'/system/65a4964b82dbaac16d820fc8'} className="questionType-option mastermind" onClick={() => soundEffects.playClick()}>
+                <div className="option-icon-wrapper">
+                  <CheckCircle2 size={64} strokeWidth={2} className="completion-icon" />
+                </div>
+                <h3 className="option-title">
+                  <span translate="no" className="notranslate">
+                    {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}
+                  </span>
+                </h3>
+                <img src="/img/completion_preview.png" alt="Completion Questions Preview" className="card-preview-screenshot" />
+              </Link>
+            </>
           )}
 
           {!isAuth ? (

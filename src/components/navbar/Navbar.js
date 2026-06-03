@@ -14,7 +14,7 @@ import CreateCompetitionModal from './CreateCompetitionModal'
 import TutorialVideoModal from '../tutorialVideoModal/TutorialVideoModal'
 import '../../reusable.css'
 import './Navbar.css'
-import { SHOW_PRICING } from '../../config/api.config'
+import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
 
 const Navbar = () => {
     const { t } = useTranslation();
@@ -126,7 +126,7 @@ const Navbar = () => {
                                     navigate('/auth/login');
                                 }
                             }} className="dropdown-item">Create Homework</span>
-                            {role === 'Teacher' && (
+                            {role === 'Teacher' && ENABLE_CUSTOM_QUESTION_BANK && (
                                 <span onClick={() => { soundEffects.playClick(); navigate('/teacher/question-bank'); }} className="dropdown-item">Question Bank</span>
                             )}
                             <span onClick={() => {
@@ -166,7 +166,7 @@ const Navbar = () => {
                             ⚔️ BATTLE
                         </div>
                     ) : null}
-                    {role === 'Teacher' ? (
+                    {role === 'Teacher' && ENABLE_CUSTOM_QUESTION_BANK ? (
                         <Link to={'/teacher/question-bank'} onClick={() => soundEffects.playClick()}>
                             <div className="create-homework-nav-btn" style={{ backgroundColor: '#9c27b0', color: '#fff', border: 'none' }}>
                                 QUESTION BANK
