@@ -183,7 +183,7 @@ function DemoQuizModal({ onClose }) {
                                             <tbody>
                                                 {currentQuestion.rows.map((row, i) => (
                                                     <tr key={i}>
-                                                        <td className="op-cell">{row.op}</td>
+                                                        <td className="op-cell">{row.op || '+'}</td>
                                                         <td className="val-cell">{row.val}</td>
                                                     </tr>
                                                 ))}

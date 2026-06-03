@@ -39,7 +39,10 @@ const parseGridRows = (questionText) => {
     return null;
 };
 
-const getRowOp  = (row) => (row.op  !== undefined ? row.op  : (row.OP  !== undefined ? row.OP  : ''));
+const getRowOp  = (row) => {
+    const op = (row.op  !== undefined ? row.op  : (row.OP  !== undefined ? row.OP  : ''));
+    return (!op || op.trim() === '') ? '+' : op;
+};
 const getRowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
 
 const renderQuestion = (question) => {
