@@ -126,6 +126,9 @@ const Navbar = () => {
                                     navigate('/auth/login');
                                 }
                             }} className="dropdown-item">Create Homework</span>
+                            {role === 'Teacher' && (
+                                <span onClick={() => { soundEffects.playClick(); navigate('/teacher/question-bank'); }} className="dropdown-item">Question Bank</span>
+                            )}
                             <span onClick={() => {
                                 soundEffects.playClick();
                                 setTutorialRole('Teacher');
@@ -162,6 +165,13 @@ const Navbar = () => {
                         <div className="create-battle-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateCompetition(true); }}>
                             ⚔️ BATTLE
                         </div>
+                    ) : null}
+                    {role === 'Teacher' ? (
+                        <Link to={'/teacher/question-bank'} onClick={() => soundEffects.playClick()}>
+                            <div className="create-homework-nav-btn" style={{ backgroundColor: '#9c27b0', color: '#fff', border: 'none' }}>
+                                QUESTION BANK
+                            </div>
+                        </Link>
                     ) : null}
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn">HOMEWORK REPORTS</div></Link> : null}
                     {role === 'Student' ? (

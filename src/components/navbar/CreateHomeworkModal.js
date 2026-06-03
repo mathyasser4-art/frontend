@@ -68,9 +68,13 @@ function CreateHomeworkModal({ onClose }) {
             setLoading(true);
             setErrorMsg(null);
             const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${selectedChapter._id}`;
+            const Token = localStorage.getItem('O_authWEB');
             fetch(URL, {
                 method: 'get',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+                },
             })
                 .then((response) => response.json())
                 .then((responseJson) => {

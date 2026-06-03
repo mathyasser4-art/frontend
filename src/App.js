@@ -48,6 +48,7 @@ import ClassHomework from './pages/classHomework/ClassHomework';
 
 import TeacherCompetitionLobby from './pages/teacherDashboard/TeacherCompetitionLobby';
 import StudentCompetition from './pages/studentDashboard/StudentCompetition';
+import TeacherQuestionBank from './pages/teacherDashboard/TeacherQuestionBank';
 
 function App() {
   const isAuth = localStorage.getItem('O_authWEB')
@@ -88,6 +89,7 @@ function App() {
       <Route path='/student/competition/:competitionId' element={isAuth && role === 'Student' ? <StudentCompetition /> : <Navigate to='/' />} />
       <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/' />} />
       <Route path='/teacher/competition/:competitionId' element={isAuth && role === 'Teacher' ? <TeacherCompetitionLobby /> : <Navigate to='/' />} />
+      <Route path='/teacher/question-bank' element={isAuth && role === 'Teacher' ? <TeacherQuestionBank /> : <Navigate to='/' />} />
       <Route path='/teacher/registration' element={<TeacherRegistrationPage />} />
       <Route path='/dashboard/supervisor' element={isAuth && role === 'Supervisor' ? <SupervisorDashboard /> : <Navigate to='/' />} />
       <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth && role === 'Teacher' ? <AssignmentReport /> : <Navigate to='/' />} />
