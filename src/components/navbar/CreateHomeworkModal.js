@@ -380,17 +380,17 @@ function CreateHomeworkModal({ onClose }) {
                                     <div className="type-icon-circle mcq-icon-bg">
                                         <Circle size={40} className="type-icon" />
                                     </div>
-                                    <h3>Multiple Choice (MCQ)</h3>
+                                    <h3>Choose Questions</h3>
                                     <p>Students select the correct answer from options.</p>
-                                    <button className="select-type-action-btn">Choose MCQ <ChevronRight size={16} /></button>
+                                    <button className="select-type-action-btn">Choose <ChevronRight size={16} /></button>
                                 </div>
                                 <div className="type-card completion-card" onClick={() => handleSelectType('completion')}>
                                     <div className="type-icon-circle completion-icon-bg">
                                         <CheckCircle2 size={40} className="type-icon" />
                                     </div>
-                                    <h3>Completion</h3>
+                                    <h3>Complete Questions</h3>
                                     <p>Students write the numeric/final answer directly.</p>
-                                    <button className="select-type-action-btn">Choose Completion <ChevronRight size={16} /></button>
+                                    <button className="select-type-action-btn">Choose <ChevronRight size={16} /></button>
                                 </div>
                                 {ENABLE_CUSTOM_QUESTION_BANK && (
                                     <div className="type-card custom-worksheets-card" onClick={() => handleSelectType('custom')}>
@@ -487,7 +487,7 @@ function CreateHomeworkModal({ onClose }) {
                     {!loading && step === 'unit' && (
                         <div className="wizard-step-container step-unit">
                             <div className="selected-breadcrumb-path">
-                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Multiple Choice' : 'Completion'}</span>
+                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Choose' : 'Complete'}</span>
                                 <ChevronRight size={12} />
                                 <span className="breadcrumb-active">{translateName(selectedSubject?.subjectName)}</span>
                             </div>
@@ -536,7 +536,7 @@ function CreateHomeworkModal({ onClose }) {
                     {!loading && step === 'details' && (
                         <div className="wizard-step-container step-details">
                             <div className="selected-breadcrumb-path">
-                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Multiple Choice' : 'Completion'}</span>
+                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Choose' : 'Complete'}</span>
                                 <ChevronRight size={12} />
                                 <span>{translateName(selectedSubject?.subjectName)}</span>
                                 <ChevronRight size={12} />

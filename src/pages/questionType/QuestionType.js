@@ -60,57 +60,23 @@ function QuestionType() {
         </div>
 
         <div className="questionType-options">
-          {ENABLE_CUSTOM_QUESTION_BANK ? (
-            <>
-              <span 
-                className="questionType-option resources-card" 
-                onClick={() => {
-                  soundEffects.playClick();
-                  setShowResourcesModal(true);
-                }}
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="option-icon-wrapper">
-                  <BookOpen size={64} strokeWidth={2} className="resources-icon" style={{ color: '#3b82f6' }} />
-                </div>
-                <h3 className="option-title">Worksheets</h3>
-                <img src="/img/mcq_preview.png" alt="Pre-made Worksheets Preview" className="card-preview-screenshot" />
-              </span>
-              
-              {(userRole === 'Teacher' || userRole === 'School' || userRole === 'Admin') && (
-                <Link to={'/teacher/question-bank'} className="questionType-option create-questions-card" onClick={() => soundEffects.playClick()}>
-                  <div className="option-icon-wrapper">
-                    <Plus size={64} strokeWidth={2} className="create-icon" style={{ color: '#eab308' }} />
-                  </div>
-                  <h3 className="option-title">Create Questions</h3>
-                  <img src="/img/create_questions_cover.png" alt="Create Questions Preview" className="card-preview-screenshot" />
-                </Link>
-              )}
-            </>
-          ) : (
-            <>
-              <Link to={'/system/65a4963482dbaac16d820fc6'} className="questionType-option mcq" onClick={() => soundEffects.playClick()}>
-                <div className="option-icon-wrapper">
-                  <Circle size={64} strokeWidth={2} className="mcq-icon" />
-                </div>
-                <h3 className="option-title">{t('academy.freeWorksheets')}</h3>
-                <img src="/img/mcq_preview.png" alt="Multiple Choice Questions Preview" className="card-preview-screenshot" />
-              </Link>
-              
-              <Link to={'/system/65a4964b82dbaac16d820fc8'} className="questionType-option mastermind" onClick={() => soundEffects.playClick()}>
-                <div className="option-icon-wrapper">
-                  <CheckCircle2 size={64} strokeWidth={2} className="completion-icon" />
-                </div>
-                <h3 className="option-title">
-                  <span translate="no" className="notranslate">
-                    {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}
-                  </span>
-                </h3>
-                <img src="/img/completion_preview.png" alt="Completion Questions Preview" className="card-preview-screenshot" />
-              </Link>
-            </>
-          )}
+          {/* Card 1: Worksheets */}
+          <span 
+            className="questionType-option resources-card" 
+            onClick={() => {
+              soundEffects.playClick();
+              setShowResourcesModal(true);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="option-icon-wrapper">
+              <BookOpen size={64} strokeWidth={2} className="resources-icon" style={{ color: '#3b82f6' }} />
+            </div>
+            <h3 className="option-title">Worksheets</h3>
+            <img src="/img/mcq_preview.png" alt="Pre-made Worksheets Preview" className="card-preview-screenshot" />
+          </span>
 
+          {/* Card 2: Fun Games */}
           {!isAuth ? (
             <span 
               className="questionType-option games-card-option locked-card" 
@@ -136,7 +102,7 @@ function QuestionType() {
             </Link>
           )}
 
-          {/* Card 4: Live Arena Battles */}
+          {/* Card 3: Live Battles */}
           {!isAuth ? (
             <span 
               className="questionType-option battle-card-option locked-card" 
@@ -192,6 +158,17 @@ function QuestionType() {
               </div>
               <h3 className="option-title">Live Battles</h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
+            </Link>
+          )}
+
+          {/* Card 4: Create Questions (Last on the right) */}
+          {ENABLE_CUSTOM_QUESTION_BANK && (userRole === 'Teacher' || userRole === 'School' || userRole === 'Admin') && (
+            <Link to={'/teacher/question-bank'} className="questionType-option create-questions-card" onClick={() => soundEffects.playClick()}>
+              <div className="option-icon-wrapper">
+                <Plus size={64} strokeWidth={2} className="create-icon" style={{ color: '#eab308' }} />
+              </div>
+              <h3 className="option-title">Create Questions</h3>
+              <img src="/img/create_questions_cover.png" alt="Create Questions Preview" className="card-preview-screenshot" />
             </Link>
           )}
         </div>
@@ -330,8 +307,8 @@ function QuestionType() {
                 <div style={{ background: 'rgba(101, 198, 238, 0.1)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                   <Circle size={32} color="#65C6EE" strokeWidth={2.5} />
                 </div>
-                <h4 style={{ margin: '0 0 6px', fontSize: '18px', color: 'var(--text-color, #333)' }}>{t('academy.freeWorksheets')}</h4>
-                <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>Multiple Choice questions</p>
+                <h4 style={{ margin: '0 0 6px', fontSize: '18px', color: 'var(--text-color, #333)' }}>{t('academy.freeWorksheets', 'Choose Questions')}</h4>
+                <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>Choose questions</p>
               </div>
               <div 
                 className="resource-type-option completion-select" 
@@ -355,9 +332,9 @@ function QuestionType() {
                   <CheckCircle2 size={32} color="#F875AA" strokeWidth={2.5} />
                 </div>
                 <h4 style={{ margin: '0 0 6px', fontSize: '18px', color: 'var(--text-color, #333)' }}>
-                  {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds')}
+                  {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds', 'Complete Questions')}
                 </h4>
-                <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>Completion/direct entry questions</p>
+                <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>Complete questions</p>
               </div>
             </div>
           </div>

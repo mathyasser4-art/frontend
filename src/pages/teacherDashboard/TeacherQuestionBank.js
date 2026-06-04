@@ -318,7 +318,7 @@ function TeacherQuestionBank() {
 
         if (isMCQ) {
             if (!mcqCorrectAnswer.trim() || !mcqWrongOption1.trim() || !mcqWrongOption2.trim() || !mcqWrongOption3.trim()) {
-                setErrorMsg('All options (1 Correct and 3 Wrong options) are required for Multiple Choice questions.');
+                setErrorMsg('All options (1 Correct and 3 Wrong options) are required for Choose questions.');
                 return;
             }
         } else {
@@ -465,13 +465,13 @@ function TeacherQuestionBank() {
                                         className={`type-switch-btn ${questionTypeID === '65a4963482dbaac16d820fc6' ? 'active' : ''}`}
                                         onClick={() => { soundEffects.playClick(); setQuestionTypeID('65a4963482dbaac16d820fc6'); }}
                                     >
-                                        <Circle size={16} /> MCQ Format
+                                        <Circle size={16} /> Choose Format
                                     </button>
                                     <button 
                                         className={`type-switch-btn ${questionTypeID === '65a4964b82dbaac16d820fc8' ? 'active' : ''}`}
                                         onClick={() => { soundEffects.playClick(); setQuestionTypeID('65a4964b82dbaac16d820fc8'); }}
                                     >
-                                        <CheckCircle2 size={16} /> Completion Format
+                                        <CheckCircle2 size={16} /> Complete Format
                                     </button>
                                 </div>
 
@@ -580,7 +580,7 @@ function TeacherQuestionBank() {
                                                             📄 {ws.chapterName}
                                                         </span>
                                                         <span className="worksheet-item-meta">
-                                                            Format: {ws.format} • {ws.questions?.length || 0} Qs
+                                                            Format: {ws.format === 'MCQ' ? 'Choose' : 'Complete'} • {ws.questions?.length || 0} Qs
                                                         </span>
                                                     </div>
                                                     <button 
@@ -614,7 +614,7 @@ function TeacherQuestionBank() {
                             <div className="qb-questions-list-wrapper">
                                 <div className="qb-list-header">
                                     <div className="chapter-badge">
-                                        📄 {translateName(selectedChapter.chapterName)} {selectedChapter.format ? `(${selectedChapter.format})` : ''}
+                                        📄 {translateName(selectedChapter.chapterName)} {selectedChapter.format ? `(${selectedChapter.format === 'MCQ' ? 'Choose' : 'Complete'})` : ''}
                                     </div>
                                     <div className="qb-header-actions" style={{ display: 'flex', gap: '10px' }}>
                                         {questions.length > 0 && (
@@ -911,7 +911,7 @@ function TeacherQuestionBank() {
                                             checked={worksheetFormat === 'MCQ'}
                                             onChange={() => setWorksheetFormat('MCQ')}
                                         />
-                                        <span>MCQ</span>
+                                        <span>Choose</span>
                                     </label>
                                     <label style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '6px', padding: '12px', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '10px', cursor: 'pointer', background: worksheetFormat === 'Completion' ? 'rgba(59,130,246,0.08)' : 'transparent', borderColor: worksheetFormat === 'Completion' ? '#3b82f6' : 'rgba(0,0,0,0.12)' }}>
                                         <input 
@@ -921,7 +921,7 @@ function TeacherQuestionBank() {
                                             checked={worksheetFormat === 'Completion'}
                                             onChange={() => setWorksheetFormat('Completion')}
                                         />
-                                        <span>Completion</span>
+                                        <span>Complete</span>
                                     </label>
                                 </div>
                             </div>

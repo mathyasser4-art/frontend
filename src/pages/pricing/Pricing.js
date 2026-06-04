@@ -156,7 +156,7 @@ function Pricing() {
                 <span className="gift-icon">🎁</span>
                 <div className="free-trial-text">
                   <strong>Free Trial Active!</strong>
-                  <p>1st Worksheet of Level 0 (MCQ & Completion) is 100% free to try!</p>
+                  <p>1st Worksheet of Level 0 (Choose & Complete) is 100% free to try!</p>
                 </div>
               </div>
 

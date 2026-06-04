@@ -71,8 +71,8 @@
   },
   "mobileNav": {
     "home": "الرئيسية",
-    "worksheets": "متعددة الخيارات",
-    "masterminds": "الاستكمال",
+    "worksheets": "اختر",
+    "masterminds": "أكمل",
     "homework": "الواجبات",
     "help": "المساعدة",
     "profile": "الملف الشخصي",
@@ -293,9 +293,9 @@
   },
   "academy": {
     "chooseYourAcademy": "ماستر مايندز",
-    "freeWorksheets": "أسئلة متعددة الخيارات",
+    "freeWorksheets": "أسئلة اختر",
     "freeWorksheetsDesc": "عزز مهاراتك في الرياضيات الذهنية من خلال حل أسئلة إضافية",
-    "masterMinds": "أسئلة الاستكمال",
+    "masterMinds": "أسئلة أكمل",
     "masterMindsDesc": "تدرب على أسئلة كتاب أكاديمية ماستر مايندز",
     "start": "ابدأ"
   },

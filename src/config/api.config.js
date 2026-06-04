@@ -16,6 +16,6 @@ export const SHOW_PRICING = false;
 
 // Feature flag to enable custom question bank & worksheets creation.
 // Set to false to hide, change to true to restore custom worksheets.
-export const ENABLE_CUSTOM_QUESTION_BANK = false;
+export const ENABLE_CUSTOM_QUESTION_BANK = true;
 
 export default API_BASE_URL;

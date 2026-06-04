@@ -224,17 +224,17 @@ function CreateCompetitionModal({ onClose }) {
                                     <div className="comp-type-icon-circle comp-mcq-bg">
                                         <Circle size={40} className="comp-type-icon" />
                                     </div>
-                                    <h3>Multiple Choice (MCQ)</h3>
+                                    <h3>Choose Questions</h3>
                                     <p>Students pick the correct answer from options.</p>
-                                    <button className="comp-type-select-btn">Choose MCQ <ChevronRight size={16} /></button>
+                                    <button className="comp-type-select-btn">Choose <ChevronRight size={16} /></button>
                                 </div>
                                 <div className="comp-type-card comp-completion-card" onClick={() => handleSelectType('completion')}>
                                     <div className="comp-type-icon-circle comp-completion-bg">
                                         <CheckCircle2 size={40} className="comp-type-icon" />
                                     </div>
-                                    <h3>Completion</h3>
+                                    <h3>Complete Questions</h3>
                                     <p>Students type the numeric answer directly.</p>
-                                    <button className="comp-type-select-btn">Choose Completion <ChevronRight size={16} /></button>
+                                    <button className="comp-type-select-btn">Choose <ChevronRight size={16} /></button>
                                 </div>
                             </div>
                         </div>
@@ -288,7 +288,7 @@ function CreateCompetitionModal({ onClose }) {
                     {!loading && step === 'unit' && (
                         <div className="comp-step-container">
                             <div className="comp-breadcrumb">
-                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Multiple Choice' : 'Completion'}</span>
+                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Choose' : 'Complete'}</span>
                                 <ChevronRight size={12} />
                                 <span className="comp-breadcrumb-active">{translateName(selectedSubject?.subjectName)}</span>
                             </div>
@@ -337,7 +337,7 @@ function CreateCompetitionModal({ onClose }) {
                     {!loading && step === 'details' && (
                         <div className="comp-step-container comp-details-step">
                             <div className="comp-breadcrumb">
-                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Multiple Choice' : 'Completion'}</span>
+                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Choose' : 'Complete'}</span>
                                 <ChevronRight size={12} />
                                 <span>{translateName(selectedSubject?.subjectName)}</span>
                                 <ChevronRight size={12} />

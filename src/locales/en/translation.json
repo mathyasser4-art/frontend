@@ -71,8 +71,8 @@
   },
   "mobileNav": {
     "home": "Home",
-    "worksheets": "Multiple Choice",
-    "masterminds": "Completion",
+    "worksheets": "Choose",
+    "masterminds": "Complete",
     "homework": "Homework",
     "help": "Help",
     "profile": "Profile"
@@ -290,9 +290,9 @@
   },
   "academy": {
     "chooseYourAcademy": "MASTERMINDS",
-    "freeWorksheets": "Multiple Choice Questions",
+    "freeWorksheets": "Choose Questions",
     "freeWorksheetsDesc": "Enhance your mental math skills with solving extra questions",
-    "masterMinds": "Completion Questions",
+    "masterMinds": "Complete Questions",
     "masterMindsDesc": "Practice the book questions of master minds academy",
     "start": "Start"
   },

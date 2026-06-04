@@ -126,9 +126,7 @@ const Navbar = () => {
                                     navigate('/auth/login');
                                 }
                             }} className="dropdown-item">Create Homework</span>
-                            {role === 'Teacher' && ENABLE_CUSTOM_QUESTION_BANK && (
-                                <span onClick={() => { soundEffects.playClick(); navigate('/teacher/question-bank'); }} className="dropdown-item">Question Bank</span>
-                            )}
+
                             <span onClick={() => {
                                 soundEffects.playClick();
                                 setTutorialRole('Teacher');
@@ -175,13 +173,7 @@ const Navbar = () => {
                             ⚔️ BATTLE
                         </div>
                     ) : null}
-                    {role === 'Teacher' && ENABLE_CUSTOM_QUESTION_BANK ? (
-                        <Link to={'/teacher/question-bank'} onClick={() => soundEffects.playClick()}>
-                            <div className="create-homework-nav-btn" style={{ backgroundColor: '#9c27b0', color: '#fff', border: 'none' }}>
-                                QUESTION BANK
-                            </div>
-                        </Link>
-                    ) : null}
+
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn">HOMEWORK REPORTS</div></Link> : null}
                     {role === 'Student' ? (
                         <>
