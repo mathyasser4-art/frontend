@@ -170,6 +170,10 @@ function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+        if (child.material) {
+          child.material.roughness = 0.2;
+          child.material.metalness = 0.1;
+        }
       }
     });
     return cloned;
@@ -239,9 +243,9 @@ function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning
     <group ref={groupRef} position={[-3, 0, 0]}>
       <primitive 
         object={clonedScene} 
-        scale={scale} 
+        scale={[scale * 0.55, scale * 0.8, scale * 0.55]} 
         position={[0, offsetY, 0]} 
-        rotation={[0, Math.PI / 2, 0]} // Face the running direction
+        rotation={[0, -Math.PI / 2, 0]} // Face the running direction
       />
     </group>
   );
@@ -257,7 +261,7 @@ function Rock3D({ position }) {
   return (
     <mesh position={[x, 0.35, 0]} castShadow receiveShadow>
       <dodecahedronGeometry args={[0.5, 1]} />
-      <meshStandardMaterial color="#64748b" roughness={0.95} metalness={0.05} />
+      <meshStandardMaterial color="#64748b" roughness={0.3} metalness={0.15} />
     </mesh>
   );
 }
@@ -270,16 +274,16 @@ function Tree3D({ position }) {
       {/* Trunk */}
       <mesh position={[0, 0.3, 0]} castShadow>
         <cylinderGeometry args={[0.07, 0.11, 0.6, 8]} />
-        <meshStandardMaterial color="#78350f" roughness={0.9} />
+        <meshStandardMaterial color="#78350f" roughness={0.4} />
       </mesh>
       {/* Cone Leaves */}
       <mesh position={[0, 0.75, 0]} castShadow>
         <coneGeometry args={[0.35, 0.7, 8]} />
-        <meshStandardMaterial color="#14532d" roughness={0.8} />
+        <meshStandardMaterial color="#14532d" roughness={0.3} />
       </mesh>
       <mesh position={[0, 1.15, 0]} castShadow>
         <coneGeometry args={[0.26, 0.5, 8]} />
-        <meshStandardMaterial color="#166534" roughness={0.8} />
+        <meshStandardMaterial color="#166534" roughness={0.3} />
       </mesh>
     </group>
   );
@@ -360,7 +364,7 @@ function Carrot3D({ position }) {
       {/* Orange Body */}
       <mesh rotation={[Math.PI, 0, 0]} position={[0, 0.15, 0]} castShadow>
         <coneGeometry args={[0.11, 0.5, 8]} />
-        <meshStandardMaterial color="#f97316" roughness={0.4} />
+        <meshStandardMaterial color="#f97316" roughness={0.1} metalness={0.1} />
       </mesh>
       {/* Leaves */}
       <mesh position={[0, 0.42, 0]} castShadow>
@@ -415,7 +419,7 @@ function CaveEnvironment({ speed, isRunning }) {
     };
   }, [nodes]);
 
-  // Configure shadows for meshes when loaded
+  // Configure shadows for meshes when loaded and make them shinier
   useEffect(() => {
     Object.values(nodeMap).forEach(node => {
       if (node) {
@@ -423,6 +427,10 @@ function CaveEnvironment({ speed, isRunning }) {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
+            if (child.material) {
+              child.material.roughness = 0.35;
+              child.material.metalness = 0.1;
+            }
           }
         });
       }
@@ -445,23 +453,23 @@ function CaveEnvironment({ speed, isRunning }) {
       {/* Ground runway - Green Grass */}
       <mesh position={[0, -0.2, 0]} receiveShadow>
         <boxGeometry args={[35, 0.4, 3]} />
-        <meshStandardMaterial color="#22c55e" roughness={0.9} />
+        <meshStandardMaterial color="#22c55e" roughness={0.35} />
       </mesh>
 
       {/* Side Track Border Grid - Wood Brown */}
       <mesh position={[0, -0.05, 1.35]} receiveShadow>
         <boxGeometry args={[35, 0.1, 0.15]} />
-        <meshStandardMaterial color="#854d0e" roughness={0.8} />
+        <meshStandardMaterial color="#854d0e" roughness={0.3} />
       </mesh>
       <mesh position={[0, -0.05, -1.35]} receiveShadow>
         <boxGeometry args={[35, 0.1, 0.15]} />
-        <meshStandardMaterial color="#854d0e" roughness={0.8} />
+        <meshStandardMaterial color="#854d0e" roughness={0.3} />
       </mesh>
 
       {/* Large Grass Field Plane stretching far to cover the bottom horizon */}
       <mesh position={[0, -0.21, -10]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial color="#4ade80" roughness={0.95} />
+        <meshStandardMaterial color="#4ade80" roughness={0.4} />
       </mesh>
 
       {/* Render the recycled low-poly decorations */}
@@ -499,6 +507,7 @@ const BunnyRun = () => {
   const [isJumping, setIsJumping] = useState(false);
   const isJumpingRef = useRef(false);
   const [jumpStartTime, setJumpStartTime] = useState(0);
+  const jumpStartTimeRef = useRef(0);
   const [isFalling, setIsFalling] = useState(false);
   const isFallingRef = useRef(false);
   const [fallStartTime, setFallStartTime] = useState(0);
@@ -557,6 +566,7 @@ const BunnyRun = () => {
     isJumpingRef.current = false;
     setIsJumping(false);
     setJumpStartTime(0);
+    jumpStartTimeRef.current = 0;
     setFallStartTime(0);
     obstaclesPassedRef.current = 0;
     targetObstaclesRef.current = Math.floor(Math.random() * 3) + 3;
@@ -577,6 +587,7 @@ const BunnyRun = () => {
     setIsJumping(true);
     isJumpingRef.current = true;
     setJumpStartTime(Date.now());
+    jumpStartTimeRef.current = Date.now();
     
     setTimeout(() => {
       setIsJumping(false);
@@ -634,7 +645,9 @@ const BunnyRun = () => {
         let newPos = pos - (speed * (deltaTime / 16));
         
         let hitObstacle = false;
-        if (newPos <= 26 && (newPos + 8) >= 14 && !isJumpingRef.current) {
+        const elapsed = isJumpingRef.current ? (Date.now() - jumpStartTimeRef.current) / 700 : 1;
+        const playerY = (isJumpingRef.current && elapsed >= 0 && elapsed <= 1) ? Math.sin(elapsed * Math.PI) * 2.8 : 0;
+        if (newPos <= 23 && newPos >= 18 && playerY < 0.8) {
           hitObstacle = true;
         }
 
@@ -749,12 +762,12 @@ const BunnyRun = () => {
               style={{ position: 'absolute', inset: 0, zIndex: 3, background: '#bae6fd' }}
             >
               {/* Morning Sunshine Lighting */}
-              <ambientLight intensity={0.75} color="#f0fdf4" />
+              <ambientLight intensity={1.3} color="#f0fdf4" />
               
               {/* Spotlight focus tracking track */}
               <directionalLight 
                 position={[8, 15, 6]} 
-                intensity={1.5} 
+                intensity={2.8} 
                 color="#fef08a"
                 castShadow 
                 shadow-mapSize-width={1024} 
@@ -766,7 +779,10 @@ const BunnyRun = () => {
                 shadow-camera-bottom={-8}
               />
 
-              <pointLight color="#bae6fd" intensity={0.8} distance={15} position={[-3, 4, 2]} />
+              {/* Back/Fill light for glossy effect */}
+              <directionalLight position={[-8, 10, -6]} intensity={1.5} color="#bae6fd" />
+
+              <pointLight color="#bae6fd" intensity={1.2} distance={15} position={[-3, 4, 2]} />
 
               {/* 3D Morning Environment Ground Runway and Parallax background hills/trees */}
               <CaveEnvironment speed={speed} isRunning={gameState === 'playing' && !isWaitingForAnswer && !isFalling} />
