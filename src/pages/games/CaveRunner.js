@@ -6,9 +6,10 @@ import MobileNav from '../../components/mobileNav/MobileNav';
 import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
+import * as THREE from 'three';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, useAnimations } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import './CaveRunner.css';
 
 // ── 3D Components ────────────────────────────────────────────────────────────
@@ -156,82 +157,99 @@ function ProceduralFallback({ isRunning, isJumping, isFalling, jumpStartTime, fa
   );
 }
 
-// 3D Character loader with animation rigging using the custom GLB model
+// 3D Character loader with procedural animation using the custom cute rabbit GLB model
 function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning }) {
   const groupRef = useRef();
-
-  const { scene, animations } = useGLTF('/models/Cube Guy Character.glb');
-  const { actions } = useAnimations(animations, groupRef);
-
-  useEffect(() => {
-    if (!actions || Object.keys(actions).length === 0) return;
-    
-    // Stop all actions first
-    Object.values(actions).forEach(action => action.stop());
-
-    let activeAction = null;
-    if (isFalling) {
-      activeAction = actions['CharacterArmature|CharacterArmature|CharacterArmature|Death'];
-    } else if (isJumping) {
-      activeAction = actions['CharacterArmature|CharacterArmature|CharacterArmature|Jump'];
-    } else if (isRunning) {
-      activeAction = actions['CharacterArmature|CharacterArmature|CharacterArmature|Run'];
-    } else {
-      activeAction = actions['CharacterArmature|CharacterArmature|CharacterArmature|Idle'];
-    }
-
-    if (activeAction) {
-      activeAction.reset().fadeIn(0.15).play();
-    }
-  }, [isRunning, isJumping, isFalling, actions]);
-
-  useEffect(() => {
-    if (scene) {
-      scene.traverse((child) => {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      });
-    }
+  const { scene } = useGLTF('/models/cute_rabbit.glb');
+  
+  // Clone scene to avoid sharing mutable states
+  const clonedScene = React.useMemo(() => {
+    if (!scene) return null;
+    const cloned = scene.clone();
+    cloned.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    return cloned;
   }, [scene]);
+
+  // Dynamically calculate and apply proper scale & vertical offset to ground the model
+  const [scale, setScale] = useState(0.4);
+  const [offsetY, setOffsetY] = useState(0.01);
+
+  useEffect(() => {
+    if (clonedScene) {
+      const box = new THREE.Box3().setFromObject(clonedScene);
+      const size = new THREE.Vector3();
+      box.getSize(size);
+      const height = size.y;
+      if (height > 0) {
+        const targetHeight = 1.0; // Perfect visual size for the bunny
+        const newScale = targetHeight / height;
+        setScale(newScale);
+        
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        const bottomY = center.y - size.y / 2;
+        setOffsetY(-bottomY * newScale + 0.01);
+      }
+    }
+  }, [clonedScene]);
 
   useFrame((state) => {
     if (!groupRef.current) return;
+    const time = state.clock.getElapsedTime();
 
-    // Position Y (Jump logic)
+    // Reset default rotations
+    groupRef.current.rotation.x = 0;
+    groupRef.current.rotation.y = Math.PI / 2; // Face forward along the track
+    groupRef.current.rotation.z = 0;
+
+    // Position Y & Rotation animations
     if (isJumping) {
       const elapsed = (Date.now() - jumpStartTime) / 700;
       if (elapsed >= 0 && elapsed <= 1) {
         groupRef.current.position.y = Math.sin(elapsed * Math.PI) * 2.8;
-        groupRef.current.rotation.z = 0;
+        // Make a beautiful 360-degree flip!
+        groupRef.current.rotation.x = elapsed * Math.PI * 2;
       }
     } else if (isFalling) {
       const elapsed = (Date.now() - fallStartTime) / 600;
       if (elapsed >= 0 && elapsed <= 1) {
         groupRef.current.position.y = Math.max(0, 0.45 - elapsed * 1.5);
-        groupRef.current.rotation.z = 0;
+        // Fall flat on its side/back
+        groupRef.current.rotation.x = elapsed * Math.PI / 2;
       }
+    } else if (isRunning) {
+      // Bob up & down and sway when running
+      groupRef.current.position.y = Math.abs(Math.sin(time * 12)) * 0.16;
+      groupRef.current.rotation.z = Math.sin(time * 12) * 0.08; // Sway left/right
+      groupRef.current.rotation.x = 0.06; // Tilt forward slightly
     } else {
-      groupRef.current.position.y = 0;
-      groupRef.current.rotation.z = 0;
+      // Idle: gentle breathing bob
+      groupRef.current.position.y = 0.05 + Math.sin(time * 2) * 0.04;
     }
   });
+
+  if (!clonedScene) return null;
 
   return (
     <group ref={groupRef} position={[-3, 0, 0]}>
       <primitive 
-        object={scene} 
-        scale={0.3} 
-        position={[0, 0.01, 0]} 
-        rotation={[0, Math.PI / 2, 0]} 
+        object={clonedScene} 
+        scale={scale} 
+        position={[0, offsetY, 0]} 
+        rotation={[0, Math.PI / 2, 0]} // Face the running direction
       />
     </group>
   );
 }
 
-// Preload the model to prevent initial load latency
-useGLTF.preload('/models/Cube Guy Character.glb');
+// Preload the character and environment models
+useGLTF.preload('/models/cute_rabbit.glb');
+useGLTF.preload('/models/low_poly_assets.glb');
 
 // 3D Rock obstacle
 function Rock3D({ position }) {
@@ -354,21 +372,71 @@ function Carrot3D({ position }) {
 }
 
 // 3D Environment with ground track, ambient lighting, and parallax scrolling background hills/trees
+// 3D Environment with ground track, ambient lighting, and low-poly forest/field decoration items scrolling past
 function CaveEnvironment({ speed, isRunning }) {
-  const [pillars, setPillars] = useState([
-    { id: 1, x: -10, z: -1.8, scale: 1.2, color: '#334155' },
-    { id: 2, x: 2, z: -2.2, scale: 0.8, color: '#475569' },
-    { id: 3, x: 14, z: -1.6, scale: 1.5, color: '#1e293b' }
+  const { nodes } = useGLTF('/models/low_poly_assets.glb');
+  
+  // Set of decorative items scrolling past in the background and midground
+  const [envItems, setEnvItems] = useState([
+    { id: 1, type: 'Spruce', x: -12, y: -0.2, z: -4.8, scale: 0.32 },
+    { id: 2, type: 'Birch', x: -7, y: -0.2, z: -4.2, scale: 0.34 },
+    { id: 3, type: 'tree', x: -2, y: -0.2, z: -5.2, scale: 0.38 },
+    { id: 4, type: 'Spruce', x: 3, y: -0.2, z: -4.5, scale: 0.28 },
+    { id: 5, type: 'Birch', x: 8, y: -0.2, z: -5.0, scale: 0.36 },
+    { id: 6, type: 'tree', x: 13, y: -0.2, z: -3.8, scale: 0.32 },
+    
+    { id: 7, type: 'bush', x: -10, y: -0.2, z: -2.8, scale: 0.22 },
+    { id: 8, type: 'flower', x: -8, y: -0.2, z: -2.6, scale: 0.18 },
+    { id: 9, type: 'bush', x: -4, y: -0.2, z: -3.0, scale: 0.26 },
+    { id: 10, type: 'flower', x: 0, y: -0.2, z: -2.4, scale: 0.22 },
+    { id: 11, type: 'bush', x: 4, y: -0.2, z: -2.7, scale: 0.2 },
+    { id: 12, type: 'flower', x: 7, y: -0.2, z: -2.9, scale: 0.16 },
+    { id: 13, type: 'bush', x: 10, y: -0.2, z: -3.2, scale: 0.24 },
+    { id: 14, type: 'flower', x: 15, y: -0.2, z: -2.5, scale: 0.18 },
+
+    { id: 15, type: 'Lantern', x: -11, y: -0.2, z: -1.5, scale: 0.2 },
+    { id: 16, type: 'fence', x: -6, y: -0.2, z: -1.45, scale: 0.28 },
+    { id: 17, type: 'Lantern', x: 1, y: -0.2, z: -1.5, scale: 0.2 },
+    { id: 18, type: 'fence', x: 6, y: -0.2, z: -1.45, scale: 0.28 },
+    { id: 19, type: 'Lantern', x: 12, y: -0.2, z: -1.5, scale: 0.2 },
   ]);
+
+  // Mapping of type strings to specific nodes in the low poly GLB model
+  const nodeMap = React.useMemo(() => {
+    if (!nodes) return {};
+    return {
+      'Spruce': nodes['Spruce_0'],
+      'Birch': nodes['Birch_9'],
+      'tree': nodes['tree_3'],
+      'bush': nodes['bush_17'],
+      'flower': nodes['flower_20'],
+      'Lantern': nodes['Lantern_32'],
+      'fence': nodes['fence_41'],
+    };
+  }, [nodes]);
+
+  // Configure shadows for meshes when loaded
+  useEffect(() => {
+    Object.values(nodeMap).forEach(node => {
+      if (node) {
+        node.traverse(child => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+      }
+    });
+  }, [nodeMap]);
 
   useFrame((state, delta) => {
     if (!isRunning) return;
-    setPillars(prev => prev.map(p => {
-      let nextX = p.x - speed * delta * 7.5;
-      if (nextX < -15) {
-        nextX = 18 + Math.random() * 6;
+    setEnvItems(prev => prev.map(item => {
+      let nextX = item.x - speed * delta * 7.5;
+      if (nextX < -18) {
+        nextX = 18 + Math.random() * 6; // Recycle back to screen-right
       }
-      return { ...p, x: nextX };
+      return { ...item, x: nextX };
     }));
   });
 
@@ -396,27 +464,25 @@ function CaveEnvironment({ speed, isRunning }) {
         <meshStandardMaterial color="#4ade80" roughness={0.95} />
       </mesh>
 
-      {/* Parallax background hills/trees */}
-      {pillars.map(p => (
-        <group key={p.id} position={[p.x, 0.4, p.z]} scale={p.scale}>
-          {/* Green Hill */}
-          <mesh castShadow receiveShadow>
-            <coneGeometry args={[1.6, 2.2, 5]} />
-            <meshStandardMaterial color="#4ade80" roughness={0.9} />
-          </mesh>
-          {/* Pine tree on the hill */}
-          <group position={[0, 1.0, 0.1]} scale={0.4}>
-            <mesh castShadow>
-              <cylinderGeometry args={[0.1, 0.15, 0.8, 8]} />
-              <meshStandardMaterial color="#78350f" />
-            </mesh>
-            <mesh position={[0, 0.8, 0]} castShadow>
-              <coneGeometry args={[0.6, 1.2, 8]} />
-              <meshStandardMaterial color="#166534" />
-            </mesh>
+      {/* Render the recycled low-poly decorations */}
+      {nodes && envItems.map(item => {
+        const targetNode = nodeMap[item.type];
+        if (!targetNode) return null;
+        
+        // Fences or Lanterns might look better with some rotation
+        const rotationY = item.type === 'fence' ? Math.PI / 2 : 0;
+
+        return (
+          <group 
+            key={item.id} 
+            position={[item.x, item.y, item.z]} 
+            scale={item.scale}
+            rotation={[0, rotationY, 0]}
+          >
+            <primitive object={targetNode.clone()} />
           </group>
-        </group>
-      ))}
+        );
+      })}
     </group>
   );
 }
