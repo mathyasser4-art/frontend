@@ -245,7 +245,7 @@ function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning
         object={clonedScene} 
         scale={[scale * 0.55, scale * 0.8, scale * 0.55]} 
         position={[0, offsetY, 0]} 
-        rotation={[0, -Math.PI / 2, 0]} // Face the running direction
+        rotation={[0, 0, 0]} // Face the running direction
       />
     </group>
   );

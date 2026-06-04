@@ -155,7 +155,16 @@ const Navbar = () => {
 
                 <div className='nav-right-side d-flex align-items-center'>
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn">HOMEWORK</div></Link> : null}
-                    {role === 'Teacher' ? <Link to={'/teacher/registration'} onClick={() => soundEffects.playClick()}><div className="teachers-btn">ADD STUDENTS</div></Link> : null}
+                    {role === 'Teacher' ? (
+                        <>
+                            <Link to={'/dashboard-school/class'} onClick={() => soundEffects.playClick()}>
+                                <div className="homework-btn" style={{ backgroundColor: '#3b82f6', border: 'none', marginRight: '10px' }}>CLASSES</div>
+                            </Link>
+                            <Link to={'/teacher/registration'} onClick={() => soundEffects.playClick()}>
+                                <div className="teachers-btn">ADD STUDENTS</div>
+                            </Link>
+                        </>
+                    ) : null}
                     {role === 'Teacher' ? (
                         <div className="create-homework-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateHomework(true); }}>
                             CREATE HW

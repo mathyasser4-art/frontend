@@ -36,12 +36,16 @@ function Class() {
     useEffect(() => {
         const getAllClass = () => {
             getClass(setLoading, setAllClass)
-            getTeacherToClass(setTeacherLoading, setAllTeacher)
+            if (role !== 'Teacher') {
+                getTeacherToClass(setTeacherLoading, setAllTeacher)
+            } else {
+                setTeacherLoading(false)
+            }
         }
         if (isAuth) {
             getAllClass()
         }
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [role]) // eslint-disable-line react-hooks/exhaustive-deps
 
     // add class func start
     const openAddPopup = () => {
@@ -232,14 +236,18 @@ function Class() {
                             <div key={item._id} className="class-item d-flex justify-content-space-between align-items-center">
                                 <p>{item.class}</p>
                                 <div className="class-icon d-flex align-items-center">
-                                    <i className="fa fa-plus" onClick={() => openAddToPopup(item.class, item._id)} aria-hidden="true"></i>
+                                    {role !== 'Teacher' && (
+                                        <i className="fa fa-plus" onClick={() => openAddToPopup(item.class, item._id)} aria-hidden="true"></i>
+                                    )}
                                     <i className="fa fa-pencil" onClick={() => openUpdatePopup(item.class, item._id)} aria-hidden="true"></i>
                                     <i className="fa fa-trash" onClick={() => openRemovePopup(item.class, item._id)} aria-hidden="true"></i>
                                     <div className="dropdown">
                                         <button className="dropbtn">▼</button>
                                         <div className="dropdown-content">
                                             <p onClick={() => openStudentListPopup(item._id)}>Show Students</p>
-                                            <p onClick={() => openTeacherListPopup(item._id, item.teachers)}>Show Teachers</p>
+                                            {role !== 'Teacher' && (
+                                                <p onClick={() => openTeacherListPopup(item._id, item.teachers)}>Show Teachers</p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
