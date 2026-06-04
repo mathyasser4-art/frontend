@@ -19,6 +19,7 @@ function Teacher() {
     const [teacherEmail, setTeacherEmail] = useState('')
     const [teacherPassword, setTeacherPassword] = useState('')
     const [subject, setSubject] = useState('')
+    const [maxStudents, setMaxStudents] = useState('')
     const [searchValue, setSearchValue] = useState('')
     const [teacherID, setTeacherID] = useState('')
     const [allTeacher, setAllTeacher] = useState([])
@@ -52,6 +53,7 @@ function Teacher() {
         setTeacherPassword('')
         setError(null)
         setSubject('')
+        setMaxStudents('')
         document.querySelector('.add-student-popup').classList.replace('d-none', 'd-flex')
         setTimeout(() => {
             document.querySelector('.add-student-popup').classList.remove('student-popup-hide')
@@ -72,18 +74,25 @@ function Teacher() {
             setError('All field is required!!')
         } else {
             const subjectID = allSubject.filter(e => e.schoolSubjectName === subject)[0]._id
-            const data = { userName: teacherName, email: teacherEmail, password: teacherPassword, subject: subjectID }
+            const data = { 
+                userName: teacherName, 
+                email: teacherEmail, 
+                password: teacherPassword, 
+                subject: subjectID,
+                maxStudents: maxStudents !== '' ? Number(maxStudents) : 0
+            }
             addTeacher(data, setError, setLoadingOperation, closeAddPopup, pageNumber, setAllTeacher, setTeacherNumber, setTotalPage)
         }
     }
     // add student func start
 
     // update student func start
-    const openUpdatePopup = (teacherID, teacherName, teacherEmail, subject) => {
+    const openUpdatePopup = (teacherID, teacherName, teacherEmail, subject, maxStudentsVal) => {
         setTeacherID(teacherID)
         setTeacherName(teacherName)
         setTeacherEmail(teacherEmail)
         setSubject(subject)
+        setMaxStudents(maxStudentsVal !== undefined && maxStudentsVal !== null ? maxStudentsVal : '')
         setTeacherPassword('')
         setError(null)
         document.querySelector('.update-student-popup').classList.replace('d-none', 'd-flex')
@@ -106,7 +115,13 @@ function Teacher() {
             setError('All field is required!!')
         } else {
             const subjectID = allSubject.filter(e => e.schoolSubjectName === subject)[0]._id
-            const data = { userName: teacherName, email: teacherEmail, password: teacherPassword !== '' ? teacherPassword : undefined, subject: subjectID }
+            const data = { 
+                userName: teacherName, 
+                email: teacherEmail, 
+                password: teacherPassword !== '' ? teacherPassword : undefined, 
+                subject: subjectID,
+                maxStudents: maxStudents !== '' ? Number(maxStudents) : 0
+            }
             updateTeacher(data, setError, setLoadingOperation, closeUpdatePopup, pageNumber, setAllTeacher, setTeacherNumber, teacherID, setTotalPage)
         }
     }
@@ -198,6 +213,7 @@ function Teacher() {
                                 <td>Name ⌄</td>
                                 <td>Email ⌄</td>
                                 <td>Subject ⌄</td>
+                                <td>Student Limit ⌄</td>
                                 <td>Classes ⌄</td>
                                 <td>Action ⌄</td>
                             </tr>
@@ -214,19 +230,20 @@ function Teacher() {
                                             </td>
                                             <td>{item.email}</td>
                                             <td>{item?.subject?.schoolSubjectName}</td>
+                                            <td>{item.maxStudents || 0}</td>
                                             <td>
                                                 <div className="d-flex align-items-center" style={{ color: '#5d17eb' }}>
                                                     {expandedTeacherId === item._id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                                 </div>
                                             </td>
                                             <td className="teacher-action" onClick={(e) => e.stopPropagation()}>
-                                                <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item?.subject?.schoolSubjectName)} aria-hidden="true"></i>
+                                                <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item?.subject?.schoolSubjectName, item.maxStudents)} aria-hidden="true"></i>
                                                 <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true"></i>
                                             </td>
                                         </tr>
                                         {expandedTeacherId === item._id && (
                                             <tr className="expanded-content-row">
-                                                <td colSpan="6">
+                                                <td colSpan="7">
                                                     <div className="teacher-classes-container">
                                                         <h4 className="classes-title">Assigned Classes</h4>
                                                         {item.classList && item.classList.length > 0 ? (
@@ -280,6 +297,8 @@ function Teacher() {
                             <input type="checkbox" onClick={showPassword} />
                             <p>Show Password</p>
                         </div>
+                        <label>Student Limit</label>
+                        <input type="number" value={maxStudents} onChange={(e) => setMaxStudents(e.target.value)} placeholder='e.g. 50' min="0" />
                         <div className="add-popup-select-class">
                             <select value={subject} onChange={(e) => setSubject(e.target.value)}>
                                 <option>Select Subject</option>
@@ -318,6 +337,8 @@ function Teacher() {
                             <input type="checkbox" onClick={showUpdatePassword} />
                             <p>Show Password</p>
                         </div>
+                        <label>Student Limit</label>
+                        <input type="number" value={maxStudents} onChange={(e) => setMaxStudents(e.target.value)} placeholder='e.g. 50' min="0" />
                         <div className="update-popup-select-class">
                             <select value={subject} onChange={(e) => setSubject(e.target.value)}>
                                 {subject ? <option>{subject}</option> : <option>Select Subject</option>}
