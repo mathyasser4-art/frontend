@@ -186,7 +186,7 @@ function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning
       box.getSize(size);
       const height = size.y;
       if (height > 0) {
-        const targetHeight = 1.0; // Perfect visual size for the bunny
+        const targetHeight = 0.5; // Perfect visual size for the bunny
         const newScale = targetHeight / height;
         setScale(newScale);
         
