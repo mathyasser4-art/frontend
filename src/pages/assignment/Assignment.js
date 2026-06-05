@@ -736,6 +736,41 @@ function Assignment() {
     }
   }, [forceFlashMode, thisQuestion, flashSpeed, flashMode]);
 
+  // Handle physical keyboard inputs for complete/essay answers
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (thisQuestion?.typeOfAnswer !== 'Essay') {
+        return;
+      }
+      // If typing in another input, ignore
+      if (document.activeElement && document.activeElement.tagName === 'INPUT' && !document.activeElement.classList.contains('input-style')) {
+        return;
+      }
+
+      // If focused on the main input, let native input handle it
+      if (document.activeElement && document.activeElement.classList.contains('input-style')) {
+        if (e.key === 'Enter') {
+          checkedQuestion();
+        }
+        return;
+      }
+
+      if ((e.key >= '0' && e.key <= '9') || e.key === '-' || e.key === '.' || e.key === ',') {
+        setAnswer(prev => prev + e.key);
+      } else if (e.key === 'Backspace') {
+        setAnswer(prev => prev.slice(0, -1));
+      } else if (e.key === 'Enter') {
+        checkedQuestion();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [thisQuestion, answer, thisQuestionNumber]);
+
   const timerCount = () => { /* not used (react-timer-hook handles it) */ }
 
   // ============================================================
@@ -1521,25 +1556,31 @@ function Assignment() {
               {thisQuestion?.typeOfAnswer === 'Essay' ? (
                 <div className='math-keyboard'>
                   <p>Write your answer here</p>
-                  <div className="answer-input-container" style={{ position: 'relative', width: '100%' }}>
+                  <form 
+                    onSubmit={(e) => { e.preventDefault(); checkedQuestion(); }}
+                    className="answer-input-container" 
+                    style={{ position: 'relative', width: '100%' }}
+                  >
                     <input
                       ref={inputRef}
                       type="text"
                       value={answer}
+                      onChange={(e) => setAnswer(e.target.value)}
                       onFocus={(e) => handleInputFocus(e)}
-                      readOnly
+                      readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
                       placeholder={isArabic ? 'Enter the answer' : 'Enter the answer'}
                       className="input-style"
+                      autoFocus
                     />
                     {showKeyboard && (
                       <div ref={keyboardRef} className="keyboard-container">
                         {renderDigits()}
-                        <button className='question-form-btn keyboard-next-btn digit-next' onClick={() => { checkedQuestion(); }}>
+                        <button type="submit" className='question-form-btn keyboard-next-btn digit-next'>
                           {checkLoading ? <span className="loader"></span> : <ArrowRight size={24} />}
                         </button>
                       </div>
                     )}
-                  </div>
+                  </form>
                 </div>
               ) : null}
               {(thisQuestion?.typeOfAnswer !== 'MCQ' && thisQuestion?.typeOfAnswer !== 'Graph') && <p className='text-error'>{error}</p>}

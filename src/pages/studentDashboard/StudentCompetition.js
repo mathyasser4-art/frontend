@@ -68,6 +68,7 @@ function StudentCompetition() {
     const answersMapRef = useRef({});
     const [localFinishedAt, setLocalFinishedAt] = useState(null);
     const wakeLockRef = useRef(null);
+    const currentQuestion = questions[currentIndex];
 
     // Robust, gesture-authorized Screen Wake Lock request helper
     const requestWakeLock = async () => {
@@ -312,6 +313,41 @@ function StudentCompetition() {
             }
         }
     }, [status, timerRemaining]);
+
+    // Handle physical keyboard inputs for complete/essay answers in competition
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (status !== 'active') return;
+            if (!currentQuestion) return;
+            if (currentQuestion.typeOfAnswer === 'MCQ' || currentQuestion.typeOfAnswer === 'Graph') return;
+
+            // If typing in another input, ignore
+            if (document.activeElement && document.activeElement.tagName === 'INPUT' && !document.activeElement.classList.contains('preview-input')) {
+                return;
+            }
+
+            // If focused on the main preview input, let native input handle it
+            if (document.activeElement && document.activeElement.classList.contains('preview-input')) {
+                if (e.key === 'Enter') {
+                    handleSubmitAnswer();
+                }
+                return;
+            }
+
+            if ((e.key >= '0' && e.key <= '9') || e.key === '-' || e.key === '.' || e.key === ',') {
+                setAnswer(prev => prev + e.key);
+            } else if (e.key === 'Backspace') {
+                setAnswer(prev => prev.slice(0, -1));
+            } else if (e.key === 'Enter') {
+                handleSubmitAnswer();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [status, currentQuestion, answer, currentIndex]);
 
     const handleDigitClick = (digit) => {
         setAnswer(prev => prev + digit);
@@ -615,7 +651,6 @@ function StudentCompetition() {
     const podiumWinners = sortedParticipants.slice(0, 3);
     const myRank = sortedParticipants.findIndex(p => String(p.student?._id || p.student) === String(studentID)) + 1;
     const myDetails = sortedParticipants.find(p => String(p.student?._id || p.student) === String(studentID));
-    const currentQuestion = questions[currentIndex];
 
     // Helper to render current question
     const renderAbacusQuestion = () => {
@@ -827,14 +862,19 @@ function StudentCompetition() {
                                     </div>
                                 </div>
                             ) : (
-                                <>
+                                <form 
+                                    onSubmit={(e) => { e.preventDefault(); handleSubmitAnswer(); }}
+                                    style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}
+                                >
                                     <div className="answer-preview-screen">
                                         <input 
                                             type="text" 
                                             value={answer}
-                                            readOnly 
+                                            onChange={(e) => setAnswer(e.target.value)}
+                                            readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
                                             placeholder="?" 
                                             className="preview-input"
+                                            autoFocus
                                         />
                                     </div>
 
@@ -842,26 +882,27 @@ function StudentCompetition() {
                                         {[7, 8, 9, 4, 5, 6, 1, 2, 3].map(digit => (
                                             <button 
                                                 key={digit} 
+                                                type="button"
                                                 onClick={() => handleDigitClick(digit.toString())}
                                                 className="key-btn digit-key"
                                             >
                                                 {digit}
                                             </button>
                                         ))}
-                                        <button onClick={() => handleDigitClick('0')} className="key-btn digit-key">0</button>
-                                        <button onClick={handleDelete} className="key-btn action-key-clear">⌫</button>
-                                        <button onClick={handleClear} className="key-btn action-key-clear">C</button>
+                                        <button type="button" onClick={() => handleDigitClick('0')} className="key-btn digit-key">0</button>
+                                        <button type="button" onClick={handleDelete} className="key-btn action-key-clear">⌫</button>
+                                        <button type="button" onClick={handleClear} className="key-btn action-key-clear">C</button>
                                     </div>
 
                                     <button 
-                                        onClick={handleSubmitAnswer}
+                                        type="submit"
                                         className="submit-answer-btn-action"
                                         disabled={!answer.trim()}
                                     >
                                         <span>{currentIndex === questions.length - 1 ? 'Submit & Finish' : 'Next'}</span>
                                         <ArrowRight size={18} />
                                     </button>
-                                </>
+                                </form>
                             )}
                         </div>
                     </div>

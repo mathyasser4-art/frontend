@@ -618,7 +618,15 @@ function MathRacer() {
         return;
       }
 
-      if (e.key >= '0' && e.key <= '9') {
+      // If they are focused on the racer essay input, let the native input events handle it
+      if (document.activeElement && document.activeElement.classList.contains('racer-essay-input')) {
+        if (e.key === 'Enter') {
+          handleEssaySubmit();
+        }
+        return;
+      }
+
+      if ((e.key >= '0' && e.key <= '9') || e.key === '-' || e.key === '.' || e.key === ',') {
         setEssayAnswer(prev => prev + e.key);
       } else if (e.key === 'Backspace') {
         setEssayAnswer(prev => prev.slice(0, -1));
@@ -1025,17 +1033,25 @@ function MathRacer() {
                 /* ==========================================
                    ESSAY / NUMERIC keypad input view
                    ========================================== */
-                <div className="racer-essay-input-container">
+                <form 
+                  onSubmit={(e) => { 
+                    e.preventDefault(); 
+                    handleEssaySubmit(essayAnswer); 
+                  }} 
+                  className="racer-essay-input-container"
+                >
                   <div className="racer-essay-input-row">
                     <input 
                       type="text" 
                       value={essayAnswer} 
-                      readOnly 
+                      onChange={(e) => setEssayAnswer(e.target.value)}
+                      readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
                       placeholder="Type Answer..." 
                       className="racer-essay-input"
+                      autoFocus
                     />
                     <button 
-                      onClick={() => handleEssaySubmit(essayAnswer)} 
+                      type="submit"
                       className="racer-essay-submit-btn"
                     >
                       OK
@@ -1047,6 +1063,7 @@ function MathRacer() {
                     {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'].map(num => (
                       <button 
                         key={num} 
+                        type="button"
                         onClick={() => setEssayAnswer(prev => prev + num)}
                         className="racer-keypad-btn digit"
                       >
@@ -1054,13 +1071,14 @@ function MathRacer() {
                       </button>
                     ))}
                     <button 
+                      type="button"
                       onClick={() => setEssayAnswer(prev => prev.slice(0, -1))}
                       className="racer-keypad-btn clear"
                     >
                       ×
                     </button>
                   </div>
-                </div>
+                </form>
               ) : currentProblem.typeOfAnswer === 'Graph' ? (
                 /* ==========================================
                    GRAPH image choices

@@ -491,6 +491,41 @@ function Question() {
         }
     }, [thisQuestion?._id, flashMode, hasFlashedOnce]);
 
+    // Handle physical keyboard inputs for complete/essay answers
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (thisQuestion?.typeOfAnswer !== 'Essay') {
+                return;
+            }
+            // If typing in another input (like assignment title/pocket), ignore
+            if (document.activeElement && document.activeElement.tagName === 'INPUT' && !document.activeElement.classList.contains('input-style')) {
+                return;
+            }
+
+            // If focused on the main input, let native input handle it
+            if (document.activeElement && document.activeElement.classList.contains('input-style')) {
+                if (e.key === 'Enter') {
+                    checkedQuestion();
+                }
+                return;
+            }
+
+            if ((e.key >= '0' && e.key <= '9') || e.key === '-' || e.key === '.' || e.key === ',') {
+                setAnswer(prev => prev + e.key);
+            } else if (e.key === 'Backspace') {
+                setAnswer(prev => prev.slice(0, -1));
+            } else if (e.key === 'Enter') {
+                checkedQuestion();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [thisQuestion, answer, thisQuestionNumber]);
+
     const nextQuestion = () => {
         soundEffects.playClick();
         const activeNumber = parseInt(document.querySelector('.active-question').innerText);
@@ -1012,18 +1047,30 @@ function Question() {
 
                             {thisQuestion?.typeOfAnswer === 'Essay' && (
                                 <div className='math-keyboard'>
-                                    <div style={{ position: 'relative', width: '100%' }}>
+                                    <form 
+                                        onSubmit={(e) => { e.preventDefault(); checkedQuestion(); }}
+                                        style={{ position: 'relative', width: '100%' }}
+                                    >
                                         <input
-                                            ref={inputRef} type='text' value={answer} onFocus={handleInputFocus} readOnly
-                                            placeholder={t('questionPage.enterAnswer')} className='input-style'
+                                            ref={inputRef} 
+                                            type='text' 
+                                            value={answer} 
+                                            onChange={(e) => setAnswer(e.target.value)}
+                                            onFocus={handleInputFocus} 
+                                            readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
+                                            placeholder={t('questionPage.enterAnswer')} 
+                                            className='input-style'
+                                            autoFocus
                                         />
                                         {showKeyboard && (
                                             <div ref={keyboardRef} className='keyboard-container'>
                                                 {renderDigits()}
-                                                <button className='question-form-btn keyboard-next-btn digit-next' onClick={() => { checkedQuestion(); }}>{checkLoading ? <span className='loader'></span> : <ArrowRight size={24} />}</button>
+                                                <button type="submit" className='question-form-btn keyboard-next-btn digit-next'>
+                                                    {checkLoading ? <span className='loader'></span> : <ArrowRight size={24} />}
+                                                </button>
                                             </div>
                                         )}
-                                    </div>
+                                    </form>
                                 </div>
                             )}
                             {(thisQuestion?.typeOfAnswer !== 'MCQ' && thisQuestion?.typeOfAnswer !== 'Graph') && <p className='text-error'>{error}</p>}
