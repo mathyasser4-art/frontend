@@ -170,7 +170,7 @@
   max-width: 900px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.8rem;
   animation: fadeIn 0.4s ease-out;
 }
 
@@ -243,7 +243,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.8rem;
 }
 
 /* Target Panel */
@@ -251,10 +251,10 @@
   text-align: center;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 1.25rem 2rem;
+  border-radius: 20px;
+  padding: 0.6rem 1.5rem;
   width: 100%;
-  max-width: 450px;
+  max-width: 400px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
 }
@@ -269,13 +269,13 @@
 }
 
 .target-number-badge {
-  font-size: 3.5rem;
+  font-size: 2.75rem;
   font-weight: 900;
   color: #fff;
   text-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
   background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
-  padding: 0.25rem 2.5rem;
-  border-radius: 16px;
+  padding: 0.15rem 2rem;
+  border-radius: 12px;
   display: inline-block;
   box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
   letter-spacing: 2px;
@@ -286,11 +286,11 @@
    ========================================================================== */
 .abacus-board-card {
   width: 100%;
-  max-width: 620px;
+  max-width: 540px;
   background: rgba(15, 23, 42, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 28px;
-  padding: 2.25rem;
+  border-radius: 24px;
+  padding: 1.25rem 1.75rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   position: relative;
   box-sizing: border-box;
@@ -305,8 +305,8 @@
 /* Polished Mahogany Wood Frame style */
 .abacus-wooden-outer {
   background: linear-gradient(135deg, #5c2d18 0%, #3a1b0e 50%, #221008 100%);
-  border-radius: 20px;
-  padding: 18px;
+  border-radius: 16px;
+  padding: 10px;
   box-shadow: 
     inset 2px 2px 4px rgba(255,255,255,0.25),
     inset -2px -2px 4px rgba(0,0,0,0.6),
@@ -315,8 +315,8 @@
 
 .abacus-wooden-inner {
   background: #111827; /* Deep inner felt/shadow */
-  border-radius: 12px;
-  padding: 10px;
+  border-radius: 10px;
+  padding: 6px;
   border: 3px solid #27130a;
   position: relative;
   box-shadow: inset 0 10px 25px rgba(0,0,0,0.9);
@@ -326,7 +326,7 @@
 /* Horizontal Beam Divider */
 .abacus-beam-divider {
   position: absolute;
-  top: 98px; /* Positioned between upper deck and lower deck */
+  top: 76px; /* Positioned between upper deck and lower deck */
   left: 0;
   right: 0;
   height: 12px;
@@ -358,7 +358,7 @@
   justify-content: space-around;
   position: relative;
   z-index: 5;
-  min-height: 280px;
+  min-height: 225px;
   padding: 0 10px;
 }
 
@@ -395,14 +395,14 @@
 
 /* Upper Deck Container (top 5-bead) */
 .upper-deck-container {
-  height: 68px;
+  height: 50px;
   position: relative;
-  margin-bottom: 24px; /* Space for the divider gap */
+  margin-bottom: 16px; /* Space for the divider gap */
 }
 
 /* Lower Deck Container (bottom four 1-beads) */
 .lower-deck-container {
-  height: 180px;
+  height: 140px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -413,8 +413,8 @@
    DIAMOND / SOROBAN BEAD SHAPING
    ========================================================================== */
 .abacus-bead {
-  width: 48px;
-  height: 25px;
+  width: 44px;
+  height: 20px;
   border-radius: 50% / 40%; /* Soroban diamond/biconical shape */
   background: linear-gradient(135deg, var(--bead-color) 0%, rgba(0, 0, 0, 0.4) 100%);
   border: 1px solid rgba(0, 0, 0, 0.4);
@@ -426,7 +426,7 @@
   z-index: 15;
   transition: transform 0.22s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
-  margin: 3px 0;
+  margin: 2px 0;
 }
 
 /* Center rod shadow effect inside bead */
@@ -459,9 +459,8 @@
   filter: brightness(1.15);
 }
 
-/* Bead Sliding Transitions */
 .bead-active-down {
-  transform: translateY(32px); /* Slides down to touch the divider bar */
+  transform: translateY(24px); /* Slides down to touch the divider bar */
   box-shadow: 
     inset 0 3px 5px rgba(255, 255, 255, 0.35),
     inset 0 -3px 5px rgba(0, 0, 0, 0.6),
@@ -469,7 +468,7 @@
 }
 
 .bead-active-up {
-  transform: translateY(-28px); /* Slides up to touch the divider bar */
+  transform: translateY(-20px); /* Slides up to touch the divider bar */
   box-shadow: 
     inset 0 3px 5px rgba(255, 255, 255, 0.35),
     inset 0 -3px 5px rgba(0, 0, 0, 0.6),
@@ -560,7 +559,7 @@
   display: flex;
   gap: 1.25rem;
   width: 100%;
-  max-width: 620px;
+  max-width: 540px;
 }
 
 .action-btn-modern {
@@ -569,10 +568,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  padding: 1rem 1.5rem;
-  font-size: 1.1rem;
+  padding: 0.7rem 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
-  border-radius: 16px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;

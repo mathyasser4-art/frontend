@@ -13,10 +13,13 @@ function Login() {
     const navigate = useNavigate()
 
     const showAlert = () => {
-        document.querySelector('.alert').classList.add('alert-active')
-        setTimeout(() => {
-            document.querySelector('.alert').classList.remove('alert-active')
-        }, 3500);
+        const alertEl = document.querySelector('.alert')
+        if (alertEl) {
+            alertEl.classList.add('alert-active')
+            setTimeout(() => {
+                alertEl.classList.remove('alert-active')
+            }, 3500);
+        }
     }
 
     const handleLogin = () => {
