@@ -152,20 +152,20 @@ const Navbar = () => {
                 </div>
 
                 <div className='nav-right-side d-flex align-items-center'>
-                    {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn">HOMEWORK</div></Link> : null}
+                    {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Teacher' ? (
                         <>
                             <Link to={'/dashboard-school/class'} onClick={() => soundEffects.playClick()}>
                                 <div className="homework-btn" style={{ backgroundColor: '#3b82f6', border: 'none', marginRight: '10px' }}>CLASSES</div>
                             </Link>
                             <Link to={'/teacher/registration'} onClick={() => soundEffects.playClick()}>
-                                <div className="teachers-btn">ADD STUDENTS</div>
+                                <div className="teachers-btn"><span className="text-desktop">ADD STUDENTS</span><span className="text-mobile">+STUDENTS</span></div>
                             </Link>
                         </>
                     ) : null}
                     {role === 'Teacher' ? (
                         <div className="create-homework-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateHomework(true); }}>
-                            CREATE HW
+                            <span className="text-desktop">CREATE HW</span><span className="text-mobile">+HW</span>
                         </div>
                     ) : null}
                     {role === 'Teacher' ? (
@@ -174,15 +174,15 @@ const Navbar = () => {
                         </div>
                     ) : null}
 
-                    {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn">HOMEWORK REPORTS</div></Link> : null}
+                    {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn"><span className="text-desktop">HOMEWORK REPORTS</span><span className="text-mobile">REPORTS</span></div></Link> : null}
                     {role === 'Student' ? (
                         <>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn">GAMES</div></Link>
-                            <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn">HOMEWORK</div></Link>
+                            <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link>
                         </>
                     ) : null}
-                    {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn">HOMEWORK</div></Link> : null}
-                    {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'} onClick={() => soundEffects.playClick()}><div className="homework-btn">HOMEWORK</div></Link> : null}
+                    {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link> : null}
+                    {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link> : null}
                     {isAuth ? (
                       <Link to={'/user/info'} onClick={() => soundEffects.playClick()}>
                         <div className="nav-btn nav-btn-profile">

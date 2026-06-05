@@ -16,7 +16,7 @@ import alerm from '../../img/alerm.PNG'
 import MyTimer from '../../components/timer/Timer';
 import AbacusSimulator from '../../components/abacus/AbacusSimulator';
 import soundEffects from '../../utils/soundEffects';
-import { Calculator, CircleCheck, ArrowRight, Maximize2, Minimize2, X, Printer } from 'lucide-react';
+import { Calculator, CircleCheck, ArrowRight, Maximize2, Minimize2, X, Printer, FileText } from 'lucide-react';
 import '../../reusable.css'
 import './Assignment.css'
 import html2canvas from 'html2canvas';
@@ -1409,37 +1409,37 @@ function Assignment() {
 
           <div className="question-content-wrapper d-flex">
             <div className="question-form">
-            <div className="question-form-head d-flex justify-content-space-between align-items-center">
-              <p className="question-progress-label notranslate" translate="no">{currentQuestionLabel}</p>
-              <div className="end-head d-flex align-items-center">
-                {role === 'Teacher' && thisQuestion && (
-                  <div ref={reportRef} style={{ position: 'relative', display: 'inline-block' }}>
-                    <div 
-                      title="Report Question Error"
-                      className={`report-error-button ${flaggedQuestions[thisQuestion._id] ? 'flagged-' + flaggedQuestions[thisQuestion._id] : ''}`} 
-                      onClick={() => { soundEffects.playClick(); setShowReportDropdown(!showReportDropdown); }}
-                    >
-                      <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                    </div>
-                    {showReportDropdown && (
-                      <div className="report-dropdown">
-                        <button 
-                          className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'answer' ? 'active' : ''}`}
-                          onClick={() => handleReportQuestion('answer')}
-                        >
-                          🔴 Wrong Answer
-                        </button>
-                        <button 
-                          className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'skill' ? 'active' : ''}`}
-                          onClick={() => handleReportQuestion('skill')}
-                        >
-                          🟠 Wrong Skill
-                        </button>
-                      </div>
-                    )}
+              {role === 'Teacher' && thisQuestion && (
+                <div ref={reportRef} className="report-error-outer-wrapper">
+                  <div 
+                    title="Report Question Error"
+                    className={`report-paper-button ${flaggedQuestions[thisQuestion._id] ? 'flagged-' + flaggedQuestions[thisQuestion._id] : ''}`} 
+                    onClick={() => { soundEffects.playClick(); setShowReportDropdown(!showReportDropdown); }}
+                  >
+                    <FileText size={18} />
                   </div>
-                )}
-                {!examCompleted && !showCheckingOverlay && (
+                  {showReportDropdown && (
+                    <div className="report-dropdown">
+                      <button 
+                        className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'answer' ? 'active' : ''}`}
+                        onClick={() => handleReportQuestion('answer')}
+                      >
+                        🔴 Wrong Answer
+                      </button>
+                      <button 
+                        className={`report-dropdown-item ${flaggedQuestions[thisQuestion._id] === 'skill' ? 'active' : ''}`}
+                        onClick={() => handleReportQuestion('skill')}
+                      >
+                        🟠 Wrong Skill
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="question-form-head d-flex justify-content-space-between align-items-center">
+                <p className="question-progress-label notranslate" translate="no">{currentQuestionLabel}</p>
+                <div className="end-head d-flex align-items-center">
+                  {!examCompleted && !showCheckingOverlay && (
 
                   <button
                     type="button"

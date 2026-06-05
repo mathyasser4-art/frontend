@@ -513,20 +513,20 @@ nav .nav-container img {
 /* Dynamic Mobile Responsiveness for all 3D buttons */
 @media only screen and (max-width: 640px) {
   nav .nav-container {
-    padding: 0.4rem 0.8rem !important;
+    padding: 0.4rem 0.6rem !important;
     height: auto !important;
-    min-height: 55px !important;
+    min-height: 70px !important;
   }
 
   nav .nav-container img {
-    width: 130px !important; /* Increased logo size slightly on mobile */
-    max-height: 35px !important;
+    width: 135px !important;
+    max-height: 38px !important;
   }
 
   .nav-right-side {
-    gap: 0.25rem !important;
+    gap: 0.15rem !important;
     display: flex !important;
-    flex-wrap: wrap !important; /* Allow wrap so buttons wrap cleanly on phone screens */
+    flex-wrap: nowrap !important; /* Force single line layout */
     align-items: center !important;
     justify-content: flex-end !important;
   }
@@ -551,16 +551,17 @@ nav .nav-container img {
   .nav-btn-profile {
     padding: 0.2rem 0.5rem !important;
     width: auto !important;
-    height: 28px !important; /* Increased height significantly */
+    height: 34px !important; /* Increased height significantly */
     min-width: unset !important;
-    margin-right: 0.05rem !important;
-    border-radius: 6px !important; /* Scaled up for larger height */
-    font-size: 9.5px !important; /* Increased font size significantly */
+    margin-right: 0.02rem !important;
+    border-radius: 6px !important;
+    font-size: 10.5px !important; /* Increased font size significantly */
     font-weight: 800 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
 
   /* Proportional 3D shadow depths on small buttons */
@@ -722,38 +723,13 @@ nav .nav-container img {
 /* Extra small devices - further scaling down to fit horizontally */
 @media only screen and (max-width: 480px) {
   nav .nav-container {
-    padding: 0.35rem 0.6rem !important;
-    min-height: 50px !important;
+    padding: 0.35rem 0.5rem !important;
+    min-height: 64px !important;
   }
 
   nav .nav-container img {
-    width: 110px !important; /* Increased logo size on smaller devices */
-    max-height: 30px !important;
-  }
-
-  .homework-btn, 
-  .teachers-btn, 
-  .games-btn, 
-  .create-homework-nav-btn, 
-  .create-battle-nav-btn,
-  .nav-btn,
-  .nav-btn-profile {
-    padding: 0.18rem 0.45rem !important;
-    height: 25px !important; /* Taller height */
-    font-size: 8.5px !important; /* Taller font size */
-    border-radius: 5px !important;
-  }
-}
-
-@media only screen and (max-width: 360px) {
-  nav .nav-container {
-    padding: 0.3rem 0.5rem !important;
-    min-height: 46px !important;
-  }
-
-  nav .nav-container img {
-    width: 95px !important; /* Increased logo size on tiny devices */
-    max-height: 26px !important;
+    width: 115px !important;
+    max-height: 32px !important;
   }
 
   .homework-btn, 
@@ -764,8 +740,33 @@ nav .nav-container img {
   .nav-btn,
   .nav-btn-profile {
     padding: 0.15rem 0.35rem !important;
-    height: 22px !important; /* Taller height */
-    font-size: 7.5px !important; /* Taller font size */
+    height: 30px !important; /* Taller height */
+    font-size: 9px !important; /* Taller font size */
+    border-radius: 5px !important;
+  }
+}
+
+@media only screen and (max-width: 360px) {
+  nav .nav-container {
+    padding: 0.3rem 0.4rem !important;
+    min-height: 58px !important;
+  }
+
+  nav .nav-container img {
+    width: 95px !important;
+    max-height: 26px !important;
+  }
+
+  .homework-btn, 
+  .teachers-btn, 
+  .games-btn, 
+  .create-homework-nav-btn, 
+  .create-battle-nav-btn,
+  .nav-btn,
+  .nav-btn-profile {
+    padding: 0.1rem 0.22rem !important;
+    height: 26px !important; /* Taller height */
+    font-size: 8px !important; /* Taller font size */
     border-radius: 4px !important;
   }
 }
@@ -1050,4 +1051,23 @@ nav .nav-container img {
     border-radius: 8px !important;
   }
 }
+
+/* Helper classes for toggling text dynamically based on screen width */
+@media only screen and (max-width: 640px) {
+  .text-desktop {
+    display: none !important;
+  }
+  .text-mobile {
+    display: inline !important;
+  }
+}
+@media only screen and (min-width: 641px) {
+  .text-desktop {
+    display: inline !important;
+  }
+  .text-mobile {
+    display: none !important;
+  }
+}
+
 

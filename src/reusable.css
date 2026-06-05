@@ -351,3 +351,64 @@
         background-color: hsl(200, 20%, 95%);
     }
 }
+
+/* Premium Sticky Paper Report Button Styles (shared between worksheets and assignments) */
+.report-error-outer-wrapper {
+  position: absolute;
+  right: -36px;
+  top: 55px;
+  z-index: 999;
+}
+
+.report-paper-button {
+  width: 36px;
+  height: 44px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  color: #64748b;
+}
+
+.report-paper-button:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  transform: translateX(2px);
+}
+
+.report-paper-button.flagged-answer {
+  background: linear-gradient(135deg, #ff4757, #ff6b81) !important;
+  border-color: #ff4757 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.5) !important;
+  animation: alert-blink 1.2s infinite alternate;
+}
+
+.report-paper-button.flagged-skill {
+  background: linear-gradient(135deg, #ffa502, #ff7f50) !important;
+  border-color: #ffa502 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(255, 165, 2, 0.5) !important;
+  animation: alert-blink 1.2s infinite alternate;
+}
+
+/* Adjustments for smaller screen widths / mobile devices to prevent cutting off */
+@media only screen and (max-width: 768px) {
+  .report-error-outer-wrapper {
+    right: 12px;
+    top: 65px;
+  }
+  .report-paper-button {
+    border-left: 2px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 34px;
+    height: 34px;
+  }
+}
