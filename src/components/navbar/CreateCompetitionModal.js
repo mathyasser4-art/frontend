@@ -13,7 +13,7 @@ function CreateCompetitionModal({ onClose }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const [step, setStep] = useState('type'); // 'type' | 'system' | 'unit' | 'details'
+    const [step, setStep] = useState('source'); // 'source' | 'type' | 'system' | 'unit' | 'custom-ws' | 'assignments' | 'details'
     const [questionTypeID, setQuestionTypeID] = useState('');
     const [selectedSubject, setSelectedSubject] = useState(null);
     const [selectedSystemId, setSelectedSystemId] = useState(null);
@@ -23,6 +23,11 @@ function CreateCompetitionModal({ onClose }) {
     const [unitData, setUnitData] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    // Custom worksheets and assignments
+    const [customWorksheets, setCustomWorksheets] = useState([]);
+    const [myAssignments, setMyAssignments] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+
     // Competition details
     const [selectedChapter, setSelectedChapter] = useState(null);
     const [chapterQuestions, setChapterQuestions] = useState([]);
@@ -30,6 +35,62 @@ function CreateCompetitionModal({ onClose }) {
     const [battleTimer, setBattleTimer] = useState(300);
     const [errorMsg, setErrorMsg] = useState(null);
     const [creating, setCreating] = useState(false);
+
+    const loadCustomWorksheets = () => {
+        setLoading(true);
+        setErrorMsg(null);
+        const Token = localStorage.getItem('O_authWEB');
+        fetch(`${API_BASE_URL}/chapter/custom`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.message === 'success') {
+                    setCustomWorksheets(data.chapters || []);
+                    setStep('custom-ws');
+                    setSearchQuery('');
+                } else {
+                    setErrorMsg(data.message);
+                }
+                setLoading(false);
+            })
+            .catch(err => {
+                setErrorMsg(err.message);
+                setLoading(false);
+            });
+    };
+
+    const loadMyAssignments = () => {
+        setLoading(true);
+        setErrorMsg(null);
+        const Token = localStorage.getItem('O_authWEB');
+        fetch(`${API_BASE_URL}/teacher/getAssignment`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.message === 'success') {
+                    setMyAssignments(data.allAssignment || []);
+                    setStep('assignments');
+                    setSearchQuery('');
+                } else {
+                    setErrorMsg(data.message);
+                }
+                setLoading(false);
+            })
+            .catch(err => {
+                setErrorMsg(err.message);
+                setLoading(false);
+            });
+    };
 
     // Load systems when question type is selected
     useEffect(() => {
@@ -92,7 +153,21 @@ function CreateCompetitionModal({ onClose }) {
     const handleBack = () => {
         soundEffects.playClick();
         if (step === 'details') {
-            setStep('unit');
+            if (selectedSubject) {
+                setStep('unit');
+                setSelectedChapter(null);
+                setChapterQuestions([]);
+            } else if (selectedChapter) {
+                setStep('custom-ws');
+                setSelectedChapter(null);
+                setChapterQuestions([]);
+            } else {
+                setStep('assignments');
+                setChapterQuestions([]);
+            }
+            setErrorMsg(null);
+        } else if (step === 'custom-ws' || step === 'assignments' || step === 'type') {
+            setStep('source');
             setSelectedChapter(null);
             setChapterQuestions([]);
             setErrorMsg(null);
@@ -185,25 +260,48 @@ function CreateCompetitionModal({ onClose }) {
 
                 {/* Progress */}
                 <div className="comp-wizard-progress">
-                    <div className={`comp-prog-step ${step === 'type' ? 'active' : ''} ${step !== 'type' ? 'completed' : ''}`}>
+                    <div className={`comp-prog-step ${step === 'source' ? 'active' : ''} ${step !== 'source' ? 'completed' : ''}`}>
                         <div className="comp-step-num">1</div>
-                        <span>Type</span>
+                        <span>Source</span>
                     </div>
-                    <div className="comp-prog-connector"></div>
-                    <div className={`comp-prog-step ${step === 'system' ? 'active' : ''} ${step === 'unit' || step === 'details' ? 'completed' : ''}`}>
-                        <div className="comp-step-num">2</div>
-                        <span>System</span>
-                    </div>
-                    <div className="comp-prog-connector"></div>
-                    <div className={`comp-prog-step ${step === 'unit' ? 'active' : ''} ${step === 'details' ? 'completed' : ''}`}>
-                        <div className="comp-step-num">3</div>
-                        <span>Chapter</span>
-                    </div>
-                    <div className="comp-prog-connector"></div>
-                    <div className={`comp-prog-step ${step === 'details' ? 'active' : ''}`}>
-                        <div className="comp-step-num">4</div>
-                        <span>Launch</span>
-                    </div>
+                    
+                    {step === 'custom-ws' || step === 'assignments' || (selectedChapter && !selectedSubject) ? (
+                        <>
+                            <div className="comp-prog-connector"></div>
+                            <div className={`comp-prog-step ${step === 'custom-ws' || step === 'assignments' ? 'active' : ''} ${step === 'details' ? 'completed' : ''}`}>
+                                <div className="comp-step-num">2</div>
+                                <span>Select</span>
+                            </div>
+                            <div className="comp-prog-connector"></div>
+                            <div className={`comp-prog-step ${step === 'details' ? 'active' : ''}`}>
+                                <div className="comp-step-num">3</div>
+                                <span>Launch</span>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="comp-prog-connector"></div>
+                            <div className={`comp-prog-step ${step === 'type' ? 'active' : ''} ${step !== 'type' && step !== 'source' ? 'completed' : ''}`}>
+                                <div className="comp-step-num">2</div>
+                                <span>Type</span>
+                            </div>
+                            <div className="comp-prog-connector"></div>
+                            <div className={`comp-prog-step ${step === 'system' ? 'active' : ''} ${step === 'unit' || step === 'details' ? 'completed' : ''}`}>
+                                <div className="comp-step-num">3</div>
+                                <span>System</span>
+                            </div>
+                            <div className="comp-prog-connector"></div>
+                            <div className={`comp-prog-step ${step === 'unit' ? 'active' : ''} ${step === 'details' ? 'completed' : ''}`}>
+                                <div className="comp-step-num">4</div>
+                                <span>Chapter</span>
+                            </div>
+                            <div className="comp-prog-connector"></div>
+                            <div className={`comp-prog-step ${step === 'details' ? 'active' : ''}`}>
+                                <div className="comp-step-num">5</div>
+                                <span>Launch</span>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Body */}
@@ -212,6 +310,116 @@ function CreateCompetitionModal({ onClose }) {
                         <div className="comp-wizard-loader">
                             <div className="comp-spinner"></div>
                             <p>Loading...</p>
+                        </div>
+                    )}
+
+                    {/* STEP 0: Question Source Selection */}
+                    {!loading && step === 'source' && (
+                        <div className="comp-step-container">
+                            <p className="comp-step-instruction">Select the source of questions for your live battle:</p>
+                            <div className="comp-source-grid">
+                                <div className="comp-source-card" onClick={() => { soundEffects.playClick(); setStep('type'); }}>
+                                    <div className="comp-source-icon-circle">
+                                        <BookOpen size={28} />
+                                    </div>
+                                    <h3>Textbook Worksheets</h3>
+                                    <p>Choose from standard book systems, units, and chapters.</p>
+                                    <button className="comp-source-select-btn">Select & Continue</button>
+                                </div>
+                                <div className="comp-source-card" onClick={loadCustomWorksheets}>
+                                    <div className="comp-source-icon-circle">
+                                        <Layers size={28} />
+                                    </div>
+                                    <h3>My Question Bank</h3>
+                                    <p>Choose from worksheets and custom questions you created.</p>
+                                    <button className="comp-source-select-btn">Select & Continue</button>
+                                </div>
+                                <div className="comp-source-card" onClick={loadMyAssignments}>
+                                    <div className="comp-source-icon-circle">
+                                        <Swords size={28} />
+                                    </div>
+                                    <h3>My Assigned Homeworks</h3>
+                                    <p>Select questions from homework you previously assigned.</p>
+                                    <button className="comp-source-select-btn">Select & Continue</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP: Custom Worksheets Selection */}
+                    {!loading && step === 'custom-ws' && (
+                        <div className="comp-step-container">
+                            <p className="comp-step-instruction">Select one of your custom worksheets:</p>
+                            <input 
+                                type="text"
+                                className="comp-search-bar"
+                                placeholder="Search worksheets..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                            />
+                            <div className="comp-list-items">
+                                {customWorksheets
+                                    .filter(ws => ws.chapterName?.toLowerCase().includes(searchQuery.toLowerCase()))
+                                    .map(ws => (
+                                        <div key={ws._id} className="comp-list-item" onClick={() => {
+                                            soundEffects.playClick();
+                                            setSelectedChapter(ws);
+                                            setBattleTitle(`${ws.chapterName} Battle`);
+                                            if (ws.format) {
+                                                setQuestionTypeID(ws.format === 'MCQ' ? '65a4963482dbaac16d820fc6' : '65a4964b82dbaac16d820fc8');
+                                            }
+                                            setStep('details');
+                                        }}>
+                                            <div className="comp-item-info">
+                                                <span className="comp-item-title">📄 {ws.chapterName}</span>
+                                                <span className="comp-item-meta">
+                                                    Format: {ws.format === 'MCQ' ? 'Choose' : 'Complete'} • {ws.questions?.length || 0} Questions
+                                                </span>
+                                            </div>
+                                            <button className="comp-item-select">Select</button>
+                                        </div>
+                                    ))}
+                                {customWorksheets.length === 0 && (
+                                    <div className="comp-empty-state">No custom worksheets found in your Question Bank.</div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP: My Assigned Homeworks Selection */}
+                    {!loading && step === 'assignments' && (
+                        <div className="comp-step-container">
+                            <p className="comp-step-instruction">Select a past assignment to clone its questions:</p>
+                            <input 
+                                type="text"
+                                className="comp-search-bar"
+                                placeholder="Search assignments..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                            />
+                            <div className="comp-list-items">
+                                {myAssignments
+                                    .filter(assign => assign.title?.toLowerCase().includes(searchQuery.toLowerCase()))
+                                    .map(assign => (
+                                        <div key={assign._id} className="comp-list-item" onClick={() => {
+                                            soundEffects.playClick();
+                                            setChapterQuestions(assign.questions || []);
+                                            setBattleTitle(`${assign.title} Battle`);
+                                            setStep('details');
+                                        }}>
+                                            <div className="comp-item-info">
+                                                <span className="comp-item-title">📋 {assign.title}</span>
+                                                <span className="comp-item-meta">
+                                                    {assign.questions?.length || 0} Questions • Due: {assign.endDate || 'N/A'}
+                                                </span>
+                                            </div>
+                                            <button className="comp-item-select">Select</button>
+                                        </div>
+                                    ))}
+                                {myAssignments.length === 0 && (
+                                    <div className="comp-empty-state">No past assignments found.</div>
+                                )}
+                            </div>
                         </div>
                     )}
 
@@ -337,11 +545,27 @@ function CreateCompetitionModal({ onClose }) {
                     {!loading && step === 'details' && (
                         <div className="comp-step-container comp-details-step">
                             <div className="comp-breadcrumb">
-                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Choose' : 'Complete'}</span>
-                                <ChevronRight size={12} />
-                                <span>{translateName(selectedSubject?.subjectName)}</span>
-                                <ChevronRight size={12} />
-                                <span className="comp-breadcrumb-active">{translateName(selectedChapter?.chapterName)}</span>
+                                {selectedSubject ? (
+                                    <>
+                                        <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Choose' : 'Complete'}</span>
+                                        <ChevronRight size={12} />
+                                        <span>{translateName(selectedSubject?.subjectName)}</span>
+                                        <ChevronRight size={12} />
+                                        <span className="comp-breadcrumb-active">{translateName(selectedChapter?.chapterName)}</span>
+                                    </>
+                                ) : selectedChapter ? (
+                                    <>
+                                        <span>My Question Bank</span>
+                                        <ChevronRight size={12} />
+                                        <span className="comp-breadcrumb-active">{selectedChapter.chapterName}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>My Assigned Homeworks</span>
+                                        <ChevronRight size={12} />
+                                        <span className="comp-breadcrumb-active">{battleTitle || 'Selected Homework'}</span>
+                                    </>
+                                )}
                             </div>
 
                             <div className="comp-details-layout">
