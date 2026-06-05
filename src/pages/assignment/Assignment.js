@@ -494,24 +494,24 @@ function Assignment() {
     return (
       <>
         {/* Row 1: 7, 8, 9 */}
-        <button onClick={() => handleButtonClick(digits[7])} className="digit-button digit-num">{digits[7]}</button>
-        <button onClick={() => handleButtonClick(digits[8])} className="digit-button digit-num">{digits[8]}</button>
-        <button onClick={() => handleButtonClick(digits[9])} className="digit-button digit-num">{digits[9]}</button>
+        <button type="button" onClick={() => handleButtonClick(digits[7])} className="digit-button digit-num">{digits[7]}</button>
+        <button type="button" onClick={() => handleButtonClick(digits[8])} className="digit-button digit-num">{digits[8]}</button>
+        <button type="button" onClick={() => handleButtonClick(digits[9])} className="digit-button digit-num">{digits[9]}</button>
         
         {/* Row 2: 4, 5, 6 */}
-        <button onClick={() => handleButtonClick(digits[4])} className="digit-button digit-num">{digits[4]}</button>
-        <button onClick={() => handleButtonClick(digits[5])} className="digit-button digit-num">{digits[5]}</button>
-        <button onClick={() => handleButtonClick(digits[6])} className="digit-button digit-num">{digits[6]}</button>
+        <button type="button" onClick={() => handleButtonClick(digits[4])} className="digit-button digit-num">{digits[4]}</button>
+        <button type="button" onClick={() => handleButtonClick(digits[5])} className="digit-button digit-num">{digits[5]}</button>
+        <button type="button" onClick={() => handleButtonClick(digits[6])} className="digit-button digit-num">{digits[6]}</button>
         
         {/* Row 3: 1, 2, 3 */}
-        <button onClick={() => handleButtonClick(digits[1])} className="digit-button digit-num">{digits[1]}</button>
-        <button onClick={() => handleButtonClick(digits[2])} className="digit-button digit-num">{digits[2]}</button>
-        <button onClick={() => handleButtonClick(digits[3])} className="digit-button digit-num">{digits[3]}</button>
+        <button type="button" onClick={() => handleButtonClick(digits[1])} className="digit-button digit-num">{digits[1]}</button>
+        <button type="button" onClick={() => handleButtonClick(digits[2])} className="digit-button digit-num">{digits[2]}</button>
+        <button type="button" onClick={() => handleButtonClick(digits[3])} className="digit-button digit-num">{digits[3]}</button>
         
         {/* Row 4: 0, ×, 123 */}
-        <button onClick={() => handleButtonClick(digits[0])} className="digit-button digit-num">{digits[0]}</button>
-        <button onClick={handleDelete} className='digit-button digit-action'>×</button>
-        <button onClick={toggleLanguage} className='digit-button digit-action'>
+        <button type="button" onClick={() => handleButtonClick(digits[0])} className="digit-button digit-num">{digits[0]}</button>
+        <button type="button" onClick={handleDelete} className='digit-button digit-action'>×</button>
+        <button type="button" onClick={toggleLanguage} className='digit-button digit-action'>
           {isArabic ? '123' : '١٢٣'}
         </button>
       </>
