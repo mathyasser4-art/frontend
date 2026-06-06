@@ -1358,4 +1358,60 @@
   border-radius: 8px;
 }
 
+/* Side-by-Side Question and Answer/Keypad layout when opened from custom question file */
+.racer-question-section,
+.racer-answer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+@media (min-width: 601px) {
+  .problem-container.side-by-side {
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 3rem;
+    padding: 2rem;
+    width: 100%;
+  }
+
+  .problem-container.side-by-side .racer-question-section {
+    flex: 1.2;
+    border-right: 2px solid #e2e8f0;
+    padding-right: 2rem;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+  }
+
+  .problem-container.side-by-side .racer-answer-section {
+    flex: 1;
+    padding-left: 1rem;
+    justify-content: center;
+  }
+
+  /* Wrap MCQ options nicely inside side-by-side layout */
+  .problem-container.side-by-side .math-racer-options {
+    flex-wrap: wrap;
+    max-width: 340px;
+    gap: 12px;
+  }
+  
+  .problem-container.side-by-side .racer-option-btn {
+    flex: 1 1 calc(50% - 12px);
+    min-width: 100px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .problem-container.side-by-side {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 1rem;
+  }
+}
+
 

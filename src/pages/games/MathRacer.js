@@ -1001,115 +1001,119 @@ function MathRacer() {
               </div>
             </div>
 
-            <div className={`problem-container ${feedback} ${currentProblem.typeOfAnswer || ''}`}>
+            <div className={`problem-container ${feedback} ${currentProblem.typeOfAnswer || ''} ${customQuestions ? 'side-by-side' : ''}`}>
               
-              {/* Optional Question Image */}
-              {currentProblem.questionPic && (
-                <div className="racer-question-image-wrapper">
-                  <img src={currentProblem.questionPic} alt="Question Diagram" className="racer-question-image" />
-                </div>
-              )}
-
-              {/* Problem Content */}
-              {currentProblem.text === 'ABACUS_GRID' && currentProblem.gridRows ? (
-                <div className="racer-abacus-grid-view">
-                  <table className="racer-abacus-display-table">
-                    <tbody>
-                      {currentProblem.gridRows.map((row, i) => (
-                        <tr key={i}>
-                          <td className="op-cell">{getRowOp(row)}</td>
-                          <td className="val-cell">{getRowVal(row)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="problem-text" style={{ whiteSpace: 'pre-wrap' }}>{currentProblem.text}</div>
-              )}
-
-              {/* Answer Inputs / Choices */}
-              {currentProblem.typeOfAnswer === 'Essay' ? (
-                /* ==========================================
-                   ESSAY / NUMERIC keypad input view
-                   ========================================== */
-                <form 
-                  onSubmit={(e) => { 
-                    e.preventDefault(); 
-                    handleEssaySubmit(essayAnswer); 
-                  }} 
-                  className="racer-essay-input-container"
-                >
-                  <div className="racer-essay-input-row">
-                    <input 
-                      type="text" 
-                      value={essayAnswer} 
-                      onChange={(e) => setEssayAnswer(e.target.value)}
-                      readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
-                      placeholder="Type Answer..." 
-                      className="racer-essay-input"
-                      autoFocus
-                    />
-                    <button 
-                      type="submit"
-                      className="racer-essay-submit-btn"
-                    >
-                      OK
-                    </button>
+              <div className="racer-question-section">
+                {/* Optional Question Image */}
+                {currentProblem.questionPic && (
+                  <div className="racer-question-image-wrapper">
+                    <img src={currentProblem.questionPic} alt="Question Diagram" className="racer-question-image" />
                   </div>
-                  
-                  {/* Visual keypad grid */}
-                  <div className="racer-keypad">
-                    {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'].map(num => (
+                )}
+
+                {/* Problem Content */}
+                {currentProblem.text === 'ABACUS_GRID' && currentProblem.gridRows ? (
+                  <div className="racer-abacus-grid-view">
+                    <table className="racer-abacus-display-table">
+                      <tbody>
+                        {currentProblem.gridRows.map((row, i) => (
+                          <tr key={i}>
+                            <td className="op-cell">{getRowOp(row)}</td>
+                            <td className="val-cell">{getRowVal(row)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="problem-text" style={{ whiteSpace: 'pre-wrap' }}>{currentProblem.text}</div>
+                )}
+              </div>
+
+              <div className="racer-answer-section">
+                {/* Answer Inputs / Choices */}
+                {currentProblem.typeOfAnswer === 'Essay' ? (
+                  /* ==========================================
+                     ESSAY / NUMERIC keypad input view
+                     ========================================== */
+                  <form 
+                    onSubmit={(e) => { 
+                      e.preventDefault(); 
+                      handleEssaySubmit(essayAnswer); 
+                    }} 
+                    className="racer-essay-input-container"
+                  >
+                    <div className="racer-essay-input-row">
+                      <input 
+                        type="text" 
+                        value={essayAnswer} 
+                        onChange={(e) => setEssayAnswer(e.target.value)}
+                        readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
+                        placeholder="Type Answer..." 
+                        className="racer-essay-input"
+                        autoFocus
+                      />
                       <button 
-                        key={num} 
-                        type="button"
-                        onClick={() => setEssayAnswer(prev => prev + num)}
-                        className="racer-keypad-btn digit"
+                        type="submit"
+                        className="racer-essay-submit-btn"
                       >
-                        {num}
+                        OK
+                      </button>
+                    </div>
+                    
+                    {/* Visual keypad grid */}
+                    <div className="racer-keypad">
+                      {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'].map(num => (
+                        <button 
+                          key={num} 
+                          type="button"
+                          onClick={() => setEssayAnswer(prev => prev + num)}
+                          className="racer-keypad-btn digit"
+                        >
+                          {num}
+                        </button>
+                      ))}
+                      <button 
+                        type="button"
+                        onClick={() => setEssayAnswer(prev => prev.slice(0, -1))}
+                        className="racer-keypad-btn clear"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </form>
+                ) : currentProblem.typeOfAnswer === 'Graph' ? (
+                  /* ==========================================
+                     GRAPH image choices
+                     ========================================== */
+                  <div className="math-racer-graph-options">
+                    {currentProblem.options && currentProblem.options.map((opt, i) => (
+                      <button 
+                        key={i} 
+                        className="racer-graph-option-btn"
+                        onClick={() => handleOptionClick(opt)}
+                      >
+                        <img src={opt} alt={`Graph choice ${i + 1}`} />
                       </button>
                     ))}
-                    <button 
-                      type="button"
-                      onClick={() => setEssayAnswer(prev => prev.slice(0, -1))}
-                      className="racer-keypad-btn clear"
-                    >
-                      ×
-                    </button>
                   </div>
-                </form>
-              ) : currentProblem.typeOfAnswer === 'Graph' ? (
-                /* ==========================================
-                   GRAPH image choices
-                   ========================================== */
-                <div className="math-racer-graph-options">
-                  {currentProblem.options && currentProblem.options.map((opt, i) => (
-                    <button 
-                      key={i} 
-                      className="racer-graph-option-btn"
-                      onClick={() => handleOptionClick(opt)}
-                    >
-                      <img src={opt} alt={`Graph choice ${i + 1}`} />
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                /* ==========================================
-                   MCQ (or standard arithmetic fallback)
-                   ========================================== */
-                <div className="math-racer-options">
-                  {currentProblem.options && currentProblem.options.map((opt, i) => (
-                    <button 
-                      key={i} 
-                      className="racer-option-btn"
-                      onClick={() => handleOptionClick(opt)}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-              )}
+                ) : (
+                  /* ==========================================
+                     MCQ (or standard arithmetic fallback)
+                     ========================================== */
+                  <div className="math-racer-options">
+                    {currentProblem.options && currentProblem.options.map((opt, i) => (
+                      <button 
+                        key={i} 
+                        className="racer-option-btn"
+                        onClick={() => handleOptionClick(opt)}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
