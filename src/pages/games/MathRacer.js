@@ -97,20 +97,6 @@ const formatQuestionText = (text) => {
     }).join('\n');
 };
 
-const sanitizeForPusher = (questions) => {
-  if (!questions) return null;
-  return questions.map(q => ({
-    _id: q._id,
-    question: q.question,
-    typeOfAnswer: q.typeOfAnswer,
-    wrongAnswer: q.wrongAnswer || [],
-    wrongPicAnswer: q.wrongPicAnswer || [],
-    questionPic: q.questionPic || '',
-    correctAnswer: q.correctAnswer || '',
-    correctPicAnswer: q.correctPicAnswer || '',
-    answer: q.answer || []
-  }));
-};
 
 function MathRacer() {
   const navigate = useNavigate();
@@ -119,6 +105,12 @@ function MathRacer() {
 
   // Custom Questions States
   const [customQuestions, setCustomQuestions] = useState(location.state?.customQuestions || null);
+  const customQuestionsRef = useRef(customQuestions);
+
+  useEffect(() => {
+    customQuestionsRef.current = customQuestions;
+  }, [customQuestions]);
+
   const [chapterName, setChapterName] = useState(location.state?.chapterName || '');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [essayAnswer, setEssayAnswer] = useState('');
@@ -275,8 +267,25 @@ function MathRacer() {
       channel.bind('sync-lobby', (data) => {
         console.log('[LOBBY] Synced roster from host:', data);
         setPlayers(data.players);
-        if (data.hasCustomQuestions) {
+        if (data.hasCustomQuestions && data.chapterName) {
           setChapterName(data.chapterName || '');
+          // Fetch custom questions from database to avoid large Pusher payloads
+          const Token = localStorage.getItem('O_authWEB');
+          fetch(`${API_BASE_URL}/chapter/getChapterQuestion/${data.chapterName}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+            }
+          })
+            .then(res => res.json())
+            .then(resJson => {
+              if (resJson.message === 'success' && resJson.chapter?.questions) {
+                setCustomQuestions(resJson.chapter.questions);
+                customQuestionsRef.current = resJson.chapter.questions;
+              }
+            })
+            .catch(err => console.error('[MathRacer] Error fetching guest questions:', err));
         }
       });
 
@@ -290,8 +299,14 @@ function MathRacer() {
         setFeedback(null);
         setCurrentQuestionIndex(0);
         setEssayAnswer('');
-        if (data.customQuestions) {
+        
+        // Use custom questions from local ref first (since fetched in sync-lobby), fallback to pusher data if any
+        const localQuestions = customQuestionsRef.current;
+        if (localQuestions && localQuestions.length > 0) {
+          generateProblem(data.difficulty, 0, localQuestions);
+        } else if (data.customQuestions && data.customQuestions.length > 0) {
           setCustomQuestions(data.customQuestions);
+          customQuestionsRef.current = data.customQuestions;
           generateProblem(data.difficulty, 0, data.customQuestions);
         } else {
           generateProblem(data.difficulty, 0, null);
@@ -452,7 +467,7 @@ function MathRacer() {
     // Broadcast start race config to all guests
     broadcastPusherEvent(roomId, 'start-game', { 
       difficulty: selectedLevel,
-      customQuestions: customQuestions ? sanitizeForPusher(customQuestions) : null
+      customQuestions: null // Set to null to keep Pusher payload under 10KB size limit
     });
     
     // Initialize host gameplay

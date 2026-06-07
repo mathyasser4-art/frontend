@@ -83,7 +83,7 @@ function MobileNav({ role }) {
                 className={`nav-item mastermind-nav-item ${isActive('/system/65a4964b82dbaac16d820fc8') ? 'active' : ''}`}
               >
                 <i className="fa fa-file-text-o" aria-hidden="true"></i>
-                <span className="nav-label">{isTopsoroban ? 'TOPSOROBAN' : t('mobileNav.masterminds')}</span>
+                <span className="nav-label">{t('mobileNav.masterminds')}</span>
               </Link>
             </>
           )}

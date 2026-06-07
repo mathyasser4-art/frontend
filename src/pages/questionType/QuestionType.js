@@ -41,11 +41,11 @@ function QuestionType() {
       <div className="questionType-container">
         <div className="questionType-title">
           {isTopsoroban ? (
-            <h3>
-              <span translate="no" className="notranslate" style={{ textShadow: '0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4)' }}>
-                TOPSOROBAN
-              </span>
-            </h3>
+            <img 
+              src="/img/topsoroban_logo.png" 
+              alt="TOPSOROBAN" 
+              className="masterminds-logo-title" 
+            />
           ) : (
             <img 
               src="/img/masterminds_logo.png" 
@@ -332,7 +332,7 @@ function QuestionType() {
                   <CheckCircle2 size={32} color="#F875AA" strokeWidth={2.5} />
                 </div>
                 <h4 style={{ margin: '0 0 6px', fontSize: '18px', color: 'var(--text-color, #333)' }}>
-                  {isTopsoroban ? 'TOPSOROBAN' : t('academy.masterMinds', 'Complete Questions')}
+                  {t('academy.masterMinds', 'Complete Questions')}
                 </h4>
                 <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>Complete questions</p>
               </div>
