@@ -21,6 +21,13 @@ const Navbar = () => {
     const navigate = useNavigate();
     const isAuth = localStorage.getItem('O_authWEB')
     const role = localStorage.getItem('auth_role')
+    const schoolName = localStorage.getItem('school_name') || '';
+    const userName = localStorage.getItem('pp_name') || '';
+    const userRole = localStorage.getItem('auth_role') || '';
+    
+    const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
+                        (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
+
     const [showTeacherForm, setShowTeacherForm] = useState(false)
     const [showTeacherHelp, setShowTeacherHelp] = useState(false)
     const [showStudentHelp, setShowStudentHelp] = useState(false)
@@ -109,7 +116,7 @@ const Navbar = () => {
 
         <nav>
             <div className='nav-container d-flex justify-content-space-between align-items-center'>
-                <Link to={'/'} onClick={() => soundEffects.playClick()}><img src={logo} alt="" /></Link>
+                <Link to={'/'} onClick={() => soundEffects.playClick()}><img src={isTopsoroban ? '/img/topsoroban_abacusheroes_logo.png' : logo} alt="" /></Link>
                 
                 {/* Desktop Center Links */}
                 <div className="nav-center-links d-none d-lg-flex">
