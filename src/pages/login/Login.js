@@ -22,6 +22,9 @@ function Login() {
         }
     }
 
+    const schoolName = localStorage.getItem('school_name') || '';
+    const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || email.toLowerCase().includes('topsoroban');
+
     const handleLogin = () => {
         if (email === '' || password === '') {
             setError('All fields are required!!')
@@ -34,7 +37,7 @@ function Login() {
     return (
         <div className='login d-flex flex-direction-column justify-content-center align-items-center'>
             <div className="login-logo">
-                <Link to={'/'}><img src={logo} alt="" /></Link>
+                <Link to={'/'}><img src={isTopsoroban ? '/img/topsoroban_abacusheroes_logo.png' : logo} alt="" /></Link>
             </div>
             <div className="login-title">
                 <p>Sign in to your account</p>

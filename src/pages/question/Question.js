@@ -257,6 +257,12 @@ function Question() {
         const marginX = 14;
         const maxWidth = pageWidth - (marginX * 2);
 
+        const schoolName = localStorage.getItem('school_name') || '';
+        const userName = localStorage.getItem('pp_name') || '';
+        const userRole = localStorage.getItem('auth_role') || '';
+        const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
+                            (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
+
         const drawHeader = (pdfInstance, isFirstPage = false) => {
             // Draw logo at top-right
             const logoWidth = 28;
@@ -264,7 +270,7 @@ function Question() {
             const logoX = pageWidth - marginX - logoWidth;
             const logoY = 12;
             try {
-                pdfInstance.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoHeight);
+                pdfInstance.addImage(isTopsoroban ? '/img/topsoroban_abacusheroes_logo.png' : logo, 'PNG', logoX, logoY, logoWidth, logoHeight);
             } catch (err) {
                 console.error("Failed to add logo to PDF", err);
             }

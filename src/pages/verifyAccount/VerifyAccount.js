@@ -30,6 +30,9 @@ function VerifyAccount() {
     resendCode(data, showAlert)
   }
 
+  const schoolName = localStorage.getItem('school_name') || '';
+  const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || (email && email.toLowerCase().includes('topsoroban'));
+
   const handleVerify = () => {
     if (firstDigit === '' || secondDigit === '' || thirdDigit === '' || fourthDigit === '' || fifthDigit === '' || sixthDigit === '') {
       setError('Enter the 6-digit verification code')
@@ -43,7 +46,7 @@ function VerifyAccount() {
   return (
     <div className='verify d-flex flex-direction-column justify-content-center align-items-center'>
       <div className="verify-logo">
-        <Link to={'/'}><img src={logo} alt="" /></Link>
+        <Link to={'/'}><img src={isTopsoroban ? '/img/topsoroban_abacusheroes_logo.png' : logo} alt="" /></Link>
       </div>
       <div className="verify-title">
         <p>Enter Verification Code</p>

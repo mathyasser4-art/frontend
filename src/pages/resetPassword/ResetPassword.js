@@ -13,6 +13,9 @@ function ResetPassword() {
     const { email } = useParams()
     const navigate = useNavigate()
 
+    const schoolName = localStorage.getItem('school_name') || '';
+    const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || (email && email.toLowerCase().includes('topsoroban'));
+
     const handleResetPassword = () => {
         if (password === '' || cPassword === '') {
             setError('All field is required!!')
@@ -25,7 +28,7 @@ function ResetPassword() {
     return (
         <div className='reset-password d-flex flex-direction-column justify-content-center align-items-center'>
             <div className="reset-password-logo">
-                <Link to={'/'}><img src={logo} alt="" /></Link>
+                <Link to={'/'}><img src={isTopsoroban ? '/img/topsoroban_abacusheroes_logo.png' : logo} alt="" /></Link>
             </div>
             <div className="reset-password-title">
                 <p>Enter your new password</p>

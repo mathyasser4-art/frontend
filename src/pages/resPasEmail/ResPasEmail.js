@@ -11,6 +11,9 @@ function ResPasEmail() {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
+    const schoolName = localStorage.getItem('school_name') || '';
+    const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || email.toLowerCase().includes('topsoroban');
+
     const handleResetPassEmail = () => {
         if (email === '') {
             setError('Email is required!!')
@@ -23,7 +26,7 @@ function ResPasEmail() {
     return (
         <div className='res-pas-email d-flex flex-direction-column justify-content-center align-items-center'>
             <div className="res-pas-email-logo">
-                <Link to={'/'}><img src={logo} alt="" /></Link>
+                <Link to={'/'}><img src={isTopsoroban ? '/img/topsoroban_abacusheroes_logo.png' : logo} alt="" /></Link>
             </div>
             <div className="res-pas-email-title">
                 <p>Reset your password</p>

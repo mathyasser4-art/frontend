@@ -14,6 +14,11 @@ function Register() {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
+    const schoolName = localStorage.getItem('school_name') || '';
+    const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
+                        email.toLowerCase().includes('topsoroban') || 
+                        userName.toLowerCase().includes('topsoroban');
+
     const handleRegister = () => {
         if(userName === '' || email === '' || password === '' || cPassword === ''){
             setError('All field is required!!')
@@ -26,7 +31,7 @@ function Register() {
     return (
         <div className='register d-flex flex-direction-column justify-content-center align-items-center'>
             <div className="register-logo">
-                <Link to={'/'}><img src={logo} alt="" /></Link>
+                <Link to={'/'}><img src={isTopsoroban ? '/img/topsoroban_abacusheroes_logo.png' : logo} alt="" /></Link>
             </div>
             <div className="register-title">
                 <p>Create an Account</p>
