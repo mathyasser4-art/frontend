@@ -10,6 +10,7 @@ function Register() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [cPassword, setCpassword] = useState('')
+    const [academy, setAcademy] = useState('')
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
@@ -22,8 +23,10 @@ function Register() {
     const handleRegister = () => {
         if(userName === '' || email === '' || password === '' || cPassword === ''){
             setError('All field is required!!')
+        }else if(academy === ''){
+            setError('Please select an Academy')
         }else{
-            const userData = {userName, email, password, cPassword}
+            const userData = {userName, email, password, cPassword, academy}
             register(userData, setError, setLoading, navigate)
         }
     }
@@ -42,6 +45,11 @@ function Register() {
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder='Email' />
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder='Password' />
                 <input type="password" value={cPassword} onChange={e => setCpassword(e.target.value)} placeholder='Confirm Password' />
+                <select value={academy} onChange={e => setAcademy(e.target.value)} className="academy-dropdown" style={{ width: '100%', padding: '15px', marginTop: '10px', borderRadius: '10px', border: 'none', background: '#F2F2F2', outline: 'none', color: '#979797' }}>
+                    <option value="" disabled>Select Academy</option>
+                    <option value="MasterMinds">MasterMinds</option>
+                    <option value="Other">Other</option>
+                </select>
             </div>
             <div className="register-btn-container">
                 <div onClick={handleRegister} className="register-btn">{loading ? <span className="loader"></span> : "Sign Up"}
