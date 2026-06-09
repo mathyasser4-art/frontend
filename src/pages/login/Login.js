@@ -72,6 +72,10 @@ function Login() {
                     <div className="login-btn2"></div>
                 </div>
             </div>
+            
+            <div className="login-footer" style={{ marginTop: '2rem', textAlign: 'center', color: '#64748b', fontSize: '0.9rem', fontWeight: '600' }}>
+                <p>Don't have a teacher account? <Link to={'/auth/register'} style={{ textDecoration: 'none' }}><span className='text-purple' style={{ color: '#2563eb', fontWeight: '800' }}>Sign Up</span></Link></p>
+            </div>
         </div>
     )
 }
