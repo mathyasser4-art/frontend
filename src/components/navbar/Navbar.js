@@ -205,6 +205,11 @@ const Navbar = () => {
                                     </div>
                                 </Link>
                             )}
+                            <Link to={'/auth/register'} onClick={() => soundEffects.playClick()} style={{ marginRight: '10px' }}>
+                                <div className="nav-btn" style={{ background: '#2563eb', color: 'white', border: 'none' }}>
+                                    Sign Up
+                                </div>
+                            </Link>
                             <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}>
                                 <div className="nav-btn">
                                     {t('common.login')}

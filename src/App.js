@@ -63,7 +63,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
       <Route path='/auth/login' element={isAuth ? <Navigate to='/' /> : <Login />} />
-      <Route path='/auth/register' element={<Navigate to='/auth/login' />} />
+      <Route path='/auth/register' element={isAuth ? <Navigate to='/' /> : <Register />} />
       <Route path='/verify/:email' element={isAuth ? <Navigate to='/' /> : <VerifyAccount />} />
       <Route path='/resetPassword/email' element={isAuth ? <Navigate to='/' /> : <ResPasEmail />} />
       <Route path='/resetPassword/code/:email' element={isAuth ? <Navigate to='/' /> : <ResPasCode />} />
