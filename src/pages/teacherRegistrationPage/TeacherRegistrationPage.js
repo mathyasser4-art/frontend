@@ -278,7 +278,7 @@ function TeacherRegistrationPage() {
 
                 {/* Direct Table Pagination */}
                 {!directLoading && searchValue === '' && directStudents?.length > 0 && (
-                    <div className="student-footer d-flex align-items-center justify-content-center" style={{ gap: '15px', marginTop: '2rem' }}>
+                    <div className="d-flex align-items-center justify-content-center" style={{ gap: '15px', marginTop: '2rem' }}>
                         <button 
                             onClick={prevDirectPage} 
                             disabled={directPageNumber === 1}
