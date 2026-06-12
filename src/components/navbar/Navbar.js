@@ -36,6 +36,7 @@ const Navbar = () => {
     const [showTutorialVideo, setShowTutorialVideo] = useState(false)
     const [tutorialRole, setTutorialRole] = useState('Teacher')
     const [activeBattleNotification, setActiveBattleNotification] = useState(null)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
     // Global real-time listener for live battle creations (exclusive to logged-in students)
     useEffect(() => {
@@ -158,7 +159,18 @@ const Navbar = () => {
                     <Link to="/contact" onClick={() => soundEffects.playClick()} className="nav-link">Contact</Link>
                 </div>
 
-                <div className='nav-right-side d-flex align-items-center'>
+                {/* Mobile Menu Toggle */}
+                <button 
+                    className="mobile-menu-toggle d-lg-none" 
+                    onClick={() => {
+                        soundEffects.playClick();
+                        setIsMobileMenuOpen(!isMobileMenuOpen);
+                    }}
+                >
+                    <i className={isMobileMenuOpen ? "fa fa-times" : "fa fa-bars"}></i>
+                </button>
+
+                <div className={`nav-right-side d-flex align-items-center ${isMobileMenuOpen ? 'mobile-open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Teacher' ? (
                         <>

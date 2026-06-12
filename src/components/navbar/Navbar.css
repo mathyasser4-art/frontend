@@ -510,8 +510,25 @@ nav .nav-container img {
     0 2px 4px rgba(255, 107, 107, 0.25);
 }
 
+.mobile-menu-toggle {
+  display: none;
+}
+
 /* Dynamic Mobile Responsiveness for all 3D buttons */
 @media only screen and (max-width: 640px) {
+  .mobile-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: #334155;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    margin-left: auto;
+  }
+
   nav .nav-container {
     padding: 0.4rem 0.6rem !important;
     height: auto !important;
@@ -524,44 +541,68 @@ nav .nav-container img {
   }
 
   .nav-right-side {
-    gap: 0.15rem !important;
+    display: none !important;
+  }
+
+  .nav-right-side.mobile-open {
     display: flex !important;
-    flex-wrap: nowrap !important; /* Force single line layout */
-    align-items: center !important;
-    justify-content: flex-end !important;
+    flex-direction: column !important;
+    position: absolute;
+    top: 75px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border: 2px solid #f1f5f9;
+    gap: 0.8rem !important;
+    z-index: 1000;
+    align-items: stretch !important;
+    min-width: 200px;
   }
 
   /* Core fix to align buttons inside Link components perfectly with sibling div buttons */
-  .nav-right-side a {
-    display: inline-flex !important;
-    align-items: center !important;
+  .nav-right-side.mobile-open a {
+    display: flex !important;
+    align-items: stretch !important;
     justify-content: center !important;
     text-decoration: none !important;
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
   }
 
-  /* Scale down buttons to fit horizontally even better */
-  .homework-btn, 
-  .teachers-btn, 
-  .games-btn, 
-  .create-homework-nav-btn,
-  .create-battle-nav-btn,
-  .nav-btn,
-  .nav-btn-profile {
-    padding: 0.2rem 0.5rem !important;
-    width: auto !important;
-    height: 34px !important; /* Increased height significantly */
+  /* Scale buttons to fit vertically perfectly */
+  .nav-right-side.mobile-open .homework-btn, 
+  .nav-right-side.mobile-open .teachers-btn, 
+  .nav-right-side.mobile-open .games-btn, 
+  .nav-right-side.mobile-open .create-homework-nav-btn,
+  .nav-right-side.mobile-open .create-battle-nav-btn,
+  .nav-right-side.mobile-open .nav-btn,
+  .nav-right-side.mobile-open .nav-btn-profile {
+    padding: 0.5rem 1rem !important;
+    width: 100% !important;
+    height: 45px !important;
     min-width: unset !important;
-    margin-right: 0.02rem !important;
-    border-radius: 6px !important;
-    font-size: 10.5px !important; /* Increased font size significantly */
+    margin-right: 0 !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
     font-weight: 800 !important;
-    display: inline-flex !important;
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     white-space: nowrap !important;
     flex-shrink: 0 !important;
+  }
+
+  /* Show desktop text in mobile menu, hide mobile text */
+  .nav-right-side.mobile-open .text-desktop {
+    display: inline !important;
+  }
+  .nav-right-side.mobile-open .text-mobile {
+    display: none !important;
   }
 
   /* Proportional 3D shadow depths on small buttons */
@@ -732,18 +773,7 @@ nav .nav-container img {
     max-height: 32px !important;
   }
 
-  .homework-btn, 
-  .teachers-btn, 
-  .games-btn, 
-  .create-homework-nav-btn, 
-  .create-battle-nav-btn,
-  .nav-btn,
-  .nav-btn-profile {
-    padding: 0.15rem 0.35rem !important;
-    height: 30px !important; /* Taller height */
-    font-size: 9px !important; /* Taller font size */
-    border-radius: 5px !important;
-  }
+
 }
 
 @media only screen and (max-width: 360px) {
@@ -757,18 +787,7 @@ nav .nav-container img {
     max-height: 26px !important;
   }
 
-  .homework-btn, 
-  .teachers-btn, 
-  .games-btn, 
-  .create-homework-nav-btn, 
-  .create-battle-nav-btn,
-  .nav-btn,
-  .nav-btn-profile {
-    padding: 0.1rem 0.22rem !important;
-    height: 26px !important; /* Taller height */
-    font-size: 8px !important; /* Taller font size */
-    border-radius: 4px !important;
-  }
+
 }
 
 /* ==========================================================================
