@@ -234,7 +234,13 @@ function Class() {
                     allClass?.map(item => {
                         return (
                             <div key={item._id} className="class-item d-flex justify-content-space-between align-items-center">
-                                <p>{item.class}</p>
+                                <p 
+                                    onClick={() => openStudentListPopup(item._id)}
+                                    style={{ cursor: 'pointer', flex: 1 }}
+                                    title="Click to view students"
+                                >
+                                    {item.class}
+                                </p>
                                 <div className="class-icon d-flex align-items-center">
                                     {role !== 'Teacher' && (
                                         <i className="fa fa-plus" onClick={() => openAddToPopup(item.class, item._id)} aria-hidden="true"></i>
