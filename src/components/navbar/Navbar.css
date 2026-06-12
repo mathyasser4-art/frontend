@@ -540,8 +540,44 @@ nav .nav-container img {
     max-height: 38px !important;
   }
 
-  .nav-right-side {
+  .nav-right-side.auth-menu {
     display: none !important;
+  }
+
+  .nav-right-side.unauth-menu {
+    gap: 0.15rem !important;
+    display: flex !important;
+    flex-wrap: nowrap !important; /* Force single line layout */
+    align-items: center !important;
+    justify-content: flex-end !important;
+  }
+
+  /* Core fix to align buttons inside Link components perfectly with sibling div buttons */
+  .nav-right-side.unauth-menu a {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Scale down buttons to fit horizontally even better */
+  .nav-right-side.unauth-menu .nav-btn,
+  .nav-right-side.unauth-menu .nav-btn-join {
+    padding: 0.2rem 0.5rem !important;
+    width: auto !important;
+    height: 34px !important; /* Increased height significantly */
+    min-width: unset !important;
+    margin-right: 0.02rem !important;
+    border-radius: 6px !important;
+    font-size: 10.5px !important; /* Increased font size significantly */
+    font-weight: 800 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
 
   .nav-right-side.mobile-open {
@@ -773,7 +809,13 @@ nav .nav-container img {
     max-height: 32px !important;
   }
 
-
+  .nav-right-side.unauth-menu .nav-btn,
+  .nav-right-side.unauth-menu .nav-btn-join {
+    padding: 0.15rem 0.35rem !important;
+    height: 30px !important; /* Taller height */
+    font-size: 9px !important; /* Taller font size */
+    border-radius: 5px !important;
+  }
 }
 
 @media only screen and (max-width: 360px) {
@@ -787,7 +829,13 @@ nav .nav-container img {
     max-height: 26px !important;
   }
 
-
+  .nav-right-side.unauth-menu .nav-btn,
+  .nav-right-side.unauth-menu .nav-btn-join {
+    padding: 0.1rem 0.22rem !important;
+    height: 26px !important; /* Taller height */
+    font-size: 8px !important; /* Taller font size */
+    border-radius: 4px !important;
+  }
 }
 
 /* ==========================================================================

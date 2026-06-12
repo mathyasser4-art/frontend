@@ -160,17 +160,19 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile Menu Toggle */}
-                <button 
-                    className="mobile-menu-toggle d-lg-none" 
-                    onClick={() => {
-                        soundEffects.playClick();
-                        setIsMobileMenuOpen(!isMobileMenuOpen);
-                    }}
-                >
-                    <i className={isMobileMenuOpen ? "fa fa-times" : "fa fa-bars"}></i>
-                </button>
+                {isAuth && (
+                    <button 
+                        className="mobile-menu-toggle d-lg-none" 
+                        onClick={() => {
+                            soundEffects.playClick();
+                            setIsMobileMenuOpen(!isMobileMenuOpen);
+                        }}
+                    >
+                        <i className={isMobileMenuOpen ? "fa fa-times" : "fa fa-bars"}></i>
+                    </button>
+                )}
 
-                <div className={`nav-right-side d-flex align-items-center ${isMobileMenuOpen ? 'mobile-open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                <div className={`nav-right-side d-flex align-items-center ${isAuth ? 'auth-menu' : 'unauth-menu'} ${isMobileMenuOpen ? 'mobile-open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Teacher' ? (
                         <>
