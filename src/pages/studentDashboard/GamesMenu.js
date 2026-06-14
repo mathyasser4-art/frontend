@@ -165,6 +165,23 @@ const GamesMenu = () => {
             <h3 className="game-card-title">Math Tanks</h3>
           </div>
 
+          {/* Minigolf */}
+          <div className="game-item-container" onClick={() => navigate('/student/games/minigolf')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #a3e635 0%, #65a30d 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>⛳</div>
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <h3>Minigolf</h3>
+                    <p>Putt your way through math challenges!</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 className="game-card-title">Minigolf</h3>
+          </div>
+
         </div>
       </div>
 

@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Home from './pages/Home/Home'
+import About from './pages/about/About'
+import Privacy from './pages/privacy/Privacy'
+import Footer from './components/footer/Footer'
 import Login from './pages/login/Login'
 import Register from './pages/register/Register'
 import System from './pages/system/System'
@@ -40,6 +43,7 @@ import SudokuGame from './pages/games/SudokuGame';
 import KenKenGame from './pages/games/KenKenGame';
 import AbacusMatchGame from './pages/games/AbacusMatchGame';
 import TanksGame from './pages/games/TanksGame';
+import MinigolfGame from './pages/games/MinigolfGame';
 import GamesMenu from './pages/studentDashboard/GamesMenu';
 import LiveChatWidget from './components/liveChat/LiveChatWidget';
 import ChatManagement from './pages/dashboardSchool/ChatManagement';
@@ -62,6 +66,8 @@ function App() {
     <>
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/about' element={<About />} />
+        <Route path='/privacy' element={<Privacy />} />
       <Route path='/auth/login' element={isAuth ? <Navigate to='/' /> : <Login />} />
       <Route path='/auth/register' element={isAuth ? <Navigate to='/' /> : <Register />} />
       <Route path='/verify/:email' element={isAuth ? <Navigate to='/' /> : <VerifyAccount />} />
@@ -107,10 +113,12 @@ function App() {
       <Route path='/student/games/kenken' element={<KenKenGame />} />
       <Route path='/student/games/abacus-match' element={<AbacusMatchGame />} />
       <Route path='/student/games/tanks' element={<TanksGame />} />
+      <Route path='/student/games/minigolf' element={<MinigolfGame />} />
       <Route path='/student/games-menu' element={<GamesMenu />} />
 
       </Routes>
       {location.pathname === '/' && (!role || role === 'Student') && <LiveChatWidget />}
+      {['/', '/pricing', '/about', '/privacy', '/contact'].includes(location.pathname) && <Footer />}
     </>
   )
 }

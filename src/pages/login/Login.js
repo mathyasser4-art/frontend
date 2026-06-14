@@ -48,24 +48,7 @@ function Login() {
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder='Password' />
             </div>
             
-            {/* Quick Demo Login Badges */}
-            <div className="login-badges-container">
-                <p className="badges-title">Quick Demo Login:</p>
-                <div className="badges-list">
-                    <div 
-                        className="demo-login-badge teacher-badge" 
-                        onClick={() => { setEmail('teacher'); setPassword('1234'); }}
-                    >
-                        👨‍🏫 Teacher
-                    </div>
-                    <div 
-                        className="demo-login-badge student-badge" 
-                        onClick={() => { setEmail('student'); setPassword('1234'); }}
-                    >
-                        🎓 Student
-                    </div>
-                </div>
-            </div>
+
 
             <div className="login-btn-container" style={{ marginTop: '1.5rem' }}>
                 <div onClick={handleLogin} className="login-btn">{loading ? <span className="loader"></span> : "Login"}

@@ -17,32 +17,7 @@ function Pricing() {
             <p>Choose the path that fits you best and start your journey today</p>
           </div>
 
-          {/* Demo Accounts Banner */}
-          <div className="demo-accounts-banner">
-            <div className="banner-header">
-              <Sparkles size={24} color="#f59e0b" className="sparkle-icon" />
-              <h3>Instant Demo Preview!</h3>
-            </div>
-            <p className="banner-subtitle">
-              For a limited time, you can log in with our demo accounts to explore all premium features:
-            </p>
-            <div className="credentials-container">
-              <div className="credential-card">
-                <h4>👨‍🏫 Teacher Account</h4>
-                <div className="credential-field">Username: <span>teacher</span></div>
-                <div className="credential-field">Password: <span>1234</span></div>
-              </div>
-              <div className="credential-card">
-                <h4>🎓 Student Account</h4>
-                <div className="credential-field">Username: <span>student</span></div>
-                <div className="credential-field">Password: <span>1234</span></div>
-              </div>
-            </div>
-            <Link to="/auth/login" className="banner-login-btn d-flex align-items-center gap-2">
-              <span>Log In & Try Now</span>
-              <ChevronRight size={18} />
-            </Link>
-          </div>
+
 
           <div className="pricing-grid-new">
             {/* 1. Academy Section */}
@@ -50,21 +25,56 @@ function Pricing() {
               <div className="section-icon">
                 <School size={40} color="#6366f1" />
               </div>
-              <h2>Academy</h2>
+              <h2>Academy Plans</h2>
               <p className="section-description">
-                Elevate your education center with our professional tools and curriculum.
+                Tailored solutions for educational institutions of all sizes with dedicated dashboards and analytics.
               </p>
-              <div className="section-offer">
-                <MessageSquare size={20} />
-                <span>Message us to get a special offer for your academy</span>
+              
+              <div className="pricing-table-container">
+                <div className="promo-badge-container">
+                  <span className="promo-badge-text">🔥 15% OFF FOR QUARTERLY PAYMENTS</span>
+                </div>
+                <p className="table-subtitle">Pricing per student account:</p>
+                <table className="teacher-tiers-table">
+                  <thead>
+                    <tr>
+                      <th>Tier (Students)</th>
+                      <th>Monthly</th>
+                      <th>Quarterly (Per Term)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="tier-name">Starter <span className="category-label">(0-1,000)</span></td>
+                      <td>30 EGP/mo</td>
+                      <td><span className="new-price-table">25.5 EGP/mo</span><br/><small style={{color: '#64748b'}}>(76.5 EGP total)</small></td>
+                    </tr>
+                    <tr>
+                      <td className="tier-name">Growth <span className="category-label">(1k-5k)</span></td>
+                      <td>20 EGP/mo</td>
+                      <td><span className="new-price-table">17 EGP/mo</span><br/><small style={{color: '#64748b'}}>(51.0 EGP total)</small></td>
+                    </tr>
+                    <tr>
+                      <td className="tier-name">Pro <span className="category-label">(5k-10k)</span></td>
+                      <td>15 EGP/mo</td>
+                      <td><span className="new-price-table">12.75 EGP/mo</span><br/><small style={{color: '#64748b'}}>(38.25 EGP total)</small></td>
+                    </tr>
+                    <tr>
+                      <td className="tier-name">Enterprise <span className="category-label">(10k+)</span></td>
+                      <td>10 EGP/mo</td>
+                      <td><span className="new-price-table">8.5 EGP/mo</span><br/><small style={{color: '#64748b'}}>(25.5 EGP total)</small></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <ul className="feature-list">
+
+              <ul className="feature-list" style={{ marginTop: '1.5rem' }}>
                 <li><CheckCircle2 size={18} /> Professional School Dashboard</li>
                 <li><CheckCircle2 size={18} /> Unlimited Teachers & Classes</li>
-                <li><CheckCircle2 size={18} /> Custom Branding Options</li>
+                <li><CheckCircle2 size={18} /> Custom Branding & Subdomain</li>
               </ul>
               <Link to="/contact" className="pricing-btn-new academy-btn">
-                Contact for Special Offer
+                Contact Sales
               </Link>
             </div>
 
@@ -169,6 +179,31 @@ function Pricing() {
               <Link to="/contact" className="pricing-btn-new student-btn">
                 Message Us
               </Link>
+            </div>
+          </div>
+
+          {/* Competitions & Rewards Section */}
+          <div className="competitions-rewards-section" style={{
+              background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '16px', padding: '2rem', marginTop: '3rem', textAlign: 'center', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginBottom: '3rem'
+          }}>
+            <h2 style={{ color: '#b45309', fontSize: '1.8rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+              🏆 Competitions & Rewards
+            </h2>
+            <p style={{ color: '#78350f', fontSize: '1.1rem', maxWidth: '800px', margin: '0 auto 1.5rem' }}>
+              The platform provides an advanced system to manage and organize grand competitions for all registered students efficiently and stably. An additional unified fee is calculated:
+            </p>
+            <div style={{ background: '#eff6ff', border: '2px dashed #3b82f6', borderRadius: '12px', padding: '1.5rem', display: 'inline-block', marginBottom: '1.5rem' }}>
+              <h3 style={{ color: '#1d4ed8', fontSize: '1.5rem', margin: 0 }}>[ 50 EGP ] only per student participating in the competition</h3>
+            </div>
+            <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '2rem' }}>(This fixed value applies regardless of the total number of students in the academy or school)</p>
+            
+            <div style={{ textAlign: 'left', background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+              <h4 style={{ color: '#0f172a', fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                🏅 What the student and institution get for these fees:
+              </h4>
+              <p style={{ color: '#334155', lineHeight: '1.6', margin: 0 }}>
+                Each competing student automatically and instantly receives a <strong>Certificate of Appreciation in PDF format as a board of honor and reward for their participation and ambition</strong>. The certificate is professionally designed and high quality, bearing the <strong>official logo of your academy</strong> next to the <strong>official Abacus Heroes platform logo</strong>, which formally enhances your institution's brand identity to parents and officially raises your clients' loyalty and trust in your educational services.
+              </p>
             </div>
           </div>
 
