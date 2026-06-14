@@ -45,8 +45,9 @@ function Register() {
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder='Email' />
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder='Password' />
                 <input type="password" value={cPassword} onChange={e => setCpassword(e.target.value)} placeholder='Confirm Password' />
-                <select value={academy} onChange={e => setAcademy(e.target.value)} className="academy-dropdown" style={{ width: '100%', padding: '15px', marginTop: '10px', borderRadius: '10px', border: 'none', background: '#F2F2F2', outline: 'none', color: '#979797' }}>
+                <select value={academy} onChange={e => setAcademy(e.target.value)} className="academy-dropdown" style={{ width: '100%', padding: '15px', marginTop: '10px', borderRadius: '10px', border: 'none', background: '#F2F2F2', outline: 'none', color: '#333', fontWeight: 'bold' }}>
                     <option value="" disabled>Select Academy</option>
+                    <option value="Topsoroban">Topsoroban</option>
                     <option value="MasterMinds">MasterMinds</option>
                     <option value="Other">Other</option>
                 </select>
