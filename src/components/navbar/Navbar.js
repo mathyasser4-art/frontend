@@ -125,7 +125,7 @@ const Navbar = () => {
                         <span className="nav-link">For Teachers ▾</span>
                         <div className="dropdown-menu">
                             <span onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }} className="dropdown-item">Website Explanation</span>
-                            <span onClick={() => { soundEffects.playClick(); navigate('/teacher/registration'); }} className="dropdown-item">Register as Teacher</span>
+                            {false && <span onClick={() => { soundEffects.playClick(); navigate('/teacher/registration'); }} className="dropdown-item">Register as Teacher</span>}
                             <span onClick={() => {
                                 soundEffects.playClick();
                                 if (role === 'Teacher' || role === 'School') {
@@ -219,11 +219,13 @@ const Navbar = () => {
                                     </div>
                                 </Link>
                             )}
-                            <Link to={'/auth/register'} onClick={() => soundEffects.playClick()} style={{ marginRight: '10px' }}>
-                                <div className="nav-btn" style={{ background: '#2563eb', color: 'white', border: 'none' }}>
-                                    Sign Up
-                                </div>
-                            </Link>
+                            {false && (
+                                <Link to={'/auth/register'} onClick={() => soundEffects.playClick()} style={{ marginRight: '10px' }}>
+                                    <div className="nav-btn" style={{ background: '#2563eb', color: 'white', border: 'none' }}>
+                                        Sign Up
+                                    </div>
+                                </Link>
+                            )}
                             <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}>
                                 <div className="nav-btn">
                                     {t('common.login')}
