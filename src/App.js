@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import API_BASE_URL from './config/api.config';
 import Home from './pages/Home/Home'
 import About from './pages/about/About'
 import Privacy from './pages/privacy/Privacy'
@@ -54,6 +55,7 @@ import TeacherCompetitionLobby from './pages/teacherDashboard/TeacherCompetition
 import StudentCompetition from './pages/studentDashboard/StudentCompetition';
 import TeacherQuestionBank from './pages/teacherDashboard/TeacherQuestionBank';
 import Shop from './pages/shop/Shop';
+import LiveAdminDashboard from './pages/dashboardSchool/LiveAdminDashboard';
 
 function App() {
   const isAuth = localStorage.getItem('O_authWEB')
@@ -63,6 +65,32 @@ function App() {
   useEffect(() => {
     localStorage.removeItem('cartona')
   }, [])
+
+  // Heartbeat mechanism for live dashboard tracking
+  useEffect(() => {
+    let sessionId = localStorage.getItem('site_session_id');
+    if (!sessionId) {
+      sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('site_session_id', sessionId);
+    }
+
+    const pingHeartbeat = () => {
+      fetch(`${API_BASE_URL}/heartbeat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          userId: localStorage.getItem('pp_id') || null,
+          role: localStorage.getItem('auth_role') || 'Visitor',
+          userName: localStorage.getItem('pp_name') || 'Anonymous'
+        })
+      }).catch(err => console.error("Heartbeat error", err));
+    };
+
+    pingHeartbeat();
+    const interval = setInterval(pingHeartbeat, 30000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <>
       <Routes>
@@ -90,6 +118,7 @@ function App() {
       <Route path='/dashboard-school/supervisor' element={isAuth && (role === 'School' || role === 'IT') ? <Supervisor /> : <Navigate to='/' />} />
       <Route path='/dashboard-school/chats' element={isAuth && (role === 'School' || role === 'IT') ? <ChatManagement /> : <Navigate to='/' />} />
       <Route path='/dashboard-school/reported-questions' element={isAuth && (role === 'School' || role === 'IT') ? <ReportedQuestions /> : <Navigate to='/' />} />
+      <Route path='/dashboard-school/live' element={isAuth && (role === 'School' || role === 'IT') ? <LiveAdminDashboard /> : <Navigate to='/' />} />
 
       <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/' />} />
       <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/' />} />
