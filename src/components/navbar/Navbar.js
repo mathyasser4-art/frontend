@@ -191,7 +191,6 @@ const Navbar = () => {
                     ) : null}
                     {role === 'Teacher' ? (
                         <>
-                            <Link to={'/shop'} onClick={() => soundEffects.playClick()}><div className="homework-btn" style={{ backgroundColor: '#fbbf24', color: '#000', border: 'none', marginRight: '10px' }}>SHOP 🪙</div></Link>
                             <div className="create-battle-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateCompetition(true); }}>
                                 ⚔️ BATTLE
                             </div>
@@ -201,7 +200,6 @@ const Navbar = () => {
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn"><span className="text-desktop">HOMEWORK REPORTS</span><span className="text-mobile">REPORTS</span></div></Link> : null}
                     {role === 'Student' ? (
                         <>
-                            <Link to={'/shop'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ backgroundColor: '#fbbf24', color: '#000', marginRight: '10px' }}>SHOP 🪙</div></Link>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn">GAMES</div></Link>
                             <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link>
                         </>
@@ -209,11 +207,18 @@ const Navbar = () => {
                     {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link> : null}
                     {isAuth ? (
-                      <Link to={'/user/info'} onClick={() => soundEffects.playClick()}>
-                        <div className="nav-btn nav-btn-profile">
-                          PROFILE
-                        </div>
-                      </Link>
+                      <>
+                        <Link to={'/shop'} onClick={() => soundEffects.playClick()}>
+                          <div className="nav-btn" style={{ backgroundColor: '#fbbf24', color: '#000', border: 'none', marginRight: '10px', fontWeight: 'bold' }}>
+                            SHOP 🪙
+                          </div>
+                        </Link>
+                        <Link to={'/user/info'} onClick={() => soundEffects.playClick()}>
+                          <div className="nav-btn nav-btn-profile">
+                            PROFILE
+                          </div>
+                        </Link>
+                      </>
                     ) : (
                         <>
                             {SHOW_PRICING && (

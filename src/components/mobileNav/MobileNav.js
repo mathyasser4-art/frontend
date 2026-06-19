@@ -109,6 +109,15 @@ function MobileNav({ role }) {
           </Link>
 
           <Link 
+            to={'/shop'} 
+            onClick={() => soundEffects.playClick()}
+            className={`nav-item ${isActive('/shop') ? 'active' : ''}`}
+          >
+            <i className="fa fa-shopping-cart" aria-hidden="true" style={{ color: '#fbbf24' }}></i>
+            <span className="nav-label" style={{ color: '#fbbf24', fontWeight: 'bold' }}>Shop 🪙</span>
+          </Link>
+
+          <Link 
             to={'/user/info'} 
             onClick={() => soundEffects.playClick()}
             className={`nav-item ${isActive('/user/info') ? 'active' : ''}`}
