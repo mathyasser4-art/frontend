@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api_url } from '../../config/api.config';
+import API_BASE_URL from '../../config/api.config';
 import './Shop.css';
 
 const Shop = () => {
@@ -23,7 +23,7 @@ const Shop = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch(`${api_url}/user/userAuthorize/${token}`);
+      const response = await fetch(`${API_BASE_URL}/user/userAuthorize/${token}`);
       const data = await response.json();
       if (data.message === 'success') {
         const user = data.userInfo;
@@ -42,7 +42,7 @@ const Shop = () => {
 
   const fetchShopItems = async () => {
     try {
-      const response = await fetch(`${api_url}/user/shop`);
+      const response = await fetch(`${API_BASE_URL}/user/shop`);
       const data = await response.json();
       if (data.message === 'success') {
         setShopItems(data.items);
@@ -56,7 +56,7 @@ const Shop = () => {
 
   const handleBuy = async (itemId) => {
     try {
-      const response = await fetch(`${api_url}/user/buyItem`, {
+      const response = await fetch(`${API_BASE_URL}/user/buyItem`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ const Shop = () => {
 
   const handleEquip = async (itemId) => {
     try {
-      const response = await fetch(`${api_url}/user/equipItem`, {
+      const response = await fetch(`${API_BASE_URL}/user/equipItem`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
