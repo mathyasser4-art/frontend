@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../config/api.config';
+import { ArrowLeft } from 'lucide-react';
 import './Shop.css';
 
 const Shop = () => {
@@ -135,8 +136,10 @@ const Shop = () => {
       <div className="shop-header" style={{ position: 'relative' }}>
         <button 
           onClick={() => navigate(-1)} 
-          style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}
-        >✖</button>
+          style={{ position: 'absolute', top: '20px', left: '20px', background: '#3b82f6', color: 'white', border: 'none', padding: '10px 15px', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+        >
+          <ArrowLeft size={20} /> Back
+        </button>
         <h1>Rewards Shop</h1>
         <div className="coin-balance">
           <span className="coin-icon">🪙</span>
