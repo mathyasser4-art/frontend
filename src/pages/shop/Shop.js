@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../config/api.config';
 import './Shop.css';
 
 const Shop = () => {
+  const navigate = useNavigate();
   const [shopItems, setShopItems] = useState({});
   const [userCoins, setUserCoins] = useState(0);
   const [unlockedItems, setUnlockedItems] = useState([]);
@@ -130,7 +132,11 @@ const Shop = () => {
 
   return (
     <div className="shop-container">
-      <div className="shop-header">
+      <div className="shop-header" style={{ position: 'relative' }}>
+        <button 
+          onClick={() => navigate(-1)} 
+          style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}
+        >✖</button>
         <h1>Rewards Shop</h1>
         <div className="coin-balance">
           <span className="coin-icon">🪙</span>

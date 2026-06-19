@@ -23,7 +23,6 @@ function Footer() {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/pricing">Pricing</Link></li>
             <li><Link to="/auth/login">Login</Link></li>
-            <li><Link to="/auth/register">Sign Up</Link></li>
           </ul>
         </div>
 
