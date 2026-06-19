@@ -210,7 +210,7 @@ const TanksGame = () => {
     const channel = pusher.subscribe(channelName);
     channelRef.current = channel;
 
-    pusher.connection.bind('connected', () => {
+    channel.bind('pusher:subscription_succeeded', () => {
       // Send self join event
       broadcastPusherEvent(roomCode, 'tanks-joined', {
         id: myId,

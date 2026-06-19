@@ -327,13 +327,13 @@ function MathRacer() {
         ));
       });
 
-      // Immediately notify host that we entered the room
-      setTimeout(() => {
+      // Notify host that we entered the room only after successful subscription
+      channel.bind('pusher:subscription_succeeded', () => {
         broadcastPusherEvent(roomCode, 'student-joined', {
           id: myId,
           name: myName
         });
-      }, 800);
+      });
     }
   };
 
