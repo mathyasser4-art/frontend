@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { api_url } from '../../config/api.config';
 import './Shop.css';
 
@@ -24,9 +23,10 @@ const Shop = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`${api_url}/user/userAuthorize/${token}`);
-      if (response.data.message === 'success') {
-        const user = response.data.userInfo;
+      const response = await fetch(`${api_url}/user/userAuthorize/${token}`);
+      const data = await response.json();
+      if (data.message === 'success') {
+        const user = data.userInfo;
         setUserCoins(user.coins || 0);
         setUnlockedItems(user.unlockedItems || []);
         setEquippedItems({
@@ -42,9 +42,10 @@ const Shop = () => {
 
   const fetchShopItems = async () => {
     try {
-      const response = await axios.get(`${api_url}/user/shop`);
-      if (response.data.message === 'success') {
-        setShopItems(response.data.items);
+      const response = await fetch(`${api_url}/user/shop`);
+      const data = await response.json();
+      if (data.message === 'success') {
+        setShopItems(data.items);
       }
     } catch (error) {
       console.error('Error fetching shop items', error);
@@ -55,31 +56,43 @@ const Shop = () => {
 
   const handleBuy = async (itemId) => {
     try {
-      const response = await axios.post(`${api_url}/user/buyItem`, { itemId }, {
-        headers: { authrization: `Bearer ${token}` }
+      const response = await fetch(`${api_url}/user/buyItem`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          authrization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ itemId })
       });
-      if (response.data.message === 'success') {
-        setUserCoins(response.data.coins);
-        setUnlockedItems(response.data.unlockedItems);
+      const data = await response.json();
+      if (data.message === 'success') {
+        setUserCoins(data.coins);
+        setUnlockedItems(data.unlockedItems);
         showMessage('Item purchased successfully!', 'success');
       } else {
-        showMessage(response.data.message, 'error');
+        showMessage(data.message, 'error');
       }
     } catch (error) {
-      showMessage(error.response?.data?.message || 'Error purchasing item', 'error');
+      showMessage(error.message || 'Error purchasing item', 'error');
     }
   };
 
   const handleEquip = async (itemId) => {
     try {
-      const response = await axios.post(`${api_url}/user/equipItem`, { itemId }, {
-        headers: { authrization: `Bearer ${token}` }
+      const response = await fetch(`${api_url}/user/equipItem`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          authrization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ itemId })
       });
-      if (response.data.message === 'success') {
+      const data = await response.json();
+      if (data.message === 'success') {
         setEquippedItems({
-          avatarBorder: response.data.currentAvatarBorder,
-          carSkin: response.data.currentCarSkin,
-          tankSkin: response.data.currentTankSkin
+          avatarBorder: data.currentAvatarBorder,
+          carSkin: data.currentCarSkin,
+          tankSkin: data.currentTankSkin
         });
         showMessage('Item equipped!', 'success');
       }
