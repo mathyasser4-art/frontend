@@ -15,6 +15,7 @@ import { History } from 'lucide-react'
 import soundEffects from '../../utils/soundEffects'
 import { getTeacherCompetitions } from '../../api/competition/competition.api';
 import CreateCompetitionModal from '../../components/navbar/CreateCompetitionModal';
+import tipStudent from '../../api/user/tipStudent.api';
 import '../../reusable.css'
 import './TeacherDashboard.css'
 
@@ -251,6 +252,24 @@ function TeacherDashboard() {
     const userName = localStorage.getItem('pp_name') || '';
     const userRole = localStorage.getItem('auth_role') || '';
     
+    const handleTipStudent = async (studentId, studentName) => {
+        const amount = window.prompt(`How many coins do you want to gift to ${studentName}?`);
+        if (!amount || isNaN(amount) || amount <= 0) return;
+        
+        const confirmTip = window.confirm(`Are you sure you want to send ${amount} coins to ${studentName}? This will be deducted from your balance.`);
+        if (!confirmTip) return;
+
+        setLoadingOperation(true);
+        const res = await tipStudent(studentId, parseInt(amount));
+        setLoadingOperation(false);
+
+        if (res.message === 'success') {
+            window.alert(`Successfully gifted ${amount} coins to ${studentName}! Your new balance is ${res.coins} coins.`);
+        } else {
+            window.alert(`Failed to tip: ${res.message}`);
+        }
+    }
+    
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
                         (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
 
@@ -374,6 +393,14 @@ function TeacherDashboard() {
                                         >
                                             <History size={20} />
                                         </Link>
+                                        <div 
+                                            className="student-tip-icon" 
+                                            title={`Gift Coins to ${item.solveBy.userName}`}
+                                            onClick={() => handleTipStudent(item.solveBy._id, item.solveBy.userName)}
+                                            style={{ cursor: 'pointer', marginLeft: '10px', fontSize: '20px' }}
+                                        >
+                                            🪙
+                                        </div>
                                     </div>
                                 )
                             })}
