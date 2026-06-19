@@ -190,14 +190,18 @@ const Navbar = () => {
                         </div>
                     ) : null}
                     {role === 'Teacher' ? (
-                        <div className="create-battle-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateCompetition(true); }}>
-                            ⚔️ BATTLE
-                        </div>
+                        <>
+                            <Link to={'/shop'} onClick={() => soundEffects.playClick()}><div className="homework-btn" style={{ backgroundColor: '#fbbf24', color: '#000', border: 'none', marginRight: '10px' }}>SHOP 🪙</div></Link>
+                            <div className="create-battle-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateCompetition(true); }}>
+                                ⚔️ BATTLE
+                            </div>
+                        </>
                     ) : null}
 
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn"><span className="text-desktop">HOMEWORK REPORTS</span><span className="text-mobile">REPORTS</span></div></Link> : null}
                     {role === 'Student' ? (
                         <>
+                            <Link to={'/shop'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ backgroundColor: '#fbbf24', color: '#000', marginRight: '10px' }}>SHOP 🪙</div></Link>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn">GAMES</div></Link>
                             <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link>
                         </>

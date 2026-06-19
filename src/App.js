@@ -53,6 +53,7 @@ import ClassHomework from './pages/classHomework/ClassHomework';
 import TeacherCompetitionLobby from './pages/teacherDashboard/TeacherCompetitionLobby';
 import StudentCompetition from './pages/studentDashboard/StudentCompetition';
 import TeacherQuestionBank from './pages/teacherDashboard/TeacherQuestionBank';
+import Shop from './pages/shop/Shop';
 
 function App() {
   const isAuth = localStorage.getItem('O_authWEB')
@@ -115,6 +116,7 @@ function App() {
       <Route path='/student/games/tanks' element={<TanksGame />} />
       <Route path='/student/games/minigolf' element={<MinigolfGame />} />
       <Route path='/student/games-menu' element={<GamesMenu />} />
+      <Route path='/shop' element={isAuth ? <Shop /> : <Navigate to='/' />} />
 
       </Routes>
       {location.pathname === '/' && (!role || role === 'Student') && <LiveChatWidget />}

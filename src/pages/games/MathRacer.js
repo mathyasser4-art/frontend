@@ -129,6 +129,22 @@ function MathRacer() {
   const myId = localStorage.getItem('pp_id') || 'usr_' + Math.random().toString(36).substr(2, 9);
   
   const F1_COLORS = ['#3b82f6', '#f43f5e', '#8b5cf6', '#10b981', '#fbbf24'];
+  const CAR_SKINS = { 'car_red': '#ef4444', 'car_purple': '#a855f7', 'car_gold': '#fbbf24' };
+  const [mySkinColor, setMySkinColor] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('O_authWEB');
+    if (token) {
+      fetch(`${API_BASE_URL}/user/userAuthorize/${token}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.message === 'success' && data.userInfo?.currentCarSkin) {
+            setMySkinColor(CAR_SKINS[data.userInfo.currentCarSkin] || null);
+          }
+        })
+        .catch(console.error);
+    }
+  }, []);
 
   const [gameState, setGameState] = useState('menu'); // 'menu', 'lobby', 'playing', 'gameover'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy', 'medium', 'hard'
@@ -210,7 +226,7 @@ function MathRacer() {
       const hostPlayer = {
         id: myId,
         name: myName,
-        color: F1_COLORS[0],
+        color: mySkinColor || F1_COLORS[0],
         distance: 0,
         score: 0,
         finished: false,
@@ -229,7 +245,7 @@ function MathRacer() {
           const newPlayer = {
             id: data.id,
             name: data.name,
-            color: nextColor,
+            color: data.skinColor || nextColor,
             distance: 0,
             score: 0,
             finished: false,
@@ -331,7 +347,8 @@ function MathRacer() {
       channel.bind('pusher:subscription_succeeded', () => {
         broadcastPusherEvent(roomCode, 'student-joined', {
           id: myId,
-          name: myName
+          name: myName,
+          skinColor: mySkinColor
         });
       });
     }
@@ -730,7 +747,7 @@ function MathRacer() {
         {gameState === 'menu' && (
           <div className="racer-menu">
             <div className="racer-logo">
-              <F1CarSVG color="#3b82f6" name="" />
+              <F1CarSVG color={mySkinColor || "#3b82f6"} name="" />
             </div>
 
             {customQuestions && (
@@ -977,7 +994,7 @@ function MathRacer() {
                     <div className="lane player-lane">
                       <div className="lane-marker"></div>
                       <div className={`racer-car player-car ${feedback === 'correct' ? 'accelerating' : ''} ${feedback === 'wrong' ? 'stalling' : ''}`} style={{ left: `${getVisualPosition(playerDistance)}%` }}>
-                        <F1CarSVG color="#3b82f6" name="You" isBoosting={feedback === 'correct'} />
+                        <F1CarSVG color={mySkinColor || "#3b82f6"} name="You" isBoosting={feedback === 'correct'} />
                       </div>
                     </div>
                     {/* Lane 3: Bot 2 */}
