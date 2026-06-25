@@ -648,6 +648,7 @@ function TeacherCompetitionLobby() {
                                 gap: '10px'
                             }}>
                                 <span style={{ fontSize: '13px', color: '#ec4899', fontWeight: 'bold' }}>INVITE LINK:</span>
+                                <button
                                     onClick={() => {
                                         const inviteLink = `${window.location.origin}/student/competition/${competitionId}`;
                                         navigator.clipboard.writeText(inviteLink);
