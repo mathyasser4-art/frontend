@@ -213,7 +213,7 @@ function CreateCompetitionModal({ onClose }) {
     const handleLaunchBattle = async () => {
         soundEffects.playClick();
         if (!battleTitle.trim()) {
-            setErrorMsg('Please enter a battle title.');
+            setErrorMsg('Please enter a competition title.');
             return;
         }
         if (chapterQuestions.length === 0) {
@@ -254,7 +254,7 @@ function CreateCompetitionModal({ onClose }) {
                         )}
                         <div className="comp-wizard-title-row">
                             <Swords size={22} className="comp-wizard-sword" />
-                            <h2>⚔️ Create Live Battle</h2>
+                            <h2>⚔️ Create a competition</h2>
                         </div>
                     </div>
                     <button className="comp-wizard-close-btn" onClick={onClose} title="Close">
@@ -320,7 +320,7 @@ function CreateCompetitionModal({ onClose }) {
                     {/* STEP 0: Question Source Selection */}
                     {!loading && step === 'source' && (
                         <div className="comp-step-container">
-                            <p className="comp-step-instruction">Select the source of questions for your live battle:</p>
+                            <p className="comp-step-instruction">Select the source of questions for your competition:</p>
                             <div className="comp-source-grid">
                                 <div className="comp-source-card" onClick={() => { soundEffects.playClick(); setStep('type'); }}>
                                     <div className="comp-source-icon-circle">
@@ -368,7 +368,7 @@ function CreateCompetitionModal({ onClose }) {
                                         <div key={ws._id} className="comp-list-item" onClick={() => {
                                             soundEffects.playClick();
                                             setSelectedChapter(ws);
-                                            setBattleTitle(`${ws.chapterName} Battle`);
+                                            setBattleTitle(`${ws.chapterName} Competition`);
                                             if (ws.format) {
                                                 setQuestionTypeID(ws.format === 'MCQ' ? '65a4963482dbaac16d820fc6' : '65a4964b82dbaac16d820fc8');
                                             }
@@ -408,7 +408,7 @@ function CreateCompetitionModal({ onClose }) {
                                         <div key={assign._id} className="comp-list-item" onClick={() => {
                                             soundEffects.playClick();
                                             setChapterQuestions(assign.questions || []);
-                                            setBattleTitle(`${assign.title} Battle`);
+                                            setBattleTitle(`${assign.title} Competition`);
                                             setStep('details');
                                         }}>
                                             <div className="comp-item-info">
@@ -430,7 +430,7 @@ function CreateCompetitionModal({ onClose }) {
                     {/* STEP 1: Question Type */}
                     {!loading && step === 'type' && (
                         <div className="comp-step-container">
-                            <p className="comp-step-instruction">Select the format of questions for your battle:</p>
+                            <p className="comp-step-instruction">Select the format of questions for your competition:</p>
                             <div className="comp-type-grid">
                                 <div className="comp-type-card comp-mcq-card" onClick={() => handleSelectType('mcq')}>
                                     <div className="comp-type-icon-circle comp-mcq-bg">
@@ -504,7 +504,7 @@ function CreateCompetitionModal({ onClose }) {
                                 <ChevronRight size={12} />
                                 <span className="comp-breadcrumb-active">{translateName(selectedSubject?.subjectName)}</span>
                             </div>
-                            <p className="comp-step-instruction">Expand a Unit, and choose the Chapter for battle questions:</p>
+                            <p className="comp-step-instruction">Expand a Unit, and choose the Chapter for competition questions:</p>
                             <div className="comp-systems-list">
                                 {unitData.length === 0 ? (
                                     <div className="comp-empty-state">No units found for this subject.</div>
@@ -576,7 +576,7 @@ function CreateCompetitionModal({ onClose }) {
                                 {/* Left: Settings */}
                                 <div className="comp-details-form">
                                     <div className="comp-form-group">
-                                        <label>⚔️ Battle Title <span className="comp-required">*</span></label>
+                                        <label>⚔️ Competition Title <span className="comp-required">*</span></label>
                                         <input
                                             type="text"
                                             value={battleTitle}
@@ -595,7 +595,7 @@ function CreateCompetitionModal({ onClose }) {
                                                     className={`comp-preset-btn ${battleTimer === t ? 'active' : ''}`}
                                                     onClick={() => { soundEffects.playClick(); setBattleTimer(t); }}
                                                 >
-                                                    {t < 60 ? `${t}s` : `${t / 60}m`}
+                                                    {t < 60 ? `${t}s` : `${t / 60}min`}
                                                 </button>
                                             ))}
                                         </div>
@@ -609,7 +609,7 @@ function CreateCompetitionModal({ onClose }) {
                                             style={{ marginTop: '8px' }}
                                         />
                                         <span className="comp-timer-hint">
-                                            = {Math.floor(battleTimer / 60)}m {battleTimer % 60}s per student
+                                            = {Math.floor(battleTimer / 60)}min {battleTimer % 60}s per student
                                         </span>
                                     </div>
 
@@ -620,7 +620,7 @@ function CreateCompetitionModal({ onClose }) {
                                         onClick={handleLaunchBattle}
                                         disabled={creating}
                                     >
-                                        {creating ? <span className="comp-spinner-small"></span> : '🚀 Launch Battle & Enter Lobby'}
+                                        {creating ? <span className="comp-spinner-small"></span> : '🚀 Launch Competition & Enter Lobby'}
                                     </button>
                                 </div>
 

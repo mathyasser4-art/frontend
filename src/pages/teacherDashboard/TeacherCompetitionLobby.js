@@ -23,7 +23,7 @@ const formatElapsedMs = (finishedAt, startedAt) => {
     
     let formatted = "";
     if (mins > 0) {
-        formatted += `${mins}m `;
+        formatted += `${mins}min `;
     }
     formatted += `${secs}s ${ms}ms`;
     return `${formatted} (${diffMs.toLocaleString()} ms)`;
@@ -414,7 +414,7 @@ function TeacherCompetitionLobby() {
                 const secs = rawTime ? Math.floor((rawTime % 60000) / 1000) : 0;
                 const ms = rawTime ? rawTime % 1000 : 0;
                 const cleanTimeStr = rawTime !== null 
-                    ? (mins > 0 ? `${mins}m ${secs}s ${ms}ms` : `${secs}s ${ms}ms`) 
+                    ? (mins > 0 ? `${mins}min ${secs}s ${ms}ms` : `${secs}s ${ms}ms`) 
                     : "—";
 
                 doc.text(cleanTimeStr, 440, yPos);
@@ -473,7 +473,7 @@ function TeacherCompetitionLobby() {
                 const secs = rawTime ? Math.floor((rawTime % 60000) / 1000) : 0;
                 const ms = rawTime ? rawTime % 1000 : 0;
                 const cleanTimeStr = rawTime !== null 
-                    ? (mins > 0 ? `${mins}m ${secs}s ${ms}ms` : `${secs}s ${ms}ms`) 
+                    ? (mins > 0 ? `${mins}min ${secs}s ${ms}ms` : `${secs}s ${ms}ms`) 
                     : "—";
 
                 doc.text(cleanTimeStr, 420, yPos + 40);
@@ -600,7 +600,7 @@ function TeacherCompetitionLobby() {
                 <header className="lobby-header-card">
                     <div className="header-text">
                         <h1>{competition.title}</h1>
-                        <p className="subtitle">Live Battle Arena Host Dashboard</p>
+                        <p className="subtitle">Create a competition Host Dashboard</p>
                         
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'center' }}>
                             <div className="battle-id-badge" style={{
@@ -613,13 +613,13 @@ function TeacherCompetitionLobby() {
                                 alignItems: 'center',
                                 gap: '10px'
                             }}>
-                                <span style={{ fontSize: '13px', color: '#a78bfa', fontWeight: 'bold' }}>BATTLE ID:</span>
+                                <span style={{ fontSize: '13px', color: '#a78bfa', fontWeight: 'bold' }}>COMPETITION ID:</span>
                                 <span style={{ fontFamily: 'monospace', fontSize: '14px', letterSpacing: '0.05em' }}>{competitionId}</span>
                                 <button
                                     onClick={() => {
                                         navigator.clipboard.writeText(competitionId);
                                         soundEffects.playClick();
-                                        alert("Battle ID copied! Share it with your students.");
+                                        alert("Competition ID copied! Share it with your students.");
                                     }}
                                     style={{
                                         background: 'linear-gradient(135deg, #7c3aed, #db2777)',
@@ -648,12 +648,11 @@ function TeacherCompetitionLobby() {
                                 gap: '10px'
                             }}>
                                 <span style={{ fontSize: '13px', color: '#ec4899', fontWeight: 'bold' }}>INVITE LINK:</span>
-                                <button
                                     onClick={() => {
                                         const inviteLink = `${window.location.origin}/student/competition/${competitionId}`;
                                         navigator.clipboard.writeText(inviteLink);
                                         soundEffects.playClick();
-                                        alert("Invite Link copied! Share it with your students.");
+                                        alert("Invite Link copied! Share it with anyone to join.");
                                     }}
                                     style={{
                                         background: 'linear-gradient(135deg, #ec4899, #f43f5e)',
@@ -698,7 +697,7 @@ function TeacherCompetitionLobby() {
                         <div className="participants-grid-wrapper">
                             <h3>Lobby Roster ({participants.length})</h3>
                             {participants.length === 0 ? (
-                                <p className="empty-roster-msg">No competitors have joined yet. Tell your students to click "Join Live Battle" on their dashboards.</p>
+                                <p className="empty-roster-msg">No competitors have joined yet. Tell your students to click "Join Competition" on their dashboards or share the invite link.</p>
                             ) : (
                                 <div className="avatar-waiting-grid">
                                     {participants.map((p, idx) => (
@@ -737,7 +736,7 @@ function TeacherCompetitionLobby() {
                             </div>
                             <button onClick={handleFinish} className="action-button end-game-btn">
                                 <Flag size={18} />
-                                <span>End Battle & Show Podium</span>
+                                <span>End Competition & Show Podium</span>
                             </button>
                         </div>
 
@@ -800,7 +799,7 @@ function TeacherCompetitionLobby() {
                     <div className="status-container podium-results-box">
                         <div className="celebration-title">
                             <Trophy size={48} className="gold-trophy" />
-                            <h2>Battle Concluded!</h2>
+                            <h2>Competition Concluded!</h2>
                             <p>Here are the champions of the Abacus Arena</p>
                         </div>
 

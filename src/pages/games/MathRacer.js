@@ -116,13 +116,20 @@ function MathRacer() {
   const [essayAnswer, setEssayAnswer] = useState('');
 
   // Matchmaking & Multiplayer States
-  const [gameMode, setGameMode] = useState('single'); // 'single' or 'multi'
+  const userRole = localStorage.getItem('auth_role') || '';
+  const isTeacher = userRole === 'Teacher' || userRole === 'School';
+
+  const [gameMode, setGameMode] = useState(isTeacher ? 'multi' : 'single'); // 'single' or 'multi'
   const [multiRole, setMultiRole] = useState(null); // 'host' or 'guest'
   const [roomId, setRoomId] = useState('');
   const [inputRoomId, setInputRoomId] = useState('');
   const [players, setPlayers] = useState([]); // [{ id, name, color, distance, score, finished, time, isBoosting }]
   const [lobbyStatus, setLobbyStatus] = useState('');
   const [isCopied, setIsCopied] = useState(false);
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
+  const [hostQuestionCount, setHostQuestionCount] = useState(15);
+  const [activeQuestionCount, setActiveQuestionCount] = useState(null);
+  const [hostIsRacing, setHostIsRacing] = useState(false); // Default host to spectator mode
 
   // User Credentials
   const myName = localStorage.getItem('pp_name') || 'Racer ' + Math.floor(100 + Math.random() * 900);
@@ -231,7 +238,8 @@ function MathRacer() {
         score: 0,
         finished: false,
         time: null,
-        isBoosting: false
+        isBoosting: false,
+        isSpectator: !hostIsRacing
       };
       setPlayers([hostPlayer]);
 
@@ -250,7 +258,8 @@ function MathRacer() {
             score: 0,
             finished: false,
             time: null,
-            isBoosting: false
+            isBoosting: false,
+            isSpectator: false
           };
           const updated = [...prev, newPlayer];
           
@@ -258,7 +267,8 @@ function MathRacer() {
           broadcastPusherEvent(roomCode, 'sync-lobby', { 
             players: updated,
             hasCustomQuestions: !!customQuestions,
-            chapterName: chapterName
+            chapterName: chapterName,
+            questionCount: hostQuestionCount
           });
           return updated;
         });
@@ -283,6 +293,9 @@ function MathRacer() {
       channel.bind('sync-lobby', (data) => {
         console.log('[LOBBY] Synced roster from host:', data);
         setPlayers(data.players);
+        if (data.questionCount) {
+          setActiveQuestionCount(data.questionCount);
+        }
         if (data.hasCustomQuestions && data.chapterName) {
           setChapterName(data.chapterName || '');
           // Fetch custom questions from database to avoid large Pusher payloads
@@ -308,6 +321,9 @@ function MathRacer() {
       // Guest listens to host's race start trigger
       channel.bind('start-game', (data) => {
         setDifficulty(data.difficulty);
+        if (data.questionCount) {
+          setActiveQuestionCount(data.questionCount);
+        }
         setGameState('playing');
         setScore(0);
         setTimeElapsed(0);
@@ -354,6 +370,34 @@ function MathRacer() {
     }
   };
 
+  useEffect(() => {
+    if (gameState === 'lobby' && multiRole === 'host' && roomId) {
+      setPlayers(prev => {
+        const updated = prev.map(p => p.id === myId ? { ...p, isSpectator: !hostIsRacing } : p);
+        broadcastPusherEvent(roomId, 'sync-lobby', {
+          players: updated,
+          hasCustomQuestions: !!customQuestions,
+          chapterName: chapterName,
+          questionCount: hostQuestionCount
+        });
+        return updated;
+      });
+    }
+  }, [hostQuestionCount, hostIsRacing, gameState, multiRole, roomId]);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const roomParam = searchParams.get('room');
+    if (roomParam) {
+      setInputRoomId(roomParam);
+      setRoomId(roomParam);
+      setGameMode('multi');
+      setMultiRole('guest');
+      setGameState('lobby');
+      initPusherMultiplayer(roomParam, 'guest');
+    }
+  }, [location.search]);
+
   // Host Action: Create lobby
   const handleCreateRoom = () => {
     soundEffects.playClick();
@@ -380,6 +424,14 @@ function MathRacer() {
     navigator.clipboard.writeText(roomId);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  const copyShareLink = () => {
+    soundEffects.playClick();
+    const shareLink = `${window.location.origin}/student/games/math-racer?room=${roomId}`;
+    navigator.clipboard.writeText(shareLink);
+    setIsLinkCopied(true);
+    setTimeout(() => setIsLinkCopied(false), 2000);
   };
 
   // Generate a random addition/subtraction MCQ problem (always consistent), or load a custom question.
@@ -480,10 +532,12 @@ function MathRacer() {
     if (players.length < 1) return; // Allow practice alone, or multiple
     soundEffects.playClick();
     setDifficulty(selectedLevel);
+    setActiveQuestionCount(hostQuestionCount);
     
     // Broadcast start race config to all guests
     broadcastPusherEvent(roomId, 'start-game', { 
       difficulty: selectedLevel,
+      questionCount: hostQuestionCount,
       customQuestions: null // Set to null to keep Pusher payload under 10KB size limit
     });
     
@@ -527,7 +581,7 @@ function MathRacer() {
             return newDist;
           });
           setPlayerDistance(prev => {
-            if (prev >= RACE_LENGTH) endGame();
+            if (prev >= RACE_LENGTH - 0.01) endGame();
             return prev;
           });
         }, 100);
@@ -543,6 +597,17 @@ function MathRacer() {
   // Real-time Multiplayer Distance Synchronizer
   useEffect(() => {
     if (gameState === 'playing' && gameMode === 'multi' && roomId) {
+      if (multiRole === 'host' && !hostIsRacing) {
+        // If host is spectator, check if any active racer finished or all finished
+        const activeRacers = players.filter(p => !p.isSpectator);
+        if (activeRacers.length > 0 && activeRacers.some(p => p.finished)) {
+          if (activeRacers.every(p => p.finished)) {
+            endGame();
+          }
+        }
+        return;
+      }
+
       // Synchronize player distance with others in room
       broadcastPusherEvent(roomId, 'player-progress', {
         id: myId,
@@ -552,7 +617,7 @@ function MathRacer() {
       });
 
       // Victory Check
-      if (playerDistance >= RACE_LENGTH) {
+      if (playerDistance >= RACE_LENGTH - 0.01) {
         const finalTime = `${timeElapsed}s`;
         
         broadcastPusherEvent(roomId, 'player-finished', {
@@ -568,7 +633,7 @@ function MathRacer() {
         endGame();
       }
     }
-  }, [playerDistance, gameState, gameMode, roomId]);
+  }, [playerDistance, gameState, gameMode, roomId, multiRole, hostIsRacing, players]);
 
   const handleOptionClick = (selectedOpt) => {
     const normalize = (val) => String(val !== undefined && val !== null ? val : "").trim();
@@ -613,7 +678,7 @@ function MathRacer() {
     setScore(prev => prev + 10);
     
     setPlayerDistance(prev => {
-      const jumpDist = difficulty === 'easy' || difficulty === '0' ? 15 : difficulty === 'medium' || difficulty === '1' ? 12 : 10;
+      const jumpDist = (gameMode === 'multi' && activeQuestionCount) ? (RACE_LENGTH / activeQuestionCount) : (difficulty === 'easy' || difficulty === '0' ? 15 : difficulty === 'medium' || difficulty === '1' ? 12 : 10);
       const newDistance = prev + jumpDist;
       
       // Update our local visual lane coordinates
@@ -684,7 +749,7 @@ function MathRacer() {
       return place;
     } else {
       // Count how many players have a greater distance or completed faster
-      const sorted = [...players].sort((a, b) => {
+      const sorted = [...players].filter(p => !p.isSpectator).sort((a, b) => {
         if (a.finished && !b.finished) return -1;
         if (!a.finished && b.finished) return 1;
         if (a.finished && b.finished) {
@@ -698,14 +763,15 @@ function MathRacer() {
   };
 
   const getVisualPosition = (distance) => {
-    // Player is always anchored at ~20% visually. We scale the relative distance.
-    const relative = distance - playerDistance;
+    const cameraDistance = (multiRole === 'host' && !hostIsRacing) ? Math.max(0, ...players.map(p => p.distance || 0)) : playerDistance;
+    const relative = distance - cameraDistance;
     const visual = 20 + (relative * 0.6); 
     return Math.max(-20, Math.min(90, visual));
   };
 
   const getFinishLineVisualPosition = () => {
-    const relative = RACE_LENGTH - playerDistance;
+    const cameraDistance = (multiRole === 'host' && !hostIsRacing) ? Math.max(0, ...players.map(p => p.distance || 0)) : playerDistance;
+    const relative = RACE_LENGTH - cameraDistance;
     const visual = 20 + (relative * 0.6); 
     return visual;
   };
@@ -719,7 +785,7 @@ function MathRacer() {
 
   // Get final placement list for podium
   const getPodiumList = () => {
-    return [...players].sort((a, b) => {
+    return [...players].filter(p => !p.isSpectator).sort((a, b) => {
       if (a.finished && !b.finished) return -1;
       if (!a.finished && b.finished) return 1;
       if (a.finished && b.finished) {
@@ -763,20 +829,22 @@ function MathRacer() {
             )}
             
             {/* Premium Lobby Selection Tabs */}
-            <div className="game-mode-tabs">
-              <button 
-                className={`mode-tab ${gameMode === 'single' ? 'active' : ''}`}
-                onClick={() => { soundEffects.playClick(); setGameMode('single'); }}
-              >
-                🤖 Single Player VS Bots
-              </button>
-              <button 
-                className={`mode-tab ${gameMode === 'multi' ? 'active' : ''}`}
-                onClick={() => { soundEffects.playClick(); setGameMode('multi'); }}
-              >
-                👥 Real-Time Multiplayer VS Friends
-              </button>
-            </div>
+            {!isTeacher && (
+              <div className="game-mode-tabs">
+                <button 
+                  className={`mode-tab ${gameMode === 'single' ? 'active' : ''}`}
+                  onClick={() => { soundEffects.playClick(); setGameMode('single'); }}
+                >
+                  🤖 Single Player
+                </button>
+                <button 
+                  className={`mode-tab ${gameMode === 'multi' ? 'active' : ''}`}
+                  onClick={() => { soundEffects.playClick(); setGameMode('multi'); }}
+                >
+                  👥 Multiplayer
+                </button>
+              </div>
+            )}
 
             {gameMode === 'single' ? (
               <div className="single-player-setup">
@@ -871,28 +939,84 @@ function MathRacer() {
               </div>
             )}
 
-            <div className="room-code-display-card">
-              <span className="room-label">ROOM ENTRY CODE</span>
-              <div className="code-badge-group">
-                <span className="room-code-value">{roomId}</span>
-                <button className="btn-copy-code" onClick={copyRoomCode}>
-                  {isCopied ? 'Copied! ✓' : <><Copy size={16} /> Copy Code</>}
+            <div className="room-code-display-card" style={{
+              background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9))',
+              border: '2px solid #ec4899',
+              borderRadius: '20px',
+              padding: '25px',
+              marginBottom: '25px',
+              boxShadow: '0 10px 30px rgba(236, 72, 153, 0.3)'
+            }}>
+              <span className="room-label" style={{ color: '#f43f5e', fontSize: '14px', fontWeight: 'bold', display: 'block', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                🔗 INVITE LINK & ROOM CODE
+              </span>
+              <div className="code-badge-group" style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
+                <button 
+                  className="btn-copy-link-premium" 
+                  onClick={copyShareLink}
+                  style={{
+                    background: 'linear-gradient(135deg, #ec4899, #f43f5e)',
+                    border: 'none',
+                    borderRadius: '14px',
+                    color: '#ffffff',
+                    padding: '14px 28px',
+                    fontSize: '16px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    width: '100%',
+                    maxWidth: '350px',
+                    boxShadow: '0 6px 20px rgba(236, 72, 153, 0.5)',
+                    transition: 'all 0.2s ease',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  {isLinkCopied ? '✓ Copied Invite Link!' : <><Copy size={20} /> 1-Click Copy Invite Link</>}
                 </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', background: 'rgba(0,0,0,0.4)', padding: '8px 20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <span style={{ color: '#94a3b8', fontSize: '14px' }}>Room Code:</span>
+                  <span className="room-code-value" style={{ fontSize: '24px', letterSpacing: '4px', color: '#38bdf8', fontWeight: 'bold' }}>{roomId}</span>
+                  <button 
+                    className="btn-copy-code" 
+                    onClick={copyRoomCode}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '8px',
+                      color: '#cbd5e1',
+                      padding: '6px 12px',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {isCopied ? '✓ Copied Code' : <><Copy size={14} /> Copy Code</>}
+                  </button>
+                </div>
               </div>
-              <p className="server-status-label">🚦 {lobbyStatus}</p>
+              <p className="server-status-label" style={{ marginTop: '20px', marginBottom: 0, color: '#10b981', fontWeight: '600' }}>🚦 {lobbyStatus}</p>
             </div>
 
             <div className="lobby-players-grid">
-              <h4>Connected Racers ({players.length} / 4)</h4>
+              <h4>Connected Racers ({players.length})</h4>
               <div className="roster-list">
                 {players.map((player, idx) => (
                   <div key={player.id || idx} className="roster-player-item">
                     <div className="player-badge-color" style={{ backgroundColor: player.color }}></div>
                     <div className="player-profile-detail">
                       <span className="roster-player-name">{player.name}</span>
-                      <span className="roster-player-rank">{idx === 0 ? '🏁 Room Host' : '🔥 Contender'}</span>
+                      <span className="roster-player-rank">{player.id === myId && multiRole === 'host' ? (player.isSpectator ? '👁️ Room Host (Spectator)' : '🏁 Room Host (Driver)') : '🔥 Contender'}</span>
                     </div>
-                    <span className="ready-indicator">Ready to Race ✓</span>
+                    <span className="ready-indicator">{player.isSpectator ? 'Observing 👁️' : 'Ready to Race ✓'}</span>
                   </div>
                 ))}
                 {players.length === 0 && (
@@ -906,6 +1030,127 @@ function MathRacer() {
 
             {multiRole === 'host' ? (
               <div className="host-launch-panel">
+                <div className="host-role-config-card" style={{
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '16px',
+                  padding: '20px',
+                  marginBottom: '20px',
+                  textAlign: 'center'
+                }}>
+                  <h4 style={{ color: '#f8fafc', fontSize: '16px', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <span>👥</span> Host Participation Mode
+                  </h4>
+                  <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '15px' }}>
+                    Choose whether you want to participate in the race as a driver or observe your students as a spectator.
+                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
+                    <button
+                      onClick={() => {
+                        soundEffects.playClick();
+                        setHostIsRacing(false);
+                      }}
+                      style={{
+                        flex: '1',
+                        minWidth: '150px',
+                        background: !hostIsRacing ? 'linear-gradient(135deg, #8b5cf6, #6366f1)' : 'rgba(255, 255, 255, 0.05)',
+                        border: `1px solid ${!hostIsRacing ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)'}`,
+                        borderRadius: '12px',
+                        color: !hostIsRacing ? '#ffffff' : '#cbd5e1',
+                        padding: '12px 20px',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: !hostIsRacing ? '0 4px 15px rgba(139, 92, 246, 0.4)' : 'none'
+                      }}
+                    >
+                      👁️ Spectator Mode
+                    </button>
+                    <button
+                      onClick={() => {
+                        soundEffects.playClick();
+                        setHostIsRacing(true);
+                      }}
+                      style={{
+                        flex: '1',
+                        minWidth: '150px',
+                        background: hostIsRacing ? 'linear-gradient(135deg, #3b82f6, #06b6d4)' : 'rgba(255, 255, 255, 0.05)',
+                        border: `1px solid ${hostIsRacing ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)'}`,
+                        borderRadius: '12px',
+                        color: hostIsRacing ? '#ffffff' : '#cbd5e1',
+                        padding: '12px 20px',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: hostIsRacing ? '0 4px 15px rgba(59, 130, 246, 0.4)' : 'none'
+                      }}
+                    >
+                      🏎️ Join Race as Driver
+                    </button>
+                  </div>
+                </div>
+
+                <div className="question-count-config-card" style={{
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '16px',
+                  padding: '20px',
+                  marginBottom: '25px',
+                  textAlign: 'center'
+                }}>
+                  <h4 style={{ color: '#f8fafc', fontSize: '16px', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <span>⚙️</span> Configure Race Length (Number of Questions)
+                  </h4>
+                  <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '15px' }}>
+                    Control how many correct answers are required for students to cross the finish line.
+                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '15px' }}>
+                    {[5, 10, 15, 20, 30, 50].map(num => (
+                      <button
+                        key={num}
+                        onClick={() => { soundEffects.playClick(); setHostQuestionCount(num); }}
+                        style={{
+                          background: hostQuestionCount === num ? 'linear-gradient(135deg, #3b82f6, #6366f1)' : 'rgba(255, 255, 255, 0.05)',
+                          border: `1px solid ${hostQuestionCount === num ? '#6366f1' : 'rgba(255, 255, 255, 0.1)'}`,
+                          borderRadius: '10px',
+                          color: hostQuestionCount === num ? '#ffffff' : '#cbd5e1',
+                          padding: '8px 16px',
+                          fontSize: '14px',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          boxShadow: hostQuestionCount === num ? '0 4px 12px rgba(59, 130, 246, 0.4)' : 'none'
+                        }}
+                      >
+                        {num} Qs
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                    <span style={{ color: '#cbd5e1', fontSize: '14px', fontWeight: '500' }}>Custom Amount:</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="200"
+                      value={hostQuestionCount}
+                      onChange={e => setHostQuestionCount(Math.max(1, parseInt(e.target.value) || 1))}
+                      style={{
+                        background: 'rgba(0, 0, 0, 0.3)',
+                        border: '1px solid #3b82f6',
+                        borderRadius: '8px',
+                        color: '#ffffff',
+                        padding: '6px 12px',
+                        width: '80px',
+                        textAlign: 'center',
+                        fontSize: '14px',
+                        fontWeight: 'bold'
+                      }}
+                    />
+                  </div>
+                </div>
+
                 {customQuestions ? (
                   <>
                     <h4>Launch Custom Race:</h4>
@@ -939,6 +1184,11 @@ function MathRacer() {
               <div className="guest-waiting-panel">
                 <div className="guest-spinner"></div>
                 <p>Waiting for Host to launch the F1 race...</p>
+                {activeQuestionCount && (
+                  <p style={{ color: '#10b981', fontSize: '15px', marginTop: '15px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <span>🏁</span> Race Length set to {activeQuestionCount} Questions
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -1008,7 +1258,7 @@ function MathRacer() {
                   /* ============================================================
                      MULTIPLAYER REAL-TIME DYNAMIC ROSTER LANES
                      ============================================================ */
-                  players.map((player, idx) => {
+                  players.filter(p => !p.isSpectator).map((player, idx) => {
                     const isMe = player.id === myId;
                     const carDistance = isMe ? playerDistance : player.distance;
                     const visualLeft = getVisualPosition(carDistance);
@@ -1033,6 +1283,51 @@ function MathRacer() {
               </div>
             </div>
 
+            {multiRole === 'host' && !hostIsRacing ? (
+              <div className="racer-spectator-panel" style={{
+                background: 'rgba(15, 23, 42, 0.85)',
+                borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                padding: '20px 30px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '15px'
+              }}>
+                <h3 style={{ color: '#38bdf8', fontSize: '20px', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>🏎️</span> Live Race Spectator Dashboard
+                </h3>
+                <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0, textAlign: 'center' }}>
+                  You are hosting this race in spectator mode. Watch your students compete live on the track above!
+                </p>
+                <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>Active Racers</span>
+                    <strong style={{ color: '#10b981', fontSize: '18px' }}>{players.filter(p => !p.isSpectator).length}</strong>
+                  </div>
+                  <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>Target Questions</span>
+                    <strong style={{ color: '#a78bfa', fontSize: '18px' }}>{activeQuestionCount || 'Unlimited'}</strong>
+                  </div>
+                </div>
+                <button
+                  onClick={endGame}
+                  style={{
+                    background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
+                    border: 'none',
+                    borderRadius: '10px',
+                    color: '#fff',
+                    padding: '10px 24px',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)'
+                  }}
+                >
+                  🏁 End Race & Show Podium
+                </button>
+              </div>
+            ) : (
             <div className={`problem-container ${feedback} ${currentProblem.typeOfAnswer || ''} ${customQuestions ? 'side-by-side' : ''}`}>
               
               <div className="racer-question-section">
@@ -1147,6 +1442,7 @@ function MathRacer() {
                 )}
               </div>
             </div>
+            )}
           </div>
         )}
 

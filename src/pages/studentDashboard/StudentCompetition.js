@@ -24,7 +24,7 @@ const formatElapsedMs = (finishedAt, startedAt) => {
     
     let formatted = "";
     if (mins > 0) {
-        formatted += `${mins}m `;
+        formatted += `${mins}min `;
     }
     formatted += `${secs}s ${ms}ms`;
     return `${formatted}`;
@@ -58,8 +58,17 @@ function StudentCompetition() {
     const [badges, setBadges] = useState([]);
     const [isCertOpen, setIsCertOpen] = useState(false);
 
-    const studentID = localStorage.getItem('pp_id');
-    const studentName = localStorage.getItem('pp_name') || 'Student';
+    let studentID = localStorage.getItem('pp_id');
+    let studentName = localStorage.getItem('pp_name');
+    if (!studentID) {
+        studentID = localStorage.getItem('guest_id');
+        if (!studentID) {
+            studentID = 'guest_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('guest_id', studentID);
+        }
+        studentName = localStorage.getItem('guest_name') || 'Guest ' + Math.floor(100 + Math.random() * 900);
+        localStorage.setItem('guest_name', studentName);
+    }
 
     // Refs to always have latest counts for background score sync
     const correctCountRef = useRef(0);
@@ -172,7 +181,7 @@ function StudentCompetition() {
                 // Join the lobby
                 console.log('[Competition] Joining competition:', competitionId);
                 console.log('[Competition] API Base URL:', API_BASE_URL);
-                const joinRes = await joinCompetition(competitionId);
+                const joinRes = await joinCompetition(competitionId, { guestId: studentID, guestName: studentName });
                 console.log('[Competition] Join response:', JSON.stringify(joinRes));
                 if (joinRes.message !== 'success') {
                     console.warn("[Competition] Could not join lobby:", joinRes.message);
@@ -400,6 +409,8 @@ function StudentCompetition() {
             // Broadcast live score update to other participants
             try {
                 await updateLiveScore(competitionId, {
+                    studentId: studentID,
+                    userName: studentName,
                     score: correctCountRef.current,
                     totalAnswered: totalAnsweredRef.current,
                     wrongAnswers: wrongCountRef.current,
@@ -545,6 +556,8 @@ function StudentCompetition() {
         // Final score broadcast
         try {
             await updateLiveScore(competitionId, {
+                studentId: studentID,
+                userName: studentName,
                 score: correctCountRef.current,
                 totalAnswered: totalAnsweredRef.current,
                 wrongAnswers: wrongCountRef.current,

@@ -236,7 +236,7 @@ function StudentDashboard() {
                                 </div>
                             </div>
 
-                            {/* Card 2: Live Battle Arena */}
+                            {/* Card 2: Competition Arena */}
                             <div className="premium-action-card battle-arena-card">
                                 <span className="card-badge">Live PVP</span>
                                 <div>
@@ -245,11 +245,11 @@ function StudentDashboard() {
                                             <Swords size={24} style={{ color: '#fff' }} />
                                         </div>
                                         <div className="card-title-text">
-                                            <h3>Live Battle Arena</h3>
+                                            <h3>Competition Arena</h3>
                                         </div>
                                     </div>
                                     <p className="card-desc-text">
-                                        Your teacher started a live battle! Paste the Competition ID here to join the race.
+                                        Your teacher started a competition! Paste the Competition ID here to join the race.
                                     </p>
                                 </div>
                                 <div className="card-action-box">

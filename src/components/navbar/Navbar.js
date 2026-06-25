@@ -192,7 +192,7 @@ const Navbar = () => {
                     {role === 'Teacher' ? (
                         <>
                             <div className="create-battle-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateCompetition(true); }}>
-                                ⚔️ BATTLE
+                                ⚔️ CREATE A COMPETITION
                             </div>
                         </>
                     ) : null}
@@ -291,10 +291,10 @@ const Navbar = () => {
                         </button>
                         <div className="bubble-header-row">
                             <span className="bubble-icon-battle">⚔️</span>
-                            <span className="bubble-title-text">Battle Arena Calling!</span>
+                            <span className="bubble-title-text">Competition Arena Calling!</span>
                         </div>
                         <p className="bubble-message-text">
-                            Teacher <strong>{activeBattleNotification.teacherName}</strong> started a live battle:<br/>
+                            Teacher <strong>{activeBattleNotification.teacherName}</strong> started a competition:<br/>
                             <span className="bubble-battle-title">"{activeBattleNotification.title}"</span>
                         </p>
                         <button 
@@ -315,7 +315,7 @@ const Navbar = () => {
                                 navigate(`/student/competition/${compId}`);
                             }}
                         >
-                            Join the Battle Now! ⚔️
+                            Join the Competition Now! ⚔️
                         </button>
                     </div>
                     <div className="bubble-thinking-dots">

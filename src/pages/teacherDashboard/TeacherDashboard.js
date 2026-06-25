@@ -315,26 +315,26 @@ function TeacherDashboard() {
                 <div className="comp-panel-header">
                     <div className="comp-panel-title">
                         <Swords size={22} className="comp-sword-icon" />
-                        <h2>Live Battle Arena</h2>
+                        <h2>Create a competition</h2>
                     </div>
                     <button
                         id="create-competition-btn"
                         className="comp-create-btn"
                         onClick={() => { soundEffects.playClick(); setShowCreateComp(true); }}
                     >
-                        ⚔️ Create New Battle
+                        ⚔️ Create a competition
                     </button>
                 </div>
 
                 {/* My Competitions List */}
                 <div className="comp-list-wrapper">
-                    <h3 className="comp-list-title">Your Past Battles</h3>
+                    <h3 className="comp-list-title">Your Past Competitions</h3>
                     {compLoading ? (
-                        <div className="comp-loading-msg">Loading battles...</div>
+                        <div className="comp-loading-msg">Loading competitions...</div>
                     ) : myCompetitions.length === 0 ? (
                         <div className="comp-empty-state">
                             <Trophy size={40} className="comp-empty-icon" />
-                            <p>No battles yet. Create your first one above!</p>
+                            <p>No competitions yet. Create your first one above!</p>
                         </div>
                     ) : (
                         <div className="comp-items-grid">
