@@ -335,6 +335,7 @@ function MathRacer() {
   const timerRef = useRef(null);
   const pusherRef = useRef(null);
   const channelRef = useRef(null);
+  const lastCorrectIndexRef = useRef(-1);
 
   // Clean up socket subscriptions on unmount
   useEffect(() => {
@@ -601,6 +602,28 @@ function MathRacer() {
 
   // Generate a random addition/subtraction MCQ problem (always consistent), or load a custom question.
   const generateProblem = (diff, index = currentQuestionIndex, questions = customQuestions) => {
+    const normalize = (val) => String(val !== undefined && val !== null ? val : "").trim();
+    const shuffleOptionsWithAntiConsecutive = (optsList, correctAns) => {
+      if (!optsList || optsList.length <= 1) return optsList;
+      let arr = [...optsList];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      let correctIdx = arr.findIndex(opt => normalize(opt) === normalize(correctAns));
+      
+      if (correctIdx !== -1 && correctIdx === lastCorrectIndexRef.current && arr.length > 1) {
+        let newIdx = (correctIdx + 1 + Math.floor(Math.random() * (arr.length - 1))) % arr.length;
+        [arr[correctIdx], arr[newIdx]] = [arr[newIdx], arr[correctIdx]];
+        correctIdx = newIdx;
+      }
+      
+      if (correctIdx !== -1) {
+        lastCorrectIndexRef.current = correctIdx;
+      }
+      return arr;
+    };
+
     if (questions && questions.length > 0) {
       const qIndex = index % questions.length;
       const q = questions[qIndex];
@@ -620,10 +643,13 @@ function MathRacer() {
         options = q.wrongPicAnswer;
       }
 
+      const answer = q.correctAnswer || (q.answer && q.answer[0]) || q.correctPicAnswer || '';
+      const shuffledOptions = shuffleOptionsWithAntiConsecutive(options, answer);
+
       setCurrentProblem({
         text: text === 'ABACUS_GRID' ? 'ABACUS_GRID' : formatQuestionText(text),
-        options,
-        answer: q.correctAnswer || (q.answer && q.answer[0]) || q.correctPicAnswer || '',
+        options: shuffledOptions,
+        answer,
         typeOfAnswer: q.typeOfAnswer,
         gridRows: gridRows || null,
         questionPic: q.questionPic || '',
@@ -671,9 +697,9 @@ function MathRacer() {
     while(options.length < 4) {
       options.push(Math.floor(Math.random() * 100));
     }
-    options.sort(() => Math.random() - 0.5);
+    const shuffledOptions = shuffleOptionsWithAntiConsecutive(options, answer);
 
-    setCurrentProblem({ text: `${num1} ${operator} ${num2} = ?`, answer, options });
+    setCurrentProblem({ text: `${num1} ${operator} ${num2} = ?`, answer, options: shuffledOptions });
   };
 
   const startGame = (selectedLevel) => {
