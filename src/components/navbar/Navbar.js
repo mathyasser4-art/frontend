@@ -50,6 +50,12 @@ const Navbar = () => {
             channel.bind('battle-created', (data) => {
                 console.log('[NOTIFICATION] Global live battle event received:', data);
                 
+                const myTeacherId = localStorage.getItem('teacher_id');
+                if (myTeacherId && data.teacherId && String(myTeacherId) !== String(data.teacherId)) {
+                    console.log('[NOTIFICATION] Ignoring battle created by a different teacher:', data.teacherId);
+                    return;
+                }
+
                 // Set the notification details in state
                 setActiveBattleNotification({
                     competitionId: data.competitionId,
@@ -63,9 +69,22 @@ const Navbar = () => {
                 } catch (e) {}
             });
 
+            channel.bind('force-join-student', (data) => {
+                console.log('[NOTIFICATION] Force join event received:', data);
+                if (String(data.studentId) === String(localStorage.getItem('pp_id'))) {
+                    const docEl = document.documentElement;
+                    if (docEl.requestFullscreen) {
+                        docEl.requestFullscreen().catch(() => {});
+                    }
+                    navigate(`/student/competition/${data.competitionId}`);
+                }
+            });
+
             // Set up a 60 seconds auto-dismiss timer whenever a battle is received
             let dismissTimer;
-            channel.bind('battle-created', () => {
+            channel.bind('battle-created', (data) => {
+                const myTeacherId = localStorage.getItem('teacher_id');
+                if (myTeacherId && data.teacherId && String(myTeacherId) !== String(data.teacherId)) return;
                 clearTimeout(dismissTimer);
                 dismissTimer = setTimeout(() => {
                     setActiveBattleNotification(null);

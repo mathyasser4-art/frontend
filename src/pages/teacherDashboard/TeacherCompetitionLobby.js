@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Pusher from 'pusher-js';
-import { getCompetitionDetails, startCompetition, finishCompetition } from '../../api/competition/competition.api';
+import { getCompetitionDetails, startCompetition, finishCompetition, joinCompetition } from '../../api/competition/competition.api';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
+import API_BASE_URL from '../../config/api.config';
 import { Play, Users, Trophy, Flag, Timer, Award, CheckCircle } from 'lucide-react';
 import soundEffects from '../../utils/soundEffects';
 import Confetti from 'react-confetti';
@@ -40,6 +41,9 @@ function TeacherCompetitionLobby() {
     const [selectedStudentReport, setSelectedStudentReport] = useState(null);
     const [selectedCertStudent, setSelectedCertStudent] = useState(null);
     const [isBulkCertOpen, setIsBulkCertOpen] = useState(false);
+    const [myStudents, setMyStudents] = useState([]);
+    const [loadingStudents, setLoadingStudents] = useState(false);
+    const [selectedStudentId, setSelectedStudentId] = useState('');
 
     const wakeLockRef = useRef(null);
 
@@ -150,6 +154,31 @@ function TeacherCompetitionLobby() {
         };
         fetchDetails();
     }, [competitionId]);
+
+    useEffect(() => {
+        const fetchStudents = async () => {
+            setLoadingStudents(true);
+            try {
+                const Token = localStorage.getItem('O_authWEB');
+                const res = await fetch(`${API_BASE_URL}/student/getStudent/1`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'authrization': `pracYas09${Token}`
+                    }
+                });
+                const data = await res.json();
+                if (data.message === 'success') {
+                    setMyStudents(data.allStudent || []);
+                }
+            } catch (err) {
+                console.error('Failed to fetch students:', err);
+            } finally {
+                setLoadingStudents(false);
+            }
+        };
+        fetchStudents();
+    }, []);
 
     // Polling fallback: re-fetch participants every 5 seconds while in lobby/active state
     // This guarantees the teacher sees new students even if Pusher events are missed
@@ -278,6 +307,33 @@ function TeacherCompetitionLobby() {
             }
         } catch (err) {
             console.error("Failed to finish competition:", err);
+        }
+    };
+
+    const handleForceJoinStudent = async (studentId) => {
+        if (!studentId) return;
+        const student = myStudents.find(s => s._id === studentId);
+        if (!student) return;
+
+        soundEffects.playClick();
+        try {
+            await joinCompetition(competitionId, { studentId: student._id, userName: student.userName });
+            await fetch(`${API_BASE_URL}/competition/mathracer/trigger`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    channelName: 'global-battle-arena',
+                    eventName: 'force-join-student',
+                    eventData: {
+                        studentId: student._id,
+                        competitionId: competitionId
+                    }
+                })
+            });
+            alert(`Successfully summoned ${student.userName} into the competition!`);
+        } catch (err) {
+            console.error('Failed to force join student:', err);
+            alert('Failed to summon student. Please try again.');
         }
     };
 
@@ -693,6 +749,59 @@ function TeacherCompetitionLobby() {
                             </div>
                             <h2>Waiting for Heroes to enter the Arena...</h2>
                             <p>Students must join this competition from their dashboard.</p>
+                        </div>
+
+                        <div className="teacher-student-selector-card" style={{
+                            background: 'rgba(255, 255, 255, 0.03)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '16px',
+                            padding: '24px',
+                            margin: '24px 0',
+                            textAlign: 'left'
+                        }}>
+                            <h3 style={{ fontSize: '18px', color: '#f8fafc', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                👥 Force Join Your Students
+                            </h3>
+                            <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '16px' }}>
+                                Select a student below to instantly pull them into this competition lobby. If they are online, their screen will automatically open the competition.
+                            </p>
+                            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                <select 
+                                    value={selectedStudentId}
+                                    onChange={e => setSelectedStudentId(e.target.value)}
+                                    style={{
+                                        flex: '1 1 250px',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
+                                        background: '#1e293b',
+                                        color: '#f8fafc',
+                                        border: '1px solid #334155',
+                                        outline: 'none',
+                                        fontSize: '15px'
+                                    }}
+                                >
+                                    <option value="">-- Select a student --</option>
+                                    {myStudents.map(s => (
+                                        <option key={s._id} value={s._id}>{s.userName} ({s.email})</option>
+                                    ))}
+                                </select>
+                                <button
+                                    onClick={() => handleForceJoinStudent(selectedStudentId)}
+                                    disabled={!selectedStudentId}
+                                    style={{
+                                        padding: '12px 24px',
+                                        borderRadius: '12px',
+                                        background: selectedStudentId ? 'linear-gradient(135deg, #3b82f6, #2563eb)' : '#334155',
+                                        color: '#fff',
+                                        border: 'none',
+                                        fontWeight: 'bold',
+                                        cursor: selectedStudentId ? 'pointer' : 'not-allowed',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    🚀 Pull Student into Lobby
+                                </button>
+                            </div>
                         </div>
 
                         <div className="participants-grid-wrapper">

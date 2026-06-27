@@ -102,7 +102,7 @@ function QuestionType() {
             </Link>
           )}
 
-          {/* Card 3: Live Battles */}
+          {/* Card 3: Live Battles / Create a Competition */}
           {!isAuth ? (
             <span 
               className="questionType-option battle-card-option locked-card" 
@@ -115,7 +115,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Swords size={64} strokeWidth={2} className="mcq-icon" />
               </div>
-              <h3 className="option-title">Live Battles <span className="card-lock-badge">🔒</span></h3>
+              <h3 className="option-title">Create a Competition <span className="card-lock-badge">🔒</span></h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
             </span>
           ) : userRole === 'Student' ? (
@@ -144,7 +144,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Swords size={64} strokeWidth={2} className="mcq-icon" style={{ color: '#fff' }} />
               </div>
-              <h3 className="option-title">Live Battles</h3>
+              <h3 className="option-title">Create a Competition</h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
             </span>
           ) : (
@@ -156,7 +156,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Swords size={64} strokeWidth={2} className="mcq-icon" />
               </div>
-              <h3 className="option-title">Live Battles</h3>
+              <h3 className="option-title">Create a Competition</h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
             </Link>
           )}

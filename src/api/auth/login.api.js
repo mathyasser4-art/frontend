@@ -40,6 +40,11 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 if (responseJson.userID) {
                     localStorage.setItem('pp_id', responseJson.userID);
                 }
+                if (responseJson.createdBy?._id) {
+                    localStorage.setItem('teacher_id', responseJson.createdBy._id);
+                } else if (responseJson.createdBy) {
+                    localStorage.setItem('teacher_id', responseJson.createdBy);
+                }
                 const route = ROLE_ROUTES[responseJson.role] || '/';
                 window.location.href = route;
             } else {
