@@ -17,7 +17,7 @@ import './Navbar.css'
 import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
 
 const Navbar = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const isAuth = localStorage.getItem('O_authWEB')
     const role = localStorage.getItem('auth_role')
@@ -141,9 +141,9 @@ const Navbar = () => {
                 {/* Desktop Center Links */}
                 <div className="nav-center-links d-none d-lg-flex">
                     <div className="nav-dropdown">
-                        <span className="nav-link">For Teachers ▾</span>
+                        <span className="nav-link">{t('navbar.forTeachers', 'For Teachers ▾')}</span>
                         <div className="dropdown-menu">
-                            <span onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }} className="dropdown-item">Website Explanation</span>
+                            <span onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }} className="dropdown-item">{t('navbar.websiteExplanation', 'Website Explanation')}</span>
                             {false && <span onClick={() => { soundEffects.playClick(); navigate('/teacher/registration'); }} className="dropdown-item">Register as Teacher</span>}
                             <span onClick={() => {
                                 soundEffects.playClick();
@@ -152,30 +152,30 @@ const Navbar = () => {
                                 } else {
                                     navigate('/auth/login');
                                 }
-                            }} className="dropdown-item">Create Homework</span>
+                            }} className="dropdown-item">{t('navbar.createHomework', 'Create Homework')}</span>
 
                             <span onClick={() => {
                                 soundEffects.playClick();
                                 setTutorialRole('Teacher');
                                 setShowTutorialVideo(true);
-                            }} className="dropdown-item">Videos</span>
+                            }} className="dropdown-item">{t('navbar.videos', 'Videos')}</span>
                         </div>
                     </div>
                     <div className="nav-dropdown">
-                        <span className="nav-link">For Students ▾</span>
+                        <span className="nav-link">{t('navbar.forStudents', 'For Students ▾')}</span>
                         <div className="dropdown-menu">
-                            <span onClick={() => { soundEffects.playClick(); setShowStudentHelp(true); }} className="dropdown-item">Website Explanation</span>
-                            <span onClick={() => { soundEffects.playClick(); if (role === 'Student') { navigate('/dashboard/student'); } else { navigate('/auth/login'); } }} className="dropdown-item">My Homework</span>
-                            <span onClick={() => { soundEffects.playClick(); navigate('/student/games-menu'); }} className="dropdown-item">Game Room</span>
+                            <span onClick={() => { soundEffects.playClick(); setShowStudentHelp(true); }} className="dropdown-item">{t('navbar.websiteExplanation', 'Website Explanation')}</span>
+                            <span onClick={() => { soundEffects.playClick(); if (role === 'Student') { navigate('/dashboard/student'); } else { navigate('/auth/login'); } }} className="dropdown-item">{t('navbar.myHomework', 'My Homework')}</span>
+                            <span onClick={() => { soundEffects.playClick(); navigate('/student/games-menu'); }} className="dropdown-item">{t('navbar.gameRoom', 'Game Room')}</span>
                             <span onClick={() => {
                                 soundEffects.playClick();
                                 setTutorialRole('Student');
                                 setShowTutorialVideo(true);
-                            }} className="dropdown-item">Videos</span>
+                            }} className="dropdown-item">{t('navbar.videos', 'Videos')}</span>
                         </div>
                     </div>
-                    {SHOW_PRICING && <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">Pricing</Link>}
-                    <Link to="/contact" onClick={() => soundEffects.playClick()} className="nav-link">Contact</Link>
+                    {SHOW_PRICING && <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">{t('navbar.pricing', 'Pricing')}</Link>}
+                    <Link to="/contact" onClick={() => soundEffects.playClick()} className="nav-link">{t('navbar.contact', 'Contact')}</Link>
                 </div>
 
                 {/* Mobile Menu Toggle */}
@@ -192,49 +192,58 @@ const Navbar = () => {
                 )}
 
                 <div className={`nav-right-side d-flex align-items-center ${isAuth ? 'auth-menu' : 'unauth-menu'} ${isMobileMenuOpen ? 'mobile-open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
-                    {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link> : null}
+                    <div className="nav-dropdown language-dropdown" style={{ marginRight: '15px' }}>
+                        <span className="nav-link" style={{ fontWeight: 'bold', color: '#10b981', cursor: 'pointer' }}>
+                            🌐 Language ({i18n.language === 'ar' ? 'العربية' : 'English'}) ▾
+                        </span>
+                        <div className="dropdown-menu">
+                            <span onClick={(e) => { e.stopPropagation(); soundEffects.playClick(); i18n.changeLanguage('en'); }} className="dropdown-item">English</span>
+                            <span onClick={(e) => { e.stopPropagation(); soundEffects.playClick(); i18n.changeLanguage('ar'); }} className="dropdown-item">العربية (Arabic)</span>
+                        </div>
+                    </div>
+                    {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Teacher' ? (
                         <>
                             <Link to={'/dashboard-school/class'} onClick={() => soundEffects.playClick()}>
-                                <div className="homework-btn" style={{ backgroundColor: '#3b82f6', border: 'none', marginRight: '10px' }}>CLASSES</div>
+                                <div className="homework-btn" style={{ backgroundColor: '#3b82f6', border: 'none', marginRight: '10px' }}>{t('navbar.classes', 'CLASSES')}</div>
                             </Link>
                             <Link to={'/teacher/registration'} onClick={() => soundEffects.playClick()}>
-                                <div className="teachers-btn"><span className="text-desktop">ADD STUDENTS</span><span className="text-mobile">+STUDENTS</span></div>
+                                <div className="teachers-btn"><span className="text-desktop">{t('navbar.addStudents', 'ADD STUDENTS')}</span><span className="text-mobile">+STUDENTS</span></div>
                             </Link>
                         </>
                     ) : null}
                     {role === 'Teacher' ? (
                         <div className="create-homework-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateHomework(true); }}>
-                            <span className="text-desktop">CREATE HW</span><span className="text-mobile">+HW</span>
+                            <span className="text-desktop">{t('navbar.createHw', 'CREATE HW')}</span><span className="text-mobile">+HW</span>
                         </div>
                     ) : null}
                     {role === 'Teacher' ? (
                         <>
                             <div className="create-battle-nav-btn" onClick={() => { soundEffects.playClick(); setShowCreateCompetition(true); }}>
-                                ⚔️ CREATE A COMPETITION
+                                {t('navbar.createCompetition', '⚔️ CREATE A COMPETITION')}
                             </div>
                         </>
                     ) : null}
 
-                    {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn"><span className="text-desktop">HOMEWORK REPORTS</span><span className="text-mobile">REPORTS</span></div></Link> : null}
+                    {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn"><span className="text-desktop">{t('navbar.homeworkReports', 'HOMEWORK REPORTS')}</span><span className="text-mobile">REPORTS</span></div></Link> : null}
                     {role === 'Student' ? (
                         <>
-                            <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn">GAMES</div></Link>
-                            <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link>
+                            <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn">{t('navbar.games', 'GAMES')}</div></Link>
+                            <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link>
                         </>
                     ) : null}
-                    {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link> : null}
-                    {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">HOMEWORK</span><span className="text-mobile">HW</span></div></Link> : null}
+                    {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
+                    {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
                     {isAuth ? (
                       <>
                         <Link to={'/shop'} onClick={() => soundEffects.playClick()}>
                           <div className="nav-btn" style={{ backgroundColor: '#fbbf24', color: '#000', border: 'none', marginRight: '10px', fontWeight: 'bold' }}>
-                            SHOP 🪙
+                            {t('navbar.shop', 'SHOP 🪙')}
                           </div>
                         </Link>
                         <Link to={'/user/info'} onClick={() => soundEffects.playClick()}>
                           <div className="nav-btn nav-btn-profile">
-                            PROFILE
+                            {t('navbar.profile', 'PROFILE')}
                           </div>
                         </Link>
                       </>

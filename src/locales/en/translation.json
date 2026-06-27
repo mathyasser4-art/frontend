@@ -40,7 +40,18 @@
     "tryTeacherFeatures": "Try Teacher Features",
     "tryTeacherDescription": "Test all features with demo students",
     "freeTrialBadge": "7-Day Free Trial",
-    "joinNow": "JOIN NOW"
+    "joinNow": "JOIN NOW",
+    "smartGames": "Smart Games.",
+    "smarterTeaching": "Smarter Teaching.",
+    "betterResults": "Better Results.",
+    "heroDesc1": "The all-in-one platform for abacus learning,",
+    "heroDesc2": "homework management & automatic correction.",
+    "explainingTeachers": "EXPLAINING FOR TEACHERS",
+    "teacherSubtitle": "Manage my class & homework",
+    "explainingStudents": "EXPLAINING FOR STUDENTS",
+    "studentSubtitle": "Play, practice & solve homework",
+    "seeHowItWorks": "See How It Works",
+    "practiceSection": "Practice Section"
   },
   "featuresSection": {
     "title": "Discover Platform Features",
@@ -67,7 +78,25 @@
   },
   "navbar": {
     "dashboard": "Dashboard",
-    "changeLanguage": "Change Language"
+    "changeLanguage": "Change Language",
+    "forTeachers": "For Teachers ▾",
+    "websiteExplanation": "Website Explanation",
+    "createHomework": "Create Homework",
+    "videos": "Videos",
+    "forStudents": "For Students ▾",
+    "myHomework": "My Homework",
+    "gameRoom": "Game Room",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "homework": "HOMEWORK",
+    "classes": "CLASSES",
+    "addStudents": "ADD STUDENTS",
+    "createHw": "CREATE HW",
+    "createCompetition": "⚔️ CREATE A COMPETITION",
+    "homeworkReports": "HOMEWORK REPORTS",
+    "games": "GAMES",
+    "shop": "SHOP 🪙",
+    "profile": "PROFILE"
   },
   "mobileNav": {
     "home": "Home",
@@ -294,7 +323,15 @@
     "freeWorksheetsDesc": "Enhance your mental math skills with solving extra questions",
     "masterMinds": "Complete Questions",
     "masterMindsDesc": "Practice the book questions of master minds academy",
-    "start": "Start"
+    "start": "Start",
+    "mainTitle": "🚀 Start Solving Questions & Playing Games Now!",
+    "mainSubtitle": "Practice worksheets or play interactive abacus math games",
+    "chooseType": "Choose the type of questions or play games:",
+    "worksheetsCard": "Worksheets",
+    "funGamesCard": "Fun Games",
+    "createCompetitionCard": "Create a Competition",
+    "liveBattlesCard": "Live Battles",
+    "createQuestionsCard": "Create Questions"
   },
   "questionPage": {
     "reviewQuestions": "Review Questions",
