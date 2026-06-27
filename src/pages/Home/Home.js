@@ -101,7 +101,7 @@ function Home() {
                       className="home-btn pink-btn"
                       onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}
                     >
-                      <span className="btn-text">👤 I'M A TEACHER</span>
+                      <span className="btn-text">👤 EXPLAINING FOR TEACHERS</span>
                     </button>
                     <div className="btn-subtitle">Manage my class & homework</div>
                   </div>
@@ -113,7 +113,7 @@ function Home() {
                         setShowStudentHelp(true);
                       }}
                     >
-                      <span className="btn-text">🎓 I'M A STUDENT</span>
+                      <span className="btn-text">🎓 EXPLAINING FOR STUDENTS</span>
                     </button>
                     <div className="btn-subtitle">Play, practice & solve homework</div>
                   </div>
@@ -196,13 +196,13 @@ function Home() {
           <div className="hero-buttons mobile-buttons">
               <div className="hero-btn-wrapper">
                 <button className="home-btn pink-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}>
-                  <span className="btn-text">👨‍🏫 I'M A TEACHER</span>
+                  <span className="btn-text">👨‍🏫 EXPLAINING FOR TEACHERS</span>
                 </button>
                 <div className="btn-subtitle">Manage class & homework</div>
               </div>
               <div className="hero-btn-wrapper">
                 <button className="home-btn blue-btn" onClick={() => { soundEffects.playClick(); setShowStudentHelp(true); }}>
-                  <span className="btn-text">🎓 I'M A STUDENT</span>
+                  <span className="btn-text">🎓 EXPLAINING FOR STUDENTS</span>
                 </button>
                 <div className="btn-subtitle">Play & solve homework</div>
               </div>

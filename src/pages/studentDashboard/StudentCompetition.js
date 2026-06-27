@@ -282,9 +282,23 @@ function StudentCompetition() {
         });
 
         // Listen for teacher ending the competition
-        channel.bind('competition-finished', () => {
+        channel.bind('competition-finished', (data) => {
+            console.log('[Pusher] competition-finished event received:', data);
             setStatus('finished');
             setTriggerConfetti(true);
+            if (data && data.competition) {
+                setCompetition(data.competition);
+                setParticipants(data.competition.participants || []);
+                calculateBadges(data.competition.participants || [], data.competition.questions?.length || 0);
+            } else {
+                getCompetitionDetails(competitionId).then(res => {
+                    if (res.message === 'success') {
+                        setCompetition(res.competition);
+                        setParticipants(res.competition.participants || []);
+                        calculateBadges(res.competition.participants || [], res.competition.questions?.length || 0);
+                    }
+                });
+            }
         });
 
         return () => {
@@ -310,7 +324,7 @@ function StudentCompetition() {
 
     // Live Game Timer countdown trigger
     useEffect(() => {
-        if (status === 'active' && timerRemaining !== null) {
+        if ((status === 'active' || status === 'waiting-for-end') && timerRemaining !== null) {
             if (timerRemaining > 0) {
                 const timer = setTimeout(() => {
                     setTimerRemaining(prev => prev - 1);
@@ -318,7 +332,19 @@ function StudentCompetition() {
                 return () => clearTimeout(timer);
             } else {
                 // Game auto-ends on client timer expiry
-                handleFinishExam();
+                if (status === 'active') {
+                    handleFinishExam(true);
+                } else if (status === 'waiting-for-end') {
+                    setStatus('finished');
+                    setTriggerConfetti(true);
+                    getCompetitionDetails(competitionId).then(res => {
+                        if (res.message === 'success') {
+                            setCompetition(res.competition);
+                            setParticipants(res.competition.participants || []);
+                            calculateBadges(res.competition.participants || [], res.competition.questions?.length || 0);
+                        }
+                    });
+                }
             }
         }
     }, [status, timerRemaining]);
@@ -543,11 +569,15 @@ function StudentCompetition() {
         }
     };
 
-    const handleFinishExam = async () => {
+    const handleFinishExam = async (isTimerExpired = false) => {
         const now = new Date();
         setLocalFinishedAt(now);
-        setStatus('finished');
-        setTriggerConfetti(true);
+        if (isTimerExpired === true || (timerRemaining !== null && timerRemaining <= 0)) {
+            setStatus('finished');
+            setTriggerConfetti(true);
+        } else {
+            setStatus('waiting-for-end');
+        }
         setIsCheckingAnswers(true);
 
         // Wait a moment for any pending background checks to complete
@@ -750,6 +780,46 @@ function StudentCompetition() {
                         )}
                     </div>
                     <p className="countdown-sub">Get ready to race...</p>
+                </div>
+            )}
+
+            {/* 2.5 WAITING FOR END OVERLAY */}
+            {status === 'waiting-for-end' && (
+                <div className="waiting-for-end-wrapper" style={{
+                    minHeight: '100vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '32px',
+                    color: '#f8fafc',
+                    textAlign: 'center',
+                    background: 'radial-gradient(circle at center, #1e293b 0%, #090d16 100%)'
+                }}>
+                    <div className="pulse-circle" style={{ marginBottom: '24px', width: '96px', height: '96px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(59, 130, 246, 0.1)', border: '2px solid #3b82f6', borderRadius: '50%' }}>
+                        <Timer size={48} className="glowing-icon" style={{ color: '#3b82f6', animation: 'pulse 2s infinite' }} />
+                    </div>
+                    <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '16px', background: 'linear-gradient(135deg, #60a5fa, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                        ⏳ Waiting for Competition to Conclude...
+                    </h1>
+                    <p style={{ fontSize: '20px', color: '#94a3b8', maxWidth: '600px', marginBottom: '32px' }}>
+                        You have successfully completed all questions in the competition! Please wait while the remaining time ticks down or until the creator concludes the event.
+                    </p>
+                    <div className="live-timer-box" style={{
+                        background: 'rgba(15, 23, 42, 0.6)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '24px',
+                        padding: '24px 48px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
+                        <span style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '2px', color: '#64748b' }}>Time Remaining</span>
+                        <span style={{ fontSize: '48px', fontWeight: 'mono', color: '#38bdf8', fontFamily: 'monospace' }}>
+                            {formatTimer(timerRemaining)}
+                        </span>
+                    </div>
                 </div>
             )}
 
