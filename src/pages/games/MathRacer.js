@@ -525,6 +525,13 @@ function MathRacer() {
         ));
       });
 
+      channel.bind('host-end-race', () => {
+        soundEffects.playEndSound();
+        alert('The host has closed the race.');
+        disconnectPusher();
+        setGameState('menu');
+      });
+
       // Notify host that we entered the room only after successful subscription
       channel.bind('pusher:subscription_succeeded', () => {
         broadcastPusherEvent(roomCode, 'student-joined', {
@@ -1311,6 +1318,15 @@ function MathRacer() {
     setGameState('menu');
   };
 
+  const handleHostCloseRace = () => {
+    if (window.confirm('Are you sure you want to end the race for all players?')) {
+      soundEffects.playClick();
+      broadcastPusherEvent(roomId, 'host-end-race', {});
+      disconnectPusher();
+      setGameState('menu');
+    }
+  };
+
   // Get final placement list for podium
   const getPodiumList = () => {
     return [...players].filter(p => !p.isSpectator).sort((a, b) => {
@@ -1336,6 +1352,11 @@ function MathRacer() {
             <span>Back</span>
           </button>
           <h2>Math Racer 🏎️💨</h2>
+          {multiRole === 'host' && (gameState === 'playing' || gameState === 'lobby') && (
+            <button onClick={handleHostCloseRace} className="host-close-race-btn" title="Close Race for All Players">
+              ✕ Close Race
+            </button>
+          )}
         </div>
 
         {gameState === 'menu' && (

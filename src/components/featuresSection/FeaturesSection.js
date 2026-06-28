@@ -288,7 +288,7 @@ function FeaturesSection() {
             <div className="teacher-controls-bar">
               <div className="rod-selector-group">
                 <span className="rod-selector-label">Rods:</span>
-                {[7, 9, 13, 15, 17].map((count) => (
+                {[5, 7, 9, 13, 15].map((count) => (
                   <button
                     key={count}
                     className={`rod-btn ${rodCount === count ? 'active' : ''}`}

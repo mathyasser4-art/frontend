@@ -45,6 +45,27 @@
   transform: translateX(-4px);
 }
 
+.host-close-race-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+.host-close-race-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+}
+
 /* Menu State */
 .racer-menu {
   display: flex;
@@ -1427,3 +1448,37 @@
   transform: translateX(4px);
 }
 
+@media (max-width: 768px) {
+  .racer-header {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .racer-header h2 {
+    font-size: 1.8rem;
+  }
+  .host-close-race-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  .math-racer-container {
+    padding: 1rem;
+  }
+  .racer-menu {
+    padding: 2rem 1rem;
+  }
+  .multiplayer-actions-panel {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .btn-copy-link-premium {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+  .room-code-display-card {
+    padding: 15px;
+  }
+  .code-badge-group > div {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
