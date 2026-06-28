@@ -534,6 +534,14 @@
     gap: 12px;
 }
 
+.ranking-table-list-scores {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
+    -webkit-overflow-scrolling: touch;
+}
+
 .personal-medals-earned-section h3, .ranking-table-list-scores h3 {
     font-size: 18px;
     font-weight: 700;

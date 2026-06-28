@@ -44,6 +44,7 @@ function TeacherCompetitionLobby() {
     const [myStudents, setMyStudents] = useState([]);
     const [loadingStudents, setLoadingStudents] = useState(false);
     const [selectedStudentId, setSelectedStudentId] = useState('');
+    const [timerRemaining, setTimerRemaining] = useState(null);
 
     const wakeLockRef = useRef(null);
 
@@ -142,6 +143,10 @@ function TeacherCompetitionLobby() {
                     setStatus(res.competition.status || 'lobby');
                     if (res.competition.status === 'finished') {
                         setTriggerConfetti(true);
+                    } else if (res.competition.status === 'active' && res.competition.startedAt) {
+                        const elapsed = Math.floor((Date.now() - new Date(res.competition.startedAt).getTime()) / 1000);
+                        const remaining = res.competition.timer - elapsed;
+                        setTimerRemaining(remaining > 0 ? remaining : 0);
                     }
                 } else {
                     setError(res.message);
@@ -208,6 +213,10 @@ function TeacherCompetitionLobby() {
                         setStatus(res.competition.status);
                         if (res.competition.status === 'finished') {
                             setTriggerConfetti(true);
+                        } else if (res.competition.status === 'active' && res.competition.startedAt) {
+                            const elapsed = Math.floor((Date.now() - new Date(res.competition.startedAt).getTime()) / 1000);
+                            const remaining = res.competition.timer - elapsed;
+                            setTimerRemaining(remaining > 0 ? remaining : 0);
                         }
                     }
                 }
@@ -263,8 +272,11 @@ function TeacherCompetitionLobby() {
         });
 
         // Listen for competition start (e.g. if page was reloaded by teacher)
-        channel.bind('start-competition', () => {
+        channel.bind('start-competition', (data) => {
             setStatus('active');
+            if (data && data.timer) {
+                setTimerRemaining(data.timer);
+            }
         });
 
         // Listen for competition finished
@@ -287,6 +299,7 @@ function TeacherCompetitionLobby() {
             if (res.message === 'success') {
                 setStatus('active');
                 setCompetition(res.competition);
+                setTimerRemaining(res.competition.timer);
             } else {
                 alert(res.message);
             }
@@ -309,6 +322,21 @@ function TeacherCompetitionLobby() {
             console.error("Failed to finish competition:", err);
         }
     };
+
+    // Live Game Timer countdown trigger for Teacher (automatically ends competition when time expires)
+    useEffect(() => {
+        if (status === 'active' && timerRemaining !== null) {
+            if (timerRemaining > 0) {
+                const timer = setTimeout(() => {
+                    setTimerRemaining(prev => prev - 1);
+                }, 1000);
+                return () => clearTimeout(timer);
+            } else {
+                // Timer expired! Automatically call handleFinish to end the competition for everyone and show the podium
+                handleFinish();
+            }
+        }
+    }, [status, timerRemaining]);
 
     const handleForceJoinStudent = async (studentId) => {
         if (!studentId) return;
@@ -735,7 +763,11 @@ function TeacherCompetitionLobby() {
                         </div>
                         <div className="stat-pill">
                             <Timer size={16} />
-                            <span>{competition.timer / 60} min Duration</span>
+                            <span>
+                                {status === 'active' && timerRemaining !== null 
+                                    ? `Time Left: ${Math.floor(timerRemaining / 60).toString().padStart(2, '0')}:${(timerRemaining % 60).toString().padStart(2, '0')}` 
+                                    : `${competition.timer / 60} min Duration`}
+                            </span>
                         </div>
                     </div>
                 </header>
