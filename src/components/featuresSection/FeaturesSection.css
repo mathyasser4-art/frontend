@@ -421,12 +421,12 @@
 
 /* Upper Bead active state moves DOWN towards the beam */
 .big-bead-top.active {
-    transform: translateY(22px);
+    transform: translateY(20px);
 }
 
 /* Lower Bead active state moves UP towards the beam */
 .big-bead-bottom.active {
-    transform: translateY(-26px);
+    transform: translateY(-40px);
 }
 
 /* Responsive Scaling for Mobile/Tablets */
