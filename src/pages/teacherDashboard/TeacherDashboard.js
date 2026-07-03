@@ -106,9 +106,7 @@ function TeacherDashboard() {
         const findAssignment = allAsignment.filter(e => e._id === assignmentID)[0]
         
         // Pre-fill with similar data, but allow teacher to modify
-        // Don't set dates - force teacher to set new dates
-        setStartDate('')
-        setExpiryData('')
+
         
         // Pre-fill timer from original
         if (findAssignment.timer)
@@ -141,8 +139,7 @@ function TeacherDashboard() {
     const closeReassignPopup = () => {
         setError(null)
         setQuestionList([])
-        setStartDate('')
-        setExpiryData('')
+
         setTimer('')
         setTitle('')
         setForceFlashMode(false)

@@ -860,8 +860,6 @@ function Question() {
         setPocketNumber(0);
         setQuestionList([]);
         setTimer('');
-        setExpiryData('');
-        setStartDate('');
         setTitle('');
         setClassesBox([]);
         setForceFlashMode(false);
