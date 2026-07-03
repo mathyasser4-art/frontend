@@ -297,8 +297,23 @@ function MathRacer() {
   const [hostIsRacing, setHostIsRacing] = useState(false); // Default host to spectator mode
 
   // User Credentials
-  const myName = localStorage.getItem('pp_name') || 'Racer ' + Math.floor(100 + Math.random() * 900);
-  const myId = localStorage.getItem('pp_id') || 'usr_' + Math.random().toString(36).substr(2, 9);
+  const [myName] = useState(() => {
+    let name = localStorage.getItem('pp_name') || localStorage.getItem('guest_name');
+    if (!name) {
+      name = 'Racer ' + Math.floor(100 + Math.random() * 900);
+      localStorage.setItem('guest_name', name);
+    }
+    return name;
+  });
+
+  const [myId] = useState(() => {
+    let id = localStorage.getItem('pp_id') || localStorage.getItem('guest_id');
+    if (!id) {
+      id = 'usr_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('guest_id', id);
+    }
+    return id;
+  });
   
   const F1_COLORS = ['#3b82f6', '#f43f5e', '#8b5cf6', '#10b981', '#fbbf24'];
   const CAR_SKINS = { 'car_red': '#ef4444', 'car_purple': '#a855f7', 'car_gold': '#fbbf24' };
