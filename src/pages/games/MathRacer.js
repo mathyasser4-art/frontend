@@ -442,16 +442,8 @@ function MathRacer() {
             isBoosting: false,
             isSpectator: false
           };
-          const updated = [...prev, newPlayer];
           
-          // Broadcast full lobby roster back to all guest players
-          broadcastPusherEvent(roomCode, 'sync-lobby', { 
-            players: updated,
-            hasCustomQuestions: !!customQuestions,
-            chapterName: selectedChapterId || chapterName,
-            questionCount: hostQuestionCount
-          });
-          return updated;
+          return [...prev, newPlayer];
         });
       });
 
@@ -555,23 +547,34 @@ function MathRacer() {
           skinColor: mySkinColor
         });
       });
+      
+      // Fallback: public channels sometimes don't reliably fire subscription_succeeded
+      setTimeout(() => {
+        broadcastPusherEvent(roomCode, 'student-joined', {
+          id: myId,
+          name: myName,
+          skinColor: mySkinColor
+        });
+      }, 1000);
     }
   };
 
   useEffect(() => {
     if (gameState === 'lobby' && multiRole === 'host' && roomId) {
-      setPlayers(prev => {
-        const updated = prev.map(p => p.id === myId ? { ...p, isSpectator: !hostIsRacing } : p);
-        broadcastPusherEvent(roomId, 'sync-lobby', {
-          players: updated,
-          hasCustomQuestions: !!customQuestions,
-          chapterName: selectedChapterId || chapterName,
-          questionCount: hostQuestionCount
-        });
-        return updated;
+      setPlayers(prev => prev.map(p => p.id === myId ? { ...p, isSpectator: !hostIsRacing } : p));
+    }
+  }, [hostIsRacing, gameState, multiRole, roomId, myId]);
+
+  useEffect(() => {
+    if (gameState === 'lobby' && multiRole === 'host' && roomId) {
+      broadcastPusherEvent(roomId, 'sync-lobby', {
+        players: players,
+        hasCustomQuestions: !!customQuestions,
+        chapterName: selectedChapterId || chapterName,
+        questionCount: hostQuestionCount
       });
     }
-  }, [hostQuestionCount, hostIsRacing, gameState, multiRole, roomId, customQuestions, selectedChapterId, chapterName]);
+  }, [players, hostQuestionCount, hostIsRacing, gameState, multiRole, roomId, customQuestions, selectedChapterId, chapterName]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
