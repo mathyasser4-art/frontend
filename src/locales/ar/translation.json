@@ -461,6 +461,33 @@
     "graphicQuestion": "سؤال صوري",
     "currentActiveQuestions": "📑 العدد الحالي للأسئلة النشطة في المسابقة:",
     "questions": "أسئلة"
+  },
+  "mathRacer": {
+    "matchLobby": "غرفة انتظار السباق",
+    "exitLobby": "الخروج من الغرفة",
+    "customRace": "سباق مخصص: الدرس",
+    "roomCode": "رمز الغرفة",
+    "copyCode": "نسخ الرمز",
+    "copyLink": "نسخ رابط الدعوة",
+    "linkCopied": "تم نسخ الرابط!",
+    "connectedRacers": "المتسابقون المتصلون",
+    "hostSpectator": "المعلم (مشاهد)",
+    "hostDriver": "المعلم (متسابق)",
+    "contender": "منافس",
+    "observing": "مراقبة",
+    "ready": "جاهز",
+    "enteringRoster": "جاري دخول الغرفة...",
+    "participationMode": "وضع مشاركة المعلم",
+    "participationDesc": "اختر ما إذا كنت ترغب في المشاركة في السباق كمتسابق أو مراقبة طلابك كمشاهد.",
+    "spectatorMode": "مشاهد",
+    "driverMode": "متسابق",
+    "configRace": "تحديد طول السباق",
+    "configRaceDesc": "حدد عدد الإجابات الصحيحة المطلوبة ليعبر الطلاب خط النهاية.",
+    "qs": "أسئلة",
+    "customAmount": "مقدار مخصص:",
+    "waitingHost": "في انتظار بدء السباق من قبل المعلم...",
+    "raceLengthSet": "تم تحديد طول السباق إلى",
+    "questions": "أسئلة"
   }
 }
 

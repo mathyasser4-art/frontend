@@ -1464,102 +1464,124 @@ function MathRacer() {
         {gameState === 'lobby' && (
           <div className="racer-lobby-panel">
             <div className="lobby-header-row">
-              <h3>🏁 Match Roster Lobby</h3>
+              <h3>🏁 {t('mathRacer.matchLobby', 'Match Roster Lobby')}</h3>
               <button className="btn-leave-lobby" onClick={handleLeaveLobby}>
-                Exit Lobby
+                {t('mathRacer.exitLobby', 'Exit Lobby')}
               </button>
             </div>
 
             {chapterName && (
               <div className="lobby-custom-badge">
-                🏎️ Custom Race: Chapter {chapterName}
+                🏎️ {t('mathRacer.customRace', 'Custom Race: Chapter')} {chapterName}
               </div>
             )}
 
             <div className="room-code-display-card" style={{
-              background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9))',
-              border: '2px solid #ec4899',
-              borderRadius: '20px',
-              padding: '25px',
-              marginBottom: '25px',
-              boxShadow: '0 10px 30px rgba(236, 72, 153, 0.3)'
+              background: '#ffffff',
+              border: '2px solid #e2e8f0',
+              borderRadius: '24px',
+              padding: '40px 20px',
+              marginBottom: '30px',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '20px'
             }}>
-              <span className="room-label" style={{ color: '#f43f5e', fontSize: '14px', fontWeight: 'bold', display: 'block', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                🔗 INVITE LINK & ROOM CODE
+              <span className="room-label" style={{ color: '#64748b', fontSize: '16px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>
+                {t('mathRacer.roomCode', 'Room Code')}
               </span>
-              <div className="code-badge-group" style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                <div className="room-code-value" style={{ 
+                  fontSize: '72px', 
+                  letterSpacing: '10px', 
+                  color: '#0f172a', 
+                  fontWeight: '900',
+                  lineHeight: '1',
+                  textShadow: '2px 2px 0px #e2e8f0'
+                }}>
+                  {roomId}
+                </div>
+                
                 <button 
-                  className="btn-copy-link-premium" 
-                  onClick={copyShareLink}
+                  className="btn-copy-code" 
+                  onClick={copyRoomCode}
+                  title={t('mathRacer.copyCode', 'Copy Code')}
                   style={{
-                    background: 'linear-gradient(135deg, #ec4899, #f43f5e)',
-                    border: 'none',
-                    borderRadius: '14px',
-                    color: '#ffffff',
-                    padding: '14px 28px',
-                    fontSize: '16px',
-                    fontWeight: '800',
-                    cursor: 'pointer',
+                    background: '#f1f5f9',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '50%',
+                    color: '#475569',
+                    width: '48px',
+                    height: '48px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '10px',
-                    width: '100%',
-                    maxWidth: '350px',
-                    boxShadow: '0 6px 20px rgba(236, 72, 153, 0.5)',
-                    transition: 'all 0.2s ease',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
                   }}
                 >
-                  {isLinkCopied ? '✓ Copied Invite Link!' : <><Copy size={20} /> 1-Click Copy Invite Link</>}
+                  {isCopied ? <span style={{color: '#10b981', fontWeight: 'bold'}}>✓</span> : <Copy size={24} />}
                 </button>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', background: 'rgba(0,0,0,0.4)', padding: '8px 20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <span style={{ color: '#94a3b8', fontSize: '14px' }}>Room Code:</span>
-                  <span className="room-code-value" style={{ fontSize: '24px', letterSpacing: '4px', color: '#38bdf8', fontWeight: 'bold' }}>{roomId}</span>
-                  <button 
-                    className="btn-copy-code" 
-                    onClick={copyRoomCode}
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      borderRadius: '8px',
-                      color: '#cbd5e1',
-                      padding: '6px 12px',
-                      fontSize: '13px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    {isCopied ? '✓ Copied Code' : <><Copy size={14} /> Copy Code</>}
-                  </button>
-                </div>
               </div>
-              <p className="server-status-label" style={{ marginTop: '20px', marginBottom: 0, color: '#10b981', fontWeight: '600' }}>🚦 {lobbyStatus}</p>
+
+              <div style={{ width: '100%', maxWidth: '300px', height: '1px', background: '#e2e8f0', margin: '10px 0' }}></div>
+
+              <button 
+                className="btn-copy-link-premium" 
+                onClick={copyShareLink}
+                style={{
+                  background: '#f8fafc',
+                  border: '2px dashed #cbd5e1',
+                  borderRadius: '12px',
+                  color: '#475569',
+                  padding: '12px 24px',
+                  fontSize: '15px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  width: '100%',
+                  maxWidth: '300px',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {isLinkCopied ? (
+                  <span style={{color: '#10b981'}}>✓ {t('mathRacer.linkCopied', 'Copied Invite Link!')}</span>
+                ) : (
+                  <><Copy size={18} /> {t('mathRacer.copyLink', 'Copy Invite Link')}</>
+                )}
+              </button>
+              
+              <p className="server-status-label" style={{ marginTop: '10px', marginBottom: 0, color: '#10b981', fontWeight: '600', fontSize: '15px' }}>
+                🚦 {lobbyStatus}
+              </p>
             </div>
 
             <div className="lobby-players-grid">
-              <h4>Connected Racers ({players.length})</h4>
+              <h4>{t('mathRacer.connectedRacers', 'Connected Racers')} ({players.length})</h4>
               <div className="roster-list">
                 {players.map((player, idx) => (
                   <div key={player.id || idx} className="roster-player-item">
                     <div className="player-badge-color" style={{ backgroundColor: player.color }}></div>
                     <div className="player-profile-detail">
                       <span className="roster-player-name">{player.name}</span>
-                      <span className="roster-player-rank">{player.id === myId && multiRole === 'host' ? (player.isSpectator ? '👁️ Room Host (Spectator)' : '🏁 Room Host (Driver)') : '🔥 Contender'}</span>
+                      <span className="roster-player-rank">
+                        {player.id === myId && multiRole === 'host' 
+                          ? (player.isSpectator ? `👁️ ${t('mathRacer.hostSpectator', 'Room Host (Spectator)')}` : `🏁 ${t('mathRacer.hostDriver', 'Room Host (Driver)')}`) 
+                          : `🔥 ${t('mathRacer.contender', 'Contender')}`}
+                      </span>
                     </div>
-                    <span className="ready-indicator">{player.isSpectator ? 'Observing 👁️' : 'Ready to Race ✓'}</span>
+                    <span className="ready-indicator">{player.isSpectator ? `${t('mathRacer.observing', 'Observing')} 👁️` : `${t('mathRacer.ready', 'Ready')} ✓`}</span>
                   </div>
                 ))}
                 {players.length === 0 && (
                   <div className="empty-roster-state">
                     <i className="fa fa-spinner fa-spin"></i>
-                    <p>Entering the room roster...</p>
+                    <p>{t('mathRacer.enteringRoster', 'Entering the room roster...')}</p>
                   </div>
                 )}
               </div>
@@ -1568,18 +1590,19 @@ function MathRacer() {
             {multiRole === 'host' ? (
               <div className="host-launch-panel">
                 <div className="host-role-config-card" style={{
-                  background: 'rgba(15, 23, 42, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '16px',
-                  padding: '20px',
-                  marginBottom: '20px',
-                  textAlign: 'center'
+                  padding: '24px',
+                  marginBottom: '24px',
+                  textAlign: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                 }}>
-                  <h4 style={{ color: '#f8fafc', fontSize: '16px', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <span>👥</span> Host Participation Mode
+                  <h4 style={{ color: '#1e293b', fontSize: '18px', marginBottom: '8px', fontWeight: '800' }}>
+                    {t('mathRacer.participationMode', 'Host Participation Mode')}
                   </h4>
-                  <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '15px' }}>
-                    Choose whether you want to participate in the race as a driver or observe your students as a spectator.
+                  <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>
+                    {t('mathRacer.participationDesc', 'Choose whether you want to participate in the race as a driver or observe your students as a spectator.')}
                   </p>
                   <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
                     <button
@@ -1590,19 +1613,19 @@ function MathRacer() {
                       style={{
                         flex: '1',
                         minWidth: '150px',
-                        background: !hostIsRacing ? 'linear-gradient(135deg, #8b5cf6, #6366f1)' : 'rgba(255, 255, 255, 0.05)',
-                        border: `1px solid ${!hostIsRacing ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)'}`,
+                        background: !hostIsRacing ? '#8b5cf6' : '#ffffff',
+                        border: `2px solid ${!hostIsRacing ? '#8b5cf6' : '#e2e8f0'}`,
                         borderRadius: '12px',
-                        color: !hostIsRacing ? '#ffffff' : '#cbd5e1',
+                        color: !hostIsRacing ? '#ffffff' : '#64748b',
                         padding: '12px 20px',
-                        fontSize: '14px',
+                        fontSize: '15px',
                         fontWeight: 'bold',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
-                        boxShadow: !hostIsRacing ? '0 4px 15px rgba(139, 92, 246, 0.4)' : 'none'
+                        boxShadow: !hostIsRacing ? '0 4px 15px rgba(139, 92, 246, 0.3)' : 'none'
                       }}
                     >
-                      👁️ Spectator Mode
+                      👁️ {t('mathRacer.spectatorMode', 'Spectator')}
                     </button>
                     <button
                       onClick={() => {
@@ -1612,61 +1635,62 @@ function MathRacer() {
                       style={{
                         flex: '1',
                         minWidth: '150px',
-                        background: hostIsRacing ? 'linear-gradient(135deg, #3b82f6, #06b6d4)' : 'rgba(255, 255, 255, 0.05)',
-                        border: `1px solid ${hostIsRacing ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)'}`,
+                        background: hostIsRacing ? '#3b82f6' : '#ffffff',
+                        border: `2px solid ${hostIsRacing ? '#3b82f6' : '#e2e8f0'}`,
                         borderRadius: '12px',
-                        color: hostIsRacing ? '#ffffff' : '#cbd5e1',
+                        color: hostIsRacing ? '#ffffff' : '#64748b',
                         padding: '12px 20px',
-                        fontSize: '14px',
+                        fontSize: '15px',
                         fontWeight: 'bold',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
-                        boxShadow: hostIsRacing ? '0 4px 15px rgba(59, 130, 246, 0.4)' : 'none'
+                        boxShadow: hostIsRacing ? '0 4px 15px rgba(59, 130, 246, 0.3)' : 'none'
                       }}
                     >
-                      🏎️ Join Race as Driver
+                      🏎️ {t('mathRacer.driverMode', 'Driver')}
                     </button>
                   </div>
                 </div>
 
                 <div className="question-count-config-card" style={{
-                  background: 'rgba(15, 23, 42, 0.6)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '16px',
-                  padding: '20px',
-                  marginBottom: '25px',
-                  textAlign: 'center'
+                  padding: '24px',
+                  marginBottom: '30px',
+                  textAlign: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                 }}>
-                  <h4 style={{ color: '#f8fafc', fontSize: '16px', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <span>⚙️</span> Configure Race Length (Number of Questions)
+                  <h4 style={{ color: '#1e293b', fontSize: '18px', marginBottom: '8px', fontWeight: '800' }}>
+                    {t('mathRacer.configRace', 'Configure Race Length')}
                   </h4>
-                  <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '15px' }}>
-                    Control how many correct answers are required for students to cross the finish line.
+                  <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>
+                    {t('mathRacer.configRaceDesc', 'Control how many correct answers are required for students to cross the finish line.')}
                   </p>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '15px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
                     {[5, 10, 15, 20, 30, 50].map(num => (
                       <button
                         key={num}
                         onClick={() => { soundEffects.playClick(); setHostQuestionCount(num); }}
                         style={{
-                          background: hostQuestionCount === num ? 'linear-gradient(135deg, #3b82f6, #6366f1)' : 'rgba(255, 255, 255, 0.05)',
-                          border: `1px solid ${hostQuestionCount === num ? '#6366f1' : 'rgba(255, 255, 255, 0.1)'}`,
+                          background: hostQuestionCount === num ? '#10b981' : '#ffffff',
+                          border: `2px solid ${hostQuestionCount === num ? '#10b981' : '#e2e8f0'}`,
                           borderRadius: '10px',
-                          color: hostQuestionCount === num ? '#ffffff' : '#cbd5e1',
-                          padding: '8px 16px',
+                          color: hostQuestionCount === num ? '#ffffff' : '#64748b',
+                          padding: '10px 16px',
                           fontSize: '14px',
-                          fontWeight: '600',
+                          fontWeight: '700',
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
-                          boxShadow: hostQuestionCount === num ? '0 4px 12px rgba(59, 130, 246, 0.4)' : 'none'
+                          boxShadow: hostQuestionCount === num ? '0 4px 12px rgba(16, 185, 129, 0.3)' : 'none'
                         }}
                       >
-                        {num} Qs
+                        {num} {t('mathRacer.qs', 'Qs')}
                       </button>
                     ))}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                    <span style={{ color: '#cbd5e1', fontSize: '14px', fontWeight: '500' }}>Custom Amount:</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+                    <span style={{ color: '#475569', fontSize: '14px', fontWeight: '600' }}>{t('mathRacer.customAmount', 'Custom Amount:')}</span>
                     <input
                       type="number"
                       min="1"
@@ -1674,15 +1698,16 @@ function MathRacer() {
                       value={hostQuestionCount}
                       onChange={e => setHostQuestionCount(Math.max(1, parseInt(e.target.value) || 1))}
                       style={{
-                        background: 'rgba(0, 0, 0, 0.3)',
-                        border: '1px solid #3b82f6',
+                        background: '#ffffff',
+                        border: '2px solid #cbd5e1',
                         borderRadius: '8px',
-                        color: '#ffffff',
-                        padding: '6px 12px',
-                        width: '80px',
+                        color: '#0f172a',
+                        padding: '8px 12px',
+                        width: '90px',
                         textAlign: 'center',
-                        fontSize: '14px',
-                        fontWeight: 'bold'
+                        fontSize: '15px',
+                        fontWeight: 'bold',
+                        outline: 'none'
                       }}
                     />
                   </div>
@@ -1693,10 +1718,10 @@ function MathRacer() {
             ) : (
               <div className="guest-waiting-panel">
                 <div className="guest-spinner"></div>
-                <p>Waiting for Host to launch the F1 race...</p>
+                <p>{t('mathRacer.waitingHost', 'Waiting for Host to launch the F1 race...')}</p>
                 {activeQuestionCount && (
                   <p style={{ color: '#10b981', fontSize: '15px', marginTop: '15px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <span>🏁</span> Race Length set to {activeQuestionCount} Questions
+                    <span>🏁</span> {t('mathRacer.raceLengthSet', 'Race Length set to')} {activeQuestionCount} {t('mathRacer.questions', 'Questions')}
                   </p>
                 )}
               </div>

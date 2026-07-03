@@ -458,6 +458,33 @@
     "graphicQuestion": "Graphic Question",
     "currentActiveQuestions": "📑 Current Active Questions in Competition:",
     "questions": "Questions"
+  },
+  "mathRacer": {
+    "matchLobby": "Match Roster Lobby",
+    "exitLobby": "Exit Lobby",
+    "customRace": "Custom Race: Chapter",
+    "roomCode": "Room Code",
+    "copyCode": "Copy Code",
+    "copyLink": "Copy Invite Link",
+    "linkCopied": "Copied Invite Link!",
+    "connectedRacers": "Connected Racers",
+    "hostSpectator": "Room Host (Spectator)",
+    "hostDriver": "Room Host (Driver)",
+    "contender": "Contender",
+    "observing": "Observing",
+    "ready": "Ready",
+    "enteringRoster": "Entering the room roster...",
+    "participationMode": "Host Participation Mode",
+    "participationDesc": "Choose whether you want to participate in the race as a driver or observe your students as a spectator.",
+    "spectatorMode": "Spectator",
+    "driverMode": "Driver",
+    "configRace": "Configure Race Length",
+    "configRaceDesc": "Control how many correct answers are required for students to cross the finish line.",
+    "qs": "Qs",
+    "customAmount": "Custom Amount:",
+    "waitingHost": "Waiting for Host to launch the F1 race...",
+    "raceLengthSet": "Race Length set to",
+    "questions": "Questions"
   }
 }
 
