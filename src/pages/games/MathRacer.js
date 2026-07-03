@@ -975,7 +975,7 @@ function MathRacer() {
                         <h4 style={{ color: '#f8fafc', fontSize: '16px', margin: 0, fontWeight: 'bold' }}>{assign.title}</h4>
                       </div>
                       <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>
-                        {assign.questions?.length || 0} Questions • Due: {assign.endDate || 'N/A'}
+                        {assign.questions?.length || 0} Questions
                       </p>
                     </div>
                     <button style={{ marginTop: '15px', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid #10b981', color: '#10b981', padding: '8px 16px', borderRadius: '10px', fontSize: '13px', fontWeight: 'bold', width: '100%', cursor: 'pointer' }}>Load Questions</button>

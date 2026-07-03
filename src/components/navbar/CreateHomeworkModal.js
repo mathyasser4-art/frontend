@@ -33,8 +33,7 @@ function CreateHomeworkModal({ onClose }) {
     const [classesList, setClassesList] = useState([]);
     const [title, setTitle] = useState('');
     const [timer, setTimer] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [expiryData, setExpiryData] = useState('');
+
     const [classesBox, setClassesBox] = useState([]);
     const [classSelector, setClassSelector] = useState('');
     const [forceFlashMode, setForceFlashMode] = useState(false);
@@ -245,14 +244,7 @@ function CreateHomeworkModal({ onClose }) {
             setErrorMsg(t('questionPage.mustHaveQuestions', 'You must have at least one question'));
             return;
         }
-        if (startDate && !expiryData) {
-            setErrorMsg(t('questionPage.mustAddExpiryDate', 'You must add an expiry date'));
-            return;
-        }
-        if (!startDate && expiryData) {
-            setErrorMsg(t('questionPage.mustAddStartDate', 'You must add a start date'));
-            return;
-        }
+
 
         setErrorMsg(null);
         setAssignLoading(true);
@@ -262,8 +254,7 @@ function CreateHomeworkModal({ onClose }) {
             totalPoints: chapterQuestions.reduce((sum, q) => sum + (q.questionPoints || 0), 0),
             timer: timer || undefined,
             attemptsNumber: 1,
-            startDate: startDate || undefined,
-            endDate: expiryData || undefined,
+
             classes: classesBox.map(c => c._id),
             title,
             forceFlashMode: forceFlashMode,
@@ -556,26 +547,6 @@ function CreateHomeworkModal({ onClose }) {
                                         />
                                     </div>
                                     
-                                    <div className="form-row">
-                                        <div className="form-group flex-1">
-                                            <label>{t('questionPage.startDate', 'Start Date')}</label>
-                                            <input 
-                                                type="date" 
-                                                value={startDate} 
-                                                onChange={e => setStartDate(e.target.value)} 
-                                                className="details-input"
-                                            />
-                                        </div>
-                                        <div className="form-group flex-1">
-                                            <label>{t('questionPage.expiryDate', 'Expiry Date')}</label>
-                                            <input 
-                                                type="date" 
-                                                value={expiryData} 
-                                                onChange={e => setExpiryData(e.target.value)} 
-                                                className="details-input"
-                                            />
-                                        </div>
-                                    </div>
 
                                     <div className="form-row">
                                         <div className="form-group flex-1">

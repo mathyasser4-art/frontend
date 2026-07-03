@@ -29,8 +29,7 @@ function TeacherDashboard() {
     let [timer, setTimer] = useState('')
     let [title, setTitle] = useState('')
     let [attempts, setAttempts] = useState('')
-    let [startDate, setStartDate] = useState('')
-    let [expiryData, setExpiryData] = useState('')
+
     let [classSelector, setClassSelector] = useState('')
     const [classesList, setClassesList] = useState([])
     const [classesBox, setClassesBox] = useState([])
@@ -172,10 +171,7 @@ function TeacherDashboard() {
     const handleReassignAssignment = () => {
         if (classesBox.length === 0 || title === '') {
             setErrorOperation('You must select class first and write the title!!')
-        } else if (startDate === '' && expiryData !== '') {
-            setErrorOperation('You must add the start date!!')
-        } else if (startDate !== '' && expiryData === '') {
-            setErrorOperation('You must add the expiry date!!')
+
         } else {
             const questionPocket = []
             const classPocket = []
@@ -194,14 +190,12 @@ function TeacherDashboard() {
                 totalPoints, 
                 timer: timer === '' ? undefined : timer, 
                 attemptsNumber: 1, 
-                startDate: startDate === '' ? undefined : startDate, 
-                endDate: expiryData === '' ? undefined : expiryData, 
                 classes: classPocket, 
                 title,
                 forceFlashMode: forceFlashMode,
                 flashSpeed: forceFlashMode ? assignmentFlashSpeed : undefined
             }
-            duplicateAssignment(data, setError, assignmentID, setAllAsignment, setLoadingOperation, setPocketNumber, setQuestionList, closeReassignPopup, setTimer, setExpiryData, setStartDate, setTitle, setForceFlashMode, setAssignmentFlashSpeed)
+            duplicateAssignment(data, setError, assignmentID, setAllAsignment, setLoadingOperation, setPocketNumber, setQuestionList, closeReassignPopup, setTimer, setTitle, setForceFlashMode, setAssignmentFlashSpeed)
         }
     }
 
@@ -509,16 +503,7 @@ function TeacherDashboard() {
                             </div>
                         </div>
 
-                        <div className="timer date-faild d-flex align-items-center">
-                            <div>
-                                <p>Start Date:</p>
-                                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                            </div>
-                            <div>
-                                <p>Expiry Date:</p>
-                                <input type="date" value={expiryData} onChange={(e) => setExpiryData(e.target.value)} />
-                            </div>
-                        </div>
+
 
                         {isTrialMode ? (
                             <UpgradePrompt 

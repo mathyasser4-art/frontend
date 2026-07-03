@@ -223,8 +223,7 @@ function Question() {
     let [pocketNumber, setPocketNumber] = useState(0);
     let [timer, setTimer] = useState('');
     let [attempts, setAttempts] = useState('');
-    let [startDate, setStartDate] = useState('');
-    let [expiryData, setExpiryData] = useState('');
+
     let [title, setTitle] = useState('');
     let [answeredQuestions, setAnsweredQuestions] = useState(0);
     const [forceFlashMode, setForceFlashMode] = useState(false);
@@ -820,24 +819,20 @@ function Question() {
     const handleCreateAssignment = () => {
         if (classesBox.length === 0 || !title) {
             setError(t('questionPage.mustSelectClassAndTitle'));
-        } else if (startDate && !expiryData) {
-            setError(t('questionPage.mustAddExpiryDate'));
-        } else if (!startDate && expiryData) {
-            setError(t('questionPage.mustAddStartDate'));
+
         } else {
             const data = {
                 questions: questionList.map(q => q._id),
                 totalPoints: questionList.reduce((sum, q) => sum + q.questionPoints, 0),
                 timer: timer || undefined,
                 attemptsNumber: 1,
-                startDate: startDate || undefined,
-                endDate: expiryData || undefined,
+
                 classes: classesBox.map(c => c._id),
                 title,
                 forceFlashMode: forceFlashMode,
                 flashSpeed: forceFlashMode ? assignmentFlashSpeed : undefined
             };
-            createAssignment(data, setError, setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setExpiryData, setStartDate, setTitle, setClassesBox, setForceFlashMode, setAssignmentFlashSpeed);
+            createAssignment(data, setError, setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setTitle, setClassesBox, setForceFlashMode, setAssignmentFlashSpeed);
         }
     };
 
@@ -1216,10 +1211,7 @@ function Question() {
                         <div className='timer d-flex align-items-center'>
                             <div style={{width: '100%'}}><p>{t('questionPage.timerMinutes')}</p><input type='number' value={timer} onChange={e => setTimer(e.target.value)} placeholder={t('questionPage.optional')} /></div>
                         </div>
-                        <div className='timer date-faild d-flex align-items-center'>
-                            <div><p>{t('questionPage.startDate')}</p><input type='date' value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
-                            <div><p>{t('questionPage.expiryDate')}</p><input type='date' value={expiryData} onChange={e => setExpiryData(e.target.value)} /></div>
-                        </div>
+
                         <div className='select-container d-flex'>
                             <div className='select-class'>
                                 <select value={classSelector} onChange={e => setClassSelector(e.target.value)} translate="no" className="notranslate">

@@ -414,7 +414,7 @@ function CreateCompetitionModal({ onClose }) {
                                             <div className="comp-item-info">
                                                 <span className="comp-item-title">📋 {assign.title}</span>
                                                 <span className="comp-item-meta">
-                                                    {assign.questions?.length || 0} {t('competitionWizard.questionsCount', 'Questions')} • {t('competitionWizard.due', 'Due')}: {assign.endDate || 'N/A'}
+                                                    {assign.questions?.length || 0} {t('competitionWizard.questionsCount', 'Questions')}
                                                 </span>
                                             </div>
                                             <button className="comp-item-select">{t('competitionWizard.selectBtn', 'Select')}</button>

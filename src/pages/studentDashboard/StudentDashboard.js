@@ -346,10 +346,7 @@ function StudentDashboard() {
                                                 </div>
                                             </div>
 
-                                            <div className="card-dates">
-                                                {item.startDate && <p><strong>Start:</strong> {item.startDate}</p>}
-                                                {item.endDate && <p><strong>Due:</strong> {item.endDate}</p>}
-                                            </div>
+
 
                                             <div className="card-footer-action">
                                                 {isCompleted ? (
