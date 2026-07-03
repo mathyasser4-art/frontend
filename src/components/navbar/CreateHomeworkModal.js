@@ -279,8 +279,6 @@ function CreateHomeworkModal({ onClose }) {
                     setSuccessMsg(t('questionPage.homeworkAssignedSuccess', 'Homework assigned successfully!'));
                     // Clear fields
                     setTimer('');
-                    setExpiryData('');
-                    setStartDate('');
                     setTitle('');
                     setClassesBox([]);
                     setForceFlashMode(false);
