@@ -333,8 +333,7 @@ function MathRacer() {
     }
   }, []);
 
-  const [showResult, setShowResult] = useState(false);
-  const [gameState, setGameState] = useState('setup'); // 'setup', 'lobby', 'countdown', 'playing', 'results'
+  const [gameState, setGameState] = useState('menu'); // 'menu', 'lobby', 'countdown', 'playing', 'gameover'
   const [countdownValue, setCountdownValue] = useState(3);
   const [difficulty, setDifficulty] = useState('easy'); // 'easy', 'medium', 'hard'
   const [score, setScore] = useState(0);
@@ -1153,9 +1152,8 @@ function MathRacer() {
 
   const endGame = () => {
     soundEffects.playEndSound();
-    setGameState('results');
+    setGameState('gameover');
     clearInterval(timerRef.current);
-    setShowResult(true);
   };
 
   // Main Game Loop (Timer & Bots)
@@ -1387,20 +1385,10 @@ function MathRacer() {
       pusherRef.current.unsubscribe(`mathracer-${roomId}`);
       channelRef.current = null;
     }
-    setGameState('setup');
+    setGameState('menu');
     setMultiRole(null);
     setRoomId('');
     setPlayers([]);
-  };
-
-  const handleCloseRace = () => {
-    if (multiRole === 'host') {
-      const confirmLeave = window.confirm('Are you sure you want to end the race early? All students will be kicked out.');
-      if (!confirmLeave) return;
-      broadcastPusherEvent(roomId, 'end-race-early', {});
-    }
-    soundEffects.playClick();
-    endGame();
   };
 
   // Add beforeunload listener to warn host if they try to close tab during race or lobby
