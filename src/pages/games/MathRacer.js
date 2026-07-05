@@ -120,8 +120,8 @@ function MathRacer() {
 
   // Wizard Question Selector States
   const { t } = useTranslation();
-  const [wizardStep, setWizardStep] = useState('source'); // 'source' | 'type' | 'system' | 'unit' | 'custom-ws' | 'assignments'
-  const [questionTypeID, setQuestionTypeID] = useState('');
+  const [wizardStep, setWizardStep] = useState('system'); // Forced to system
+  const [questionTypeID, setQuestionTypeID] = useState('65a4963482dbaac16d820fc6'); // Force MCQ
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedSystemId, setSelectedSystemId] = useState(null);
   const [selectedUnitId, setSelectedUnitId] = useState(null);
@@ -292,8 +292,8 @@ function MathRacer() {
   const [lobbyStatus, setLobbyStatus] = useState('');
   const [isCopied, setIsCopied] = useState(false);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
-  const [hostQuestionCount, setHostQuestionCount] = useState(15);
-  const [activeQuestionCount, setActiveQuestionCount] = useState(null);
+  const [hostQuestionCount, setHostQuestionCount] = useState(10);
+  const [activeQuestionCount, setActiveQuestionCount] = useState(10);
   const [hostIsRacing, setHostIsRacing] = useState(false); // Default host to spectator mode
 
   // User Credentials
@@ -498,7 +498,11 @@ function MathRacer() {
         if (data.questionCount) {
           setActiveQuestionCount(data.questionCount);
         }
-        startCountdownThenPlay(data.difficulty, data.customQuestions);
+        if (data.customQuestions && data.customQuestions.length > 0) {
+          setCustomQuestions(data.customQuestions);
+          customQuestionsRef.current = data.customQuestions;
+        }
+        startCountdownThenPlay(data.difficulty, data.customQuestions || customQuestionsRef.current);
       });
 
       // Guest listens to host early exit
@@ -506,33 +510,6 @@ function MathRacer() {
         setGameState('lobby');
         setPlayers([]);
         alert('The host has ended the race.');
-      });
-
-      // Guest listens to host's race start trigger
-      channel.bind('start-game', (data) => {
-        setDifficulty(data.difficulty);
-        if (data.questionCount) {
-          setActiveQuestionCount(data.questionCount);
-        }
-
-        setScore(0);
-        setTimeElapsed(0);
-        setPlayerDistance(0);
-        setFeedback(null);
-        setCurrentQuestionIndex(0);
-        setEssayAnswer('');
-        
-        // Use custom questions from local ref first (since fetched in sync-lobby), fallback to pusher data if any
-        const localQuestions = customQuestionsRef.current;
-        if (localQuestions && localQuestions.length > 0) {
-          generateProblem(data.difficulty, 0, localQuestions);
-        } else if (data.customQuestions && data.customQuestions.length > 0) {
-          setCustomQuestions(data.customQuestions);
-          customQuestionsRef.current = data.customQuestions;
-          generateProblem(data.difficulty, 0, data.customQuestions);
-        } else {
-          generateProblem(data.difficulty, 0, null);
-        }
       });
 
       // Guest listens to score/distance updates from host/other guests
@@ -814,337 +791,98 @@ function MathRacer() {
   };
 
   const renderQuestionSelector = (isHostMode = false) => {
-    if (customQuestions) {
-      return (
-        <div className="custom-race-banner" style={{ margin: '20px 0', padding: '25px', background: 'linear-gradient(135deg, #1e293b, #0f172a)', border: '2px solid #10b981', borderRadius: '20px', boxShadow: '0 10px 30px rgba(16, 185, 129, 0.2)' }}>
-          <span className="banner-badge" style={{ background: '#10b981', color: '#fff', padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px' }}>✓ QUESTIONS SELECTED</span>
-          <h3 style={{ color: '#f8fafc', margin: '15px 0 8px', fontSize: '22px', fontWeight: 'bold' }}>{chapterName || 'Selected Worksheet'}</h3>
-          <p style={{ color: '#94a3b8', margin: '0 0 20px', fontSize: '15px' }}>Loaded {customQuestions.length} questions for the F1 Race.</p>
-          <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            {!isHostMode ? (
-              <button className="diff-btn easy" style={{ width: '100%', maxWidth: '280px', margin: 0, padding: '14px 28px', fontSize: '16px', fontWeight: '800', borderRadius: '14px', boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)' }} onClick={() => startGame('easy')}>
-                🏎️ Start Single Player Race
-              </button>
-            ) : (
-              <button className="diff-btn easy" style={{ width: '100%', maxWidth: '280px', margin: 0, padding: '14px 28px', fontSize: '16px', fontWeight: '800', borderRadius: '14px', boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)' }} onClick={() => handleHostStartRace('easy')}>
-                🚀 Launch Multiplayer Race
-              </button>
-            )}
-            <button className="clear-custom-btn" style={{ background: 'rgba(239, 68, 68, 0.15)', border: '2px solid #ef4444', color: '#fca5a5', padding: '14px 28px', borderRadius: '14px', fontSize: '16px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s ease' }} onClick={() => { setCustomQuestions(null); setWizardStep('source'); }}>
-              Change Questions
-            </button>
-          </div>
-        </div>
-      );
-    }
-
     return (
-      <div className="racer-question-selector-card" style={{
-        background: 'rgba(15, 23, 42, 0.75)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderRadius: '24px',
-        padding: '30px',
-        marginTop: '25px',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
-        textAlign: 'left'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '15px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {wizardStep !== 'source' && (
-              <button onClick={handleWizardBack} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '8px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ChevronLeft size={20} />
-              </button>
-            )}
-            <h3 style={{ color: '#38bdf8', fontSize: '20px', margin: 0, fontWeight: 'bold' }}>
-              {wizardStep === 'source' ? '📚 Choose Questions Source' : wizardStep === 'type' ? '📝 Select Question Type' : wizardStep === 'system' ? '🗂️ Select System & Subject' : wizardStep === 'unit' ? '📂 Select Unit & Chapter' : wizardStep === 'custom-ws' ? '📄 My Question Bank' : '📋 My Assigned Homeworks'}
-            </h3>
-          </div>
-          <span style={{ color: '#94a3b8', fontSize: '13px', fontWeight: '600', background: 'rgba(255,255,255,0.05)', padding: '6px 14px', borderRadius: '20px' }}>
-            Step {wizardStep === 'source' ? '1' : wizardStep === 'type' ? '2' : wizardStep === 'system' ? '3' : wizardStep === 'unit' ? '4' : '2'}
-          </span>
-        </div>
-
-        {loadingWizard && (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <i className="fa fa-spinner fa-spin" style={{ fontSize: '32px', color: '#38bdf8', marginBottom: '15px' }}></i>
-            <p style={{ color: '#cbd5e1', fontSize: '16px', margin: 0 }}>Loading questions data...</p>
-          </div>
-        )}
-
-        {wizardError && (
-          <div style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#fca5a5', padding: '12px 20px', borderRadius: '12px', marginBottom: '20px', fontSize: '14px', fontWeight: '600' }}>
-            ⚠️ {wizardError}
-          </div>
-        )}
-
-        {!loadingWizard && wizardStep === 'source' && (
+      <div style={{ textAlign: 'left', marginTop: '20px' }}>
+        <h3 style={{ color: isHostMode ? 'black' : '#ef4444', margin: '0 0 10px', fontSize: '18px', fontWeight: 'bold' }}>
+          question resource (worksheets)
+        </h3>
+        
+        {!customQuestions ? (
           <div>
-            <p style={{ color: '#cbd5e1', fontSize: '15px', marginBottom: '25px' }}>Select from where you want to load questions for this F1 race:</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-              <div 
-                onClick={() => { soundEffects.playClick(); setWizardStep('type'); }}
-                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '25px', cursor: 'pointer', transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
-                className="racer-source-card"
-              >
-                <div style={{ background: 'rgba(56, 189, 248, 0.1)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '18px' }}>
-                  <BookOpen size={32} color="#38bdf8" />
-                </div>
-                <h4 style={{ color: '#f8fafc', fontSize: '18px', margin: '0 0 8px', fontWeight: 'bold' }}>Textbook Worksheets</h4>
-                <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 20px', lineHeight: '1.5' }}>Choose from standard book systems, units, and chapters.</p>
-                <button style={{ marginTop: 'auto', background: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '12px', padding: '10px 20px', fontSize: '14px', fontWeight: 'bold', width: '100%', cursor: 'pointer' }}>Select Source</button>
-              </div>
-
-              <div 
-                onClick={loadCustomWorksheets}
-                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '25px', cursor: 'pointer', transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
-                className="racer-source-card"
-              >
-                <div style={{ background: 'rgba(167, 139, 250, 0.1)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '18px' }}>
-                  <Layers size={32} color="#a78bfa" />
-                </div>
-                <h4 style={{ color: '#f8fafc', fontSize: '18px', margin: '0 0 8px', fontWeight: 'bold' }}>My Question Bank</h4>
-                <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 20px', lineHeight: '1.5' }}>Choose from worksheets and custom questions you created.</p>
-                <button style={{ marginTop: 'auto', background: '#a78bfa', color: '#0f172a', border: 'none', borderRadius: '12px', padding: '10px 20px', fontSize: '14px', fontWeight: 'bold', width: '100%', cursor: 'pointer' }}>Select Source</button>
-              </div>
-
-              <div 
-                onClick={loadMyAssignments}
-                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '25px', cursor: 'pointer', transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
-                className="racer-source-card"
-              >
-                <div style={{ background: 'rgba(244, 63, 94, 0.1)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '18px' }}>
-                  <Swords size={32} color="#f43f5e" />
-                </div>
-                <h4 style={{ color: '#f8fafc', fontSize: '18px', margin: '0 0 8px', fontWeight: 'bold' }}>My Assigned Homeworks</h4>
-                <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 20px', lineHeight: '1.5' }}>Select questions from homework you previously assigned.</p>
-                <button style={{ marginTop: 'auto', background: '#f43f5e', color: '#ffffff', border: 'none', borderRadius: '12px', padding: '10px 20px', fontSize: '14px', fontWeight: 'bold', width: '100%', cursor: 'pointer' }}>Select Source</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!loadingWizard && wizardStep === 'type' && (
-          <div>
-            <p style={{ color: '#cbd5e1', fontSize: '15px', marginBottom: '25px' }}>Select the format of questions for this race:</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-              <div 
-                onClick={() => handleSelectType('mcq')}
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '25px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.3s ease' }}
-                className="racer-source-card"
-              >
-                <div style={{ background: 'rgba(56, 189, 248, 0.1)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
-                  <Circle size={32} color="#38bdf8" />
-                </div>
-                <h4 style={{ color: '#f8fafc', fontSize: '18px', margin: '0 0 8px', fontWeight: 'bold' }}>Choose Questions</h4>
-                <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Students pick the correct answer from 4 options.</p>
-              </div>
-              <div 
-                onClick={() => handleSelectType('completion')}
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '25px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.3s ease' }}
-                className="racer-source-card"
-              >
-                <div style={{ background: 'rgba(244, 63, 94, 0.1)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
-                  <CheckCircle2 size={32} color="#f43f5e" />
-                </div>
-                <h4 style={{ color: '#f8fafc', fontSize: '18px', margin: '0 0 8px', fontWeight: 'bold' }}>Complete Questions</h4>
-                <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Students type the numeric answer directly using keypad.</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!loadingWizard && wizardStep === 'custom-ws' && (
-          <div>
-            <p style={{ color: '#cbd5e1', fontSize: '15px', marginBottom: '20px' }}>Select one of your custom worksheets to load its questions:</p>
-            <input 
-              type="text"
-              placeholder="Search worksheets..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              style={{ width: '100%', padding: '14px 20px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '15px', marginBottom: '25px', outline: 'none', boxSizing: 'border-box' }}
-            />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
-              {customWorksheets
-                .filter(ws => ws.chapterName?.toLowerCase().includes(searchQuery.toLowerCase()))
-                .map(ws => (
-                  <div 
-                    key={ws._id} 
-                    onClick={() => handleSelectChapter(ws)}
-                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '20px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-                    className="racer-source-card"
-                  >
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                        <span style={{ fontSize: '20px' }}>📄</span>
-                        <h4 style={{ color: '#f8fafc', fontSize: '16px', margin: 0, fontWeight: 'bold' }}>{ws.chapterName}</h4>
-                      </div>
-                      <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>
-                        Format: {ws.format === 'MCQ' ? 'Choose' : 'Complete'} • {ws.questions?.length || 0} Questions
-                      </p>
-                    </div>
-                    <button style={{ marginTop: '15px', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid #10b981', color: '#10b981', padding: '8px 16px', borderRadius: '10px', fontSize: '13px', fontWeight: 'bold', width: '100%', cursor: 'pointer' }}>Load Questions</button>
-                  </div>
-                ))}
-              {customWorksheets.length === 0 && (
-                <p style={{ color: '#94a3b8', fontSize: '15px', textAlign: 'center', width: '100%', padding: '30px 0', gridColumn: '1 / -1' }}>No custom worksheets found in your Question Bank.</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {!loadingWizard && wizardStep === 'assignments' && (
-          <div>
-            <p style={{ color: '#cbd5e1', fontSize: '15px', marginBottom: '20px' }}>Select a past assignment to load its questions:</p>
-            <input 
-              type="text"
-              placeholder="Search assignments..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              style={{ width: '100%', padding: '14px 20px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '15px', marginBottom: '25px', outline: 'none', boxSizing: 'border-box' }}
-            />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
-              {myAssignments
-                .filter(assign => assign.title?.toLowerCase().includes(searchQuery.toLowerCase()))
-                .map(assign => (
-                  <div 
-                    key={assign._id} 
-                    onClick={() => {
-                      soundEffects.playClick();
-                      setSelectedChapterId(assign._id);
-                      setChapterName(assign.title);
-                      setCustomQuestions(assign.questions || []);
-                    }}
-                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '20px', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-                    className="racer-source-card"
-                  >
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                        <span style={{ fontSize: '20px' }}>📋</span>
-                        <h4 style={{ color: '#f8fafc', fontSize: '16px', margin: 0, fontWeight: 'bold' }}>{assign.title}</h4>
-                      </div>
-                      <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>
-                        {assign.questions?.length || 0} Questions
-                      </p>
-                    </div>
-                    <button style={{ marginTop: '15px', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid #10b981', color: '#10b981', padding: '8px 16px', borderRadius: '10px', fontSize: '13px', fontWeight: 'bold', width: '100%', cursor: 'pointer' }}>Load Questions</button>
-                  </div>
-                ))}
-              {myAssignments.length === 0 && (
-                <p style={{ color: '#94a3b8', fontSize: '15px', textAlign: 'center', width: '100%', padding: '30px 0', gridColumn: '1 / -1' }}>No past assignments found.</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {!loadingWizard && wizardStep === 'system' && (
-          <div>
-            <p style={{ color: '#cbd5e1', fontSize: '15px', marginBottom: '20px' }}>Choose a System, then select a Subject:</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '15px' }}>
               {systemData.length === 0 ? (
-                <p style={{ color: '#94a3b8', fontSize: '15px', textAlign: 'center', padding: '30px 0' }}>No systems found.</p>
+                <p style={{ color: '#94a3b8', fontSize: '14px' }}>Loading worksheets...</p>
               ) : (
                 systemData.map(system => {
                   const isExpanded = selectedSystemId === system._id;
                   return (
-                    <div key={system._id} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', overflow: 'hidden' }}>
-                      <div 
-                        onClick={() => toggleSystemExpand(system._id)}
-                        style={{ padding: '18px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', background: isExpanded ? 'rgba(255,255,255,0.08)' : 'transparent', fontWeight: 'bold', color: '#f8fafc' }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <Layers size={20} color="#38bdf8" />
-                          <span>{translateName(system.systemName)}</span>
-                        </div>
-                        {isExpanded ? <ChevronUp size={20} color="#94a3b8" /> : <ChevronDown size={20} color="#94a3b8" />}
+                    <div key={system._id} style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
+                      <div onClick={() => toggleSystemExpand(system._id)} style={{ padding: '10px 15px', display: 'flex', justifyContent: 'space-between', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a' }}>
+                        <span>{translateName(system.systemName)}</span>
+                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                       </div>
                       {isExpanded && (
-                        <div style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.2)' }}>
-                          {system.subjects?.length === 0 ? (
-                            <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0 }}>No subjects in this system.</p>
-                          ) : (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-                              {system.subjects?.map(subject => (
-                                <div 
-                                  key={subject._id} 
-                                  onClick={() => handleSelectSubject(subject)}
-                                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '14px 18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#cbd5e1', fontSize: '14px', fontWeight: '600', transition: 'all 0.2s ease' }}
-                                  className="racer-subject-btn"
-                                >
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <BookOpen size={16} color="#38bdf8" />
-                                    <span>{translateName(subject.subjectName)}</span>
-                                  </div>
-                                  <ChevronRight size={16} color="#64748b" />
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                         <div style={{ padding: '10px', borderTop: '1px solid #cbd5e1', background: '#f8fafc' }}>
+                            {system.subjects?.map(subject => (
+                              <div key={subject._id} onClick={() => handleSelectSubject(subject)} style={{ padding: '8px', cursor: 'pointer', color: '#333' }}>
+                                • {translateName(subject.subjectName)}
+                              </div>
+                            ))}
+                         </div>
                       )}
                     </div>
                   );
                 })
               )}
             </div>
+            
+            {selectedSubject && unitData.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <p style={{ color: '#333', fontSize: '14px', margin: '0 0 5px' }}>Select Chapter:</p>
+                {unitData.map(unit => {
+                  const isExpanded = selectedUnitId === unit._id;
+                  return (
+                    <div key={unit._id} style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
+                      <div onClick={() => toggleUnitExpand(unit._id)} style={{ padding: '10px 15px', display: 'flex', justifyContent: 'space-between', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a' }}>
+                        <span>{translateName(unit.unitName)}</span>
+                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      </div>
+                      {isExpanded && (
+                         <div style={{ padding: '10px', borderTop: '1px solid #cbd5e1', background: '#f8fafc' }}>
+                            {unit.chapters?.map(chapter => (
+                              <div key={chapter._id} onClick={() => handleSelectChapter(chapter)} style={{ padding: '8px', cursor: 'pointer', color: '#3b82f6', fontWeight: 'bold' }}>
+                                📄 {translateName(chapter.chapterName)}
+                              </div>
+                            ))}
+                         </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ background: '#10b981', color: 'white', padding: '10px', borderRadius: '8px', fontWeight: 'bold', marginBottom: '15px' }}>
+            ✓ Selected: {chapterName} ({customQuestions.length} Qs)
+            <button onClick={() => setCustomQuestions(null)} style={{ marginLeft: '10px', background: 'transparent', border: '1px solid white', color: 'white', borderRadius: '4px', cursor: 'pointer', padding: '4px 8px' }}>Change</button>
           </div>
         )}
 
-        {!loadingWizard && wizardStep === 'unit' && (
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '13px', marginBottom: '20px', background: 'rgba(0,0,0,0.3)', padding: '10px 16px', borderRadius: '12px' }}>
-              <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Choose' : 'Complete'}</span>
-              <ChevronRight size={14} />
-              <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>{translateName(selectedSubject?.subjectName)}</span>
-            </div>
-            <p style={{ color: '#cbd5e1', fontSize: '15px', marginBottom: '20px' }}>Expand a Unit, and choose the Chapter to load its questions:</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {unitData.length === 0 ? (
-                <p style={{ color: '#94a3b8', fontSize: '15px', textAlign: 'center', padding: '30px 0' }}>No units found for this subject.</p>
-              ) : (
-                unitData.map(unit => {
-                  const isExpanded = selectedUnitId === unit._id;
-                  return (
-                    <div key={unit._id} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', overflow: 'hidden' }}>
-                      <div 
-                        onClick={() => toggleUnitExpand(unit._id)}
-                        style={{ padding: '18px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', background: isExpanded ? 'rgba(255,255,255,0.08)' : 'transparent', fontWeight: 'bold', color: '#f8fafc' }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <Layers size={20} color="#a78bfa" />
-                          <span>{translateName(unit.unitName)}</span>
-                        </div>
-                        {isExpanded ? <ChevronUp size={20} color="#94a3b8" /> : <ChevronDown size={20} color="#94a3b8" />}
-                      </div>
-                      {isExpanded && (
-                        <div style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.2)' }}>
-                          {unit.chapters?.length === 0 ? (
-                            <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0 }}>No chapters available.</p>
-                          ) : (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-                              {unit.chapters?.map(chapter => (
-                                <div 
-                                  key={chapter._id} 
-                                  onClick={() => handleSelectChapter(chapter)}
-                                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '14px 18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#cbd5e1', fontSize: '14px', fontWeight: '600', transition: 'all 0.2s ease' }}
-                                  className="racer-chapter-btn"
-                                >
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <span style={{ fontSize: '16px' }}>📄</span>
-                                    <span>{translateName(chapter.chapterName)}</span>
-                                  </div>
-                                  <span style={{ background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold' }}>Select</span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
+        <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h3 style={{ color: isHostMode ? '#38bdf8' : 'black', margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
+            number of questions ({isHostMode ? hostQuestionCount : activeQuestionCount || 10})
+          </h3>
+          <select 
+            value={isHostMode ? hostQuestionCount : activeQuestionCount || 10} 
+            onChange={(e) => {
+              const val = parseInt(e.target.value);
+              if (isHostMode) setHostQuestionCount(val);
+              else setActiveQuestionCount(val);
+            }}
+            style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px' }}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+          </select>
+        </div>
+
+        {!isHostMode && customQuestions && (
+          <button onClick={() => startGame('easy')} style={{ width: '100%', marginTop: '20px', padding: '15px', background: '#3b82f6', color: 'white', borderRadius: '8px', fontWeight: 'bold', fontSize: '16px', border: 'none', cursor: 'pointer' }}>
+            Start Single Player Race
+          </button>
         )}
       </div>
     );
@@ -1533,261 +1271,62 @@ function MathRacer() {
             {gameState === 'playing' && <FullscreenButton targetRef={containerRef} />}
             
             {gameState === 'lobby' && (
-              <div className="racer-lobby-panel">
-            <div className="lobby-header-row">
-              <h3>🏁 {t('mathRacer.matchLobby', 'Match Roster Lobby')}</h3>
-              <button className="btn-leave-lobby" onClick={handleLeaveLobby}>
-                {t('mathRacer.exitLobby', 'Exit Lobby')}
-              </button>
-            </div>
-
-            {chapterName && (
-              <div className="lobby-custom-badge">
-                🏎️ {t('mathRacer.customRace', 'Custom Race: Chapter')} {chapterName}
-              </div>
-            )}
-
-            <div className="room-code-display-card">
-              <span className="room-label" style={{ color: '#64748b', fontSize: '16px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>
-                {t('mathRacer.roomCode', 'Room Code')}
-              </span>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <div className="room-code-value" style={{ 
-                  fontSize: '42px', 
-                  letterSpacing: '5px', 
-                  color: '#0f172a', 
-                  fontWeight: '900',
-                  lineHeight: '1',
-                  textShadow: '1px 1px 0px #e2e8f0'
-                }}>
-                  {roomId}
-                </div>
-                
-                <button 
-                  className="btn-copy-code" 
-                  onClick={copyRoomCode}
-                  title={t('mathRacer.copyCode', 'Copy Code')}
-                  style={{
-                    background: '#f1f5f9',
-                    border: '1px solid #cbd5e1',
-                    borderRadius: '50%',
-                    color: '#475569',
-                    width: '48px',
-                    height: '48px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  {isCopied ? <span style={{color: '#10b981', fontWeight: 'bold'}}>✓</span> : <Copy size={24} />}
-                </button>
-              </div>
-
-              <div style={{ width: '100%', maxWidth: '300px', height: '1px', background: '#e2e8f0', margin: '10px 0' }}></div>
-
-              <button 
-                className="btn-copy-link-premium" 
-                onClick={copyShareLink}
-                style={{
-                  background: '#f8fafc',
-                  border: '2px dashed #cbd5e1',
-                  borderRadius: '12px',
-                  color: '#475569',
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  width: '100%',
-                  maxWidth: '300px',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                {isLinkCopied ? (
-                  <span style={{color: '#10b981'}}>✓ {t('mathRacer.linkCopied', 'Copied Invite Link!')}</span>
-                ) : (
-                  <><Copy size={18} /> {t('mathRacer.copyLink', 'Copy Invite Link')}</>
-                )}
-              </button>
-              
-              <p className="server-status-label" style={{ marginTop: '10px', marginBottom: 0, color: '#10b981', fontWeight: '600', fontSize: '15px' }}>
-                🚦 {lobbyStatus}
-              </p>
-            </div>
-
-            <div className="lobby-players-grid">
-              <h4>{t('mathRacer.connectedRacers', 'Connected Racers')} ({players.length})</h4>
-              <div className="roster-list">
-                {players.map((player, idx) => (
-                  <div key={player.id || idx} className="roster-player-item">
-                    <div className="player-badge-color" style={{ backgroundColor: player.color }}></div>
-                    <div className="player-profile-detail">
-                      <span className="roster-player-name">{player.name}</span>
-                      <span className="roster-player-rank">
-                        {player.id === myId && multiRole === 'host' 
-                          ? (player.isSpectator ? `👁️ ${t('mathRacer.hostSpectator', 'Room Host (Spectator)')}` : `🏁 ${t('mathRacer.hostDriver', 'Room Host (Driver)')}`) 
-                          : `🔥 ${t('mathRacer.contender', 'Contender')}`}
-                      </span>
-                    </div>
-                    <span className="ready-indicator">{player.isSpectator ? `${t('mathRacer.observing', 'Observing')} 👁️` : `${t('mathRacer.ready', 'Ready')} ✓`}</span>
-                  </div>
-                ))}
-                {players.length === 0 && (
-                  <div className="empty-roster-state">
-                    <i className="fa fa-spinner fa-spin"></i>
-                    <p>{t('mathRacer.enteringRoster', 'Entering the room roster...')}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {multiRole === 'host' ? (
-              <div className="host-launch-panel">
-                <div className="host-role-config-card" style={{
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '16px',
-                  padding: '24px',
-                  marginBottom: '24px',
-                  textAlign: 'center',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-                }}>
-                  <h4 style={{ color: '#1e293b', fontSize: '18px', marginBottom: '8px', fontWeight: '800' }}>
-                    {t('mathRacer.participationMode', 'Host Participation Mode')}
-                  </h4>
-                  <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>
-                    {t('mathRacer.participationDesc', 'Choose whether you want to participate in the race as a driver or observe your students as a spectator.')}
-                  </p>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
-                    <button
-                      onClick={() => {
-                        soundEffects.playClick();
-                        setHostIsRacing(false);
-                      }}
-                      style={{
-                        flex: '1',
-                        minWidth: '150px',
-                        background: !hostIsRacing ? '#8b5cf6' : '#ffffff',
-                        border: `2px solid ${!hostIsRacing ? '#8b5cf6' : '#e2e8f0'}`,
-                        borderRadius: '12px',
-                        color: !hostIsRacing ? '#ffffff' : '#64748b',
-                        padding: '12px 20px',
-                        fontSize: '15px',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        boxShadow: !hostIsRacing ? '0 4px 15px rgba(139, 92, 246, 0.3)' : 'none'
-                      }}
-                    >
-                      👁️ {t('mathRacer.spectatorMode', 'Spectator')}
-                    </button>
-                    <button
-                      onClick={() => {
-                        soundEffects.playClick();
-                        setHostIsRacing(true);
-                      }}
-                      style={{
-                        flex: '1',
-                        minWidth: '150px',
-                        background: hostIsRacing ? '#3b82f6' : '#ffffff',
-                        border: `2px solid ${hostIsRacing ? '#3b82f6' : '#e2e8f0'}`,
-                        borderRadius: '12px',
-                        color: hostIsRacing ? '#ffffff' : '#64748b',
-                        padding: '12px 20px',
-                        fontSize: '15px',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        boxShadow: hostIsRacing ? '0 4px 15px rgba(59, 130, 246, 0.3)' : 'none'
-                      }}
-                    >
-                      🏎️ {t('mathRacer.driverMode', 'Driver')}
-                    </button>
-                  </div>
+            {gameState === 'lobby' && (
+              <div className="racer-lobby-panel" style={{ background: 'white', padding: '15px', borderRadius: '12px', border: '2px solid #ef4444', maxHeight: '100%', overflowY: 'auto' }}>
+                <div style={{ background: '#ef4444', color: 'white', padding: '10px', textAlign: 'center', borderRadius: '8px', fontSize: '20px', fontWeight: 'bold', marginBottom: '15px' }}>
+                  Racers Room
                 </div>
 
-                <div className="question-count-config-card" style={{
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '16px',
-                  padding: '24px',
-                  marginBottom: '30px',
-                  textAlign: 'center',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-                }}>
-                  <h4 style={{ color: '#1e293b', fontSize: '18px', marginBottom: '8px', fontWeight: '800' }}>
-                    {t('mathRacer.configRace', 'Configure Race Length')}
-                  </h4>
-                  <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>
-                    {t('mathRacer.configRaceDesc', 'Control how many correct answers are required for students to cross the finish line.')}
-                  </p>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
-                    {[5, 10, 15, 20, 30, 50].map(num => (
-                      <button
-                        key={num}
-                        onClick={() => { soundEffects.playClick(); setHostQuestionCount(num); }}
-                        style={{
-                          background: hostQuestionCount === num ? '#10b981' : '#ffffff',
-                          border: `2px solid ${hostQuestionCount === num ? '#10b981' : '#e2e8f0'}`,
-                          borderRadius: '10px',
-                          color: hostQuestionCount === num ? '#ffffff' : '#64748b',
-                          padding: '10px 16px',
-                          fontSize: '14px',
-                          fontWeight: '700',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          boxShadow: hostQuestionCount === num ? '0 4px 12px rgba(16, 185, 129, 0.3)' : 'none'
-                        }}
-                      >
-                        {num} {t('mathRacer.qs', 'Qs')}
-                      </button>
+                <div style={{ marginBottom: '15px' }}>
+                  <h4 style={{ color: '#ef4444', fontSize: '18px', margin: '0 0 10px', fontWeight: 'bold' }}>Connected Racers</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    {players.map((player, idx) => (
+                      <div key={player.id || idx} style={{ color: '#eab308', fontSize: '16px', fontWeight: 'bold', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <span>• {player.name}</span>
+                        {player.id === myId && multiRole === 'host' && (
+                           <span style={{ color: '#f97316', fontSize: '14px' }}>
+                             (Host - {player.isSpectator ? 'Watching' : 'Participating'})
+                             <button onClick={() => setHostIsRacing(!!player.isSpectator)} style={{ marginLeft: '10px', padding: '2px 8px', fontSize: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                               Switch
+                             </button>
+                           </span>
+                        )}
+                      </div>
                     ))}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-                    <span style={{ color: '#475569', fontSize: '14px', fontWeight: '600' }}>{t('mathRacer.customAmount', 'Custom Amount:')}</span>
-                    <input
-                      type="number"
-                      min="1"
-                      max="200"
-                      value={hostQuestionCount}
-                      onChange={e => setHostQuestionCount(Math.max(1, parseInt(e.target.value) || 1))}
-                      style={{
-                        background: '#ffffff',
-                        border: '2px solid #cbd5e1',
-                        borderRadius: '8px',
-                        color: '#0f172a',
-                        padding: '8px 12px',
-                        width: '90px',
-                        textAlign: 'center',
-                        fontSize: '15px',
-                        fontWeight: 'bold',
-                        outline: 'none'
-                      }}
-                    />
+                    {players.length === 0 && (
+                      <div style={{ color: '#eab308', fontSize: '14px' }}>Loading...</div>
+                    )}
                   </div>
                 </div>
 
-                {renderQuestionSelector(true)}
-              </div>
-            ) : (
-              <div className="guest-waiting-panel">
-                <div className="guest-spinner"></div>
-                <p>{t('mathRacer.waitingHost', 'Waiting for Host to launch the F1 race...')}</p>
-                {activeQuestionCount && (
-                  <p style={{ color: '#10b981', fontSize: '15px', marginTop: '15px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <span>🏁</span> {t('mathRacer.raceLengthSet', 'Race Length set to')} {activeQuestionCount} {t('mathRacer.questions', 'Questions')}
-                  </p>
+                {multiRole === 'host' ? (
+                  <div style={{ marginBottom: '15px' }}>
+                    {renderQuestionSelector(true)}
+
+                    <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
+                      <button onClick={() => { if(!customQuestions){ alert('Please select questions first'); return;} handleHostStartRace('easy'); }} style={{ flex: 1, padding: '12px', background: '#10b981', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
+                        Start Race
+                      </button>
+                      <button onClick={handleLeaveLobby} style={{ padding: '12px', background: '#ef4444', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ marginBottom: '15px', color: '#10b981', fontWeight: 'bold', textAlign: 'center' }}>
+                    Waiting for Host to start...
+                  </div>
                 )}
+
+                <div style={{ background: '#f0fdf4', border: '2px dashed #10b981', borderRadius: '8px', padding: '15px', textAlign: 'center', marginTop: '15px' }}>
+                  <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 10px', fontSize: '18px' }}>Join Code: {roomId}</p>
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                    <button onClick={copyRoomCode} style={{ background: '#10b981', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isCopied ? 'Copied!' : 'Copy Code'}</button>
+                    <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? 'Copied!' : 'Copy Link'}</button>
+                  </div>
+                </div>
               </div>
             )}
-          </div>
-        )}
 
         {/* ============================================================
            COUNTDOWN OVERLAY (CRASH BANDICOOT STYLE)
