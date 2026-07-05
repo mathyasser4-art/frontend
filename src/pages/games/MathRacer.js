@@ -333,7 +333,9 @@ function MathRacer() {
     }
   }, []);
 
-  const [gameState, setGameState] = useState('menu'); // 'menu', 'lobby', 'playing', 'gameover'
+  const [showResult, setShowResult] = useState(false);
+  const [gameState, setGameState] = useState('setup'); // 'setup', 'lobby', 'countdown', 'playing', 'results'
+  const [countdownValue, setCountdownValue] = useState(3);
   const [difficulty, setDifficulty] = useState('easy'); // 'easy', 'medium', 'hard'
   const [score, setScore] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -497,7 +499,23 @@ function MathRacer() {
         if (data.questionCount) {
           setActiveQuestionCount(data.questionCount);
         }
-        setGameState('playing');
+        startCountdownThenPlay(data.difficulty, data.customQuestions);
+      });
+
+      // Guest listens to host early exit
+      channel.bind('end-race-early', () => {
+        setGameState('lobby');
+        setPlayers([]);
+        alert('The host has ended the race.');
+      });
+
+      // Guest listens to host's race start trigger
+      channel.bind('start-game', (data) => {
+        setDifficulty(data.difficulty);
+        if (data.questionCount) {
+          setActiveQuestionCount(data.questionCount);
+        }
+
         setScore(0);
         setTimeElapsed(0);
         setPlayerDistance(0);
@@ -727,20 +745,55 @@ function MathRacer() {
     setCurrentProblem({ text: `${num1} ${operator} ${num2} = ?`, answer, options: shuffledOptions });
   };
 
-  const startGame = (selectedLevel) => {
+  const triggerFullscreen = () => {
+    const elem = containerRef.current;
+    if (elem) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+    }
+  };
+
+  const startCountdownThenPlay = (selectedLevel, specificQuestions = null) => {
     soundEffects.playClick();
     setDifficulty(selectedLevel);
-
     setScore(0);
     setTimeElapsed(0);
     setPlayerDistance(0);
     setBot1Distance(0);
     setBot2Distance(0);
-    setGameState('playing');
     setFeedback(null);
     setCurrentQuestionIndex(0);
     setEssayAnswer('');
-    generateProblem(selectedLevel, 0, customQuestions);
+    
+    // Auto-fullscreen
+    triggerFullscreen();
+
+    setGameState('countdown');
+    setCountdownValue(3);
+    
+    generateProblem(selectedLevel, 0, specificQuestions || customQuestions);
+
+    let count = 3;
+    const interval = setInterval(() => {
+      count -= 1;
+      if (count > 0) {
+        setCountdownValue(count);
+      } else if (count === 0) {
+        setCountdownValue('GO!');
+      } else {
+        clearInterval(interval);
+        setGameState('playing');
+      }
+    }, 1000);
+  };
+
+  const startGame = (selectedLevel) => {
+    startCountdownThenPlay(selectedLevel, customQuestions);
   };
 
   // Host Action: Trigger race start for all players
@@ -758,14 +811,7 @@ function MathRacer() {
     });
     
     // Initialize host gameplay
-    setScore(0);
-    setTimeElapsed(0);
-    setPlayerDistance(0);
-    setGameState('playing');
-    setFeedback(null);
-    setCurrentQuestionIndex(0);
-    setEssayAnswer('');
-    generateProblem(selectedLevel, 0, customQuestions);
+    startCountdownThenPlay(selectedLevel, customQuestions);
   };
 
   const renderQuestionSelector = (isHostMode = false) => {
@@ -1107,8 +1153,9 @@ function MathRacer() {
 
   const endGame = () => {
     soundEffects.playEndSound();
-    setGameState('gameover');
+    setGameState('results');
     clearInterval(timerRef.current);
+    setShowResult(true);
   };
 
   // Main Game Loop (Timer & Bots)
@@ -1329,12 +1376,44 @@ function MathRacer() {
     return visual;
   };
 
-  // Lobby cleanup when leaving waiting lobby
   const handleLeaveLobby = () => {
+    if (multiRole === 'host') {
+      const confirmLeave = window.confirm('Are you sure you want to exit? This will close the lobby for all connected students.');
+      if (!confirmLeave) return;
+      broadcastPusherEvent(roomId, 'end-race-early', {});
+    }
     soundEffects.playClick();
-    disconnectPusher();
-    setGameState('menu');
+    if (channelRef.current) {
+      pusherRef.current.unsubscribe(`mathracer-${roomId}`);
+      channelRef.current = null;
+    }
+    setGameState('setup');
+    setMultiRole(null);
+    setRoomId('');
+    setPlayers([]);
   };
+
+  const handleCloseRace = () => {
+    if (multiRole === 'host') {
+      const confirmLeave = window.confirm('Are you sure you want to end the race early? All students will be kicked out.');
+      if (!confirmLeave) return;
+      broadcastPusherEvent(roomId, 'end-race-early', {});
+    }
+    soundEffects.playClick();
+    endGame();
+  };
+
+  // Add beforeunload listener to warn host if they try to close tab during race or lobby
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (multiRole === 'host' && (gameState === 'lobby' || gameState === 'playing' || gameState === 'countdown')) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [multiRole, gameState]);
 
   const handleHostCloseRace = () => {
     if (window.confirm('Are you sure you want to end the race for all players?')) {
@@ -1461,8 +1540,25 @@ function MathRacer() {
         {/* ============================================================
            MULTIPLAYER LOBBY SCREEN (LOBBY WAITING SCREEN)
            ============================================================ */}
-        {gameState === 'lobby' && (
-          <div className="racer-lobby-panel">
+        {['lobby', 'countdown', 'playing'].includes(gameState) && (
+          <div className="racer-gameplay" ref={containerRef}>
+            {gameState === 'playing' && <FullscreenButton targetRef={containerRef} />}
+            
+            {gameState === 'lobby' && (
+              <div className="racer-lobby-panel" style={{
+                position: 'absolute',
+                top: '5%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 100,
+                width: '90%',
+                maxWidth: '600px',
+                background: 'rgba(255, 255, 255, 0.9)',
+                backdropFilter: 'blur(10px)',
+                borderRadius: '24px',
+                padding: '20px',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+              }}>
             <div className="lobby-header-row">
               <h3>🏁 {t('mathRacer.matchLobby', 'Match Roster Lobby')}</h3>
               <button className="btn-leave-lobby" onClick={handleLeaveLobby}>
@@ -1725,13 +1821,57 @@ function MathRacer() {
                   </p>
                 )}
               </div>
+              </div>
             )}
           </div>
         )}
 
+        {/* ============================================================
+           COUNTDOWN OVERLAY (CRASH BANDICOOT STYLE)
+           ============================================================ */}
+        {gameState === 'countdown' && (
+          <div className="traffic-light-container" style={{
+            position: 'absolute',
+            top: '20%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 150,
+            display: 'flex',
+            gap: '20px',
+            background: '#1e293b',
+            padding: '20px 30px',
+            borderRadius: '40px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.8)',
+            border: '4px solid #334155'
+          }}>
+            {[3, 2, 1].map((num) => {
+              const isOn = typeof countdownValue === 'number' ? countdownValue <= num : true;
+              const isGreen = countdownValue === 'GO!';
+              return (
+                <div key={num} className="traffic-light" style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: isGreen ? '#10b981' : (isOn ? '#ef4444' : '#475569'),
+                  boxShadow: isGreen 
+                    ? '0 0 40px #10b981, inset 0 0 20px rgba(255,255,255,0.5)' 
+                    : (isOn ? '0 0 40px #ef4444, inset 0 0 20px rgba(255,255,255,0.5)' : 'inset 0 0 10px rgba(0,0,0,0.5)'),
+                  border: '4px solid #0f172a',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.1s ease',
+                  opacity: isOn ? 1 : 0.4
+                }}>
+                  {isGreen && <span style={{color:'white', fontWeight:'900', fontSize:'20px'}}>GO</span>}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {gameState === 'playing' && (
-          <div className="racer-gameplay" ref={containerRef}>
-            <FullscreenButton targetRef={containerRef} />
+          <>
             <div className="game-stats">
               <div className="stat-box timer-box">
                 <Timer size={24} color="#fff" />
@@ -1746,9 +1886,12 @@ function MathRacer() {
                 <span>{score}</span>
               </div>
             </div>
+          </>
+        )}
 
-            {/* The Infinite Journey Track */}
-            <div className={`track-container ${gameState === 'playing' ? 'is-moving' : ''}`}>
+        {/* The Infinite Journey Track (VISIBLE IN LOBBY, COUNTDOWN, AND PLAYING) */}
+        {['lobby', 'countdown', 'playing'].includes(gameState) && (
+          <div className={`track-container ${gameState === 'playing' ? 'is-moving' : ''}`}>
               <div className="sky-bg"></div>
               <div className="mountains-bg"></div>
               <div className="trees-bg"></div>
@@ -1818,165 +1961,159 @@ function MathRacer() {
               </div>
             </div>
 
-            {multiRole === 'host' && !hostIsRacing ? (
-              <div className="racer-spectator-panel" style={{
-                background: 'rgba(15, 23, 42, 0.85)',
-                borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-                padding: '20px 30px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '15px'
-              }}>
-                <h3 style={{ color: '#38bdf8', fontSize: '20px', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>🏎️</span> Live Race Spectator Dashboard
-                </h3>
-                <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0, textAlign: 'center' }}>
-                  You are hosting this race in spectator mode. Watch your students compete live on the track above!
-                </p>
-                <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                    <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>Active Racers</span>
-                    <strong style={{ color: '#10b981', fontSize: '18px' }}>{players.filter(p => !p.isSpectator).length}</strong>
+            {gameState === 'playing' && (
+              <>
+                {multiRole === 'host' && !hostIsRacing ? (
+                  <div className="racer-spectator-panel" style={{
+                    background: 'rgba(15, 23, 42, 0.85)',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                    padding: '20px 30px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '15px'
+                  }}>
+                    <h3 style={{ color: '#38bdf8', fontSize: '20px', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span>🏎️</span> Live Race Spectator Dashboard
+                    </h3>
+                    <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0, textAlign: 'center' }}>
+                      You are hosting this race in spectator mode. Watch your students compete live on the track above!
+                    </p>
+                    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                      <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                        <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>Active Racers</span>
+                        <strong style={{ color: '#10b981', fontSize: '18px' }}>{players.filter(p => !p.isSpectator).length}</strong>
+                      </div>
+                      <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                        <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>Target Questions</span>
+                        <strong style={{ color: '#a78bfa', fontSize: '18px' }}>{activeQuestionCount || 'Unlimited'}</strong>
+                      </div>
+                    </div>
+                    <button
+                      onClick={endGame}
+                      style={{
+                        background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
+                        border: 'none',
+                        borderRadius: '10px',
+                        color: '#fff',
+                        padding: '10px 24px',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)'
+                      }}
+                    >
+                      🏁 End Race & Show Podium
+                    </button>
                   </div>
-                  <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                    <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>Target Questions</span>
-                    <strong style={{ color: '#a78bfa', fontSize: '18px' }}>{activeQuestionCount || 'Unlimited'}</strong>
+                ) : (
+                <div className={`problem-container ${feedback} ${currentProblem.typeOfAnswer || ''} ${customQuestions ? 'side-by-side' : ''}`}>
+                  
+                  <div className="racer-question-section">
+                    {/* Optional Question Image */}
+                    {currentProblem.questionPic && (
+                      <div className="racer-question-image-wrapper">
+                        <img src={currentProblem.questionPic} alt="Question Diagram" className="racer-question-image" />
+                      </div>
+                    )}
+
+                    {/* Problem Content */}
+                    {currentProblem.text === 'ABACUS_GRID' && currentProblem.gridRows ? (
+                      <div className="racer-abacus-grid-view">
+                        <table className="racer-abacus-display-table">
+                          <tbody>
+                            {currentProblem.gridRows.map((row, i) => (
+                              <tr key={i}>
+                                <td className="op-cell">{getRowOp(row)}</td>
+                                <td className="val-cell">{getRowVal(row)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="problem-text" style={{ whiteSpace: 'pre-wrap' }}>{currentProblem.text}</div>
+                    )}
+                  </div>
+
+                  <div className="racer-answer-section">
+                    {/* Answer Inputs / Choices */}
+                    {currentProblem.typeOfAnswer === 'Essay' ? (
+                      <form 
+                        onSubmit={(e) => { 
+                          e.preventDefault(); 
+                          handleEssaySubmit(essayAnswer); 
+                        }} 
+                        className="racer-essay-input-container"
+                      >
+                        <div className="racer-essay-input-row">
+                          <input 
+                            type="text" 
+                            value={essayAnswer} 
+                            onChange={(e) => setEssayAnswer(e.target.value)}
+                            readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
+                            placeholder="Type Answer..." 
+                            className="racer-essay-input"
+                            autoFocus
+                          />
+                          <button 
+                            type="submit"
+                            className="racer-essay-submit-btn"
+                          >
+                            OK
+                          </button>
+                        </div>
+                        
+                        <div className="racer-keypad">
+                          {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'].map(num => (
+                            <button 
+                              key={num} 
+                              type="button"
+                              onClick={() => setEssayAnswer(prev => prev + num)}
+                              className="racer-keypad-btn digit"
+                            >
+                              {num}
+                            </button>
+                          ))}
+                          <button 
+                            type="button"
+                            onClick={() => setEssayAnswer(prev => prev.slice(0, -1))}
+                            className="racer-keypad-btn clear"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </form>
+                    ) : currentProblem.typeOfAnswer === 'Graph' ? (
+                      <div className="math-racer-graph-options">
+                        {currentProblem.options && currentProblem.options.map((opt, i) => (
+                          <button 
+                            key={i} 
+                            className="racer-graph-option-btn"
+                            onClick={() => handleOptionClick(opt)}
+                          >
+                            <img src={opt} alt={`Graph choice ${i + 1}`} />
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="math-racer-options">
+                        {currentProblem.options && currentProblem.options.map((opt, i) => (
+                          <button 
+                            key={i} 
+                            className="racer-option-btn"
+                            onClick={() => handleOptionClick(opt)}
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
-                <button
-                  onClick={endGame}
-                  style={{
-                    background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
-                    border: 'none',
-                    borderRadius: '10px',
-                    color: '#fff',
-                    padding: '10px 24px',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)'
-                  }}
-                >
-                  🏁 End Race & Show Podium
-                </button>
-              </div>
-            ) : (
-            <div className={`problem-container ${feedback} ${currentProblem.typeOfAnswer || ''} ${customQuestions ? 'side-by-side' : ''}`}>
-              
-              <div className="racer-question-section">
-                {/* Optional Question Image */}
-                {currentProblem.questionPic && (
-                  <div className="racer-question-image-wrapper">
-                    <img src={currentProblem.questionPic} alt="Question Diagram" className="racer-question-image" />
-                  </div>
                 )}
-
-                {/* Problem Content */}
-                {currentProblem.text === 'ABACUS_GRID' && currentProblem.gridRows ? (
-                  <div className="racer-abacus-grid-view">
-                    <table className="racer-abacus-display-table">
-                      <tbody>
-                        {currentProblem.gridRows.map((row, i) => (
-                          <tr key={i}>
-                            <td className="op-cell">{getRowOp(row)}</td>
-                            <td className="val-cell">{getRowVal(row)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="problem-text" style={{ whiteSpace: 'pre-wrap' }}>{currentProblem.text}</div>
-                )}
-              </div>
-
-              <div className="racer-answer-section">
-                {/* Answer Inputs / Choices */}
-                {currentProblem.typeOfAnswer === 'Essay' ? (
-                  /* ==========================================
-                     ESSAY / NUMERIC keypad input view
-                     ========================================== */
-                  <form 
-                    onSubmit={(e) => { 
-                      e.preventDefault(); 
-                      handleEssaySubmit(essayAnswer); 
-                    }} 
-                    className="racer-essay-input-container"
-                  >
-                    <div className="racer-essay-input-row">
-                      <input 
-                        type="text" 
-                        value={essayAnswer} 
-                        onChange={(e) => setEssayAnswer(e.target.value)}
-                        readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
-                        placeholder="Type Answer..." 
-                        className="racer-essay-input"
-                        autoFocus
-                      />
-                      <button 
-                        type="submit"
-                        className="racer-essay-submit-btn"
-                      >
-                        OK
-                      </button>
-                    </div>
-                    
-                    {/* Visual keypad grid */}
-                    <div className="racer-keypad">
-                      {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'].map(num => (
-                        <button 
-                          key={num} 
-                          type="button"
-                          onClick={() => setEssayAnswer(prev => prev + num)}
-                          className="racer-keypad-btn digit"
-                        >
-                          {num}
-                        </button>
-                      ))}
-                      <button 
-                        type="button"
-                        onClick={() => setEssayAnswer(prev => prev.slice(0, -1))}
-                        className="racer-keypad-btn clear"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </form>
-                ) : currentProblem.typeOfAnswer === 'Graph' ? (
-                  /* ==========================================
-                     GRAPH image choices
-                     ========================================== */
-                  <div className="math-racer-graph-options">
-                    {currentProblem.options && currentProblem.options.map((opt, i) => (
-                      <button 
-                        key={i} 
-                        className="racer-graph-option-btn"
-                        onClick={() => handleOptionClick(opt)}
-                      >
-                        <img src={opt} alt={`Graph choice ${i + 1}`} />
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  /* ==========================================
-                     MCQ (or standard arithmetic fallback)
-                     ========================================== */
-                  <div className="math-racer-options">
-                    {currentProblem.options && currentProblem.options.map((opt, i) => (
-                      <button 
-                        key={i} 
-                        className="racer-option-btn"
-                        onClick={() => handleOptionClick(opt)}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+              </>
             )}
           </div>
         )}
