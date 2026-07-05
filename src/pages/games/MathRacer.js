@@ -119,7 +119,7 @@ function MathRacer() {
   const [essayAnswer, setEssayAnswer] = useState('');
 
   // Wizard Question Selector States
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [wizardStep, setWizardStep] = useState('system'); // Forced to system
   const [questionTypeID, setQuestionTypeID] = useState('65a4963482dbaac16d820fc6'); // Force MCQ
   const [selectedSubject, setSelectedSubject] = useState(null);
@@ -265,12 +265,12 @@ function MathRacer() {
 
   const toggleSystemExpand = (id) => {
       soundEffects.playClick();
-      setSelectedSystemId(selectedSystemId === id ? null : id);
+      setSelectedSystemId(id);
   };
 
   const toggleUnitExpand = (id) => {
       soundEffects.playClick();
-      setSelectedUnitId(selectedUnitId === id ? null : id);
+      setSelectedUnitId(id);
   };
 
   const translateName = (name) => {
@@ -792,63 +792,85 @@ function MathRacer() {
 
   const renderQuestionSelector = (isHostMode = false) => {
     return (
-      <div style={{ textAlign: 'left', marginTop: '20px' }}>
-        <h3 style={{ color: isHostMode ? 'black' : '#ef4444', margin: '0 0 10px', fontSize: '18px', fontWeight: 'bold' }}>
+      <div style={{ textAlign: 'left', marginTop: '5px' }}>
+        <h3 style={{ color: isHostMode ? 'black' : '#3b82f6', margin: '0 0 5px', fontSize: '18px', fontWeight: 'bold' }}>
           question resource (worksheets)
         </h3>
         
         {!customQuestions ? (
           <div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '15px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
               {systemData.length === 0 ? (
-                <p style={{ color: '#94a3b8', fontSize: '14px' }}>Loading worksheets...</p>
+                <p style={{ color: '#94a3b8', fontSize: '14px' }}>{t('loading_worksheets', 'Loading worksheets...')}</p>
               ) : (
-                systemData.map(system => {
-                  const isExpanded = selectedSystemId === system._id;
-                  return (
-                    <div key={system._id} style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
-                      <div onClick={() => toggleSystemExpand(system._id)} style={{ padding: '10px 15px', display: 'flex', justifyContent: 'space-between', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a' }}>
-                        <span>{translateName(system.systemName)}</span>
-                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                      </div>
-                      {isExpanded && (
-                         <div style={{ padding: '10px', borderTop: '1px solid #cbd5e1', background: '#f8fafc' }}>
-                            {system.subjects?.map(subject => (
-                              <div key={subject._id} onClick={() => handleSelectSubject(subject)} style={{ padding: '8px', cursor: 'pointer', color: '#333' }}>
-                                • {translateName(subject.subjectName)}
-                              </div>
-                            ))}
-                         </div>
-                      )}
-                    </div>
-                  );
-                })
+                <>
+                  <select
+                    value={selectedSystemId || ''}
+                    onChange={(e) => {
+                      toggleSystemExpand(e.target.value);
+                      setSelectedSubject(null);
+                      setSelectedUnitId(null);
+                      setUnitData([]);
+                    }}
+                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                  >
+                    <option value="" disabled>{t('select_system', 'Select System...')}</option>
+                    {systemData.map(system => (
+                      <option key={system._id} value={system._id}>{translateName(system.systemName)}</option>
+                    ))}
+                  </select>
+
+                  {selectedSystemId && (
+                    <select
+                      value={selectedSubject?._id || ''}
+                      onChange={(e) => {
+                        const system = systemData.find(s => s._id === selectedSystemId);
+                        const subject = system?.subjects?.find(sub => sub._id === e.target.value);
+                        if (subject) handleSelectSubject(subject);
+                      }}
+                      style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                    >
+                      <option value="" disabled>{t('select_subject', 'Select Subject...')}</option>
+                      {systemData.find(s => s._id === selectedSystemId)?.subjects?.map(subject => (
+                        <option key={subject._id} value={subject._id}>{translateName(subject.subjectName)}</option>
+                      ))}
+                    </select>
+                  )}
+                </>
               )}
             </div>
             
             {selectedSubject && unitData.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <p style={{ color: '#333', fontSize: '14px', margin: '0 0 5px' }}>Select Chapter:</p>
-                {unitData.map(unit => {
-                  const isExpanded = selectedUnitId === unit._id;
-                  return (
-                    <div key={unit._id} style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
-                      <div onClick={() => toggleUnitExpand(unit._id)} style={{ padding: '10px 15px', display: 'flex', justifyContent: 'space-between', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a' }}>
-                        <span>{translateName(unit.unitName)}</span>
-                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                      </div>
-                      {isExpanded && (
-                         <div style={{ padding: '10px', borderTop: '1px solid #cbd5e1', background: '#f8fafc' }}>
-                            {unit.chapters?.map(chapter => (
-                              <div key={chapter._id} onClick={() => handleSelectChapter(chapter)} style={{ padding: '8px', cursor: 'pointer', color: '#3b82f6', fontWeight: 'bold' }}>
-                                📄 {translateName(chapter.chapterName)}
-                              </div>
-                            ))}
-                         </div>
-                      )}
-                    </div>
-                  );
-                })}
+                <select
+                  value={selectedUnitId || ''}
+                  onChange={(e) => {
+                    toggleUnitExpand(e.target.value);
+                  }}
+                  style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                >
+                  <option value="" disabled>{t('select_unit', 'Select Unit...')}</option>
+                  {unitData.map(unit => (
+                    <option key={unit._id} value={unit._id}>{translateName(unit.unitName)}</option>
+                  ))}
+                </select>
+
+                {selectedUnitId && (
+                  <select
+                    value=""
+                    onChange={(e) => {
+                      const unit = unitData.find(u => u._id === selectedUnitId);
+                      const chapter = unit?.chapters?.find(c => c._id === e.target.value);
+                      if (chapter) handleSelectChapter(chapter);
+                    }}
+                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                  >
+                    <option value="" disabled>{t('select_chapter', 'Select Chapter...')}</option>
+                    {unitData.find(u => u._id === selectedUnitId)?.chapters?.map(chapter => (
+                      <option key={chapter._id} value={chapter._id}>📄 {translateName(chapter.chapterName)}</option>
+                    ))}
+                  </select>
+                )}
               </div>
             )}
           </div>
@@ -859,29 +881,28 @@ function MathRacer() {
           </div>
         )}
 
-        <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <h3 style={{ color: isHostMode ? '#38bdf8' : 'black', margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
-            number of questions ({isHostMode ? hostQuestionCount : activeQuestionCount || 10})
+        <div style={{ marginTop: '5px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h3 style={{ color: isHostMode ? '#38bdf8' : '#3b82f6', margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
+            {t('number_of_questions', 'number of questions')} ({isHostMode ? hostQuestionCount : activeQuestionCount || 10})
           </h3>
-          <select 
+          <input
+            type="number"
+            min="1"
             value={isHostMode ? hostQuestionCount : activeQuestionCount || 10} 
             onChange={(e) => {
               const val = parseInt(e.target.value);
-              if (isHostMode) setHostQuestionCount(val);
-              else setActiveQuestionCount(val);
+              if (val > 0) {
+                if (isHostMode) setHostQuestionCount(val);
+                else setActiveQuestionCount(val);
+              }
             }}
-            style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px' }}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20}>20</option>
-          </select>
+            style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px', width: '60px' }}
+          />
         </div>
 
         {!isHostMode && customQuestions && (
-          <button onClick={() => startGame('easy')} style={{ width: '100%', marginTop: '20px', padding: '15px', background: '#3b82f6', color: 'white', borderRadius: '8px', fontWeight: 'bold', fontSize: '16px', border: 'none', cursor: 'pointer' }}>
-            Start Single Player Race
+          <button onClick={() => startGame('easy')} style={{ width: '100%', marginTop: '10px', padding: '10px', background: '#3b82f6', color: 'white', borderRadius: '8px', fontWeight: 'bold', fontSize: '16px', border: 'none', cursor: 'pointer' }}>
+            {t('start_single_player', 'Start Single Player Race')}
           </button>
         )}
       </div>
@@ -1172,12 +1193,20 @@ function MathRacer() {
         <div className="racer-header">
           <button onClick={() => { soundEffects.playClick(); navigate(-1); }} className="back-button">
             <ChevronLeft size={20} />
-            <span>Back</span>
+            <span>{t('back', 'Back')}</span>
           </button>
-          <h2>Math Racer 🏎️💨</h2>
+          <h2>{t('math_racer', 'Math Racer')} 🏎️💨</h2>
+          
+          <button 
+            onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'ar' : 'en')} 
+            style={{ marginLeft: '20px', padding: '8px 16px', borderRadius: '8px', background: '#1e293b', color: 'white', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}
+          >
+            {i18n.language === 'en' ? 'العربية' : 'English'}
+          </button>
+
           {multiRole === 'host' && (gameState === 'playing' || gameState === 'lobby') && (
-            <button onClick={handleHostCloseRace} className="host-close-race-btn" title="Close Race for All Players">
-              ✕ Close Race
+            <button onClick={handleHostCloseRace} className="host-close-race-btn" title={t('close_race', 'Close Race for All Players')}>
+              ✕ {t('close_race', 'Close Race')}
             </button>
           )}
         </div>
@@ -1207,13 +1236,13 @@ function MathRacer() {
                   className={`mode-tab ${gameMode === 'single' ? 'active' : ''}`}
                   onClick={() => { soundEffects.playClick(); setGameMode('single'); }}
                 >
-                  🤖 Single Player
+                  🤖 {t('single_player', 'Single Player')}
                 </button>
                 <button 
                   className={`mode-tab ${gameMode === 'multi' ? 'active' : ''}`}
                   onClick={() => { soundEffects.playClick(); setGameMode('multi'); }}
                 >
-                  👥 Multiplayer
+                  👥 {t('multiplayer', 'Multiplayer')}
                 </button>
               </div>
             )}
@@ -1224,36 +1253,36 @@ function MathRacer() {
               </div>
             ) : (
               <div className="multi-player-setup">
-                <h3>Challenge Friends in Real-Time!</h3>
-                <p>Host your own private F1 room and share your code, or enter a friend's room code to start the high-speed competition!</p>
+                <h3>{t('challenge_friends', 'Challenge Friends in Real-Time!')}</h3>
+                <p>{t('host_private_room_desc', 'Host your own private F1 room and share your code, or enter a friend\'s room code to start the high-speed competition!')}</p>
                 
                 <div className="multiplayer-actions-panel">
                   <div className="host-section-card">
-                    <h4>Host a New Match</h4>
-                    <p>Start a racing room and invite up to 4 competitors!</p>
+                    <h4>{t('host_new_match', 'Host a New Match')}</h4>
+                    <p>{t('start_racing_room', 'Start a racing room and invite up to 4 competitors!')}</p>
                     <button className="btn-multi-host" onClick={handleCreateRoom}>
-                      🚀 Host a Race
+                      🚀 {t('host_a_race', 'Host a Race')}
                     </button>
                   </div>
                   
                   <div className="join-divider">
-                    <span>OR</span>
+                    <span>{t('or', 'OR')}</span>
                   </div>
 
                   <div className="join-section-card">
-                    <h4>Join Existing Match</h4>
-                    <p>Enter your competitor's room code to connect:</p>
+                    <h4>{t('join_existing_match', 'Join Existing Match')}</h4>
+                    <p>{t('enter_competitor_code', 'Enter your competitor\'s room code to connect:')}</p>
                     <div className="join-input-group">
                       <input 
                         type="text" 
-                        placeholder="Enter 2-Digit Code"
+                        placeholder={t('enter_code', 'ENTER 2-DIGIT CODE')}
                         maxLength="2"
                         value={inputRoomId}
                         onChange={(e) => setInputRoomId(e.target.value)}
                         className="multi-join-input"
                       />
                       <button className="btn-multi-join" onClick={handleJoinRoom}>
-                        Join Roster
+                        {t('join_roster', 'Join Roster')}
                       </button>
                     </div>
                   </div>
@@ -1271,19 +1300,19 @@ function MathRacer() {
             {gameState === 'playing' && <FullscreenButton targetRef={containerRef} />}
             
             {gameState === 'lobby' && (
-              <div className="racer-lobby-panel" style={{ background: 'white', padding: '15px', borderRadius: '12px', border: '2px solid #ef4444', maxHeight: '100%', overflowY: 'auto' }}>
-                <div style={{ background: '#ef4444', color: 'white', padding: '10px', textAlign: 'center', borderRadius: '8px', fontSize: '20px', fontWeight: 'bold', marginBottom: '15px' }}>
-                  Racers Room
+              <div className="racer-lobby-panel" style={{ background: 'white', padding: '10px', borderRadius: '12px', border: '2px solid #ef4444' }}>
+                <div style={{ background: '#ef4444', color: 'white', padding: '8px', textAlign: 'center', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', marginBottom: '10px' }}>
+                  {t('racers_room', 'Racers Room')}
                 </div>
 
-                <div style={{ marginBottom: '15px' }}>
-                  <h4 style={{ color: '#ef4444', fontSize: '18px', margin: '0 0 10px', fontWeight: 'bold' }}>Connected Racers</h4>
+                <div style={{ marginBottom: '10px' }}>
+                  <h4 style={{ color: '#ef4444', fontSize: '16px', margin: '0 0 5px', fontWeight: 'bold' }}>{t('connected_racers', 'Connected Racers')}</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     {players.map((player, idx) => (
-                      <div key={player.id || idx} style={{ color: '#eab308', fontSize: '16px', fontWeight: 'bold', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <div key={player.id || idx} style={{ color: '#eab308', fontSize: '15px', fontWeight: 'bold', display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <span>• {player.name}</span>
                         {player.id === myId && multiRole === 'host' && (
-                           <span style={{ color: '#f97316', fontSize: '14px' }}>
+                           <span style={{ color: '#f97316', fontSize: '13px' }}>
                              (Host - {player.isSpectator ? 'Watching' : 'Participating'})
                              <button onClick={() => setHostIsRacing(!!player.isSpectator)} style={{ marginLeft: '10px', padding: '2px 8px', fontSize: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
                                Switch
@@ -1299,29 +1328,29 @@ function MathRacer() {
                 </div>
 
                 {multiRole === 'host' ? (
-                  <div style={{ marginBottom: '15px' }}>
+                  <div style={{ marginBottom: '5px' }}>
                     {renderQuestionSelector(true)}
 
-                    <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
-                      <button onClick={() => { if(!customQuestions){ alert('Please select questions first'); return;} handleHostStartRace('easy'); }} style={{ flex: 1, padding: '12px', background: '#10b981', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
-                        Start Race
+                    <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                      <button onClick={() => { if(!customQuestions){ alert('Please select questions first'); return;} handleHostStartRace('easy'); }} style={{ flex: 1, padding: '10px', background: '#10b981', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
+                        {t('start_race', 'Start Race')}
                       </button>
-                      <button onClick={handleLeaveLobby} style={{ padding: '12px', background: '#ef4444', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
-                        Cancel
+                      <button onClick={handleLeaveLobby} style={{ padding: '10px', background: '#ef4444', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
+                        {t('cancel', 'Cancel')}
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div style={{ marginBottom: '15px', color: '#10b981', fontWeight: 'bold', textAlign: 'center' }}>
-                    Waiting for Host to start...
+                  <div style={{ marginBottom: '10px', color: '#10b981', fontWeight: 'bold', textAlign: 'center' }}>
+                    {t('waiting_for_host', 'Waiting for Host to start...')}
                   </div>
                 )}
 
-                <div style={{ background: '#f0fdf4', border: '2px dashed #10b981', borderRadius: '8px', padding: '15px', textAlign: 'center', marginTop: '15px' }}>
-                  <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 10px', fontSize: '18px' }}>Join Code: {roomId}</p>
+                <div style={{ background: '#f0fdf4', border: '2px dashed #10b981', borderRadius: '8px', padding: '10px', textAlign: 'center', marginTop: '10px' }}>
+                  <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px', fontSize: '16px' }}>{t('copy_link_or_code', 'copy link OR use code')} ({roomId})</p>
                   <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                    <button onClick={copyRoomCode} style={{ background: '#10b981', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isCopied ? 'Copied!' : 'Copy Code'}</button>
-                    <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? 'Copied!' : 'Copy Link'}</button>
+                    <button onClick={copyRoomCode} style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isCopied ? t('copied', 'Copied!') : t('copy_code', 'Copy Code')}</button>
+                    <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? t('copied', 'Copied!') : t('copy_link', 'Copy Link')}</button>
                   </div>
                 </div>
               </div>
