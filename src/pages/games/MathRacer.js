@@ -1271,7 +1271,6 @@ function MathRacer() {
             {gameState === 'playing' && <FullscreenButton targetRef={containerRef} />}
             
             {gameState === 'lobby' && (
-            {gameState === 'lobby' && (
               <div className="racer-lobby-panel" style={{ background: 'white', padding: '15px', borderRadius: '12px', border: '2px solid #ef4444', maxHeight: '100%', overflowY: 'auto' }}>
                 <div style={{ background: '#ef4444', color: 'white', padding: '10px', textAlign: 'center', borderRadius: '8px', fontSize: '20px', fontWeight: 'bold', marginBottom: '15px' }}>
                   Racers Room
