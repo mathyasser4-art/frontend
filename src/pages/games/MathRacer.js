@@ -111,6 +111,10 @@ function MathRacer() {
   const customQuestionsRef = useRef(customQuestions);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     customQuestionsRef.current = customQuestions;
   }, [customQuestions]);
 
@@ -752,6 +756,24 @@ function MathRacer() {
     setGameState('countdown');
     setCountdownValue(3);
     
+    const playBeep = (freq, duration) => {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    };
+
+    playBeep(400, 0.5); // First red light
+
     generateProblem(selectedLevel, 0, specificQuestions || customQuestions);
 
     let count = 3;
@@ -759,8 +781,10 @@ function MathRacer() {
       count -= 1;
       if (count > 0) {
         setCountdownValue(count);
+        playBeep(400, 0.5); // Next red lights
       } else if (count === 0) {
         setCountdownValue('GO!');
+        playBeep(800, 0.8); // Green light!
       } else {
         clearInterval(interval);
         setGameState('playing');
@@ -1305,34 +1329,36 @@ function MathRacer() {
                   {t('racers_room', 'Racers Room')}
                 </div>
 
-                <div style={{ marginBottom: '10px' }}>
-                  <h4 style={{ color: '#ef4444', fontSize: '16px', margin: '0 0 5px', fontWeight: 'bold' }}>{t('connected_racers', 'Connected Racers')}</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                    {players.map((player, idx) => (
-                      <div key={player.id || idx} style={{ color: '#eab308', fontSize: '15px', fontWeight: 'bold', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <span>• {player.name}</span>
-                        {player.id === myId && multiRole === 'host' && (
-                           <span style={{ color: '#f97316', fontSize: '13px' }}>
-                             (Host - {player.isSpectator ? 'Watching' : 'Participating'})
-                             <button onClick={() => setHostIsRacing(!!player.isSpectator)} style={{ marginLeft: '10px', padding: '2px 8px', fontSize: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                               Switch
-                             </button>
-                           </span>
-                        )}
-                      </div>
-                    ))}
-                    {players.length === 0 && (
-                      <div style={{ color: '#eab308', fontSize: '14px' }}>Loading...</div>
-                    )}
+                {multiRole === 'host' && (
+                  <div style={{ marginBottom: '10px' }}>
+                    <h4 style={{ color: '#ef4444', fontSize: '16px', margin: '0 0 5px', fontWeight: 'bold' }}>{t('connected_racers', 'Connected Racers')}</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                      {players.map((player, idx) => (
+                        <div key={player.id || idx} style={{ color: '#eab308', fontSize: '15px', fontWeight: 'bold', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                          <span>• {player.name}</span>
+                          {player.id === myId && multiRole === 'host' && (
+                             <span style={{ color: '#f97316', fontSize: '13px' }}>
+                               (Host - {player.isSpectator ? 'Watching' : 'Participating'})
+                               <button onClick={() => setHostIsRacing(!!player.isSpectator)} style={{ marginLeft: '10px', padding: '2px 8px', fontSize: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                                 Switch
+                               </button>
+                             </span>
+                          )}
+                        </div>
+                      ))}
+                      {players.length === 0 && (
+                        <div style={{ color: '#eab308', fontSize: '14px' }}>Loading...</div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {multiRole === 'host' ? (
                   <div style={{ marginBottom: '5px' }}>
                     {renderQuestionSelector(true)}
 
                     <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-                      <button onClick={() => { if(!customQuestions){ alert('Please select questions first'); return;} handleHostStartRace('easy'); }} style={{ flex: 1, padding: '10px', background: '#10b981', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
+                      <button className="start-race-btn-glow" onClick={() => { if(!customQuestions){ alert('Please select questions first'); return;} handleHostStartRace('easy'); }}>
                         {t('start_race', 'Start Race')}
                       </button>
                       <button onClick={handleLeaveLobby} style={{ padding: '10px', background: '#ef4444', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
@@ -1341,8 +1367,8 @@ function MathRacer() {
                     </div>
                   </div>
                 ) : (
-                  <div style={{ marginBottom: '10px', color: '#10b981', fontWeight: 'bold', textAlign: 'center' }}>
-                    {t('waiting_for_host', 'Waiting for Host to start...')}
+                  <div style={{ marginBottom: '10px', color: '#10b981', fontWeight: 'bold', textAlign: 'center', fontSize: '1.2rem', padding: '20px' }}>
+                    🏎️ {t('waiting_for_host', 'Waiting for Host to start...')}
                   </div>
                 )}
 

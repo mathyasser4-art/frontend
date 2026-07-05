@@ -192,14 +192,18 @@ const Navbar = () => {
                 )}
 
                 <div className={`nav-right-side d-flex align-items-center ${isAuth ? 'auth-menu' : 'unauth-menu'} ${isMobileMenuOpen ? 'mobile-open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
-                    <div className="nav-dropdown language-dropdown" style={{ marginRight: '15px' }}>
-                        <span className="nav-link" style={{ fontWeight: 'bold', color: '#10b981', cursor: 'pointer' }}>
-                            🌐 Language ({i18n.language === 'ar' ? 'العربية' : 'English'}) ▾
+                    <div style={{ marginRight: '15px' }}>
+                        <span 
+                            className="nav-link" 
+                            style={{ fontWeight: 'bold', color: '#10b981', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                soundEffects.playClick();
+                                i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar');
+                            }}
+                        >
+                            🌐 Language ({i18n.language === 'ar' ? 'العربية' : 'English'})
                         </span>
-                        <div className="dropdown-menu">
-                            <span onClick={(e) => { e.stopPropagation(); soundEffects.playClick(); i18n.changeLanguage('en'); }} className="dropdown-item">English</span>
-                            <span onClick={(e) => { e.stopPropagation(); soundEffects.playClick(); i18n.changeLanguage('ar'); }} className="dropdown-item">العربية (Arabic)</span>
-                        </div>
                     </div>
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Teacher' ? (
