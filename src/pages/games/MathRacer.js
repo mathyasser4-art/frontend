@@ -1533,20 +1533,7 @@ function MathRacer() {
             {gameState === 'playing' && <FullscreenButton targetRef={containerRef} />}
             
             {gameState === 'lobby' && (
-              <div className="racer-lobby-panel" style={{
-                position: 'absolute',
-                top: '5%',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                zIndex: 100,
-                width: '90%',
-                maxWidth: '600px',
-                background: 'rgba(255, 255, 255, 0.9)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: '24px',
-                padding: '20px',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
-              }}>
+              <div className="racer-lobby-panel">
             <div className="lobby-header-row">
               <h3>🏁 {t('mathRacer.matchLobby', 'Match Roster Lobby')}</h3>
               <button className="btn-leave-lobby" onClick={handleLeaveLobby}>
@@ -1560,30 +1547,19 @@ function MathRacer() {
               </div>
             )}
 
-            <div className="room-code-display-card" style={{
-              background: '#ffffff',
-              border: '2px solid #e2e8f0',
-              borderRadius: '24px',
-              padding: '40px 20px',
-              marginBottom: '30px',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '20px'
-            }}>
+            <div className="room-code-display-card">
               <span className="room-label" style={{ color: '#64748b', fontSize: '16px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>
                 {t('mathRacer.roomCode', 'Room Code')}
               </span>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                 <div className="room-code-value" style={{ 
-                  fontSize: '72px', 
-                  letterSpacing: '10px', 
+                  fontSize: '42px', 
+                  letterSpacing: '5px', 
                   color: '#0f172a', 
                   fontWeight: '900',
                   lineHeight: '1',
-                  textShadow: '2px 2px 0px #e2e8f0'
+                  textShadow: '1px 1px 0px #e2e8f0'
                 }}>
                   {roomId}
                 </div>
@@ -1620,14 +1596,14 @@ function MathRacer() {
                   border: '2px dashed #cbd5e1',
                   borderRadius: '12px',
                   color: '#475569',
-                  padding: '12px 24px',
-                  fontSize: '15px',
+                  padding: '8px 16px',
+                  fontSize: '13px',
                   fontWeight: '700',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '8px',
+                  gap: '6px',
                   width: '100%',
                   maxWidth: '300px',
                   transition: 'all 0.2s ease'
