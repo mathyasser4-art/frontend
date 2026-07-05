@@ -1821,7 +1821,6 @@ function MathRacer() {
                   </p>
                 )}
               </div>
-              </div>
             )}
           </div>
         )}
@@ -1960,6 +1959,7 @@ function MathRacer() {
                 )}
               </div>
             </div>
+          )}
 
             {gameState === 'playing' && (
               <>
