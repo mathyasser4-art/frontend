@@ -11,6 +11,7 @@ import FullscreenButton from '../../components/fullscreenButton/FullscreenButton
 import ArithmeticMcqDebugPanel from '../../components/debug/ArithmeticMcqDebugPanel';
 import Pusher from 'pusher-js';
 import API_BASE_URL from '../../config/api.config';
+import Draggable from 'react-draggable';
 import './MathRacer.css';
 
 const F1CarSVG = ({ color, name, isBoosting }) => (
@@ -838,7 +839,7 @@ function MathRacer() {
                     }}
                     style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
                   >
-                    <option value="" disabled>{t('select_system', 'Select System...')}</option>
+                    <option value="" disabled>{t('select_system', 'select...')}</option>
                     {systemData.map(system => (
                       <option key={system._id} value={system._id}>{translateName(system.systemName)}</option>
                     ))}
@@ -854,7 +855,7 @@ function MathRacer() {
                       }}
                       style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
                     >
-                      <option value="" disabled>{t('select_subject', 'Select Subject...')}</option>
+                      <option value="" disabled>{t('select_subject', 'select...')}</option>
                       {systemData.find(s => s._id === selectedSystemId)?.subjects?.map(subject => (
                         <option key={subject._id} value={subject._id}>{translateName(subject.subjectName)}</option>
                       ))}
@@ -873,7 +874,7 @@ function MathRacer() {
                   }}
                   style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
                 >
-                  <option value="" disabled>{t('select_unit', 'Select Unit...')}</option>
+                  <option value="" disabled>{t('select_unit', 'select...')}</option>
                   {unitData.map(unit => (
                     <option key={unit._id} value={unit._id}>{translateName(unit.unitName)}</option>
                   ))}
@@ -1324,62 +1325,63 @@ function MathRacer() {
             {gameState === 'playing' && <FullscreenButton targetRef={containerRef} />}
             
             {gameState === 'lobby' && (
-              <div className="racer-lobby-panel" style={{ background: 'white', padding: '10px', borderRadius: '12px', border: '2px solid #ef4444' }}>
-                <div style={{ background: '#ef4444', color: 'white', padding: '8px', textAlign: 'center', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', marginBottom: '10px' }}>
-                  {t('racers_room', 'Racers Room')}
-                </div>
+              <Draggable handle=".lobby-drag-handle">
+                <div className="racer-lobby-panel" style={{ background: 'white', padding: '10px', borderRadius: '12px', border: '2px solid #ef4444' }}>
+                  <div className="lobby-drag-handle" style={{ background: '#ef4444', color: 'white', padding: '8px', textAlign: 'center', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', cursor: 'move' }}>
+                    {t('racers_room', 'Racers Room')}
+                  </div>
 
-                {multiRole === 'host' && (
-                  <div style={{ marginBottom: '10px' }}>
-                    <h4 style={{ color: '#ef4444', fontSize: '16px', margin: '0 0 5px', fontWeight: 'bold' }}>{t('connected_racers', 'Connected Racers')}</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                      {players.map((player, idx) => (
-                        <div key={player.id || idx} style={{ color: '#eab308', fontSize: '15px', fontWeight: 'bold', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                          <span>• {player.name}</span>
-                          {player.id === myId && multiRole === 'host' && (
-                             <span style={{ color: '#f97316', fontSize: '13px' }}>
-                               (Host - {player.isSpectator ? 'Watching' : 'Participating'})
-                               <button onClick={() => setHostIsRacing(!!player.isSpectator)} style={{ marginLeft: '10px', padding: '2px 8px', fontSize: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                                 Switch
-                               </button>
-                             </span>
-                          )}
+                  {multiRole === 'host' && (
+                    <div style={{ marginBottom: '10px' }}>
+                      <h4 style={{ color: '#ef4444', fontSize: '16px', margin: '0 0 5px', fontWeight: 'bold' }}>{t('connected_racers', 'Connected Racers')}</h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        {players.map((player, idx) => (
+                          <div key={player.id || idx} style={{ color: '#eab308', fontSize: '15px', fontWeight: 'bold', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span>• {player.name}</span>
+                            {player.id === myId && multiRole === 'host' && (
+                               <span style={{ color: '#f97316', fontSize: '13px' }}>
+                                 (Host - {player.isSpectator ? 'Watching' : 'Participating'})
+                                 <button onClick={() => setHostIsRacing(!!player.isSpectator)} style={{ marginLeft: '10px', padding: '2px 8px', fontSize: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                                   Switch
+                                 </button>
+                               </span>
+                            )}
+                          </div>
+                        ))}
+                        {players.length === 0 && (
+                          <div style={{ color: '#eab308', fontSize: '14px' }}>Loading...</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {multiRole === 'host' ? (
+                    <div style={{ marginBottom: '5px' }}>
+                      {renderQuestionSelector(true)}
+
+                      <div style={{ background: '#f0fdf4', border: '2px dashed #10b981', borderRadius: '8px', padding: '10px', textAlign: 'center', marginTop: '10px' }}>
+                        <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px', fontSize: '16px' }}>{t('copy_link', 'Copy Link')} ({roomId})</p>
+                        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                          <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? t('copied', 'Copied!') : t('copy_link', 'Copy Link')}</button>
                         </div>
-                      ))}
-                      {players.length === 0 && (
-                        <div style={{ color: '#eab308', fontSize: '14px' }}>Loading...</div>
-                      )}
+                      </div>
+
+                      <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                        <button className="start-race-btn-glow" onClick={() => { if(!customQuestions){ alert('Please select questions first'); return;} handleHostStartRace('easy'); }}>
+                          {t('start_race', 'Start Race')}
+                        </button>
+                        <button onClick={handleLeaveLobby} style={{ padding: '10px', background: '#ef4444', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
+                          {t('cancel', 'Cancel')}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                {multiRole === 'host' ? (
-                  <div style={{ marginBottom: '5px' }}>
-                    {renderQuestionSelector(true)}
-
-                    <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-                      <button className="start-race-btn-glow" onClick={() => { if(!customQuestions){ alert('Please select questions first'); return;} handleHostStartRace('easy'); }}>
-                        {t('start_race', 'Start Race')}
-                      </button>
-                      <button onClick={handleLeaveLobby} style={{ padding: '10px', background: '#ef4444', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
-                        {t('cancel', 'Cancel')}
-                      </button>
+                  ) : (
+                    <div style={{ marginBottom: '10px', color: '#10b981', fontWeight: 'bold', textAlign: 'center', fontSize: '1.2rem', padding: '20px' }}>
+                      🏎️ {t('waiting_for_host', 'Waiting for Host to start...')}
                     </div>
-                  </div>
-                ) : (
-                  <div style={{ marginBottom: '10px', color: '#10b981', fontWeight: 'bold', textAlign: 'center', fontSize: '1.2rem', padding: '20px' }}>
-                    🏎️ {t('waiting_for_host', 'Waiting for Host to start...')}
-                  </div>
-                )}
-
-                <div style={{ background: '#f0fdf4', border: '2px dashed #10b981', borderRadius: '8px', padding: '10px', textAlign: 'center', marginTop: '10px' }}>
-                  <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px', fontSize: '16px' }}>{t('copy_link_or_code', 'copy link OR use code')} ({roomId})</p>
-                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                    <button onClick={copyRoomCode} style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isCopied ? t('copied', 'Copied!') : t('copy_code', 'Copy Code')}</button>
-                    <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? t('copied', 'Copied!') : t('copy_link', 'Copy Link')}</button>
-                  </div>
+                  )}
                 </div>
-              </div>
+              </Draggable>
             )}
 
         {/* ============================================================

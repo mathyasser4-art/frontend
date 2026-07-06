@@ -487,7 +487,18 @@
     "customAmount": "مقدار مخصص:",
     "waitingHost": "في انتظار بدء السباق من قبل المعلم...",
     "raceLengthSet": "تم تحديد طول السباق إلى",
-    "questions": "أسئلة"
+    "questions": "أسئلة",
+    "single_player": "لاعب واحد",
+    "multiplayer": "متعدد اللاعبين",
+    "host_new_match": "إنشاء سباق جديد",
+    "join_existing_match": "الانضمام إلى سباق",
+    "host_a_race": "إنشاء السباق",
+    "join_roster": "الانضمام",
+    "challenge_friends": "تحدي الأصدقاء في الوقت الفعلي!",
+    "challenge_friends_desc": "قم بإنشاء غرفتك الخاصة في سباق الفورمولا 1 وشارك الرمز، أو أدخل رمز غرفة صديق لبدء المنافسة!",
+    "select_system": "اختر...",
+    "select_subject": "اختر...",
+    "select_unit": "اختر..."
   }
 }
 
