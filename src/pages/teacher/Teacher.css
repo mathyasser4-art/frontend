@@ -6,24 +6,41 @@
 
 .teacher-header {
     margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .teacher-header input {
-    width: 97%;
+    flex: 1;
     padding: 1rem;
     border-radius: 10px;
     border: 1px solid gray;
 }
 
-.teacher-header div {
+.teacher-header .add-squer {
     font-size: 23px;
     background-color: #5d17eb;
     color: #fff;
-    width: 50px;
+    min-width: 50px;
     height: 50px;
     border-radius: 50%;
-    margin-left: 0.8rem;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.teacher-header .export-btn {
+    font-size: 16px;
+    min-width: fit-content;
+    border-radius: 10px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 .teacher-body {
