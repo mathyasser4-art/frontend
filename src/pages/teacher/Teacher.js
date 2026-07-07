@@ -234,21 +234,9 @@ function Teacher() {
         setLoadingOperation(false);
     }
 
-    const exportToPDF = async () => {
+    const exportTeacherPDF = async (teacher) => {
         setLoadingOperation(true);
         try {
-            const token = localStorage.getItem('O_authWEB');
-            let allExtracted = [];
-            for (let p = 1; p <= totalPage; p++) {
-                const res = await fetch(`${API_BASE_URL}/teacher/getTeachers/${p}`, {
-                    headers: { 'authrization': `pracYas09${token}` }
-                });
-                const data = await res.json();
-                if (data.message === 'success' && data.allTeachers) {
-                    allExtracted = [...allExtracted, ...data.allTeachers];
-                }
-            }
-
             const schoolName = localStorage.getItem('pp_name') || 'School';
 
             const container = document.createElement('div');
@@ -257,97 +245,88 @@ function Teacher() {
             container.style.color = '#333';
             container.style.backgroundColor = '#ffffff';
             
-            allExtracted.forEach((teacher, index) => {
-                const pageWrapper = document.createElement('div');
-                if (index > 0) {
-                     pageWrapper.style.pageBreakBefore = 'always';
-                }
-                
-                const header = document.createElement('div');
-                header.style.display = 'flex';
-                header.style.justifyContent = 'space-between';
-                header.style.alignItems = 'center';
-                header.style.borderBottom = '3px solid #10b981';
-                header.style.paddingBottom = '20px';
-                header.style.marginBottom = '30px';
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.justifyContent = 'space-between';
+            header.style.alignItems = 'center';
+            header.style.borderBottom = '3px solid #10b981';
+            header.style.paddingBottom = '20px';
+            header.style.marginBottom = '30px';
 
-                const logoSection = document.createElement('div');
-                logoSection.style.display = 'flex';
-                logoSection.style.alignItems = 'center';
-                logoSection.innerHTML = `<img src="${logo}" alt="AbacusHeroes" style="height: 50px; margin-right: 15px;" />
-                                         <div>
-                                            <h1 style="color: #5d17eb; margin: 0; font-size: 28px;">AbacusHeroes</h1>
-                                            <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teachers & Classes Report</p>
-                                         </div>`;
-                
-                const schoolSection = document.createElement('div');
-                schoolSection.style.display = 'flex';
-                schoolSection.style.alignItems = 'center';
-                schoolSection.innerHTML = `<div style="text-align: right; margin-right: 15px;">
-                                              <h2 style="color: #1e293b; margin: 0; font-size: 22px;">${schoolName}</h2>
-                                           </div>
-                                           <img src="${schoolLogo}" alt="Academy Logo" style="height: 50px;" />`;
+            const logoSection = document.createElement('div');
+            logoSection.style.display = 'flex';
+            logoSection.style.alignItems = 'center';
+            logoSection.innerHTML = `<img src="${logo}" alt="AbacusHeroes" style="height: 50px; margin-right: 15px;" />
+                                     <div>
+                                        <h1 style="color: #5d17eb; margin: 0; font-size: 28px;">AbacusHeroes</h1>
+                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teacher & Classes Report</p>
+                                     </div>`;
+            
+            const schoolSection = document.createElement('div');
+            schoolSection.style.display = 'flex';
+            schoolSection.style.alignItems = 'center';
+            schoolSection.innerHTML = `<div style="text-align: right; margin-right: 15px;">
+                                          <h2 style="color: #1e293b; margin: 0; font-size: 22px;">${schoolName}</h2>
+                                       </div>
+                                       <img src="${schoolLogo}" alt="Academy Logo" style="height: 50px;" />`;
 
-                header.appendChild(logoSection);
-                header.appendChild(schoolSection);
-                pageWrapper.appendChild(header);
+            header.appendChild(logoSection);
+            header.appendChild(schoolSection);
+            container.appendChild(header);
 
-                const card = document.createElement('div');
-                card.style.border = '1px solid #e2e8f0';
-                card.style.borderRadius = '12px';
-                card.style.padding = '20px';
-                card.style.backgroundColor = '#f8fafc';
-                card.style.pageBreakInside = 'avoid';
+            const card = document.createElement('div');
+            card.style.border = '1px solid #e2e8f0';
+            card.style.borderRadius = '12px';
+            card.style.padding = '20px';
+            card.style.backgroundColor = '#f8fafc';
 
-                const tName = document.createElement('h3');
-                tName.style.margin = '0 0 10px 0';
-                tName.style.color = '#0f172a';
-                tName.style.fontSize = '24px';
-                tName.innerHTML = `&#128104;&#8205;&#127979; ${teacher.userName} <span style="font-size: 16px; color: #64748b; font-weight: normal; margin-left: 10px;">${teacher.email}</span>`;
-                card.appendChild(tName);
+            const tName = document.createElement('h3');
+            tName.style.margin = '0 0 10px 0';
+            tName.style.color = '#0f172a';
+            tName.style.fontSize = '24px';
+            tName.innerHTML = `&#128104;&#8205;&#127979; ${teacher.userName}`;
+            card.appendChild(tName);
 
-                const classLabel = document.createElement('p');
-                classLabel.style.margin = '20px 0 10px 0';
-                classLabel.style.fontWeight = 'bold';
-                classLabel.style.color = '#334155';
-                classLabel.style.fontSize = '18px';
-                classLabel.innerText = 'Assigned Classes:';
-                card.appendChild(classLabel);
+            const classLabel = document.createElement('p');
+            classLabel.style.margin = '20px 0 10px 0';
+            classLabel.style.fontWeight = 'bold';
+            classLabel.style.color = '#334155';
+            classLabel.style.fontSize = '18px';
+            classLabel.innerText = 'Assigned Classes:';
+            card.appendChild(classLabel);
 
-                const classesDiv = document.createElement('div');
-                classesDiv.style.display = 'flex';
-                classesDiv.style.flexDirection = 'column';
-                classesDiv.style.gap = '10px';
+            const classesDiv = document.createElement('div');
+            classesDiv.style.display = 'flex';
+            classesDiv.style.flexDirection = 'column';
+            classesDiv.style.gap = '10px';
 
-                if (teacher.classList && teacher.classList.length > 0) {
-                    teacher.classList.forEach(cls => {
-                        const classPill = document.createElement('div');
-                        classPill.style.backgroundColor = '#e0e7ff';
-                        classPill.style.color = '#4338ca';
-                        classPill.style.padding = '10px 15px';
-                        classPill.style.borderRadius = '10px';
-                        classPill.style.fontSize = '16px';
-                        classPill.style.fontWeight = 'bold';
-                        classPill.innerText = `\uD83C\uDFEB ${cls.class}`;
-                        classesDiv.appendChild(classPill);
-                    });
-                } else {
-                    const noClass = document.createElement('div');
-                    noClass.style.color = '#94a3b8';
-                    noClass.style.fontStyle = 'italic';
-                    noClass.style.fontSize = '16px';
-                    noClass.innerText = 'No classes assigned';
-                    classesDiv.appendChild(noClass);
-                }
+            if (teacher.classList && teacher.classList.length > 0) {
+                teacher.classList.forEach(cls => {
+                    const classPill = document.createElement('div');
+                    classPill.style.backgroundColor = '#e0e7ff';
+                    classPill.style.color = '#4338ca';
+                    classPill.style.padding = '10px 15px';
+                    classPill.style.borderRadius = '10px';
+                    classPill.style.fontSize = '16px';
+                    classPill.style.fontWeight = 'bold';
+                    classPill.innerText = `\uD83C\uDFEB ${cls.class}`;
+                    classesDiv.appendChild(classPill);
+                });
+            } else {
+                const noClass = document.createElement('div');
+                noClass.style.color = '#94a3b8';
+                noClass.style.fontStyle = 'italic';
+                noClass.style.fontSize = '16px';
+                noClass.innerText = 'No classes assigned';
+                classesDiv.appendChild(noClass);
+            }
 
-                card.appendChild(classesDiv);
-                pageWrapper.appendChild(card);
-                container.appendChild(pageWrapper);
-            });
+            card.appendChild(classesDiv);
+            container.appendChild(card);
             
             const opt = {
                 margin:       10,
-                filename:     'Teachers_Report.pdf',
+                filename:     `Teacher_${teacher.userName}_Classes.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -370,9 +349,6 @@ function Teacher() {
                     <div className='add-squer d-flex justify-content-space-around align-items-center' onClick={openAddPopup} title="Add Teacher"><p>+</p></div>
                     <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportToCSV} style={{ backgroundColor: '#10b981', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
                         Export CSV
-                    </div>
-                    <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportToPDF} style={{ backgroundColor: '#ef4444', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
-                        Export PDF
                     </div>
                 </div>
                 <div className="teacher-body">
@@ -407,8 +383,9 @@ function Teacher() {
                                                 </div>
                                             </td>
                                             <td className="teacher-action" onClick={(e) => e.stopPropagation()}>
-                                                <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item?.subject?.schoolSubjectName, item.maxStudents)} aria-hidden="true"></i>
-                                                <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true"></i>
+                                                <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item?.subject?.schoolSubjectName, item.maxStudents)} aria-hidden="true" title="Edit Teacher"></i>
+                                                <i className="fa fa-file-pdf-o" onClick={() => exportTeacherPDF(item)} style={{ color: '#ef4444', marginRight: '0.7rem', cursor: 'pointer' }} aria-hidden="true" title="Export PDF"></i>
+                                                <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true" title="Remove Teacher"></i>
                                             </td>
                                         </tr>
                                         {expandedTeacherId === item._id && (
