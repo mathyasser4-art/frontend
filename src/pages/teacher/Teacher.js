@@ -301,14 +301,14 @@ function Teacher() {
                 card.style.width = 'calc(50% - 10px)';
                 card.style.boxSizing = 'border-box';
 
-                card.innerHTML = \`
+                card.innerHTML = `
                     <div style="font-size: 20px; font-weight: bold; color: #0f172a; margin-bottom: 10px;">
-                        Username: <span style="color: #4338ca; font-weight: normal;">\${teacher.userName}</span>
+                        Username: <span style="color: #4338ca; font-weight: normal;">${teacher.userName}</span>
                     </div>
                     <div style="font-size: 20px; font-weight: bold; color: #0f172a;">
                         Password: <span style="color: #4338ca; font-weight: normal;">1234</span>
                     </div>
-                \`;
+                `;
 
                 grid.appendChild(card);
             });
