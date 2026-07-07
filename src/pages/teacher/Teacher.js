@@ -13,6 +13,8 @@ import searchTeacher from '../../api/teacher/searchTeacher.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import API_BASE_URL from '../../config/api.config'
 import html2pdf from 'html2pdf.js'
+import logo from '../../logo.png'
+import schoolLogo from '../../img/school-avatar.png'
 import '../../reusable.css'
 import './Teacher.css'
 
@@ -255,30 +257,41 @@ function Teacher() {
             container.style.color = '#333';
             container.style.backgroundColor = '#ffffff';
             
-            const header = document.createElement('div');
-            header.style.display = 'flex';
-            header.style.justifyContent = 'space-between';
-            header.style.alignItems = 'center';
-            header.style.borderBottom = '3px solid #10b981';
-            header.style.paddingBottom = '20px';
-            header.style.marginBottom = '30px';
+            allExtracted.forEach((teacher, index) => {
+                const pageWrapper = document.createElement('div');
+                if (index > 0) {
+                     pageWrapper.style.pageBreakBefore = 'always';
+                }
+                
+                const header = document.createElement('div');
+                header.style.display = 'flex';
+                header.style.justifyContent = 'space-between';
+                header.style.alignItems = 'center';
+                header.style.borderBottom = '3px solid #10b981';
+                header.style.paddingBottom = '20px';
+                header.style.marginBottom = '30px';
 
-            const logoSection = document.createElement('div');
-            logoSection.innerHTML = `<h1 style="color: #5d17eb; margin: 0; font-size: 28px;">AbacusHeroes</h1><p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teachers & Classes Report</p>`;
-            
-            const schoolSection = document.createElement('div');
-            schoolSection.innerHTML = `<h2 style="color: #1e293b; margin: 0; font-size: 22px;">${schoolName}</h2>`;
+                const logoSection = document.createElement('div');
+                logoSection.style.display = 'flex';
+                logoSection.style.alignItems = 'center';
+                logoSection.innerHTML = `<img src="${logo}" alt="AbacusHeroes" style="height: 50px; margin-right: 15px;" />
+                                         <div>
+                                            <h1 style="color: #5d17eb; margin: 0; font-size: 28px;">AbacusHeroes</h1>
+                                            <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teachers & Classes Report</p>
+                                         </div>`;
+                
+                const schoolSection = document.createElement('div');
+                schoolSection.style.display = 'flex';
+                schoolSection.style.alignItems = 'center';
+                schoolSection.innerHTML = `<div style="text-align: right; margin-right: 15px;">
+                                              <h2 style="color: #1e293b; margin: 0; font-size: 22px;">${schoolName}</h2>
+                                           </div>
+                                           <img src="${schoolLogo}" alt="Academy Logo" style="height: 50px;" />`;
 
-            header.appendChild(logoSection);
-            header.appendChild(schoolSection);
-            container.appendChild(header);
+                header.appendChild(logoSection);
+                header.appendChild(schoolSection);
+                pageWrapper.appendChild(header);
 
-            const grid = document.createElement('div');
-            grid.style.display = 'flex';
-            grid.style.flexDirection = 'column';
-            grid.style.gap = '20px';
-
-            allExtracted.forEach(teacher => {
                 const card = document.createElement('div');
                 card.style.border = '1px solid #e2e8f0';
                 card.style.borderRadius = '12px';
@@ -289,48 +302,48 @@ function Teacher() {
                 const tName = document.createElement('h3');
                 tName.style.margin = '0 0 10px 0';
                 tName.style.color = '#0f172a';
-                tName.style.fontSize = '20px';
-                tName.innerHTML = `&#128104;&#8205;&#127979; ${teacher.userName} <span style="font-size: 14px; color: #64748b; font-weight: normal; margin-left: 10px;">${teacher.email}</span>`;
+                tName.style.fontSize = '24px';
+                tName.innerHTML = `&#128104;&#8205;&#127979; ${teacher.userName} <span style="font-size: 16px; color: #64748b; font-weight: normal; margin-left: 10px;">${teacher.email}</span>`;
                 card.appendChild(tName);
 
                 const classLabel = document.createElement('p');
-                classLabel.style.margin = '0 0 10px 0';
+                classLabel.style.margin = '20px 0 10px 0';
                 classLabel.style.fontWeight = 'bold';
                 classLabel.style.color = '#334155';
+                classLabel.style.fontSize = '18px';
                 classLabel.innerText = 'Assigned Classes:';
                 card.appendChild(classLabel);
 
                 const classesDiv = document.createElement('div');
                 classesDiv.style.display = 'flex';
-                classesDiv.style.flexWrap = 'wrap';
+                classesDiv.style.flexDirection = 'column';
                 classesDiv.style.gap = '10px';
 
                 if (teacher.classList && teacher.classList.length > 0) {
                     teacher.classList.forEach(cls => {
-                        const classPill = document.createElement('span');
+                        const classPill = document.createElement('div');
                         classPill.style.backgroundColor = '#e0e7ff';
                         classPill.style.color = '#4338ca';
-                        classPill.style.padding = '5px 12px';
-                        classPill.style.borderRadius = '20px';
-                        classPill.style.fontSize = '14px';
+                        classPill.style.padding = '10px 15px';
+                        classPill.style.borderRadius = '10px';
+                        classPill.style.fontSize = '16px';
                         classPill.style.fontWeight = 'bold';
                         classPill.innerText = `\uD83C\uDFEB ${cls.class}`;
                         classesDiv.appendChild(classPill);
                     });
                 } else {
-                    const noClass = document.createElement('span');
+                    const noClass = document.createElement('div');
                     noClass.style.color = '#94a3b8';
                     noClass.style.fontStyle = 'italic';
-                    noClass.style.fontSize = '14px';
+                    noClass.style.fontSize = '16px';
                     noClass.innerText = 'No classes assigned';
                     classesDiv.appendChild(noClass);
                 }
 
                 card.appendChild(classesDiv);
-                grid.appendChild(card);
+                pageWrapper.appendChild(card);
+                container.appendChild(pageWrapper);
             });
-
-            container.appendChild(grid);
             
             const opt = {
                 margin:       10,
