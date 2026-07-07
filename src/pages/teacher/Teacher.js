@@ -234,6 +234,103 @@ function Teacher() {
         setLoadingOperation(false);
     }
 
+    const exportAllTeachersPDF = async () => {
+        setLoadingOperation(true);
+        try {
+            const token = localStorage.getItem('O_authWEB');
+            let allExtracted = [];
+            for (let p = 1; p <= totalPage; p++) {
+                const res = await fetch(`${API_BASE_URL}/teacher/getTeachers/${p}`, {
+                    headers: { 'authrization': `pracYas09${token}` }
+                });
+                const data = await res.json();
+                if (data.message === 'success' && data.allTeachers) {
+                    allExtracted = [...allExtracted, ...data.allTeachers];
+                }
+            }
+
+            const schoolName = localStorage.getItem('pp_name') || 'School';
+
+            const container = document.createElement('div');
+            container.style.padding = '40px';
+            container.style.fontFamily = 'Arial, sans-serif';
+            container.style.color = '#333';
+            container.style.backgroundColor = '#ffffff';
+            
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.justifyContent = 'space-between';
+            header.style.alignItems = 'center';
+            header.style.borderBottom = '3px solid #10b981';
+            header.style.paddingBottom = '20px';
+            header.style.marginBottom = '30px';
+
+            const logoSection = document.createElement('div');
+            logoSection.style.display = 'flex';
+            logoSection.style.alignItems = 'center';
+            logoSection.innerHTML = `<img src="${logo}" alt="AbacusHeroes" style="height: 50px; margin-right: 15px;" />
+                                     <div>
+                                        <h1 style="color: #5d17eb; margin: 0; font-size: 28px;">AbacusHeroes</h1>
+                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teachers Login Credentials</p>
+                                     </div>`;
+            
+            const schoolSection = document.createElement('div');
+            schoolSection.style.display = 'flex';
+            schoolSection.style.alignItems = 'center';
+            schoolSection.innerHTML = `<div style="text-align: right; margin-right: 15px;">
+                                          <h2 style="color: #1e293b; margin: 0; font-size: 22px;">${schoolName}</h2>
+                                       </div>
+                                       <img src="${schoolLogo}" alt="Academy Logo" style="height: 50px;" />`;
+
+            header.appendChild(logoSection);
+            header.appendChild(schoolSection);
+            container.appendChild(header);
+
+            const grid = document.createElement('div');
+            grid.style.display = 'flex';
+            grid.style.flexWrap = 'wrap';
+            grid.style.gap = '20px';
+
+            allExtracted.forEach(teacher => {
+                const card = document.createElement('div');
+                card.style.border = '1px solid #e2e8f0';
+                card.style.borderRadius = '12px';
+                card.style.padding = '20px';
+                card.style.backgroundColor = '#f8fafc';
+                card.style.pageBreakInside = 'avoid';
+                card.style.width = 'calc(50% - 10px)';
+                card.style.boxSizing = 'border-box';
+
+                card.innerHTML = \`
+                    <div style="font-size: 20px; font-weight: bold; color: #0f172a; margin-bottom: 10px;">
+                        Username: <span style="color: #4338ca; font-weight: normal;">\${teacher.userName}</span>
+                    </div>
+                    <div style="font-size: 20px; font-weight: bold; color: #0f172a;">
+                        Password: <span style="color: #4338ca; font-weight: normal;">1234</span>
+                    </div>
+                \`;
+
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+            
+            const opt = {
+                margin:       10,
+                filename:     'Teachers_Credentials.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            await html2pdf().from(container).set(opt).save();
+
+        } catch (e) {
+            console.error('Export error', e);
+        }
+        setLoadingOperation(false);
+    }
+
     const exportTeacherPDF = async (teacher) => {
         setLoadingOperation(true);
         try {
@@ -349,6 +446,9 @@ function Teacher() {
                     <div className='add-squer d-flex justify-content-space-around align-items-center' onClick={openAddPopup} title="Add Teacher"><p>+</p></div>
                     <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportToCSV} style={{ backgroundColor: '#10b981', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
                         Export CSV
+                    </div>
+                    <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportAllTeachersPDF} style={{ backgroundColor: '#ef4444', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
+                        Export PDF
                     </div>
                 </div>
                 <div className="teacher-body">
