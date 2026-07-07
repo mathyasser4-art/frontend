@@ -11,6 +11,7 @@ import updateTeacher from '../../api/teacher/updateTeacher.api'
 import removeTeacher from '../../api/teacher/removeTeacher.api'
 import searchTeacher from '../../api/teacher/searchTeacher.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
+import API_BASE_URL from '../../config/api.config'
 import '../../reusable.css'
 import './Teacher.css'
 
@@ -196,6 +197,39 @@ function Teacher() {
     const toggleExpandTeacher = (teacherID) => {
         setExpandedTeacherId(prev => prev === teacherID ? null : teacherID)
     }
+
+    const exportToCSV = async () => {
+        setLoadingOperation(true);
+        try {
+            const token = localStorage.getItem('O_authWEB');
+            let allExtracted = [];
+            for (let p = 1; p <= totalPage; p++) {
+                const res = await fetch(`${API_BASE_URL}/teacher/getTeachers/${p}`, {
+                    headers: { 'authrization': `pracYas09${token}` }
+                });
+                const data = await res.json();
+                if (data.message === 'success' && data.allTeachers) {
+                    allExtracted = [...allExtracted, ...data.allTeachers];
+                }
+            }
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "Name,Email,Subject,Student Limit\n";
+            allExtracted.forEach(item => {
+                let row = `${item.userName},${item.email},${item?.subject?.schoolSubjectName || ''},${item.maxStudents || 0}`;
+                csvContent += row + "\n";
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "teachers_list.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            console.error('Export error', e);
+        }
+        setLoadingOperation(false);
+    }
     return (
         <>
             <MobileNav role={role} />
@@ -203,7 +237,10 @@ function Teacher() {
             <div className="teacher-container">
                 <div className="teacher-header d-flex align-items-center">
                     <input type="text" onChange={(e) => search(e.target.value)} placeholder='Enter teacher name...' />
-                    <div className='add-squer d-flex justify-content-space-around align-items-center' onClick={openAddPopup}><p>+</p></div>
+                    <div className='add-squer d-flex justify-content-space-around align-items-center' onClick={openAddPopup} title="Add Teacher"><p>+</p></div>
+                    <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportToCSV} style={{ backgroundColor: '#10b981', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
+                        Export CSV
+                    </div>
                 </div>
                 <div className="teacher-body">
                     {loading ? <DashboardLoading /> : <table>
