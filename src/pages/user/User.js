@@ -55,10 +55,7 @@ function User() {
                         <i className="fa fa-user-o" aria-hidden="true"></i>
                         <p>{userData?.userName}</p>
                     </div>
-                    <div className="info d-flex align-items-center">
-                        <i className="fa fa-envelope-o" aria-hidden="true"></i>
-                        <p>{userData?.email}</p>
-                    </div>
+
                     <div className="info d-flex align-items-center">
                         <i className="fa fa-id-card-o" aria-hidden="true"></i>
                         <p>{userData?.role}</p>
