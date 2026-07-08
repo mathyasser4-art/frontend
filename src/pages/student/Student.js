@@ -66,15 +66,16 @@ function Student() {
     }
 
     const newStudent = () => {
-        if (studentName === '' || studentEmail === '' || studentPassword === '') {
+        if (studentName === '' || studentPassword === '') {
             setError('All field is required!!')
         } else {
+            const generatedEmail = `${studentName.replace(/\s+/g, '')}_${Date.now()}@student.com`;
             let data = {}
             if (studentClass !== '' && studentClass !== 'Select Class') {
                 const classID = allClass.filter(e => e.class === studentClass)[0]._id
-                data = { userName: studentName, email: studentEmail, password: studentPassword, class: classID }
+                data = { userName: studentName, email: generatedEmail, password: studentPassword, class: classID }
             } else {
-                data = { userName: studentName, email: studentEmail, password: studentPassword }
+                data = { userName: studentName, email: generatedEmail, password: studentPassword }
             }
             addStudent(data, setError, setLoadingOperation, closeAddPopup, pageNumber, setAllStudent, setStudentNumber, setTotalPage)
         }
@@ -108,15 +109,15 @@ function Student() {
     }
 
     const handleUpdateStudent = () => {
-        if (studentName === '' || studentEmail === '') {
+        if (studentName === '') {
             setError('All field is required!!')
         } else {
             let data = {}
             if (studentClass !== '' && studentClass !== 'Select Class') {
                 const classID = allClass.filter(e => e.class === studentClass)[0]._id
-                data = { userName: studentName, email: studentEmail, password: studentPassword !== '' ? studentPassword : undefined, class: classID }
+                data = { userName: studentName, password: studentPassword !== '' ? studentPassword : undefined, class: classID }
             } else {
-                data = { userName: studentName, email: studentEmail, password: studentPassword !== '' ? studentPassword : undefined }
+                data = { userName: studentName, password: studentPassword !== '' ? studentPassword : undefined }
             }
             updateStudent(data, setError, setLoadingOperation, closeUpdatePopup, pageNumber, setAllStudent, setStudentNumber, studentID, setTotalPage)
         }
@@ -204,7 +205,6 @@ function Student() {
                             <tr>
                                 <td className='text-purple'>{studentNumber}</td>
                                 <td>Name ⌄</td>
-                                <td>Email ⌄</td>
                                 <td>Class ⌄</td>
                                 <td>Action ⌄</td>
                             </tr>
@@ -219,7 +219,6 @@ function Student() {
                                                 <img src={student} alt="" />
                                                 <p>{item.userName}</p>
                                             </td>
-                                            <td>{item.email}</td>
                                             <td>{item.class ? item.class.class : '______'}</td>
                                             <td className="student-action">
                                                 <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item.class)} aria-hidden="true"></i>
@@ -251,8 +250,6 @@ function Student() {
                     <div className="add-popup-body">
                         <label>Student Name</label>
                         <input type="text" value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder='Mahmoud Mohamed Atta' />
-                        <label>Student Email</label>
-                        <input type="email" value={studentEmail} onChange={(e) => setStudentEmail(e.target.value)} placeholder='mahmoudmohamed@elrwad.com' />
                         <label>Student Password</label>
                         <input className='input-password' value={studentPassword} onChange={(e) => setStudentPassword(e.target.value)} type="password" placeholder='M1803cz@vv' />
                         <div className="show-password d-flex align-items-center">
@@ -289,8 +286,6 @@ function Student() {
                     <div className="update-popup-body">
                         <label>Student Name</label>
                         <input value={studentName} onChange={(e) => setStudentName(e.target.value)} type="text" placeholder='Mahmoud Mohamed Atta' />
-                        <label>Student Email</label>
-                        <input value={studentEmail} onChange={(e) => setStudentEmail(e.target.value)} type="email" placeholder='mahmoudmohamed@elrwad.com' />
                         <label>Student Password</label>
                         <input value={studentPassword} onChange={(e) => setStudentPassword(e.target.value)} className='input-password input-password-update' type="password" placeholder='●●●●●●●●●●●●●●●●●●●●●●●' />
                         <div className="show-password d-flex align-items-center">
