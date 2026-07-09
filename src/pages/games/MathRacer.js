@@ -839,7 +839,7 @@ function MathRacer() {
                     }}
                     style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
                   >
-                    <option value="" disabled>{t('select_system', 'select...')}</option>
+                    <option value="" disabled>{t('mathRacer.select_system', 'select...')}</option>
                     {systemData.map(system => (
                       <option key={system._id} value={system._id}>{translateName(system.systemName)}</option>
                     ))}
@@ -855,7 +855,7 @@ function MathRacer() {
                       }}
                       style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
                     >
-                      <option value="" disabled>{t('select_subject', 'select...')}</option>
+                      <option value="" disabled>{t('mathRacer.select_subject', 'select...')}</option>
                       {systemData.find(s => s._id === selectedSystemId)?.subjects?.map(subject => (
                         <option key={subject._id} value={subject._id}>{translateName(subject.subjectName)}</option>
                       ))}
@@ -874,7 +874,7 @@ function MathRacer() {
                   }}
                   style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
                 >
-                  <option value="" disabled>{t('select_unit', 'select...')}</option>
+                  <option value="" disabled>{t('mathRacer.select_unit', 'select...')}</option>
                   {unitData.map(unit => (
                     <option key={unit._id} value={unit._id}>{translateName(unit.unitName)}</option>
                   ))}
@@ -1256,13 +1256,13 @@ function MathRacer() {
                   className={`mode-tab ${gameMode === 'single' ? 'active' : ''}`}
                   onClick={() => { soundEffects.playClick(); setGameMode('single'); }}
                 >
-                  🤖 {t('single_player', 'Single Player')}
+                  🤖 {t('mathRacer.single_player', 'Single Player')}
                 </button>
                 <button 
                   className={`mode-tab ${gameMode === 'multi' ? 'active' : ''}`}
                   onClick={() => { soundEffects.playClick(); setGameMode('multi'); }}
                 >
-                  👥 {t('multiplayer', 'Multiplayer')}
+                  👥 {t('mathRacer.multiplayer', 'Multiplayer')}
                 </button>
               </div>
             )}
@@ -1273,13 +1273,13 @@ function MathRacer() {
               </div>
             ) : (
               <div className="multi-player-setup compact-multiplayer">
-                <h3>{t('challenge_friends', 'Challenge Friends in Real-Time!')}</h3>
+                <h3>{t('mathRacer.challenge_friends', 'Challenge Friends in Real-Time!')}</h3>
                 
                 <div className="multiplayer-actions-panel compact-panel">
                   <div className="host-section-card compact-card">
-                    <h4>{t('host_new_match', 'Host a New Match')}</h4>
+                    <h4>{t('mathRacer.host_new_match', 'Host a New Match')}</h4>
                     <button className="btn-multi-host" onClick={handleCreateRoom}>
-                      🚀 {t('host_a_race', 'Host a Race')}
+                      🚀 {t('mathRacer.host_a_race', 'Host a Race')}
                     </button>
                   </div>
                   
@@ -1288,18 +1288,18 @@ function MathRacer() {
                   </div>
 
                   <div className="join-section-card compact-card">
-                    <h4>{t('join_existing_match', 'Join Existing Match')}</h4>
+                    <h4>{t('mathRacer.join_existing_match', 'Join Existing Match')}</h4>
                     <div className="join-input-group">
                       <input 
                         type="text" 
-                        placeholder={t('enter_code', 'ENTER CODE')}
+                        placeholder={t('mathRacer.enter_code', 'ENTER CODE')}
                         maxLength="2"
                         value={inputRoomId}
                         onChange={(e) => setInputRoomId(e.target.value)}
                         className="multi-join-input"
                       />
                       <button className="btn-multi-join" onClick={handleJoinRoom}>
-                        {t('join_roster', 'Join')}
+                        {t('mathRacer.join_roster', 'Join')}
                       </button>
                     </div>
                   </div>
@@ -1320,12 +1320,12 @@ function MathRacer() {
               <Draggable handle=".lobby-drag-handle">
                 <div className="racer-lobby-panel" style={{ background: 'white', padding: '10px', borderRadius: '12px', border: '2px solid #ef4444' }}>
                   <div className="lobby-drag-handle" style={{ background: '#ef4444', color: 'white', padding: '8px', textAlign: 'center', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', cursor: 'move' }}>
-                    {t('racers_room', 'Racers Room')}
+                    {t('mathRacer.matchLobby', 'Racers Room')}
                   </div>
 
                   {multiRole === 'host' && (
                     <div style={{ marginBottom: '10px' }}>
-                      <h4 style={{ color: '#ef4444', fontSize: '16px', margin: '0 0 5px', fontWeight: 'bold' }}>{t('connected_racers', 'Connected Racers')}</h4>
+                      <h4 style={{ color: '#ef4444', fontSize: '16px', margin: '0 0 5px', fontWeight: 'bold' }}>{t('mathRacer.connectedRacers', 'Connected Racers')}</h4>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                         {players.map((player, idx) => (
                           <div key={player.id || idx} style={{ color: '#eab308', fontSize: '15px', fontWeight: 'bold', display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -1352,9 +1352,9 @@ function MathRacer() {
                       {renderQuestionSelector(true)}
 
                       <div style={{ background: '#f0fdf4', border: '2px dashed #10b981', borderRadius: '8px', padding: '10px', textAlign: 'center', marginTop: '10px' }}>
-                        <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px', fontSize: '16px' }}>{t('copy_link', 'Copy Link')} ({roomId})</p>
+                        <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px', fontSize: '16px' }}>{t('mathRacer.copyLink', 'Copy Link')} ({roomId})</p>
                         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                          <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? t('copied', 'Copied!') : t('copy_link', 'Copy Link')}</button>
+                          <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? t('mathRacer.linkCopied', 'Copied!') : t('mathRacer.copyLink', 'Copy Link')}</button>
                         </div>
                       </div>
 
@@ -1369,7 +1369,7 @@ function MathRacer() {
                     </div>
                   ) : (
                     <div style={{ marginBottom: '10px', color: '#10b981', fontWeight: 'bold', textAlign: 'center', fontSize: '1.2rem', padding: '20px' }}>
-                      🏎️ {t('waiting_for_host', 'Waiting for Host to start...')}
+                      🏎️ {t('mathRacer.waitingHost', 'Waiting for Host to start...')}
                     </div>
                   )}
                 </div>
