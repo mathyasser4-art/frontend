@@ -485,6 +485,24 @@
     "waitingHost": "Waiting for Host to launch the F1 race...",
     "raceLengthSet": "Race Length set to",
     "questions": "Questions"
+  },
+  "teacherHelp": {
+    "title": "Teacher Hub",
+    "students": "Manage Students",
+    "studentsDesc": "Add and manage student accounts easily.",
+    "homework": "Assign Homework",
+    "homeworkDesc": "Create and assign worksheets effortlessly.",
+    "addStudentsBtn": "Add Students",
+    "practiceBtn": "Start Practicing"
+  },
+  "studentHelp": {
+    "title": "Student Hub",
+    "games": "Play Epic Games",
+    "gamesDesc": "Solve math to win in fun games!",
+    "homework": "Solve Homework",
+    "homeworkDesc": "Do your assignments easily.",
+    "goHomework": "📚 GO TO MY HOMEWORK",
+    "loginStart": "🔑 LOGIN TO START HOMEWORK"
   }
 }
 

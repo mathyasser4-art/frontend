@@ -499,6 +499,24 @@
     "select_system": "اختر...",
     "select_subject": "اختر...",
     "select_unit": "اختر..."
+  },
+  "teacherHelp": {
+    "title": "مركز المعلم",
+    "students": "إدارة الطلاب",
+    "studentsDesc": "إضافة وإدارة حسابات الطلاب بسهولة.",
+    "homework": "تعيين الواجبات",
+    "homeworkDesc": "إنشاء وتعيين أوراق العمل بكل سهولة.",
+    "addStudentsBtn": "إضافة طلاب",
+    "practiceBtn": "بدء التدريب"
+  },
+  "studentHelp": {
+    "title": "مركز الطالب",
+    "games": "العب ألعاباً رائعة",
+    "gamesDesc": "حل المسائل الرياضية للفوز في الألعاب!",
+    "homework": "حل الواجبات",
+    "homeworkDesc": "قم بحل واجباتك بسهولة.",
+    "goHomework": "📚 اذهب إلى واجباتي",
+    "loginStart": "🔑 تسجيل الدخول للبدء"
   }
 }
 

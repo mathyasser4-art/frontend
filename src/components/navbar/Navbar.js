@@ -193,21 +193,22 @@ const Navbar = () => {
 
                 <div className={`nav-right-side d-flex align-items-center ${isAuth ? 'auth-menu' : 'unauth-menu'} ${isMobileMenuOpen ? 'mobile-open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                     <div style={{ marginRight: '15px' }}>
-                        <span 
-                            className="nav-link" 
-                            style={{ fontWeight: 'bold', color: '#10b981', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                        <div 
+                            className="nav-btn" 
+                            style={{ backgroundColor: '#10b981', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', gap: '5px' }}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 soundEffects.playClick();
                                 i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar');
                             }}
                         >
-                            🌐 Language ({i18n.language === 'ar' ? 'العربية' : 'English'})
-                        </span>
+                            🌐 {i18n.language === 'ar' ? 'English' : 'العربية'}
+                        </div>
                     </div>
                     {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Teacher' ? (
                         <>
+                            <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ marginRight: '10px' }}>{t('navbar.games', 'GAMES')}</div></Link>
                             <Link to={'/dashboard-school/class'} onClick={() => soundEffects.playClick()}>
                                 <div className="homework-btn" style={{ backgroundColor: '#3b82f6', border: 'none', marginRight: '10px' }}>{t('navbar.classes', 'CLASSES')}</div>
                             </Link>
@@ -238,19 +239,19 @@ const Navbar = () => {
                     ) : null}
                     {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Supervisor' ? <Link to={'/dashboard/supervisor'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
-                    {isAuth ? (
-                      <>
+                    {isAuth && role !== 'Teacher' ? (
                         <Link to={'/shop'} onClick={() => soundEffects.playClick()}>
                           <div className="nav-btn" style={{ backgroundColor: '#fbbf24', color: '#000', border: 'none', marginRight: '10px', fontWeight: 'bold' }}>
                             {t('navbar.shop', 'SHOP 🪙')}
                           </div>
                         </Link>
+                    ) : null}
+                    {isAuth ? (
                         <Link to={'/user/info'} onClick={() => soundEffects.playClick()}>
                           <div className="nav-btn nav-btn-profile">
                             {t('navbar.profile', 'PROFILE')}
                           </div>
                         </Link>
-                      </>
                     ) : (
                         <>
                             {SHOW_PRICING && (
