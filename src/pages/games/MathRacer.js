@@ -1333,7 +1333,7 @@ function MathRacer() {
                             {player.id === myId && multiRole === 'host' && (
                                <span style={{ color: '#f97316', fontSize: '13px' }}>
                                  (Host - {player.isSpectator ? 'Watching' : 'Participating'})
-                                 <button onClick={() => setHostIsRacing(!!player.isSpectator)} style={{ marginLeft: '10px', padding: '2px 8px', fontSize: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                                 <button className="switch-btn-glow" onClick={() => setHostIsRacing(!!player.isSpectator)} style={{ marginLeft: '10px', padding: '4px 12px', fontSize: '14px', background: '#f97316', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
                                    Switch
                                  </button>
                                </span>
@@ -1351,10 +1351,11 @@ function MathRacer() {
                     <div style={{ marginBottom: '5px' }}>
                       {renderQuestionSelector(true)}
 
-                      <div style={{ background: '#f0fdf4', border: '2px dashed #10b981', borderRadius: '8px', padding: '10px', textAlign: 'center', marginTop: '10px' }}>
-                        <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px', fontSize: '16px' }}>{t('mathRacer.copyLink', 'Copy Link')} ({roomId})</p>
+                      <div style={{ background: '#f0fdf4', border: '2px dashed #10b981', borderRadius: '8px', padding: '15px', textAlign: 'center', marginTop: '10px' }}>
+                        <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px', fontSize: '18px' }}>Use Code: <span style={{ fontSize: '24px', letterSpacing: '2px' }}>{roomId}</span></p>
+                        <p style={{ color: '#64748b', fontSize: '14px', margin: '8px 0', fontWeight: 'bold' }}>OR</p>
                         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                          <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? t('mathRacer.linkCopied', 'Copied!') : t('mathRacer.copyLink', 'Copy Link')}</button>
+                          <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? t('mathRacer.linkCopied', 'Copied!') : t('mathRacer.copyLink', 'Copy Invite Link')}</button>
                         </div>
                       </div>
 
