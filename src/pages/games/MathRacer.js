@@ -1222,12 +1222,7 @@ function MathRacer() {
           </button>
           <h2>{t('math_racer', 'Math Racer')} 🏎️💨</h2>
           
-          <button 
-            onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'ar' : 'en')} 
-            style={{ marginLeft: '20px', padding: '8px 16px', borderRadius: '8px', background: '#1e293b', color: 'white', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}
-          >
-            {i18n.language === 'en' ? 'العربية' : 'English'}
-          </button>
+
 
           {multiRole === 'host' && (gameState === 'playing' || gameState === 'lobby') && (
             <button onClick={handleHostCloseRace} className="host-close-race-btn" title={t('close_race', 'Close Race for All Players')}>
@@ -1277,14 +1272,12 @@ function MathRacer() {
                 {renderQuestionSelector(false)}
               </div>
             ) : (
-              <div className="multi-player-setup">
+              <div className="multi-player-setup compact-multiplayer">
                 <h3>{t('challenge_friends', 'Challenge Friends in Real-Time!')}</h3>
-                <p>{t('host_private_room_desc', 'Host your own private F1 room and share your code, or enter a friend\'s room code to start the high-speed competition!')}</p>
                 
-                <div className="multiplayer-actions-panel">
-                  <div className="host-section-card">
+                <div className="multiplayer-actions-panel compact-panel">
+                  <div className="host-section-card compact-card">
                     <h4>{t('host_new_match', 'Host a New Match')}</h4>
-                    <p>{t('start_racing_room', 'Start a racing room and invite up to 4 competitors!')}</p>
                     <button className="btn-multi-host" onClick={handleCreateRoom}>
                       🚀 {t('host_a_race', 'Host a Race')}
                     </button>
@@ -1294,20 +1287,19 @@ function MathRacer() {
                     <span>{t('or', 'OR')}</span>
                   </div>
 
-                  <div className="join-section-card">
+                  <div className="join-section-card compact-card">
                     <h4>{t('join_existing_match', 'Join Existing Match')}</h4>
-                    <p>{t('enter_competitor_code', 'Enter your competitor\'s room code to connect:')}</p>
                     <div className="join-input-group">
                       <input 
                         type="text" 
-                        placeholder={t('enter_code', 'ENTER 2-DIGIT CODE')}
+                        placeholder={t('enter_code', 'ENTER CODE')}
                         maxLength="2"
                         value={inputRoomId}
                         onChange={(e) => setInputRoomId(e.target.value)}
                         className="multi-join-input"
                       />
                       <button className="btn-multi-join" onClick={handleJoinRoom}>
-                        {t('join_roster', 'Join Roster')}
+                        {t('join_roster', 'Join')}
                       </button>
                     </div>
                   </div>
