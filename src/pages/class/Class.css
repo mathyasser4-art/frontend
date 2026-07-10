@@ -109,6 +109,7 @@
 .update-class-popup,
 .add-class-popup,
 .remove-class-popup,
+.bulk-add-class-popup,
 .add-to-class-popup {
     position: fixed;
     top: 0;
@@ -127,6 +128,7 @@
 .update-class-container,
 .add-class-container,
 .remove-class-container,
+.bulk-add-class-container,
 .add-to-class-container {
     position: absolute;
     background-color: #fff;
@@ -149,6 +151,16 @@
 .class-top {
     top: -1200px;
     transition: 0.7s;
+}
+
+.bulk-textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: vertical;
+    font-size: 16px;
+    margin-top: 0.5rem;
 }
 
 .remove-popup-body,
@@ -312,6 +324,7 @@
     .update-class-container,
     .add-class-container,
     .remove-class-container,
+    .bulk-add-class-container,
     .add-to-class-container {
         width: 50%;
     }
@@ -327,6 +340,7 @@
     .update-class-container,
     .add-class-container,
     .remove-class-container,
+    .bulk-add-class-container,
     .add-to-class-container {
         width: 70%;
     }
@@ -342,6 +356,7 @@
     .update-class-container,
     .add-class-container,
     .remove-class-container,
+    .bulk-add-class-container,
     .add-to-class-container {
         width: 95%;
     }
