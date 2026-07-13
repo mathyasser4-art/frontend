@@ -4,6 +4,7 @@ import API_BASE_URL from '../../config/api.config';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import { Users, User, UserCheck, Settings } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 import '../../reusable.css';
 import './DashboardSchool.css';
 
@@ -66,6 +67,18 @@ const LiveAdminDashboard = () => {
         if (userRole === 'Teacher') return <UserCheck style={{ color: '#10b981' }} />;
         if (userRole === 'School' || userRole === 'IT') return <Settings style={{ color: '#8b5cf6' }} />;
         return <Users style={{ color: '#64748b' }} />;
+    };
+
+    const exportPDF = () => {
+        const element = document.getElementById('historical-visits-container');
+        const opt = {
+            margin:       0.5,
+            filename:     `visitors-${historyDate}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
     };
 
     return (
@@ -131,15 +144,23 @@ const LiveAdminDashboard = () => {
                     </div>
 
                     {/* Historical Daily Visits */}
-                    <div style={{ background: 'white', borderRadius: '15px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginTop: '40px' }}>
+                    <div id="historical-visits-container" style={{ background: 'white', borderRadius: '15px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginTop: '40px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #e2e8f0', paddingBottom: '10px' }}>
                             <h2 style={{ color: '#1e293b', margin: 0 }}>Historical Daily Visits</h2>
-                            <input 
-                                type="date" 
-                                value={historyDate} 
-                                onChange={(e) => setHistoryDate(e.target.value)} 
-                                style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: '#f8fafc' }}
-                            />
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <input 
+                                    type="date" 
+                                    value={historyDate} 
+                                    onChange={(e) => setHistoryDate(e.target.value)} 
+                                    style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: '#f8fafc' }}
+                                />
+                                <button 
+                                    onClick={exportPDF}
+                                    style={{ padding: '8px 15px', borderRadius: '8px', border: 'none', background: '#10b981', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}
+                                >
+                                    Export PDF
+                                </button>
+                            </div>
                         </div>
                         
                         {Object.keys(groupedHistoryUsers).map(roleKey => (
@@ -156,7 +177,7 @@ const LiveAdminDashboard = () => {
                                             <div>
                                                 <div style={{ fontWeight: 'bold', color: '#0f172a' }}>{user.userName}</div>
                                                 <div style={{ fontSize: '12px', color: '#64748b' }}>
-                                                    Last Seen: {new Date(user.lastSeen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    Online: {user.firstSeen ? new Date(user.firstSeen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date(user.lastSeen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(user.lastSeen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </div>
                                             </div>
                                         </div>
