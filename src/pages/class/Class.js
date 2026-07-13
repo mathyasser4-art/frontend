@@ -273,15 +273,15 @@ function Class() {
                     </div>
                 </div>
                 {loading ? <DashboardLoading /> :
-                    allClass?.map(item => {
+                    allClass?.map((item, index) => {
                         return (
                             <div key={item._id} className="class-item d-flex justify-content-space-between align-items-center">
                                 <p 
                                     onClick={() => openStudentListPopup(item._id)}
-                                    style={{ cursor: 'pointer', flex: 1 }}
+                                    style={{ cursor: 'pointer', flex: 1, display: 'flex', alignItems: 'center' }}
                                     title="Click to view students"
                                 >
-                                    {item.class}
+                                    <span style={{ fontWeight: 'bold', marginRight: '10px', color: '#5d17eb' }}>{index + 1}.</span> {item.class}
                                 </p>
                                 <div className="class-icon d-flex align-items-center">
                                     {role !== 'Teacher' && (
@@ -422,10 +422,10 @@ function Class() {
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="add-to-popup-body">
                         {studentLoading ? <DashboardLoading /> : (noStudent) ? <p>Oops!!There are no any students in this class yet.</p> :
-                            classStudent.map(item => {
+                            classStudent.map((item, index) => {
                                 return (
                                     <div key={item._id} className="student-item d-flex align-items-center justify-content-space-between">
-                                        <p>{item.userName}</p>
+                                        <p style={{ margin: 0, display: 'flex', alignItems: 'center' }}><span style={{fontWeight: 'bold', marginRight: '10px', color: '#5d17eb'}}>{index + 1}.</span> {item.userName}</p>
                                         <i className="fa fa-trash" onClick={() => handleRemoveStudent(item._id)} aria-hidden="true"></i>
                                     </div>
                                 )
@@ -450,10 +450,10 @@ function Class() {
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="add-to-popup-body">
                         {noTeacher ? <p>Oops!!There are no any teachers in this class yet.</p> : 
-                        teacherList.map(item => {
+                        teacherList.map((item, index) => {
                             return (
                                 <div key={item._id} className="student-item d-flex align-items-center justify-content-space-between">
-                                    <p>{item.userName}</p>
+                                    <p style={{ margin: 0, display: 'flex', alignItems: 'center' }}><span style={{fontWeight: 'bold', marginRight: '10px', color: '#5d17eb'}}>{index + 1}.</span> {item.userName}</p>
                                     <i className="fa fa-trash" onClick={() => handleRemoveTeacher(item._id)} aria-hidden="true"></i>
                                 </div>
                             )
