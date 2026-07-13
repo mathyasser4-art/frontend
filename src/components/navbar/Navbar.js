@@ -51,9 +51,15 @@ const Navbar = () => {
                 console.log('[NOTIFICATION] Global live battle event received:', data);
                 
                 const myTeacherId = localStorage.getItem('teacher_id');
-                if (myTeacherId && data.teacherId && String(myTeacherId) !== String(data.teacherId)) {
-                    console.log('[NOTIFICATION] Ignoring battle created by a different teacher:', data.teacherId);
-                    return;
+                // Allow notification if student was created by this teacher, OR student was created by the teacher's school (common in Topsoroban)
+                if (myTeacherId && data.teacherId) {
+                    const matchesTeacher = String(myTeacherId) === String(data.teacherId);
+                    const matchesSchool = data.schoolId && String(myTeacherId) === String(data.schoolId);
+                    
+                    if (!matchesTeacher && !matchesSchool) {
+                        console.log('[NOTIFICATION] Ignoring battle created by a different teacher/school:', data.teacherId);
+                        return;
+                    }
                 }
 
                 // Set the notification details in state
@@ -84,7 +90,11 @@ const Navbar = () => {
             let dismissTimer;
             channel.bind('battle-created', (data) => {
                 const myTeacherId = localStorage.getItem('teacher_id');
-                if (myTeacherId && data.teacherId && String(myTeacherId) !== String(data.teacherId)) return;
+                if (myTeacherId && data.teacherId) {
+                    const matchesTeacher = String(myTeacherId) === String(data.teacherId);
+                    const matchesSchool = data.schoolId && String(myTeacherId) === String(data.schoolId);
+                    if (!matchesTeacher && !matchesSchool) return;
+                }
                 clearTimeout(dismissTimer);
                 dismissTimer = setTimeout(() => {
                     setActiveBattleNotification(null);

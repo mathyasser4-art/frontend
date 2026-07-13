@@ -56,6 +56,7 @@ import StudentCompetition from './pages/studentDashboard/StudentCompetition';
 import TeacherQuestionBank from './pages/teacherDashboard/TeacherQuestionBank';
 import Shop from './pages/shop/Shop';
 import LiveAdminDashboard from './pages/dashboardSchool/LiveAdminDashboard';
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   const isAuth = localStorage.getItem('O_authWEB')
@@ -93,6 +94,7 @@ function App() {
   }, []);
   return (
     <>
+      <Analytics />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/about' element={<About />} />

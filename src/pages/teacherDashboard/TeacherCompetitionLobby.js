@@ -280,9 +280,20 @@ function TeacherCompetitionLobby() {
         });
 
         // Listen for competition finished
-        channel.bind('competition-finished', () => {
+        channel.bind('competition-finished', (data) => {
             setStatus('finished');
             setTriggerConfetti(true);
+            if (data && data.competition) {
+                setCompetition(data.competition);
+                setParticipants(data.competition.participants || []);
+            } else {
+                getCompetitionDetails(competitionId).then(res => {
+                    if (res.message === 'success') {
+                        setCompetition(res.competition);
+                        setParticipants(res.competition.participants || []);
+                    }
+                });
+            }
         });
 
         return () => {
@@ -871,15 +882,35 @@ function TeacherCompetitionLobby() {
                 {/* 2. ACTIVE LIVE RACING SCOREBOARD */}
                 {status === 'active' && (
                     <div className="status-container live-scoring-box">
-                        <div className="live-header-bar">
-                            <div className="live-indicator">
-                                <span className="live-dot"></span>
-                                <h2>Live Competition in Progress</h2>
+                        <div className="live-header-bar" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                <div className="live-indicator">
+                                    <span className="live-dot"></span>
+                                    <h2>Live Competition in Progress</h2>
+                                </div>
+                                <button onClick={handleFinish} className="action-button end-game-btn">
+                                    <Flag size={18} />
+                                    <span>End Competition & Show Podium</span>
+                                </button>
                             </div>
-                            <button onClick={handleFinish} className="action-button end-game-btn">
-                                <Flag size={18} />
-                                <span>End Competition & Show Podium</span>
-                            </button>
+                            {timerRemaining !== null && (
+                                <div style={{ 
+                                    alignSelf: 'center', 
+                                    background: 'rgba(15, 23, 42, 0.8)', 
+                                    border: '2px solid rgba(59, 130, 246, 0.4)', 
+                                    borderRadius: '16px', 
+                                    padding: '12px 32px', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '12px',
+                                    boxShadow: '0 8px 32px rgba(59, 130, 246, 0.15)'
+                                }}>
+                                    <Timer size={28} color="#38bdf8" />
+                                    <span style={{ fontSize: '32px', fontWeight: 'bold', color: '#38bdf8', fontFamily: 'monospace', letterSpacing: '2px' }}>
+                                        {Math.floor(timerRemaining / 60).toString().padStart(2, '0')}:{(timerRemaining % 60).toString().padStart(2, '0')}
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         <div className="live-race-track-list">

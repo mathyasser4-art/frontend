@@ -215,6 +215,30 @@ function StudentCompetition() {
                         const elapsed = Math.floor((Date.now() - new Date(detailsRes.competition.startedAt).getTime()) / 1000);
                         const remaining = detailsRes.competition.timer - elapsed;
                         setTimerRemaining(remaining > 0 ? remaining : 0);
+
+                        // Restore answers if any
+                        const myDetails = (detailsRes.competition.participants || []).find(p => String(p.student?._id || p.student) === String(studentID) || String(p.guestId) === String(studentID));
+                        if (myDetails && myDetails.answers) {
+                            const initAnswersMap = {};
+                            let newCorrectCount = 0;
+                            let newWrongCount = 0;
+                            myDetails.answers.forEach(a => {
+                                initAnswersMap[a.question] = { answer: a.studentAnswer, checked: true, correct: a.isCorrect };
+                                if (a.isCorrect) newCorrectCount++;
+                                else newWrongCount++;
+                            });
+                            setAnswersMap(initAnswersMap);
+                            answersMapRef.current = initAnswersMap;
+                            
+                            setCorrectCount(newCorrectCount);
+                            correctCountRef.current = newCorrectCount;
+                            
+                            setWrongCount(newWrongCount);
+                            wrongCountRef.current = newWrongCount;
+                            
+                            setTotalAnswered(myDetails.answers.length);
+                            totalAnsweredRef.current = myDetails.answers.length;
+                        }
                     } else if (compStatus === 'finished') {
                         setTriggerConfetti(true);
                         calculateBadges(detailsRes.competition.participants || [], detailsRes.competition.questions?.length || 0);
@@ -399,67 +423,62 @@ function StudentCompetition() {
         requestWakeLock();
     };
 
-    // Background answer check (fire & forget) — like homework flow
+    // Background answer check (fire & forget) — secure flow
     const syncAnswerWithBackend = async (questionId, questionAnswer) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/question/checkTheAnswer/${questionId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'authrization': `pracYas09${localStorage.getItem('O_authWEB')}`
-                },
-                body: JSON.stringify({ questionAnswer: questionAnswer.trim() })
-            });
-            const result = await response.json();
-            const isCorrect = result.message === 'success';
-
-            // Update the answers map
+            // First update the answersMap locally (optimistic)
             setAnswersMap(prev => {
                 const updated = {
                     ...prev,
-                    [questionId]: { ...prev[questionId], checked: true, correct: isCorrect }
+                    [questionId]: { ...prev[questionId], checked: true, answer: questionAnswer } // correct status unknown yet
                 };
                 answersMapRef.current = updated;
                 return updated;
             });
 
-            // Update counts
-            if (isCorrect) {
-                correctCountRef.current += 1;
-                setCorrectCount(correctCountRef.current);
-            } else {
-                wrongCountRef.current += 1;
-                setWrongCount(wrongCountRef.current);
-            }
+            // Send score update
+            const response = await updateLiveScore(competitionId, {
+                studentId: studentID,
+                userName: studentName,
+                finished: false,
+                answers: Object.entries(answersMapRef.current).map(([qId, data]) => ({
+                    question: qId,
+                    studentAnswer: data.answer || ""
+                }))
+            });
 
-            // Broadcast live score update to other participants
-            try {
-                await updateLiveScore(competitionId, {
-                    studentId: studentID,
-                    userName: studentName,
-                    score: correctCountRef.current,
-                    totalAnswered: totalAnsweredRef.current,
-                    wrongAnswers: wrongCountRef.current,
-                    finished: false,
-                    answers: Object.entries(answersMapRef.current).map(([qId, data]) => ({
-                        question: qId,
-                        studentAnswer: data.answer || "",
-                        isCorrect: !!data.correct
-                    }))
-                });
-            } catch (e) {
-                console.error("Failed to broadcast score:", e);
+            // The backend returns the secure answers map containing isCorrect
+            if (response && response.answers) {
+                 const secureAnswers = response.answers;
+                 let newCorrectCount = 0;
+                 let newWrongCount = 0;
+                 let newTotalAnswered = secureAnswers.length;
+                 
+                 setAnswersMap(prev => {
+                     const updated = { ...prev };
+                     secureAnswers.forEach(ans => {
+                         if (updated[ans.question]) {
+                             updated[ans.question].correct = ans.isCorrect;
+                             updated[ans.question].checked = true;
+                         } else {
+                             updated[ans.question] = { answer: ans.studentAnswer, checked: true, correct: ans.isCorrect };
+                         }
+                         if (ans.isCorrect) newCorrectCount++;
+                         else newWrongCount++;
+                     });
+                     answersMapRef.current = updated;
+                     return updated;
+                 });
+                 
+                 correctCountRef.current = newCorrectCount;
+                 setCorrectCount(newCorrectCount);
+                 wrongCountRef.current = newWrongCount;
+                 setWrongCount(newWrongCount);
+                 totalAnsweredRef.current = newTotalAnswered;
+                 setTotalAnswered(newTotalAnswered);
             }
         } catch (err) {
             console.error('Background sync failed for question', questionId, err);
-            setAnswersMap(prev => {
-                const updated = {
-                    ...prev,
-                    [questionId]: { ...prev[questionId], checked: false, correct: false }
-                };
-                answersMapRef.current = updated;
-                return updated;
-            });
         }
     };
 
@@ -489,7 +508,7 @@ function StudentCompetition() {
 
         soundEffects.playClick();
 
-        // Move to next question immediately or finish if last
+        // Move to next question or auto-submit if last
         const isLastQuestion = currentIndex === questions.length - 1;
         setAnswer('');
         
@@ -799,11 +818,12 @@ function StudentCompetition() {
                     <div className="pulse-circle" style={{ marginBottom: '24px', width: '96px', height: '96px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(59, 130, 246, 0.1)', border: '2px solid #3b82f6', borderRadius: '50%' }}>
                         <Timer size={48} className="glowing-icon" style={{ color: '#3b82f6', animation: 'pulse 2s infinite' }} />
                     </div>
+                    <div className="loader" style={{ marginBottom: '24px' }}></div>
                     <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '16px', background: 'linear-gradient(135deg, #60a5fa, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                         ⏳ Waiting for Competition to Conclude...
                     </h1>
                     <p style={{ fontSize: '20px', color: '#94a3b8', maxWidth: '600px', marginBottom: '32px' }}>
-                        You have successfully completed all questions in the competition! Please wait while the remaining time ticks down or until the creator concludes the event.
+                        Loading final results... You have successfully completed all questions! Please wait while the remaining time ticks down or until the creator officially concludes the event.
                     </p>
                     <div className="live-timer-box" style={{
                         background: 'rgba(15, 23, 42, 0.6)',
