@@ -226,6 +226,7 @@ const TanksGame = () => {
 
     // Handle incoming players
     channel.bind('tanks-joined', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
       if (data.id === myId) return;
 
       setPlayers(prev => {
@@ -246,6 +247,7 @@ const TanksGame = () => {
     });
 
     channel.bind('tanks-host-echo', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
       if (roleType !== 'guest') return;
       
       setPlayers(prev => {
@@ -266,12 +268,14 @@ const TanksGame = () => {
 
     // Game starting trigger
     channel.bind('tanks-start', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
       setDifficulty(data.difficulty);
       setGameState('playing');
     });
 
     // Sync tank positions and angles
     channel.bind('tanks-move', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
       if (data.id === myId) return;
       remoteTanksRef.current[data.id] = {
         ...remoteTanksRef.current[data.id],
@@ -290,6 +294,7 @@ const TanksGame = () => {
 
     // Fired bullets sync
     channel.bind('tanks-fire', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
       if (data.ownerId === myId) return;
       bulletsRef.current.push({
         id: data.id,
@@ -304,6 +309,7 @@ const TanksGame = () => {
 
     // Hit registration sync
     channel.bind('tanks-hit', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
       // Remove local bullet
       bulletsRef.current = bulletsRef.current.filter(b => b.id !== data.bulletId);
 
@@ -326,6 +332,7 @@ const TanksGame = () => {
 
     // Defeated player sync
     channel.bind('tanks-defeated', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
       if (remoteTanksRef.current[data.id]) {
         remoteTanksRef.current[data.id].defeated = true;
         remoteTanksRef.current[data.id].health = 0;
@@ -335,6 +342,7 @@ const TanksGame = () => {
 
     // Force game over sync
     channel.bind('tanks-gameover', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
       setLeaderboard(data.ranks);
       setGameState('gameover');
       if (gameLoopId.current) cancelAnimationFrame(gameLoopId.current);

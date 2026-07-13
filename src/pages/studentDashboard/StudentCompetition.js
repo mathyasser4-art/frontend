@@ -273,6 +273,7 @@ function StudentCompetition() {
 
         // Listen for other students joining the lobby
         channel.bind('student-joined', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setParticipants(prev => {
                 const exists = prev.some(p => String(p.student?._id || p.student) === String(data.studentId));
                 if (exists) return prev;
@@ -282,6 +283,7 @@ function StudentCompetition() {
 
         // Listen for live score updates from other participants
         channel.bind('score-updated', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setParticipants(prev => {
                 return prev.map(p => {
                     const pId = p.student?._id || p.student;
@@ -301,6 +303,7 @@ function StudentCompetition() {
 
         // Listen for teacher starting the competition
         channel.bind('start-competition', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             soundEffects.playClick();
             setStatus('countdown');
             setLobbyCountdown(3);
@@ -311,6 +314,7 @@ function StudentCompetition() {
 
         // Listen for teacher ending the competition
         channel.bind('competition-finished', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             console.log('[Pusher] competition-finished event received:', data);
             setStatus('finished');
             setTriggerConfetti(true);

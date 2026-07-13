@@ -247,6 +247,7 @@ function TeacherCompetitionLobby() {
 
         // Listen for new student joining
         channel.bind('student-joined', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             soundEffects.playClick();
             setParticipants(prev => {
                 const exists = prev.some(p => String(p.student?._id || p.student) === String(data.studentId));
@@ -257,6 +258,7 @@ function TeacherCompetitionLobby() {
 
         // Listen for live score updates from students
         channel.bind('score-updated', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setParticipants(prev => {
                 return prev.map(p => {
                     const pId = p.student?._id || p.student;
@@ -277,6 +279,7 @@ function TeacherCompetitionLobby() {
 
         // Listen for competition start (e.g. if page was reloaded by teacher)
         channel.bind('start-competition', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setStatus('active');
             if (data && data.timer) {
                 setTimerRemaining(data.timer);
@@ -285,6 +288,7 @@ function TeacherCompetitionLobby() {
 
         // Listen for competition finished
         channel.bind('competition-finished', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setStatus('finished');
             setTriggerConfetti(true);
             if (data && data.competition) {

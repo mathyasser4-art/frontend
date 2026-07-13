@@ -53,6 +53,7 @@ const Navbar = () => {
             const channel = pusher.subscribe('global-battle-arena');
             
             channel.bind('battle-created', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
                 console.log('[NOTIFICATION] Global live battle event received:', data);
                 
                 const myTeacherId = localStorage.getItem('teacher_id');
@@ -81,6 +82,7 @@ const Navbar = () => {
             });
 
             channel.bind('force-join-student', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
                 console.log('[NOTIFICATION] Force join event received:', data);
                 if (String(data.studentId) === String(localStorage.getItem('pp_id'))) {
                     const docEl = document.documentElement;
@@ -94,6 +96,7 @@ const Navbar = () => {
             // Set up a 60 seconds auto-dismiss timer whenever a battle is received
             let dismissTimer;
             channel.bind('battle-created', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
                 const myTeacherId = localStorage.getItem('teacher_id');
                 if (myTeacherId && data.teacherId) {
                     const matchesTeacher = String(myTeacherId) === String(data.teacherId);

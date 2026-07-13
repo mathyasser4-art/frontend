@@ -437,6 +437,7 @@ function MathRacer() {
 
       // Host listens for new players joining
       channel.bind('student-joined', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         soundEffects.playClick();
         setPlayers(prev => {
           if (prev.some(p => p.id === data.id)) return prev;
@@ -460,6 +461,7 @@ function MathRacer() {
 
       // Host listens to score/distance updates from active guest players
       channel.bind('player-progress', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, distance: data.distance, score: data.score, isBoosting: !!data.isBoosting } : p
         ));
@@ -467,6 +469,7 @@ function MathRacer() {
 
       // Host listens to finished signal from active guest players
       channel.bind('player-finished', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, finished: true, time: data.time } : p
         ));
@@ -475,6 +478,7 @@ function MathRacer() {
     } else {
       // Guest player listens to full lobby syncing from the host
       channel.bind('sync-lobby', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         console.log('[LOBBY] Synced roster from host:', data);
         setPlayers(data.players);
         if (data.questionCount) {
@@ -504,6 +508,7 @@ function MathRacer() {
 
       // Guest listens to host's race start trigger
       channel.bind('start-game', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         setDifficulty(data.difficulty);
         if (data.questionCount) {
           setActiveQuestionCount(data.questionCount);
@@ -524,6 +529,7 @@ function MathRacer() {
 
       // Guest listens to score/distance updates from host/other guests
       channel.bind('player-progress', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, distance: data.distance, score: data.score, isBoosting: !!data.isBoosting } : p
         ));
@@ -531,6 +537,7 @@ function MathRacer() {
 
       // Guest listens to finished signals from host/other guests
       channel.bind('player-finished', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, finished: true, time: data.time } : p
         ));
