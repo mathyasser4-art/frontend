@@ -400,7 +400,6 @@ function MathRacer() {
     setLobbyStatus('Connecting to server...');
 
     const pusher = new Pusher('app_e4ed3fcd3045501a594c2640c4d2dd75832ff677', {
-      cluster: 'us',
       wsHost: 'ws-us.apinator.io',
       wsPort: 80,
       wssPort: 443,
