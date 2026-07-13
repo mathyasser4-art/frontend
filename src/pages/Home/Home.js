@@ -63,15 +63,7 @@ function Home() {
     return () => clearInterval(timer)
   }, [])
 
-  React.useEffect(() => {
-    const isAuthUser = localStorage.getItem('O_authWEB');
-    const hasSeenDemo = localStorage.getItem('hasSeenDemoQuiz') === 'true';
-    if (!isAuthUser && !hasSeenDemo) {
-      // Auto open demo quiz overlay for first-time guest visitors
-      setShowDemoQuiz(true);
-    }
-  }, []);
-
+  // Auto open demo quiz removed based on user request
   return (
     <>
       <MobileNav role={role} />
