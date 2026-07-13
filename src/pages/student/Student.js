@@ -209,12 +209,12 @@ function Student() {
                                 <td>Action ⌄</td>
                             </tr>
                         </tbody>
-                        {allStudent?.map(item => {
+                        {allStudent?.map((item, index) => {
                             return (
                                 <React.Fragment key={item._id}>
                                     <tbody className='student-row'>
                                         <tr>
-                                            <td>{number++}</td>
+                                            <td><span style={{fontWeight: 'bold', color: '#5d17eb', fontSize: '1.1rem'}}>{(pageNumber - 1) * 20 + index + 1}.</span></td>
                                             <td className='d-flex student-name align-items-center'>
                                                 <img src={student} alt="" />
                                                 <p>{item.userName}</p>

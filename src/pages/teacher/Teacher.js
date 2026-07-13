@@ -464,12 +464,12 @@ function Teacher() {
                                 <td>Action ⌄</td>
                             </tr>
                         </tbody>
-                        {allTeacher?.map(item => {
+                        {allTeacher?.map((item, index) => {
                             return (
                                 <React.Fragment key={item._id}>
                                     <tbody className={`teacher-row ${expandedTeacherId === item._id ? 'expanded' : ''}`}>
                                         <tr onClick={() => toggleExpandTeacher(item._id)} style={{ cursor: 'pointer' }}>
-                                            <td>{number++}</td>
+                                            <td><span style={{fontWeight: 'bold', color: '#5d17eb', fontSize: '1.1rem'}}>{(pageNumber - 1) * 20 + index + 1}.</span></td>
                                             <td className='d-flex teacher-name align-items-center'>
                                                 <img src={student} alt="" />
                                                 <p>{item.userName}</p>
