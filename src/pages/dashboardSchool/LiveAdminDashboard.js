@@ -9,6 +9,8 @@ import './DashboardSchool.css';
 
 const LiveAdminDashboard = () => {
     const [stats, setStats] = useState({ totalVisitors: 0, users: [] });
+    const [historyDate, setHistoryDate] = useState(new Date().toISOString().split('T')[0]);
+    const [historyStats, setHistoryStats] = useState({ users: [] });
     const navigate = useNavigate();
     const role = localStorage.getItem('auth_role');
 
@@ -30,8 +32,30 @@ const LiveAdminDashboard = () => {
         return () => clearInterval(interval);
     }, []);
 
+    // Fetch historical data when date changes
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/historical-stats?date=${historyDate}`);
+                const data = await res.json();
+                if (data.success) {
+                    setHistoryStats({ users: data.users });
+                }
+            } catch (err) {
+                console.error("Failed to fetch historical stats", err);
+            }
+        };
+        fetchHistory();
+    }, [historyDate]);
+
     // Group users by role
     const groupedUsers = stats.users.reduce((acc, user) => {
+        if (!acc[user.role]) acc[user.role] = [];
+        acc[user.role].push(user);
+        return acc;
+    }, {});
+
+    const groupedHistoryUsers = historyStats.users.reduce((acc, user) => {
         if (!acc[user.role]) acc[user.role] = [];
         acc[user.role].push(user);
         return acc;
@@ -102,6 +126,48 @@ const LiveAdminDashboard = () => {
                         {stats.users.length === 0 && (
                             <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
                                 No active users at the moment.
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Historical Daily Visits */}
+                    <div style={{ background: 'white', borderRadius: '15px', padding: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', marginTop: '40px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #e2e8f0', paddingBottom: '10px' }}>
+                            <h2 style={{ color: '#1e293b', margin: 0 }}>Historical Daily Visits</h2>
+                            <input 
+                                type="date" 
+                                value={historyDate} 
+                                onChange={(e) => setHistoryDate(e.target.value)} 
+                                style={{ padding: '8px 15px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: '#f8fafc' }}
+                            />
+                        </div>
+                        
+                        {Object.keys(groupedHistoryUsers).map(roleKey => (
+                            <div key={roleKey} style={{ marginBottom: '30px' }}>
+                                <h3 style={{ color: '#475569', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    {roleKey}s <span style={{ background: '#f1f5f9', padding: '2px 10px', borderRadius: '10px', fontSize: '14px' }}>{groupedHistoryUsers[roleKey].length}</span>
+                                </h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '15px' }}>
+                                    {groupedHistoryUsers[roleKey].map((user, idx) => (
+                                        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px', border: '1px solid #e2e8f0', borderRadius: '10px', background: '#f8fafc' }}>
+                                            <div style={{ background: '#e0e7ff', padding: '10px', borderRadius: '50%' }}>
+                                                {getRoleIcon(user.role)}
+                                            </div>
+                                            <div>
+                                                <div style={{ fontWeight: 'bold', color: '#0f172a' }}>{user.userName}</div>
+                                                <div style={{ fontSize: '12px', color: '#64748b' }}>
+                                                    Last Seen: {new Date(user.lastSeen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+
+                        {historyStats.users.length === 0 && (
+                            <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                                No logged visits found for this date.
                             </div>
                         )}
                     </div>
