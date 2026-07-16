@@ -1052,10 +1052,10 @@ function Question() {
 
                                     <div 
                                         title={t('questionPage.addAllToPocket')} 
-                                        style={{ position: 'relative', width: '42px', height: '42px', padding: '0', margin: '0 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FA709A', backgroundImage: 'linear-gradient(135deg, #FA709A 0%, #FEE140 100%)', borderRadius: '50%', color: 'white', cursor: 'pointer', boxShadow: '0 8px 18px rgba(250, 112, 154, 0.35)' }}
+                                        style={{ position: 'relative', width: '42px', height: '42px', padding: '0', margin: '0 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FA709A', backgroundImage: 'linear-gradient(135deg, #FA709A 0%, #FEE140 100%)', borderRadius: '50%', color: 'white', cursor: 'pointer', boxShadow: '0 8px 18px rgba(250, 112, 154, 0.35)', userSelect: 'none' }}
                                         onClick={() => { soundEffects.playClick(); addAllToPocket(); }}
                                     >
-                                        <span style={{ position: 'absolute', top: '50%', left: '30%', transform: 'translate(-50%, -50%)', margin: 0, padding: 0, fontSize: '15px', fontWeight: 'bold' }}>HW</span>
+                                        <span style={{ position: 'absolute', top: '50%', left: '22%', transform: 'translate(-50%, -50%)', margin: 0, padding: 0, fontSize: '15px', fontWeight: 'bold', border: 'none', outline: 'none' }}>HW</span>
                                     </div>
                                 )}
                                 <div 
