@@ -744,8 +744,8 @@ button#nextBtn:active,
 }
 
 .abacus-button {
-    background: linear-gradient(135deg, #b088f9, #da9ff9);
-    box-shadow: 0 8px 18px rgba(176, 136, 249, 0.35);
+    background: linear-gradient(135deg, #FEE140 0%, #ffb347 100%);
+    box-shadow: 0 8px 18px rgba(254, 225, 64, 0.35);
 }
 
 .worksheet-print-btn:hover:not(:disabled),
