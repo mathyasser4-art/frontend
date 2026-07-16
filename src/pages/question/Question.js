@@ -1033,16 +1033,29 @@ function Question() {
                                     </div>
                                 )}
                                 <div title={t('questionPage.openAbacus')} className="abacus-button" style={{ width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #FEE140 0%, #ffb347 100%)', borderRadius: '50%', padding: '0', boxShadow: '0 8px 18px rgba(254, 225, 64, 0.35)', border: 'none', cursor: 'pointer' }} onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
-                                    <span style={{ fontSize: '22px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🧮</span>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="2" y="5" width="20" height="14" rx="2" stroke="white" strokeWidth="2"/>
+                                        <line x1="7" y1="5" x2="7" y2="19" stroke="white" strokeWidth="1.5"/>
+                                        <line x1="12" y1="5" x2="12" y2="19" stroke="white" strokeWidth="1.5"/>
+                                        <line x1="17" y1="5" x2="17" y2="19" stroke="white" strokeWidth="1.5"/>
+                                        <line x1="2" y1="10" x2="22" y2="10" stroke="white" strokeWidth="1.5"/>
+                                        <circle cx="7" cy="7.5" r="1.5" fill="#FF6B6B"/>
+                                        <circle cx="7" cy="13" r="1.5" fill="#4ECDC4"/>
+                                        <circle cx="7" cy="16" r="1.5" fill="#4ECDC4"/>
+                                        <circle cx="12" cy="7.5" r="1.5" fill="#FFE66D"/>
+                                        <circle cx="12" cy="15" r="1.5" fill="#FF6B6B"/>
+                                        <circle cx="17" cy="14" r="1.5" fill="#FFE66D"/>
+                                        <circle cx="17" cy="17" r="1.5" fill="#FFE66D"/>
+                                    </svg>
                                 </div>
                                 {role === 'Teacher' && (
 
                                     <div 
                                         title={t('questionPage.addAllToPocket')} 
-                                        style={{ width: '42px', height: '42px', padding: '0', margin: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', fontWeight: 'bold', background: 'linear-gradient(135deg, #FA709A 0%, #FEE140 100%)', borderRadius: '50%', color: 'white', cursor: 'pointer', boxShadow: '0 8px 18px rgba(250, 112, 154, 0.35)' }}
+                                        style={{ position: 'relative', width: '42px', height: '42px', padding: '0', margin: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #FA709A 0%, #FEE140 100%)', borderRadius: '50%', color: 'white', cursor: 'pointer', boxShadow: '0 8px 18px rgba(250, 112, 154, 0.35)' }}
                                         onClick={() => { soundEffects.playClick(); addAllToPocket(); }}
                                     >
-                                        <span style={{ margin: 0, padding: 0 }}>HW</span>
+                                        <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', margin: 0, padding: 0, fontSize: '15px', fontWeight: 'bold' }}>HW</span>
                                     </div>
                                 )}
                                 <div 
