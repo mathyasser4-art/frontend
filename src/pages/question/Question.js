@@ -830,7 +830,10 @@ function Question() {
     const addAllToPocket = () => {
         // Merge existing questions with new ones, filtering out duplicates
         const existingIds = questionList.map(q => q._id);
-        const newQuestions = questionData.filter(q => !existingIds.includes(q._id));
+        const newQuestions = questionData.filter(q => !existingIds.includes(q._id)).map(q => ({
+            ...q,
+            isArabic: useArabicNumerals
+        }));
         const newQuestionList = [...questionList, ...newQuestions];
         
         setQuestionList(newQuestionList);

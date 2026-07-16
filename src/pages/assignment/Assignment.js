@@ -298,8 +298,13 @@ function Assignment() {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const inputRef = useRef(null);
   const keyboardRef = useRef(null);
-  const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+  const translateNumbers = (text, toArabic) => {
+    if (!toArabic || text == null) return text;
+    return String(text).replace(/[0-9]/g, d => arabicDigits[parseInt(d, 10)]);
+  };
 
   
 
@@ -569,31 +574,63 @@ function Assignment() {
   // Flash Mode Functions
   const getQuestionLines = () => {
     if (!thisQuestion?.question) return [];
+    const toArabic = !!thisQuestion.isArabic;
     const grid = parseAbacusGrid(thisQuestion.question);
-    if (grid) return grid.map(row => `${rowOp(row)} ${rowVal(row)}`);
-    return formatQuestionText(thisQuestion.question).split('\n').filter(line => line.trim());
+    if (grid) {
+      return grid.map(row => `${rowOp(row)} ${translateNumbers(rowVal(row), toArabic)}`);
+    }
+    return formatQuestionText(thisQuestion.question)
+      .split('\n')
+      .filter(line => line.trim())
+      .map(line => {
+        const hasPlus = line.startsWith('+');
+        const restOfLine = translateNumbers(line.replace(/^\+/, ''), toArabic);
+        return hasPlus ? `+${restOfLine}` : restOfLine;
+      });
   };
 
   const renderQuestion = () => {
     if (!thisQuestion?.question) return null;
+    const toArabic = !!thisQuestion.isArabic;
     const grid = parseAbacusGrid(thisQuestion.question);
     if (grid) {
       return (
         <div className="abacus-grid-view">
           <table className="abacus-display-table">
             <tbody>
-              {grid.map((row, i) => (
-                <tr key={i}>
-                  <td className="op-cell">{rowOp(row)}</td>
-                  <td className="val-cell">{rowVal(row)}</td>
-                </tr>
-              ))}
+              {grid.map((row, i) => {
+                let op = rowOp(row);
+                return (
+                  <tr key={i}>
+                    <td className="op-cell">
+                      <span style={{ color: op === '+' ? 'transparent' : 'inherit', width: op === '+' ? '1ch' : 'auto', display: 'inline-block', textAlign: 'center' }}>
+                        {op}
+                      </span>
+                    </td>
+                    <td className="val-cell">{translateNumbers(rowVal(row), toArabic)}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       );
     }
-    return <pre>{formatQuestionText(thisQuestion.question)}</pre>;
+    const lines = formatQuestionText(thisQuestion.question).split('\n');
+    return (
+      <pre>
+        {lines.map((line, i) => {
+          const hasPlus = line.startsWith('+');
+          const restOfLine = translateNumbers(line.replace(/^\+/, ''), toArabic);
+          return (
+            <span key={i} style={{ display: 'block' }}>
+              {hasPlus && <span style={{ color: 'transparent', width: '1ch', display: 'inline-block', textAlign: 'center' }}>+</span>}
+              <span>{restOfLine}</span>
+            </span>
+          );
+        })}
+      </pre>
+    );
   };
 
   const toggleFullscreen = () => {
@@ -1601,7 +1638,7 @@ function Assignment() {
                         checked={answer && answer === item}
                         onChange={e => handleChecked(e.target.value)} 
                       />
-                      <span className='mcq-text'>{item}</span>
+                      <span className='mcq-text'>{translateNumbers(item, thisQuestion.isArabic)}</span>
                     </label>
                   ))}
                 </div>
