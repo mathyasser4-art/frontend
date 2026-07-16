@@ -59,25 +59,37 @@ const formatQuestionText = (text) => {
     }).join('\n');
 };
 
-const renderQuestion = (question) => {
+const translateNumbers = (text, toArabic) => {
+    if (!toArabic || text == null) return text;
+    return String(text).replace(/[0-9]/g, d => ARABIC_DIGITS[parseInt(d, 10)]);
+};
+
+const renderQuestion = (question, useArabicNumerals) => {
     const gridRows = parseGridRows(question?.question);
     if (gridRows) {
         return (
             <div className="abacus-grid-view">
                 <table className="abacus-display-table">
                     <tbody>
-                        {gridRows.map((row, i) => (
-                            <tr key={i}>
-                                <td className="op-cell">{getRowOp(row)}</td>
-                                <td className="val-cell">{getRowVal(row)}</td>
-                            </tr>
-                        ))}
+                        {gridRows.map((row, i) => {
+                            let op = getRowOp(row);
+                            if (op === '+') op = '';
+                            return (
+                                <tr key={i}>
+                                    <td className="op-cell">{op}</td>
+                                    <td className="val-cell">{translateNumbers(getRowVal(row), useArabicNumerals)}</td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
         );
     }
-    return <pre>{formatQuestionText(question?.question)}</pre>;
+    
+    let text = formatQuestionText(question?.question);
+    text = String(text).split('\n').map(line => line.replace(/^\+/, '')).join('\n');
+    return <pre>{translateNumbers(text, useArabicNumerals)}</pre>;
 };
 
 // Helper functions for PDF worksheet generation
@@ -126,6 +138,7 @@ function Question() {
     
     // State for Abacus visibility
     const [showAbacus, setShowAbacus] = useState(false);
+    const [useArabicNumerals, setUseArabicNumerals] = useState(false);
 
     // State for Flash Mode
     const [flashMode, setFlashMode] = useState(false);
@@ -429,8 +442,15 @@ function Question() {
     const getQuestionLines = () => {
         if (!thisQuestion?.question) return [];
         const gridRows = parseGridRows(thisQuestion.question);
-        if (gridRows) return gridRows.map(row => `${getRowOp(row)}${getRowVal(row)}`);
-        return formatQuestionText(thisQuestion.question).split('\n').filter(line => line.trim());
+        if (gridRows) return gridRows.map(row => {
+            let op = getRowOp(row);
+            if (op === '+') op = '';
+            return translateNumbers(`${op}${getRowVal(row)}`.trim(), useArabicNumerals);
+        });
+        return formatQuestionText(thisQuestion.question)
+            .split('\n')
+            .filter(line => line.trim())
+            .map(line => translateNumbers(line.replace(/^\+/, ''), useArabicNumerals));
     };
 
     const toggleFullscreen = () => {
@@ -933,15 +953,6 @@ function Question() {
                             <div className='question-form-head d-flex justify-content-space-between align-items-center'>
                                 <p>Q{thisQuestionNumber}/{questionData?.length || 0}</p>
                                 <div className='end-head d-flex align-items-center'>
-                                    <button
-                                        type="button"
-                                    title={t('questionPage.downloadWorksheet', 'Download Worksheet PDF')}
-                                    className="worksheet-print-btn"
-                                    onClick={downloadWorksheetPDF}
-                                    disabled={!questionData?.length}
-                                >
-                                    <Printer size={18} color="#fff" />
-                                </button>
                                 <button
                                     type="button"
                                     title={t('questionPage.gamify', 'Gamify with Math Racer')}
@@ -1003,15 +1014,14 @@ function Question() {
                                         <i className="fa fa-plus-square-o" aria-hidden="true"></i>
                                     </div>
                                 )}
-                                {role === 'Teacher' && (
-                                    <div 
-                                        title={t('questionPage.addToPocket')} 
-                                        className="pocket-button" 
-                                        onClick={() => { soundEffects.playClick(); addToPocket(); }}
-                                    >
-                                        <i className="fa fa-plus" aria-hidden="true"></i>
-                                    </div>
-                                )}
+                                <div 
+                                    title={useArabicNumerals ? 'Math' : 'ماث - عربي'} 
+                                    className="pocket-button" 
+                                    style={{ width: 'auto', padding: '0 10px', fontSize: '14px', fontWeight: 'bold' }}
+                                    onClick={() => { soundEffects.playClick(); setUseArabicNumerals(!useArabicNumerals); }}
+                                >
+                                    {useArabicNumerals ? 'Math' : 'ماث - عربي'}
+                                </div>
                             </div>
 
                         </div>
@@ -1041,7 +1051,7 @@ function Question() {
                                     )}
                                 </div>
                             ) : (
-                                renderQuestion(thisQuestion)
+                                renderQuestion(thisQuestion, useArabicNumerals)
                             )}
 
                             {thisQuestion?.typeOfAnswer === 'Essay' && (
