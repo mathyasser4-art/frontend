@@ -73,10 +73,11 @@ const renderQuestion = (question, useArabicNumerals) => {
                     <tbody>
                         {gridRows.map((row, i) => {
                             let op = getRowOp(row);
-                            if (op === '+') op = '';
                             return (
                                 <tr key={i}>
-                                    <td className="op-cell">{op}</td>
+                                    <td className="op-cell">
+                                        <span style={{ color: op === '+' ? 'transparent' : 'inherit' }}>{op}</span>
+                                    </td>
                                     <td className="val-cell">{translateNumbers(getRowVal(row), useArabicNumerals)}</td>
                                 </tr>
                             );
@@ -87,9 +88,22 @@ const renderQuestion = (question, useArabicNumerals) => {
         );
     }
     
-    let text = formatQuestionText(question?.question);
-    text = String(text).split('\n').map(line => line.replace(/^\+/, '')).join('\n');
-    return <pre>{translateNumbers(text, useArabicNumerals)}</pre>;
+    let lines = formatQuestionText(question?.question).split('\n');
+    return (
+        <pre>
+            {lines.map((line, i) => {
+                const hasPlus = line.startsWith('+');
+                const restOfLine = translateNumbers(line.replace(/^\+/, ''), useArabicNumerals);
+                return (
+                    <span key={i}>
+                        {hasPlus && <span style={{ color: 'transparent' }}>+</span>}
+                        {restOfLine}
+                        {i < lines.length - 1 && '\n'}
+                    </span>
+                );
+            })}
+        </pre>
+    );
 };
 
 // Helper functions for PDF worksheet generation
@@ -442,15 +456,29 @@ function Question() {
     const getQuestionLines = () => {
         if (!thisQuestion?.question) return [];
         const gridRows = parseGridRows(thisQuestion.question);
-        if (gridRows) return gridRows.map(row => {
+        if (gridRows) return gridRows.map((row, i) => {
             let op = getRowOp(row);
-            if (op === '+') op = '';
-            return translateNumbers(`${op}${getRowVal(row)}`.trim(), useArabicNumerals);
+            let val = translateNumbers(getRowVal(row), useArabicNumerals);
+            return (
+                <span key={i} style={{ display: 'inline-flex' }}>
+                    <span style={{ color: op === '+' ? 'transparent' : 'inherit', width: op === '+' ? '1ch' : 'auto', textAlign: 'center' }}>{op}</span>
+                    <span>{val}</span>
+                </span>
+            );
         });
         return formatQuestionText(thisQuestion.question)
             .split('\n')
             .filter(line => line.trim())
-            .map(line => translateNumbers(line.replace(/^\+/, ''), useArabicNumerals));
+            .map((line, i) => {
+                const hasPlus = line.startsWith('+');
+                const restOfLine = translateNumbers(line.replace(/^\+/, ''), useArabicNumerals);
+                return (
+                    <span key={i} style={{ display: 'inline-flex' }}>
+                        {hasPlus && <span style={{ color: 'transparent', width: '1ch', textAlign: 'center' }}>+</span>}
+                        <span>{restOfLine}</span>
+                    </span>
+                );
+            });
     };
 
     const toggleFullscreen = () => {
@@ -1015,12 +1043,12 @@ function Question() {
                                     </div>
                                 )}
                                 <div 
-                                    title={useArabicNumerals ? 'Math' : 'ماث - عربي'} 
+                                    title={useArabicNumerals ? 'Math' : 'عربي'} 
                                     className="pocket-button" 
                                     style={{ width: 'auto', padding: '0 10px', fontSize: '14px', fontWeight: 'bold' }}
                                     onClick={() => { soundEffects.playClick(); setUseArabicNumerals(!useArabicNumerals); }}
                                 >
-                                    {useArabicNumerals ? 'Math' : 'ماث - عربي'}
+                                    {useArabicNumerals ? 'Math' : 'عربي'}
                                 </div>
                             </div>
 
@@ -1100,7 +1128,7 @@ function Question() {
                                                 checked={answer && answer === item}
                                                 onChange={e => handleChecked(e.target.value)} 
                                             />
-                                            <span className='mcq-text'>{item}</span>
+                                            <span className='mcq-text'>{translateNumbers(item, useArabicNumerals)}</span>
                                         </label>
                                     ))}
                                 </div>
