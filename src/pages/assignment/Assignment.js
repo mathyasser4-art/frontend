@@ -1543,7 +1543,7 @@ function Assignment() {
                   </div>
                 )}
                 <div title="Open Abacus" className="abacus-button" onClick={() => setShowAbacus(!showAbacus)}>
-                  <Calculator size={24} strokeWidth={2.5} style={{ color: '#65C6EE' }} />
+                  <span style={{ fontSize: '24px' }}>🧮</span>
                 </div>
                 <div 
                   title={isArabic ? 'Math' : 'عربي'} 

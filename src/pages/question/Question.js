@@ -1033,16 +1033,18 @@ function Question() {
                                     </div>
                                 )}
                                 <div title={t('questionPage.openAbacus')} className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
-                                    <i className="fa fa-calculator" aria-hidden="true"></i>
+                                    <span style={{ fontSize: '22px' }}>🧮</span>
                                 </div>
                                 {role === 'Teacher' && (
 
                                     <div 
                                         title={t('questionPage.addAllToPocket')} 
                                         className="pocket-all-button" 
+                                        style={{ width: 'auto', padding: '0 15px', display: 'flex', gap: '6px', fontSize: '14px', fontWeight: 'bold', whiteSpace: 'nowrap' }}
                                         onClick={() => { soundEffects.playClick(); addAllToPocket(); }}
                                     >
-                                        <i className="fa fa-plus-square-o" aria-hidden="true"></i>
+                                        <i className="fa fa-plus" aria-hidden="true" style={{ marginTop: '2px' }}></i>
+                                        <span>Add to Homework</span>
                                     </div>
                                 )}
                                 <div 
