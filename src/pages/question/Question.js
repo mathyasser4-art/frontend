@@ -1032,19 +1032,19 @@ function Question() {
                                         </select>
                                     </div>
                                 )}
-                                <div title={t('questionPage.openAbacus')} className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
-                                    <span style={{ fontSize: '22px' }}>🧮</span>
+                                <div title={t('questionPage.openAbacus')} className="abacus-button" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
+                                    <span style={{ fontSize: '22px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🧮</span>
                                 </div>
                                 {role === 'Teacher' && (
 
                                     <div 
                                         title={t('questionPage.addAllToPocket')} 
                                         className="pocket-all-button" 
-                                        style={{ width: 'auto', padding: '0 15px', display: 'flex', gap: '6px', fontSize: '14px', fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                                        style={{ width: 'auto', padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '15px', fontWeight: 'bold' }}
                                         onClick={() => { soundEffects.playClick(); addAllToPocket(); }}
                                     >
-                                        <i className="fa fa-plus" aria-hidden="true" style={{ marginTop: '2px' }}></i>
-                                        <span>Add to Homework</span>
+                                        <i className="fa fa-plus" aria-hidden="true"></i>
+                                        <span>HW</span>
                                     </div>
                                 )}
                                 <div 

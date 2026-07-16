@@ -1542,8 +1542,8 @@ function Assignment() {
                     </select>
                   </div>
                 )}
-                <div title="Open Abacus" className="abacus-button" onClick={() => setShowAbacus(!showAbacus)}>
-                  <span style={{ fontSize: '24px' }}>🧮</span>
+                <div title="Open Abacus" className="abacus-button" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowAbacus(!showAbacus)}>
+                  <span style={{ fontSize: '24px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🧮</span>
                 </div>
                 <div 
                   title={isArabic ? 'Math' : 'عربي'} 
