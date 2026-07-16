@@ -1032,18 +1032,17 @@ function Question() {
                                         </select>
                                     </div>
                                 )}
-                                <div title={t('questionPage.openAbacus')} className="abacus-button" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #FEE140 0%, #ffb347 100%)', borderRadius: '8px', padding: '0 10px', boxShadow: '0 4px 10px rgba(254, 225, 64, 0.4)' }} onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
+                                <div title={t('questionPage.openAbacus')} className="abacus-button" style={{ width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #FEE140 0%, #ffb347 100%)', borderRadius: '50%', padding: '0', boxShadow: '0 8px 18px rgba(254, 225, 64, 0.35)', border: 'none', cursor: 'pointer' }} onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
                                     <span style={{ fontSize: '22px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🧮</span>
                                 </div>
                                 {role === 'Teacher' && (
 
                                     <div 
                                         title={t('questionPage.addAllToPocket')} 
-                                        className="pocket-all-button" 
-                                        style={{ width: '42px', height: '42px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', fontWeight: 'bold' }}
+                                        style={{ width: '42px', height: '42px', padding: '0', margin: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', fontWeight: 'bold', background: 'linear-gradient(135deg, #FA709A 0%, #FEE140 100%)', borderRadius: '50%', color: 'white', cursor: 'pointer', boxShadow: '0 8px 18px rgba(250, 112, 154, 0.35)' }}
                                         onClick={() => { soundEffects.playClick(); addAllToPocket(); }}
                                     >
-                                        <span>HW</span>
+                                        <span style={{ margin: 0, padding: 0 }}>HW</span>
                                     </div>
                                 )}
                                 <div 
