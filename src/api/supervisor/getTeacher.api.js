@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/supervisor/getAllTeachers`;
-const Token = localStorage.getItem('O_authWEB')
 
 const getTeacher = (setAllTecaher) => {
+    const Token = localStorage.getItem('O_authWEB');
+
     fetch(`${URL}`, {
         method: 'get',
         headers: {

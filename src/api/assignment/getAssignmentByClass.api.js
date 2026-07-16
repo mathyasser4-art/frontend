@@ -1,8 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
 
 const getAssignmentByClass = (setLoading, setAllAssignment, setError, classID) => {
-    setLoading(true);
     const Token = localStorage.getItem('O_authWEB');
+
+    setLoading(true);
+    
     const URL = `${API_BASE_URL}/assignment/class/${classID}`;
 
     fetch(URL, {

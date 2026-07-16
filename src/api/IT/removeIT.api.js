@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/it/deleteIT`;
-const Token = localStorage.getItem('O_authWEB')
 
 const removeIT = (itID, setError, setLoadingOperation, closeRemovePopup, setAllIt, setItNumber) => {
+    const Token = localStorage.getItem('O_authWEB');
+
     setLoadingOperation(true)
     fetch(`${URL}/${itID}`, {
         method: 'delete',

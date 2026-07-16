@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/student/getStudent`;
-const Token = localStorage.getItem('O_authWEB')
 
 const getStudent = (setLoading, setAllStudent, pageNumber, setStudentNumber, setTotalPage) => {
+    const Token = localStorage.getItem('O_authWEB');
+
     setLoading(true)
     fetch(`${URL}/${pageNumber}`, {
         method: 'get',

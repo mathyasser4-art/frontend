@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/teacher/updateTeacher`;
-const Token = localStorage.getItem('O_authWEB')
 
 const updateTeacher = (data, setError, setLoadingOperation, closeUpdatePopup, pageNumber, setAllTeacher, setTeacherNumber, teacherID, setTotalPage) => {
+    const Token = localStorage.getItem('O_authWEB');
+
     setLoadingOperation(true)
     fetch(`${URL}/${teacherID}/${pageNumber}`, {
         method: 'put',

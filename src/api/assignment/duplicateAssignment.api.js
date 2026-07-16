@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/assignment/duplicateAssignment`;
-const Token = localStorage.getItem('O_authWEB')
 
 const duplicateAssignment = (data, setError, assignmentID, setAllAsignment, setLoadingOperation, setPocketNumber, setQuestionList, closeReassignPopup, setTimer, setTitle, setForceFlashMode, setAssignmentFlashSpeed) => {
+    const Token = localStorage.getItem('O_authWEB');
+
     setLoadingOperation(true)
     
     console.log('Duplicating assignment:', assignmentID);

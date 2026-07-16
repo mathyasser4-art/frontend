@@ -1,9 +1,10 @@
 ﻿import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/school/registerTeachers`;
-const Token = localStorage.getItem('O_authWEB');
 
 const registerTeachers = (data, setError, setLoadingOperation, onSuccess) => {
+    const Token = localStorage.getItem('O_authWEB');
+
     setLoadingOperation(true);
     fetch(URL, {
         method: 'POST',
