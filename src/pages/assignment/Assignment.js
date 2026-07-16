@@ -574,7 +574,7 @@ function Assignment() {
   // Flash Mode Functions
   const getQuestionLines = () => {
     if (!thisQuestion?.question) return [];
-    const toArabic = !!thisQuestion.isArabic;
+    const toArabic = isArabic;
     const grid = parseAbacusGrid(thisQuestion.question);
     if (grid) {
       return grid.map(row => `${rowOp(row)} ${translateNumbers(rowVal(row), toArabic)}`);
@@ -591,7 +591,7 @@ function Assignment() {
 
   const renderQuestion = () => {
     if (!thisQuestion?.question) return null;
-    const toArabic = !!thisQuestion.isArabic;
+    const toArabic = isArabic;
     const grid = parseAbacusGrid(thisQuestion.question);
     if (grid) {
       return (
@@ -731,6 +731,15 @@ function Assignment() {
       }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-enable Arabic mode if the teacher set the assignment to be Arabic
+  useEffect(() => {
+    if (questionData && questionData.length > 0) {
+      if (questionData[0].isArabic) {
+        setIsArabic(true);
+      }
+    }
+  }, [questionData]);
 
   // Debug: Track forceFlashMode state changes
   useEffect(() => {
@@ -1536,6 +1545,14 @@ function Assignment() {
                 <div title="Open Abacus" className="abacus-button" onClick={() => setShowAbacus(!showAbacus)}>
                   <Calculator size={24} strokeWidth={2.5} style={{ color: '#65C6EE' }} />
                 </div>
+                <div 
+                  title={isArabic ? 'Math' : 'عربي'} 
+                  className="pocket-button" 
+                  style={{ width: 'auto', padding: '0 10px', fontSize: '14px', fontWeight: 'bold' }}
+                  onClick={() => { soundEffects.playClick(); setIsArabic(!isArabic); }}
+                >
+                  {isArabic ? 'Math' : 'عربي'}
+                </div>
 
 
 
@@ -1638,7 +1655,7 @@ function Assignment() {
                         checked={answer && answer === item}
                         onChange={e => handleChecked(e.target.value)} 
                       />
-                      <span className='mcq-text'>{translateNumbers(item, thisQuestion.isArabic)}</span>
+                      <span className='mcq-text'>{translateNumbers(item, isArabic)}</span>
                     </label>
                   ))}
                 </div>
