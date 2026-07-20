@@ -80,10 +80,6 @@ const Navbar = () => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
                 console.log('[NOTIFICATION] Force join event received:', data);
                 if (String(data.studentId) === String(localStorage.getItem('pp_id'))) {
-                    const docEl = document.documentElement;
-                    if (docEl.requestFullscreen) {
-                        docEl.requestFullscreen().catch(() => {});
-                    }
                     navigate(`/student/competition/${data.competitionId}`);
                 }
             });
@@ -348,14 +344,6 @@ const Navbar = () => {
                             onClick={() => {
                                 const compId = activeBattleNotification.competitionId;
                                 setActiveBattleNotification(null);
-                                
-                                // Eagerly trigger automatic fullscreen using active user gesture
-                                const docEl = document.documentElement;
-                                if (docEl.requestFullscreen) {
-                                    docEl.requestFullscreen().catch(() => {});
-                                } else if (docEl.webkitRequestFullscreen) {
-                                    docEl.webkitRequestFullscreen();
-                                }
                                 
                                 // Route directly to the competition page
                                 navigate(`/student/competition/${compId}`);

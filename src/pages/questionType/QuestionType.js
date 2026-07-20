@@ -241,14 +241,6 @@ function QuestionType() {
                   if (!id) { setJoinCompError('Please paste a valid Competition ID from your teacher.'); return; }
                   soundEffects.playClick();
                   
-                  // Eagerly trigger automatic fullscreen using active user gesture
-                  const docEl = document.documentElement;
-                  if (docEl.requestFullscreen) {
-                      docEl.requestFullscreen().catch(() => {});
-                  } else if (docEl.webkitRequestFullscreen) {
-                      docEl.webkitRequestFullscreen();
-                  }
-
                   setJoiningComp(true);
                   navigate(`/student/competition/${id}`);
                 }}

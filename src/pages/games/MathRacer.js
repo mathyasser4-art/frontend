@@ -757,9 +757,8 @@ function MathRacer() {
     setFeedback(null);
     setCurrentQuestionIndex(0);
     setEssayAnswer('');
-    
-    // Auto-fullscreen
-    triggerFullscreen();
+    // Auto-fullscreen disabled
+    // triggerFullscreen();
 
     setGameState('countdown');
     setCountdownValue(3);

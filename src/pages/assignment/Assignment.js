@@ -648,16 +648,17 @@ function Assignment() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  // Auto-enter fullscreen when student enters assignment
+  // Auto-enter fullscreen disabled
+  /*
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!document.fullscreenElement) {
         toggleFullscreen();
       }
-    }, 100); // Small delay to ensure DOM ready
-
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
+  */
 
   const toggleFlashMode = () => {
     // Prevent toggling if flash mode is forced by teacher

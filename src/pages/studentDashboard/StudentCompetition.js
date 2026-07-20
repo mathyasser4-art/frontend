@@ -118,11 +118,11 @@ function StudentCompetition() {
         };
 
         // Try immediately
-        enterFullscreen();
+        // enterFullscreen(); // disabled
 
-        // Aggressively attempt fullscreen and wake lock on user clicks/touches (even before game starts!)
+        // Aggressively attempt wake lock on user clicks/touches (even before game starts!)
         const handleGesture = () => {
-            enterFullscreen();
+            // enterFullscreen(); // disabled
             requestWakeLock();
         };
         document.addEventListener('click', handleGesture);
