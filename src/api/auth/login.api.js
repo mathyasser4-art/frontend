@@ -46,9 +46,13 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                     localStorage.setItem('teacher_id', responseJson.createdBy);
                 }
                 const route = ROLE_ROUTES[responseJson.role] || '/';
-                setTimeout(() => {
-                    window.location.href = route;
-                }, 100);
+                if (typeof navigate === 'function') {
+                    navigate(route, { replace: true });
+                } else {
+                    setTimeout(() => {
+                        window.location.href = route;
+                    }, 100);
+                }
             } else {
                 let errorMsg = responseJson.message;
                 if (errorMsg === 'This email is not registered' || errorMsg === 'Incorrect password') {

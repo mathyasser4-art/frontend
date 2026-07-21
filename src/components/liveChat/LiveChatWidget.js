@@ -112,6 +112,7 @@ const LiveChatWidget = () => {
   }, []);
 
   const syncChat = async () => {
+    if (document.visibilityState === 'hidden') return;
     try {
       const response = await fetch(`${API_BASE_URL}/chat/sync/${sessionIdRef.current}`);
       const data = await response.json();
@@ -249,4 +250,4 @@ const LiveChatWidget = () => {
   );
 };
 
-export default LiveChatWidget;
+export default React.memo(LiveChatWidget);

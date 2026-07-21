@@ -19,14 +19,22 @@ class SoundEffects {
       wrong: 0.12       // Quieter wrong sound
     };
 
-    // Initialize Web Audio API
+    // Initialize Web Audio API lazily
     this.audioContext = null;
     this.isReady = false;
-    this.initAudioContext();
-    this.loadAllSounds();
+    this.isLoading = false;
     
     // Unlock audio on first user interaction (required for mobile)
     this.setupAudioUnlock();
+  }
+
+  ensureInitialized() {
+    if (!this.audioContext) {
+      this.initAudioContext();
+    }
+    if (!this.isReady && !this.isLoading) {
+      this.loadAllSounds();
+    }
   }
 
   initAudioContext() {
@@ -41,6 +49,7 @@ class SoundEffects {
   setupAudioUnlock() {
     // Mobile browsers require user interaction before playing audio
     const unlockAudio = () => {
+      this.ensureInitialized();
       if (this.audioContext && this.audioContext.state === 'suspended') {
         this.audioContext.resume().then(() => {
           console.log('Audio context unlocked');
@@ -52,13 +61,14 @@ class SoundEffects {
       document.removeEventListener('click', unlockAudio);
     };
 
-    document.addEventListener('touchstart', unlockAudio);
-    document.addEventListener('touchend', unlockAudio);
-    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio, { passive: true });
+    document.addEventListener('touchend', unlockAudio, { passive: true });
+    document.addEventListener('click', unlockAudio, { passive: true });
   }
 
   async loadAllSounds() {
     if (!this.audioContext) return;
+    this.isLoading = true;
 
     const loadPromises = Object.entries(this.soundPaths).map(async ([name, path]) => {
       try {
@@ -66,7 +76,6 @@ class SoundEffects {
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
         this.buffers[name] = audioBuffer;
-        console.log(`Loaded sound: ${name}`);
       } catch (error) {
         console.error(`Failed to load sound ${name}:`, error);
       }
@@ -74,7 +83,7 @@ class SoundEffects {
 
     await Promise.all(loadPromises);
     this.isReady = true;
-    console.log('All sounds loaded and ready');
+    this.isLoading = false;
   }
 
   playClick() {
@@ -114,8 +123,8 @@ class SoundEffects {
   }
 
   playSound(soundName, volume = null) {
+    this.ensureInitialized();
     if (!this.audioContext || !this.buffers[soundName]) {
-      console.warn(`Sound ${soundName} not ready yet`);
       return;
     }
 
