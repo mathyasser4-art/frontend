@@ -51,7 +51,7 @@
     width: 340px;
     color: rgba(255, 255, 255, 0.9);
     border-radius: 15px;
-    background: linear-gradient(-45deg, #ffa63d, #ff3d77, #338aff, #3cf0c5);
+    background: linear-gradient(-45deg, #ff6b35, #e63946, #d62828, #ff006e);
     background-size: 600%;
     cursor: pointer;
     -webkit-animation: anime 16s linear infinite;
