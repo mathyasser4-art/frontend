@@ -109,6 +109,8 @@ and you have (${item?.attemptsNumber} Attempts) to finshing exam.`}
                                         </div>
                                         <div className="assignment-footer d-flex flex-wrap align-items-center justify-content-space-between">
                                             <div className="text-footer">
+                                                {item?.startDate ? <p>Start Date: {item?.startDate}</p> : null}
+                                                {item?.endDate ? <p>Expiry Date: {item?.endDate}</p> : null}
                                             </div>
                                             <p className='created'>Created At: {item?.createdAt}</p>
                                         </div>

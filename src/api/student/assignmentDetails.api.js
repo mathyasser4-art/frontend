@@ -2,11 +2,9 @@ import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 
 const URL = `${API_BASE_URL}/student/assignmentDetails`;
-
+const Token = localStorage.getItem('O_authWEB')
 
 const assignmentDetails = (setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode, setCurrentAttempt, setTotalAttempts, setRemainingAttempts, setFlashSpeed) => {
-    const Token = localStorage.getItem('O_authWEB');
-
     setLoading(true)
     // Only remove legacy time key if no saved progress exists for this assignment
     // (preserves backward compatibility while supporting phone-shutdown recovery)

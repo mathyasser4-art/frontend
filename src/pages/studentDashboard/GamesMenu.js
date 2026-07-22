@@ -1,14 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import './GamesMenu.css';
 
 const GamesMenu = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const isAuth = localStorage.getItem('O_authWEB');
 
   return (
@@ -23,10 +21,10 @@ const GamesMenu = () => {
             className="back-button-modern"
           >
             <ArrowLeft size={24} />
-            <span>{t('gamesMenu.backToDashboard', 'Back to Dashboard')}</span>
+            <span>Back to Dashboard</span>
           </button>
-          <h1 className="menu-title">{t('gamesMenu.title', 'Adventure Games Room')}</h1>
-          <p className="menu-subtitle">{t('gamesMenu.subtitle', 'Play, Learn, and Conquer the Leaderboard!')}</p>
+          <h1 className="menu-title">Adventure Games Room</h1>
+          <p className="menu-subtitle">Play, Learn, and Conquer the Leaderboard!</p>
         </div>
 
         <div className="games-grid-premium">
@@ -38,14 +36,14 @@ const GamesMenu = () => {
                 <img src="/img/games/racer_cover.png" alt="Math Racer" className="card-bg-img" />
                 <div className="card-overlay">
                   <div className="overlay-content">
-                    <h3>{t('gamesMenu.mathRacer', 'Math Racer')}</h3>
-                    <p>{t('gamesMenu.mathRacerDesc', 'Turbo charged math action')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
+                    <h3>Math Racer</h3>
+                    <p>Turbo charged math action</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
               </div>
             </div>
-            <h3 className="game-card-title">{t('gamesMenu.mathRacer', 'Math Racer')}</h3>
+            <h3 className="game-card-title">Math Racer</h3>
           </div>
 
           {/* Bunny Run */}
@@ -55,14 +53,14 @@ const GamesMenu = () => {
                 <img src="/img/games/bunny_cover.png" alt="Bunny Run" className="card-bg-img" />
                 <div className="card-overlay">
                   <div className="overlay-content">
-                    <h3>{t('gamesMenu.bunnyRun', 'Bunny Run')}</h3>
-                    <p>{t('gamesMenu.bunnyRunDesc', 'Endless runner fun')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
+                    <h3>Bunny Run</h3>
+                    <p>Endless runner fun</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
               </div>
             </div>
-            <h3 className="game-card-title">{t('gamesMenu.bunnyRun', 'Bunny Run')}</h3>
+            <h3 className="game-card-title">Bunny Run</h3>
           </div>
 
           {/* Maze Game */}
@@ -72,14 +70,14 @@ const GamesMenu = () => {
                 <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧩</div>
                 <div className="card-overlay">
                   <div className="overlay-content">
-                    <h3>{t('gamesMenu.mazeGame', 'Maze Game')}</h3>
-                    <p>{t('gamesMenu.mazeGameDesc', 'Navigate and solve math to unlock doors')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
+                    <h3>Maze Game</h3>
+                    <p>Navigate and solve math to unlock doors</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
               </div>
             </div>
-            <h3 className="game-card-title">{t('gamesMenu.mazeGame', 'Maze Game')}</h3>
+            <h3 className="game-card-title">Maze Game</h3>
           </div>
 
           {/* Cartoon Airplanes */}
@@ -89,14 +87,14 @@ const GamesMenu = () => {
                 <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>✈️</div>
                 <div className="card-overlay">
                   <div className="overlay-content">
-                    <h3>{t('gamesMenu.cartoonAirplanes', 'Cartoon Airplanes')}</h3>
-                    <p>{t('gamesMenu.cartoonAirplanesDesc', 'Take to the skies')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
+                    <h3>Cartoon Airplanes</h3>
+                    <p>Take to the skies</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
               </div>
             </div>
-            <h3 className="game-card-title">{t('gamesMenu.cartoonAirplanes', 'Cartoon Airplanes')}</h3>
+            <h3 className="game-card-title">Cartoon Airplanes</h3>
           </div>
 
           {/* Infinite Mario */}
@@ -106,14 +104,14 @@ const GamesMenu = () => {
                 <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #ef4444 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🍄</div>
                 <div className="card-overlay">
                   <div className="overlay-content">
-                    <h3>{t('gamesMenu.infiniteMario', 'Infinite Mario')}</h3>
-                    <p>{t('gamesMenu.infiniteMarioDesc', 'Classic platforming')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
+                    <h3>Infinite Mario</h3>
+                    <p>Classic platforming</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
               </div>
             </div>
-            <h3 className="game-card-title">{t('gamesMenu.infiniteMario', 'Infinite Mario')}</h3>
+            <h3 className="game-card-title">Infinite Mario</h3>
           </div>
 
           {/* Sudoku Master */}
@@ -123,14 +121,14 @@ const GamesMenu = () => {
                 <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧩</div>
                 <div className="card-overlay">
                   <div className="overlay-content">
-                    <h3>{t('gamesMenu.sudokuMaster', 'Sudoku Master')}</h3>
-                    <p>{t('gamesMenu.sudokuMasterDesc', 'Brain teasing puzzles')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
+                    <h3>Sudoku Master</h3>
+                    <p>Brain teasing puzzles</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
               </div>
             </div>
-            <h3 className="game-card-title">{t('gamesMenu.sudokuMaster', 'Sudoku Master')}</h3>
+            <h3 className="game-card-title">Sudoku Master</h3>
           </div>
 
           {/* Abacus Match Challenge */}
@@ -140,14 +138,14 @@ const GamesMenu = () => {
                 <img src="/img/games/abacus_match_cover.png" alt="Abacus Match" className="card-bg-img" />
                 <div className="card-overlay">
                   <div className="overlay-content">
-                    <h3>{t('gamesMenu.abacusMatch', 'Abacus Match')}</h3>
-                    <p>{t('gamesMenu.abacusMatchDesc', 'Soroban training challenge')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
+                    <h3>Abacus Match</h3>
+                    <p>Soroban training challenge</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
               </div>
             </div>
-            <h3 className="game-card-title">{t('gamesMenu.abacusMatch', 'Abacus Match')}</h3>
+            <h3 className="game-card-title">Abacus Match</h3>
           </div>
 
           {/* Math Tanks */}
@@ -157,14 +155,14 @@ const GamesMenu = () => {
                 <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🚀</div>
                 <div className="card-overlay">
                   <div className="overlay-content">
-                    <h3>{t('gamesMenu.mathTanks', 'Math Tanks')}</h3>
-                    <p>{t('gamesMenu.mathTanksDesc', 'Aim, solve, and blast rivals in the arena!')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
+                    <h3>Math Tanks</h3>
+                    <p>Aim, solve, and blast rivals in the arena!</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
               </div>
             </div>
-            <h3 className="game-card-title">{t('gamesMenu.mathTanks', 'Math Tanks')}</h3>
+            <h3 className="game-card-title">Math Tanks</h3>
           </div>
 
           {/* Minigolf */}
@@ -174,14 +172,14 @@ const GamesMenu = () => {
                 <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #a3e635 0%, #65a30d 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>⛳</div>
                 <div className="card-overlay">
                   <div className="overlay-content">
-                    <h3>{t('gamesMenu.minigolf', 'Minigolf')}</h3>
-                    <p>{t('gamesMenu.minigolfDesc', 'Putt your way through math challenges!')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
+                    <h3>Minigolf</h3>
+                    <p>Putt your way through math challenges!</p>
+                    <button className="play-hover-btn">PLAY NOW</button>
                   </div>
                 </div>
               </div>
             </div>
-            <h3 className="game-card-title">{t('gamesMenu.minigolf', 'Minigolf')}</h3>
+            <h3 className="game-card-title">Minigolf</h3>
           </div>
 
         </div>
@@ -192,20 +190,20 @@ const GamesMenu = () => {
           <div className="upgrade-modal-card">
             <div className="upgrade-modal-header">
               <span className="lock-large-icon">🔒</span>
-              <h2>{t('gamesMenu.upgradeTitle', 'Upgrade to Use')}</h2>
+              <h2>Upgrade to Use</h2>
             </div>
             <p className="upgrade-modal-text">
-              {t('gamesMenu.upgradeText', 'Public guests cannot access the Adventure Games Room. Subscribe to unlock all interactive educational games!')}
+              Public guests cannot access the Adventure Games Room. Subscribe to unlock all interactive educational games!
             </p>
             <div className="upgrade-modal-actions">
               <button className="upgrade-btn-primary" onClick={() => navigate('/pricing')}>
-                {t('gamesMenu.viewPricing', 'View Pricing Plans')}
+                View Pricing Plans
               </button>
               <button className="upgrade-btn-secondary" onClick={() => navigate('/auth/login')}>
-                {t('gamesMenu.logIn', 'Log In')}
+                Log In
               </button>
               <button className="upgrade-btn-secondary" style={{ marginTop: '0.25rem' }} onClick={() => navigate('/')}>
-                {t('gamesMenu.backToHome', 'Back to Home')}
+                Back to Home
               </button>
             </div>
           </div>

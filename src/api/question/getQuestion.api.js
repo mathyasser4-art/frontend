@@ -4,10 +4,9 @@ import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 const URL = `${API_BASE_URL}/chapter/getChapterQuestion`;
 
 const getQuestion = (setLoading, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, chapterID) => {
-    const Token = localStorage.getItem('O_authWEB');
-
     setLoading(true)
-        fetch(`${URL}/${chapterID}`, {
+    const Token = localStorage.getItem('O_authWEB');
+    fetch(`${URL}/${chapterID}`, {
         method: 'get',
         headers: {
             'Content-Type': 'application/json',

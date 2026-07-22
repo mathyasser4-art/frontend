@@ -473,18 +473,11 @@
 }
 
 @media (max-width: 600px) {
-  .maze-main-container { padding: 0.5rem; max-width: 100%; }
-  .maze-game-layout { padding: 0.5rem; max-width: 100%; }
-  .hud-timer { padding: 0.5rem 1rem; font-size: 1.2rem; }
-  .maze-sidebar { flex-direction: column; gap: 1.5rem; padding: 1rem; }
-  .maze-viewport { padding: 0.5rem; max-width: 100%; }
-  .problem-box { font-size: 2rem; padding: 1rem; }
-  .input-group-modern { flex-direction: column; gap: 0.5rem; }
-  .input-group-modern input { font-size: 1.8rem; padding: 0.5rem; }
-  .input-group-modern button { padding: 0.5rem 1.5rem; font-size: 1.3rem; }
-  .dpad-modern button { width: 55px; height: 55px; }
-  .m-cell.w-t { border-top-width: 6px; }
-  .m-cell.w-r { border-right-width: 6px; }
-  .m-cell.w-b { border-bottom-width: 6px; }
-  .m-cell.w-l { border-left-width: 6px; }
+  .maze-main-container { padding: 0.5rem; }
+  .maze-game-layout { padding: 1rem; }
+  .hud-timer { padding: 0.5rem 1rem; font-size: 1.4rem; }
+  .maze-sidebar { flex-direction: column; gap: 2rem; }
+  .maze-viewport { padding: 1rem; }
+  .problem-box { font-size: 2.5rem; }
 }
+

@@ -2,8 +2,7 @@ import API_BASE_URL from '../../config/api.config';
 
 const getStudentHistory = async (studentID) => {
     const Token = localStorage.getItem('O_authWEB');
-
-        const URL = `${API_BASE_URL}/teacher/student/${studentID}/history`;
+    const URL = `${API_BASE_URL}/teacher/student/${studentID}/history`;
     
     try {
         const response = await fetch(URL, {

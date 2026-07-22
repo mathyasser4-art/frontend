@@ -213,7 +213,7 @@ function CreateCompetitionModal({ onClose }) {
     const handleLaunchBattle = async () => {
         soundEffects.playClick();
         if (!battleTitle.trim()) {
-            setErrorMsg('Please enter a competition title.');
+            setErrorMsg('Please enter a battle title.');
             return;
         }
         if (chapterQuestions.length === 0) {
@@ -254,7 +254,7 @@ function CreateCompetitionModal({ onClose }) {
                         )}
                         <div className="comp-wizard-title-row">
                             <Swords size={22} className="comp-wizard-sword" />
-                            <h2>{t('competitionWizard.title', '⚔️ Create a competition')}</h2>
+                            <h2>⚔️ Create Live Battle</h2>
                         </div>
                     </div>
                     <button className="comp-wizard-close-btn" onClick={onClose} title="Close">
@@ -266,7 +266,7 @@ function CreateCompetitionModal({ onClose }) {
                 <div className="comp-wizard-progress">
                     <div className={`comp-prog-step ${step === 'source' ? 'active' : ''} ${step !== 'source' ? 'completed' : ''}`}>
                         <div className="comp-step-num">1</div>
-                        <span>{t('competitionWizard.source', 'Source')}</span>
+                        <span>Source</span>
                     </div>
                     
                     {step === 'custom-ws' || step === 'assignments' || (selectedChapter && !selectedSubject) ? (
@@ -274,12 +274,12 @@ function CreateCompetitionModal({ onClose }) {
                             <div className="comp-prog-connector"></div>
                             <div className={`comp-prog-step ${step === 'custom-ws' || step === 'assignments' ? 'active' : ''} ${step === 'details' ? 'completed' : ''}`}>
                                 <div className="comp-step-num">2</div>
-                                <span>{t('competitionWizard.select', 'Select')}</span>
+                                <span>Select</span>
                             </div>
                             <div className="comp-prog-connector"></div>
                             <div className={`comp-prog-step ${step === 'details' ? 'active' : ''}`}>
                                 <div className="comp-step-num">3</div>
-                                <span>{t('competitionWizard.launch', 'Launch')}</span>
+                                <span>Launch</span>
                             </div>
                         </>
                     ) : (
@@ -287,22 +287,22 @@ function CreateCompetitionModal({ onClose }) {
                             <div className="comp-prog-connector"></div>
                             <div className={`comp-prog-step ${step === 'type' ? 'active' : ''} ${step !== 'type' && step !== 'source' ? 'completed' : ''}`}>
                                 <div className="comp-step-num">2</div>
-                                <span>{t('competitionWizard.type', 'Type')}</span>
+                                <span>Type</span>
                             </div>
                             <div className="comp-prog-connector"></div>
                             <div className={`comp-prog-step ${step === 'system' ? 'active' : ''} ${step === 'unit' || step === 'details' ? 'completed' : ''}`}>
                                 <div className="comp-step-num">3</div>
-                                <span>{t('competitionWizard.system', 'System')}</span>
+                                <span>System</span>
                             </div>
                             <div className="comp-prog-connector"></div>
                             <div className={`comp-prog-step ${step === 'unit' ? 'active' : ''} ${step === 'details' ? 'completed' : ''}`}>
                                 <div className="comp-step-num">4</div>
-                                <span>{t('competitionWizard.chapter', 'Chapter')}</span>
+                                <span>Chapter</span>
                             </div>
                             <div className="comp-prog-connector"></div>
                             <div className={`comp-prog-step ${step === 'details' ? 'active' : ''}`}>
                                 <div className="comp-step-num">5</div>
-                                <span>{t('competitionWizard.launch', 'Launch')}</span>
+                                <span>Launch</span>
                             </div>
                         </>
                     )}
@@ -320,31 +320,31 @@ function CreateCompetitionModal({ onClose }) {
                     {/* STEP 0: Question Source Selection */}
                     {!loading && step === 'source' && (
                         <div className="comp-step-container">
-                            <p className="comp-step-instruction">{t('competitionWizard.selectSource', 'Select the source of questions for your competition:')}</p>
+                            <p className="comp-step-instruction">Select the source of questions for your live battle:</p>
                             <div className="comp-source-grid">
                                 <div className="comp-source-card" onClick={() => { soundEffects.playClick(); setStep('type'); }}>
                                     <div className="comp-source-icon-circle">
                                         <BookOpen size={28} />
                                     </div>
-                                    <h3>{t('competitionWizard.textbookWorksheets', 'Textbook Worksheets')}</h3>
-                                    <p>{t('competitionWizard.textbookWorksheetsDesc', 'Choose from standard book systems, units, and chapters.')}</p>
-                                    <button className="comp-source-select-btn">{t('competitionWizard.selectContinue', 'Select & Continue')}</button>
+                                    <h3>Textbook Worksheets</h3>
+                                    <p>Choose from standard book systems, units, and chapters.</p>
+                                    <button className="comp-source-select-btn">Select & Continue</button>
                                 </div>
                                 <div className="comp-source-card" onClick={loadCustomWorksheets}>
                                     <div className="comp-source-icon-circle">
                                         <Layers size={28} />
                                     </div>
-                                    <h3>{t('competitionWizard.myQuestionBank', 'My Question Bank')}</h3>
-                                    <p>{t('competitionWizard.myQuestionBankDesc', 'Choose from worksheets and custom questions you created.')}</p>
-                                    <button className="comp-source-select-btn">{t('competitionWizard.selectContinue', 'Select & Continue')}</button>
+                                    <h3>My Question Bank</h3>
+                                    <p>Choose from worksheets and custom questions you created.</p>
+                                    <button className="comp-source-select-btn">Select & Continue</button>
                                 </div>
                                 <div className="comp-source-card" onClick={loadMyAssignments}>
                                     <div className="comp-source-icon-circle">
                                         <Swords size={28} />
                                     </div>
-                                    <h3>{t('competitionWizard.myAssignedHomeworks', 'My Assigned Homeworks')}</h3>
-                                    <p>{t('competitionWizard.myAssignedHomeworksDesc', 'Select questions from homework you previously assigned.')}</p>
-                                    <button className="comp-source-select-btn">{t('competitionWizard.selectContinue', 'Select & Continue')}</button>
+                                    <h3>My Assigned Homeworks</h3>
+                                    <p>Select questions from homework you previously assigned.</p>
+                                    <button className="comp-source-select-btn">Select & Continue</button>
                                 </div>
                             </div>
                         </div>
@@ -353,11 +353,11 @@ function CreateCompetitionModal({ onClose }) {
                     {/* STEP: Custom Worksheets Selection */}
                     {!loading && step === 'custom-ws' && (
                         <div className="comp-step-container">
-                            <p className="comp-step-instruction">{t('competitionWizard.selectCustomWs', 'Select one of your custom worksheets:')}</p>
+                            <p className="comp-step-instruction">Select one of your custom worksheets:</p>
                             <input 
                                 type="text"
                                 className="comp-search-bar"
-                                placeholder={t('competitionWizard.searchWs', 'Search worksheets...')}
+                                placeholder="Search worksheets..."
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
                             />
@@ -368,7 +368,7 @@ function CreateCompetitionModal({ onClose }) {
                                         <div key={ws._id} className="comp-list-item" onClick={() => {
                                             soundEffects.playClick();
                                             setSelectedChapter(ws);
-                                            setBattleTitle(`${ws.chapterName} Competition`);
+                                            setBattleTitle(`${ws.chapterName} Battle`);
                                             if (ws.format) {
                                                 setQuestionTypeID(ws.format === 'MCQ' ? '65a4963482dbaac16d820fc6' : '65a4964b82dbaac16d820fc8');
                                             }
@@ -377,14 +377,14 @@ function CreateCompetitionModal({ onClose }) {
                                             <div className="comp-item-info">
                                                 <span className="comp-item-title">📄 {ws.chapterName}</span>
                                                 <span className="comp-item-meta">
-                                                    Format: {ws.format === 'MCQ' ? t('competitionWizard.formatChoose', 'Choose') : t('competitionWizard.formatComplete', 'Complete')} • {ws.questions?.length || 0} {t('competitionWizard.questionsCount', 'Questions')}
+                                                    Format: {ws.format === 'MCQ' ? 'Choose' : 'Complete'} • {ws.questions?.length || 0} Questions
                                                 </span>
                                             </div>
-                                            <button className="comp-item-select">{t('competitionWizard.selectBtn', 'Select')}</button>
+                                            <button className="comp-item-select">Select</button>
                                         </div>
                                     ))}
                                 {customWorksheets.length === 0 && (
-                                    <div className="comp-empty-state">{t('competitionWizard.noCustomWs', 'No custom worksheets found in your Question Bank.')}</div>
+                                    <div className="comp-empty-state">No custom worksheets found in your Question Bank.</div>
                                 )}
                             </div>
                         </div>
@@ -393,11 +393,11 @@ function CreateCompetitionModal({ onClose }) {
                     {/* STEP: My Assigned Homeworks Selection */}
                     {!loading && step === 'assignments' && (
                         <div className="comp-step-container">
-                            <p className="comp-step-instruction">{t('competitionWizard.selectPastAssign', 'Select a past assignment to clone its questions:')}</p>
+                            <p className="comp-step-instruction">Select a past assignment to clone its questions:</p>
                             <input 
                                 type="text"
                                 className="comp-search-bar"
-                                placeholder={t('competitionWizard.searchAssign', 'Search assignments...')}
+                                placeholder="Search assignments..."
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
                             />
@@ -408,20 +408,20 @@ function CreateCompetitionModal({ onClose }) {
                                         <div key={assign._id} className="comp-list-item" onClick={() => {
                                             soundEffects.playClick();
                                             setChapterQuestions(assign.questions || []);
-                                            setBattleTitle(`${assign.title} Competition`);
+                                            setBattleTitle(`${assign.title} Battle`);
                                             setStep('details');
                                         }}>
                                             <div className="comp-item-info">
                                                 <span className="comp-item-title">📋 {assign.title}</span>
                                                 <span className="comp-item-meta">
-                                                    {assign.questions?.length || 0} {t('competitionWizard.questionsCount', 'Questions')}
+                                                    {assign.questions?.length || 0} Questions • Due: {assign.endDate || 'N/A'}
                                                 </span>
                                             </div>
-                                            <button className="comp-item-select">{t('competitionWizard.selectBtn', 'Select')}</button>
+                                            <button className="comp-item-select">Select</button>
                                         </div>
                                     ))}
                                 {myAssignments.length === 0 && (
-                                    <div className="comp-empty-state">{t('competitionWizard.noPastAssign', 'No past assignments found.')}</div>
+                                    <div className="comp-empty-state">No past assignments found.</div>
                                 )}
                             </div>
                         </div>
@@ -430,23 +430,23 @@ function CreateCompetitionModal({ onClose }) {
                     {/* STEP 1: Question Type */}
                     {!loading && step === 'type' && (
                         <div className="comp-step-container">
-                            <p className="comp-step-instruction">{t('competitionWizard.selectFormat', 'Select the format of questions for your competition:')}</p>
+                            <p className="comp-step-instruction">Select the format of questions for your battle:</p>
                             <div className="comp-type-grid">
                                 <div className="comp-type-card comp-mcq-card" onClick={() => handleSelectType('mcq')}>
                                     <div className="comp-type-icon-circle comp-mcq-bg">
                                         <Circle size={40} className="comp-type-icon" />
                                     </div>
-                                    <h3>{t('competitionWizard.chooseQuestions', 'Choose Questions')}</h3>
-                                    <p>{t('competitionWizard.chooseQuestionsDesc', 'Students pick the correct answer from options.')}</p>
-                                    <button className="comp-type-select-btn">{t('competitionWizard.chooseBtn', 'Choose')} <ChevronRight size={16} /></button>
+                                    <h3>Choose Questions</h3>
+                                    <p>Students pick the correct answer from options.</p>
+                                    <button className="comp-type-select-btn">Choose <ChevronRight size={16} /></button>
                                 </div>
                                 <div className="comp-type-card comp-completion-card" onClick={() => handleSelectType('completion')}>
                                     <div className="comp-type-icon-circle comp-completion-bg">
                                         <CheckCircle2 size={40} className="comp-type-icon" />
                                     </div>
-                                    <h3>{t('competitionWizard.completeQuestions', 'Complete Questions')}</h3>
-                                    <p>{t('competitionWizard.completeQuestionsDesc', 'Students type the numeric answer directly.')}</p>
-                                    <button className="comp-type-select-btn">{t('competitionWizard.chooseBtn', 'Choose')} <ChevronRight size={16} /></button>
+                                    <h3>Complete Questions</h3>
+                                    <p>Students type the numeric answer directly.</p>
+                                    <button className="comp-type-select-btn">Choose <ChevronRight size={16} /></button>
                                 </div>
                             </div>
                         </div>
@@ -455,10 +455,10 @@ function CreateCompetitionModal({ onClose }) {
                     {/* STEP 2: System & Subject */}
                     {!loading && step === 'system' && (
                         <div className="comp-step-container">
-                            <p className="comp-step-instruction">{t('competitionWizard.chooseSystem', 'Choose a System, then select a Subject:')}</p>
+                            <p className="comp-step-instruction">Choose a System, then select a Subject:</p>
                             <div className="comp-systems-list">
                                 {systemData.length === 0 ? (
-                                    <div className="comp-empty-state">{t('competitionWizard.noSystems', 'No systems found.')}</div>
+                                    <div className="comp-empty-state">No systems found.</div>
                                 ) : (
                                     systemData.map(system => {
                                         const isExpanded = selectedSystemId === system._id;
@@ -474,7 +474,7 @@ function CreateCompetitionModal({ onClose }) {
                                                 {isExpanded && (
                                                     <div className="comp-accordion-content">
                                                         {system.subjects?.length === 0 ? (
-                                                            <div className="comp-no-items">{t('competitionWizard.noSubjects', 'No subjects in this system.')}</div>
+                                                            <div className="comp-no-items">No subjects in this system.</div>
                                                         ) : (
                                                             <div className="comp-subjects-grid">
                                                                 {system.subjects?.map(subject => (
@@ -500,14 +500,14 @@ function CreateCompetitionModal({ onClose }) {
                     {!loading && step === 'unit' && (
                         <div className="comp-step-container">
                             <div className="comp-breadcrumb">
-                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? t('competitionWizard.formatChoose', 'Choose') : t('competitionWizard.formatComplete', 'Complete')}</span>
+                                <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Choose' : 'Complete'}</span>
                                 <ChevronRight size={12} />
                                 <span className="comp-breadcrumb-active">{translateName(selectedSubject?.subjectName)}</span>
                             </div>
-                            <p className="comp-step-instruction">{t('competitionWizard.expandUnit', 'Expand a Unit, and choose the Chapter for competition questions:')}</p>
+                            <p className="comp-step-instruction">Expand a Unit, and choose the Chapter for battle questions:</p>
                             <div className="comp-systems-list">
                                 {unitData.length === 0 ? (
-                                    <div className="comp-empty-state">{t('competitionWizard.noUnits', 'No units found for this subject.')}</div>
+                                    <div className="comp-empty-state">No units found for this subject.</div>
                                 ) : (
                                     unitData.map(unit => {
                                         const isExpanded = selectedUnitId === unit._id;
@@ -523,14 +523,14 @@ function CreateCompetitionModal({ onClose }) {
                                                 {isExpanded && (
                                                     <div className="comp-accordion-content">
                                                         {unit.chapters?.length === 0 ? (
-                                                            <div className="comp-no-items">{t('competitionWizard.noChapters', 'No chapters available.')}</div>
+                                                            <div className="comp-no-items">No chapters available.</div>
                                                         ) : (
                                                             <div className="comp-chapters-grid">
                                                                 {unit.chapters?.map(chapter => (
                                                                     <div key={chapter._id} className="comp-chapter-btn" onClick={() => handleSelectChapter(chapter)}>
                                                                         <span className="comp-chapter-bullet">📄</span>
                                                                         <span>{translateName(chapter.chapterName)}</span>
-                                                                        <span className="comp-select-pill">{t('competitionWizard.selectBtn', 'Select')}</span>
+                                                                        <span className="comp-select-pill">Select</span>
                                                                     </div>
                                                                 ))}
                                                             </div>
@@ -551,7 +551,7 @@ function CreateCompetitionModal({ onClose }) {
                             <div className="comp-breadcrumb">
                                 {selectedSubject ? (
                                     <>
-                                        <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? t('competitionWizard.formatChoose', 'Choose') : t('competitionWizard.formatComplete', 'Complete')}</span>
+                                        <span>{questionTypeID === '65a4963482dbaac16d820fc6' ? 'Choose' : 'Complete'}</span>
                                         <ChevronRight size={12} />
                                         <span>{translateName(selectedSubject?.subjectName)}</span>
                                         <ChevronRight size={12} />
@@ -559,48 +559,43 @@ function CreateCompetitionModal({ onClose }) {
                                     </>
                                 ) : selectedChapter ? (
                                     <>
-                                        <span>{t('competitionWizard.myQuestionBank', 'My Question Bank')}</span>
+                                        <span>My Question Bank</span>
                                         <ChevronRight size={12} />
                                         <span className="comp-breadcrumb-active">{selectedChapter.chapterName}</span>
                                     </>
                                 ) : (
                                     <>
-                                        <span>{t('competitionWizard.myAssignedHomeworks', 'My Assigned Homeworks')}</span>
+                                        <span>My Assigned Homeworks</span>
                                         <ChevronRight size={12} />
-                                        <span className="comp-breadcrumb-active">{battleTitle || t('competitionWizard.selectedHomework', 'Selected Homework')}</span>
+                                        <span className="comp-breadcrumb-active">{battleTitle || 'Selected Homework'}</span>
                                     </>
                                 )}
-                            </div>
-
-                            <div className="comp-dynamic-count-banner" style={{ background: 'linear-gradient(135deg, #10b981, #059669)', color: '#ffffff', padding: '14px 28px', borderRadius: '18px', margin: '15px 0 25px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontWeight: 'bold', boxShadow: '0 10px 25px rgba(16, 185, 129, 0.35)' }}>
-                                <span style={{ fontSize: '17px' }}>{t('competitionWizard.currentActiveQuestions', '📑 Current Active Questions in Competition:')}</span>
-                                <span style={{ fontSize: '22px', background: 'rgba(0,0,0,0.25)', padding: '6px 20px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.2)' }}>{chapterQuestions.length} {t('competitionWizard.questions', 'Questions')}</span>
                             </div>
 
                             <div className="comp-details-layout">
                                 {/* Left: Settings */}
                                 <div className="comp-details-form">
                                     <div className="comp-form-group">
-                                        <label>{t('competitionWizard.competitionTitle', '⚔️ Competition Title')} <span className="comp-required">*</span></label>
+                                        <label>⚔️ Battle Title <span className="comp-required">*</span></label>
                                         <input
                                             type="text"
                                             value={battleTitle}
                                             onChange={e => setBattleTitle(e.target.value)}
-                                            placeholder={t('competitionWizard.titlePlaceholder', 'e.g. Friday Speed Challenge 🔥')}
+                                            placeholder="e.g. Friday Speed Challenge 🔥"
                                             className="comp-details-input"
                                         />
                                     </div>
                                     <div className="comp-form-group">
-                                        <label><Timer size={14} /> {t('competitionWizard.timerSeconds', 'Timer (seconds)')}</label>
+                                        <label><Timer size={14} /> Timer (seconds)</label>
                                         <div className="comp-timer-presets">
-                                            {[120, 180, 300, 600, 900].map(tVal => (
+                                            {[120, 180, 300, 600, 900].map(t => (
                                                 <button
-                                                    key={tVal}
+                                                    key={t}
                                                     type="button"
-                                                    className={`comp-preset-btn ${battleTimer === tVal ? 'active' : ''}`}
-                                                    onClick={() => { soundEffects.playClick(); setBattleTimer(tVal); }}
+                                                    className={`comp-preset-btn ${battleTimer === t ? 'active' : ''}`}
+                                                    onClick={() => { soundEffects.playClick(); setBattleTimer(t); }}
                                                 >
-                                                    {tVal < 60 ? `${tVal}s` : `${tVal / 60}min`}
+                                                    {t < 60 ? `${t}s` : `${t / 60}m`}
                                                 </button>
                                             ))}
                                         </div>
@@ -614,7 +609,7 @@ function CreateCompetitionModal({ onClose }) {
                                             style={{ marginTop: '8px' }}
                                         />
                                         <span className="comp-timer-hint">
-                                            = {Math.floor(battleTimer / 60)}min {battleTimer % 60}s {t('competitionWizard.perStudent', 'per student')}
+                                            = {Math.floor(battleTimer / 60)}m {battleTimer % 60}s per student
                                         </span>
                                     </div>
 
@@ -625,19 +620,19 @@ function CreateCompetitionModal({ onClose }) {
                                         onClick={handleLaunchBattle}
                                         disabled={creating}
                                     >
-                                        {creating ? <span className="comp-spinner-small"></span> : t('competitionWizard.launchCompetition', '🚀 Launch Competition & Enter Lobby')}
+                                        {creating ? <span className="comp-spinner-small"></span> : '🚀 Launch Battle & Enter Lobby'}
                                     </button>
                                 </div>
 
                                 {/* Right: Questions preview */}
                                 <div className="comp-questions-preview">
-                                    <h3>{t('competitionWizard.questionsPreview', '📑 Questions')} ({chapterQuestions.length})</h3>
+                                    <h3>📑 Questions ({chapterQuestions.length})</h3>
                                     <div className="comp-preview-scroll">
                                         {chapterQuestions.map((q, idx) => (
                                             <div key={q._id} className="comp-preview-q-card">
                                                 <div className="comp-preview-q-header">
                                                     <span className="comp-q-num">#{idx + 1}</span>
-                                                    <span className="comp-q-pts">{q.questionPoints} {t('competitionWizard.pts', 'pts')}</span>
+                                                    <span className="comp-q-pts">{q.questionPoints} pts</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleRemoveQuestion(q._id)}
@@ -649,7 +644,7 @@ function CreateCompetitionModal({ onClose }) {
                                                 </div>
                                                 <div className="comp-preview-q-body">
                                                     {q.questionPic && <img src={q.questionPic} alt="Q visual" className="comp-preview-q-img" />}
-                                                    <pre>{q.question || t('competitionWizard.graphicQuestion', 'Graphic Question')}</pre>
+                                                    <pre>{q.question || 'Graphic Question'}</pre>
                                                 </div>
                                             </div>
                                         ))}
@@ -665,4 +660,3 @@ function CreateCompetitionModal({ onClose }) {
 }
 
 export default CreateCompetitionModal;
-

@@ -11,9 +11,18 @@ function TutorialVideoModal({ isOpen, onClose, role }) {
 
   if (!isOpen) return null;
 
+  // Determine which video to show based on role
+  const videoUrl = role === 'Student' 
+    ? '/videos/student-tutorial.mp4' 
+    : '/videos/teacher-tutorial.mp4';
+
   const modalTitle = role === 'Student'
-    ? 'Abacus Heroes - Student Guide'
-    : 'Abacus Heroes - Teacher Guide';
+    ? 'How to Use Abacus Heroes - Student Guide'
+    : 'How to Use Abacus Heroes - Teacher Guide';
+
+  const videoDescription = role === 'Student'
+    ? 'Learn how to open your homework and practice questions'
+    : 'Learn how to create homework and use all teacher features';
 
   return (
     <div className="tutorial-modal-overlay" onClick={handleClose}>
@@ -24,9 +33,23 @@ function TutorialVideoModal({ isOpen, onClose, role }) {
         
         <div className="tutorial-modal-header">
           <h2>{modalTitle}</h2>
+          <p>{videoDescription}</p>
         </div>
 
         <div className="tutorial-modal-body">
+          <div className="video-wrapper">
+            <video 
+              controls 
+              className="tutorial-video"
+              preload="metadata"
+            >
+              <source src={videoUrl} type="video/mp4" />
+              <p className="video-fallback">
+                Your browser does not support the video tag. Please try using a modern browser like Chrome, Firefox, or Safari.
+              </p>
+            </video>
+          </div>
+
           <div className="tutorial-tips">
             <p className="tip-title">💡 Quick Tips:</p>
             <ul className="tips-list">

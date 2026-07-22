@@ -1,10 +1,9 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/teacher/getAssignment`;
+const Token = localStorage.getItem('O_authWEB')
 
 const getAssignment = (setLoading, setAllAsignment, setError) => {
-    const Token = localStorage.getItem('O_authWEB');
-
     setLoading(true)
     fetch(URL, {
         method: 'get',

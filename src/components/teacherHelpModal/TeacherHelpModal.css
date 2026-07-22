@@ -213,34 +213,98 @@
     .help-btn-primary { width: 100%; }
 }
 
-.compact-modal {
-    max-width: 600px;
-    padding: 2rem;
-    overflow-y: visible;
-}
-
-.compact-content {
+/* Step-by-Step Styling */
+.step-by-step {
+    background: #f8fafc;
+    border-radius: 24px;
+    border: 2px dashed #0ea5e9;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
 }
 
-.compact-modal .help-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    text-align: left;
 }
 
-.compact-modal .help-btn-primary, .compact-modal .help-btn-secondary {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    margin: 0 0.5rem;
+.step-number {
+    background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 900;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+    margin-top: 2px;
+}
+
+.step-content-box {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    align-items: center;
+    width: 100%;
+}
+
+.step-desc {
+    font-size: 0.95rem;
+    color: #475569;
+    line-height: 1.6;
+    flex: 1;
+}
+
+.step-desc strong {
+    color: #0f172a;
+}
+
+.step-media {
+    flex-shrink: 0;
+    width: 220px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 3px solid #ffffff;
+    transition: transform 0.3s ease;
+}
+
+.step-media:hover {
+    transform: scale(1.05);
+}
+
+.step-screenshot-inline {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.help-btn-secondary.registration-btn {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+}
+
+.help-btn-secondary.registration-btn:hover {
+    background: #059669;
+    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
 }
 
 @media (max-width: 768px) {
-    .compact-modal .help-grid { grid-template-columns: 1fr; }
-    .compact-modal .help-btn-primary, .compact-modal .help-btn-secondary {
-        width: 100%;
-        margin: 0.5rem 0;
-    }
-    .compact-modal .help-footer {
+    .step-content-box {
         flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+    }
+    .step-media {
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
     }
 }

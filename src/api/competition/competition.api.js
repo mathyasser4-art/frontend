@@ -2,8 +2,7 @@ import API_BASE_URL from '../../config/api.config';
 
 const getHeaders = () => {
     const Token = localStorage.getItem('O_authWEB');
-
-        return {
+    return {
         'Content-Type': 'application/json',
         'authrization': `pracYas09${Token}`
     };
@@ -34,11 +33,10 @@ export const getCompetitionDetails = async (competitionId) => {
     return response.json();
 };
 
-export const joinCompetition = async (competitionId, guestData = null) => {
+export const joinCompetition = async (competitionId) => {
     const response = await fetch(`${API_BASE_URL}/competition/${competitionId}/join`, {
         method: 'POST',
-        headers: getHeaders(),
-        body: guestData ? JSON.stringify(guestData) : undefined
+        headers: getHeaders()
     });
     return response.json();
 };

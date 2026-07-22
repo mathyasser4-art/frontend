@@ -6,13 +6,502 @@ import MobileNav from '../../components/mobileNav/MobileNav';
 import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
+import * as THREE from 'three';
+
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
 import './CaveRunner.css';
+
+// ── 3D Components ────────────────────────────────────────────────────────────
+
+// Beautiful Procedural Bunny - Slim, cute, and animated!
+function ProceduralBunny({ isRunning, isJumping, isFalling }) {
+  const frontLeftLegRef = useRef();
+  const frontRightLegRef = useRef();
+  const backLeftLegRef = useRef();
+  const backRightLegRef = useRef();
+
+  useFrame((state) => {
+    if (!isRunning) {
+      if (frontLeftLegRef.current) frontLeftLegRef.current.rotation.z = 0;
+      if (frontRightLegRef.current) frontRightLegRef.current.rotation.z = 0;
+      if (backLeftLegRef.current) backLeftLegRef.current.rotation.z = 0;
+      if (backRightLegRef.current) backRightLegRef.current.rotation.z = 0;
+      return;
+    }
+    const t = state.clock.getElapsedTime();
+    const swing = Math.sin(t * 16) * 0.6; // Energetic leg swing
+    if (frontLeftLegRef.current) frontLeftLegRef.current.rotation.z = swing;
+    if (frontRightLegRef.current) frontRightLegRef.current.rotation.z = -swing;
+    if (backLeftLegRef.current) backLeftLegRef.current.rotation.z = -swing;
+    if (backRightLegRef.current) backRightLegRef.current.rotation.z = swing;
+  });
+
+  return (
+    <group>
+      {/* Body - Slim Ellipsoid */}
+      <mesh position={[0, 0.5, 0]} scale={[1.3, 0.9, 0.7]} castShadow>
+        <sphereGeometry args={[0.4, 32, 32]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.8} />
+      </mesh>
+      {/* Head - Slightly forward */}
+      <mesh position={[0.36, 0.82, 0]} castShadow>
+        <sphereGeometry args={[0.22, 32, 32]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.8} />
+      </mesh>
+      {/* Ears - Long and slim */}
+      <mesh position={[0.28, 1.25, 0.07]} rotation={[0, 0, -0.35]} castShadow>
+        <cylinderGeometry args={[0.02, 0.03, 0.7, 16]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.8} />
+      </mesh>
+      <mesh position={[0.28, 1.25, -0.07]} rotation={[0, 0, -0.35]} castShadow>
+        <cylinderGeometry args={[0.02, 0.03, 0.7, 16]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.8} />
+      </mesh>
+      {/* Pink Inner Ears */}
+      <mesh position={[0.29, 1.25, 0.07]} rotation={[0, 0, -0.35]} scale={[0.5, 0.9, 0.5]}>
+        <cylinderGeometry args={[0.02, 0.03, 0.7, 16]} />
+        <meshStandardMaterial color="#fda4af" roughness={0.8} />
+      </mesh>
+      <mesh position={[0.29, 1.25, -0.07]} rotation={[0, 0, -0.35]} scale={[0.5, 0.9, 0.5]}>
+        <cylinderGeometry args={[0.02, 0.03, 0.7, 16]} />
+        <meshStandardMaterial color="#fda4af" roughness={0.8} />
+      </mesh>
+      {/* Nose */}
+      <mesh position={[0.58, 0.78, 0]}>
+        <sphereGeometry args={[0.035, 16, 16]} />
+        <meshStandardMaterial color="#f43f5e" />
+      </mesh>
+      {/* Eyes */}
+      <mesh position={[0.47, 0.88, 0.08]}>
+        <sphereGeometry args={[0.028, 16, 16]} />
+        <meshStandardMaterial color="#0f172a" roughness={0.2} />
+      </mesh>
+      <mesh position={[0.47, 0.88, -0.08]}>
+        <sphereGeometry args={[0.028, 16, 16]} />
+        <meshStandardMaterial color="#0f172a" roughness={0.2} />
+      </mesh>
+      {/* Tail */}
+      <mesh position={[-0.48, 0.5, 0]} castShadow>
+        <sphereGeometry args={[0.12, 16, 16]} />
+        <meshStandardMaterial color="#f1f5f9" roughness={0.9} />
+      </mesh>
+
+      {/* 4 Animated Legs */}
+      {/* Front Left Leg */}
+      <group ref={frontLeftLegRef} position={[0.2, 0.22, 0.15]}>
+        <mesh position={[0, -0.12, 0]} castShadow>
+          <cylinderGeometry args={[0.04, 0.03, 0.24, 16]} />
+          <meshStandardMaterial color="#f8fafc" roughness={0.8} />
+        </mesh>
+      </group>
+      {/* Front Right Leg */}
+      <group ref={frontRightLegRef} position={[0.2, 0.22, -0.15]}>
+        <mesh position={[0, -0.12, 0]} castShadow>
+          <cylinderGeometry args={[0.04, 0.03, 0.24, 16]} />
+          <meshStandardMaterial color="#f8fafc" roughness={0.8} />
+        </mesh>
+      </group>
+      {/* Back Left Leg */}
+      <group ref={backLeftLegRef} position={[-0.2, 0.22, 0.15]}>
+        <mesh position={[0, -0.12, 0]} castShadow>
+          <cylinderGeometry args={[0.045, 0.03, 0.24, 16]} />
+          <meshStandardMaterial color="#f8fafc" roughness={0.8} />
+        </mesh>
+      </group>
+      {/* Back Right Leg */}
+      <group ref={backRightLegRef} position={[-0.2, 0.22, -0.15]}>
+        <mesh position={[0, -0.12, 0]} castShadow>
+          <cylinderGeometry args={[0.045, 0.03, 0.24, 16]} />
+          <meshStandardMaterial color="#f8fafc" roughness={0.8} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+// A simple fallback for the procedural bunny animation during loading
+function ProceduralFallback({ isRunning, isJumping, isFalling, jumpStartTime, fallStartTime }) {
+  const groupRef = useRef();
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+    const t = state.clock.getElapsedTime();
+
+    if (isJumping) {
+      const elapsed = (Date.now() - jumpStartTime) / 700;
+      if (elapsed >= 0 && elapsed <= 1) {
+        groupRef.current.position.y = Math.sin(elapsed * Math.PI) * 2.8;
+        groupRef.current.rotation.z = Math.sin(elapsed * Math.PI) * 0.15;
+      }
+    } else if (isFalling) {
+      const elapsed = (Date.now() - fallStartTime) / 600;
+      if (elapsed >= 0 && elapsed <= 1) {
+        groupRef.current.position.y = Math.max(0, 0.45 - elapsed * 1.5);
+        groupRef.current.rotation.z = -elapsed * Math.PI / 2;
+      }
+    } else {
+      groupRef.current.position.y = 0;
+      groupRef.current.rotation.z = 0;
+      if (isRunning) {
+        groupRef.current.position.y = Math.abs(Math.sin(t * 14)) * 0.18;
+        groupRef.current.rotation.z = Math.sin(t * 14) * 0.05;
+      }
+    }
+  });
+
+  return (
+    <group ref={groupRef} position={[-3, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+      <ProceduralBunny isRunning={isRunning} isJumping={isJumping} isFalling={isFalling} />
+    </group>
+  );
+}
+
+// 3D Character loader with procedural animation using the custom cute rabbit GLB model
+function Bunny3D({ isJumping, jumpStartTime, isFalling, fallStartTime, isRunning }) {
+  const groupRef = useRef();
+  const { scene } = useGLTF('/models/cute_rabbit.glb');
+  
+  // Clone scene to avoid sharing mutable states
+  const clonedScene = React.useMemo(() => {
+    if (!scene) return null;
+    const cloned = scene.clone();
+    cloned.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        if (child.material) {
+          child.material.roughness = 0.2;
+          child.material.metalness = 0.1;
+        }
+      }
+    });
+    return cloned;
+  }, [scene]);
+
+  // Dynamically calculate and apply proper scale & vertical offset to ground the model
+  const [scale, setScale] = useState(0.4);
+  const [offsetY, setOffsetY] = useState(0.01);
+
+  useEffect(() => {
+    if (clonedScene) {
+      const box = new THREE.Box3().setFromObject(clonedScene);
+      const size = new THREE.Vector3();
+      box.getSize(size);
+      const height = size.y;
+      if (height > 0) {
+        const targetHeight = 0.5; // Perfect visual size for the bunny
+        const newScale = targetHeight / height;
+        setScale(newScale);
+        
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        const bottomY = center.y - size.y / 2;
+        setOffsetY(-bottomY * newScale + 0.01);
+      }
+    }
+  }, [clonedScene]);
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+    const time = state.clock.getElapsedTime();
+
+    // Reset default rotations
+    groupRef.current.rotation.x = 0;
+    groupRef.current.rotation.y = Math.PI / 2; // Face forward along the track
+    groupRef.current.rotation.z = 0;
+
+    // Position Y & Rotation animations
+    if (isJumping) {
+      const elapsed = (Date.now() - jumpStartTime) / 700;
+      if (elapsed >= 0 && elapsed <= 1) {
+        groupRef.current.position.y = Math.sin(elapsed * Math.PI) * 2.8;
+        // Make a beautiful 360-degree flip!
+        groupRef.current.rotation.x = elapsed * Math.PI * 2;
+      }
+    } else if (isFalling) {
+      const elapsed = (Date.now() - fallStartTime) / 600;
+      if (elapsed >= 0 && elapsed <= 1) {
+        groupRef.current.position.y = Math.max(0, 0.45 - elapsed * 1.5);
+        // Fall flat on its side/back
+        groupRef.current.rotation.x = elapsed * Math.PI / 2;
+      }
+    } else if (isRunning) {
+      // Bob up & down and sway when running
+      groupRef.current.position.y = Math.abs(Math.sin(time * 12)) * 0.16;
+      groupRef.current.rotation.z = Math.sin(time * 12) * 0.08; // Sway left/right
+      groupRef.current.rotation.x = 0.06; // Tilt forward slightly
+    } else {
+      // Idle: gentle breathing bob
+      groupRef.current.position.y = 0.05 + Math.sin(time * 2) * 0.04;
+    }
+  });
+
+  if (!clonedScene) return null;
+
+  return (
+    <group ref={groupRef} position={[-3, 0, 0]}>
+      <primitive 
+        object={clonedScene} 
+        scale={[scale * 0.55, scale * 0.8, scale * 0.55]} 
+        position={[0, offsetY, 0]} 
+        rotation={[0, 0, 0]} // Face the running direction
+      />
+    </group>
+  );
+}
+
+// Preload the character and environment models
+useGLTF.preload('/models/cute_rabbit.glb');
+useGLTF.preload('/models/low_poly_assets.glb');
+
+// 3D Rock obstacle
+function Rock3D({ position }) {
+  const x = ((position - 20) / 100) * 15 - 3;
+  return (
+    <mesh position={[x, 0.35, 0]} castShadow receiveShadow>
+      <dodecahedronGeometry args={[0.5, 1]} />
+      <meshStandardMaterial color="#64748b" roughness={0.3} metalness={0.15} />
+    </mesh>
+  );
+}
+
+// 3D Pine Tree obstacle
+function Tree3D({ position }) {
+  const x = ((position - 20) / 100) * 15 - 3;
+  return (
+    <group position={[x, 0, 0]}>
+      {/* Trunk */}
+      <mesh position={[0, 0.3, 0]} castShadow>
+        <cylinderGeometry args={[0.07, 0.11, 0.6, 8]} />
+        <meshStandardMaterial color="#78350f" roughness={0.4} />
+      </mesh>
+      {/* Cone Leaves */}
+      <mesh position={[0, 0.75, 0]} castShadow>
+        <coneGeometry args={[0.35, 0.7, 8]} />
+        <meshStandardMaterial color="#14532d" roughness={0.3} />
+      </mesh>
+      <mesh position={[0, 1.15, 0]} castShadow>
+        <coneGeometry args={[0.26, 0.5, 8]} />
+        <meshStandardMaterial color="#166534" roughness={0.3} />
+      </mesh>
+    </group>
+  );
+}
+
+// 3D Glowing Fire obstacle
+function Fire3D({ position }) {
+  const x = ((position - 20) / 100) * 15 - 3;
+  const fireRef = useRef();
+
+  useFrame((state) => {
+    if (fireRef.current) {
+      const t = state.clock.getElapsedTime();
+      fireRef.current.scale.set(
+        1 + Math.sin(t * 22) * 0.08,
+        1 + Math.cos(t * 18) * 0.12,
+        1 + Math.sin(t * 20) * 0.08
+      );
+    }
+  });
+
+  return (
+    <group position={[x, 0, 0]}>
+      {/* Wood Logs Base */}
+      <mesh position={[0, 0.08, 0.1]} rotation={[0.3, 0.6, 1.5]} castShadow>
+        <cylinderGeometry args={[0.05, 0.05, 0.4, 6]} />
+        <meshStandardMaterial color="#451a03" roughness={0.9} />
+      </mesh>
+      <mesh position={[0, 0.08, -0.1]} rotation={[-0.3, -0.6, 1.5]} castShadow>
+        <cylinderGeometry args={[0.05, 0.05, 0.4, 6]} />
+        <meshStandardMaterial color="#451a03" roughness={0.9} />
+      </mesh>
+
+      {/* Flame meshes */}
+      <group ref={fireRef}>
+        <mesh position={[0, 0.4, 0]}>
+          <coneGeometry args={[0.25, 0.8, 8]} />
+          <meshBasicMaterial color="#ef4444" />
+        </mesh>
+        <mesh position={[0, 0.32, 0.04]} scale={0.72}>
+          <coneGeometry args={[0.25, 0.8, 8]} />
+          <meshBasicMaterial color="#f97316" />
+        </mesh>
+        <mesh position={[0, 0.22, -0.04]} scale={0.48}>
+          <coneGeometry args={[0.25, 0.8, 8]} />
+          <meshBasicMaterial color="#eab308" />
+        </mesh>
+      </group>
+
+      {/* Glowing point light */}
+      <pointLight color="#f97316" intensity={2.5} distance={4} decay={1.5} position={[0, 0.4, 0]} />
+    </group>
+  );
+}
+
+// Obstacle Multiplexer
+function Obstacle3D({ type, position }) {
+  if (type === 'rock') return <Rock3D position={position} />;
+  if (type === 'tree') return <Tree3D position={position} />;
+  if (type === 'fire') return <Fire3D position={position} />;
+  return null;
+}
+
+// 3D Spinning Carrot collectible
+function Carrot3D({ position }) {
+  const x = ((position - 20) / 100) * 15 - 3;
+  const carrotRef = useRef();
+
+  useFrame((state) => {
+    if (carrotRef.current) {
+      carrotRef.current.rotation.y = state.clock.getElapsedTime() * 3.5;
+      carrotRef.current.position.y = 1.35 + Math.sin(state.clock.getElapsedTime() * 6) * 0.12;
+    }
+  });
+
+  return (
+    <group ref={carrotRef} position={[x, 1.35, 0]} scale={0.8}>
+      {/* Orange Body */}
+      <mesh rotation={[Math.PI, 0, 0]} position={[0, 0.15, 0]} castShadow>
+        <coneGeometry args={[0.11, 0.5, 8]} />
+        <meshStandardMaterial color="#f97316" roughness={0.1} metalness={0.1} />
+      </mesh>
+      {/* Leaves */}
+      <mesh position={[0, 0.42, 0]} castShadow>
+        <sphereGeometry args={[0.07, 8, 8]} />
+        <meshStandardMaterial color="#22c55e" roughness={0.7} />
+      </mesh>
+    </group>
+  );
+}
+
+// 3D Environment with ground track, ambient lighting, and parallax scrolling background hills/trees
+// 3D Environment with ground track, ambient lighting, and low-poly forest/field decoration items scrolling past
+function CaveEnvironment({ speed, isRunning }) {
+  const { nodes } = useGLTF('/models/low_poly_assets.glb');
+  
+  // Set of decorative items scrolling past in the background and midground
+  const [envItems, setEnvItems] = useState([
+    { id: 1, type: 'Spruce', x: -12, y: -0.2, z: -4.8, scale: 0.32 },
+    { id: 2, type: 'Birch', x: -7, y: -0.2, z: -4.2, scale: 0.34 },
+    { id: 3, type: 'tree', x: -2, y: -0.2, z: -5.2, scale: 0.38 },
+    { id: 4, type: 'Spruce', x: 3, y: -0.2, z: -4.5, scale: 0.28 },
+    { id: 5, type: 'Birch', x: 8, y: -0.2, z: -5.0, scale: 0.36 },
+    { id: 6, type: 'tree', x: 13, y: -0.2, z: -3.8, scale: 0.32 },
+    
+    { id: 7, type: 'bush', x: -10, y: -0.2, z: -2.8, scale: 0.22 },
+    { id: 8, type: 'flower', x: -8, y: -0.2, z: -2.6, scale: 0.18 },
+    { id: 9, type: 'bush', x: -4, y: -0.2, z: -3.0, scale: 0.26 },
+    { id: 10, type: 'flower', x: 0, y: -0.2, z: -2.4, scale: 0.22 },
+    { id: 11, type: 'bush', x: 4, y: -0.2, z: -2.7, scale: 0.2 },
+    { id: 12, type: 'flower', x: 7, y: -0.2, z: -2.9, scale: 0.16 },
+    { id: 13, type: 'bush', x: 10, y: -0.2, z: -3.2, scale: 0.24 },
+    { id: 14, type: 'flower', x: 15, y: -0.2, z: -2.5, scale: 0.18 },
+
+    { id: 15, type: 'Lantern', x: -11, y: -0.2, z: -1.5, scale: 0.2 },
+    { id: 16, type: 'fence', x: -6, y: -0.2, z: -1.45, scale: 0.28 },
+    { id: 17, type: 'Lantern', x: 1, y: -0.2, z: -1.5, scale: 0.2 },
+    { id: 18, type: 'fence', x: 6, y: -0.2, z: -1.45, scale: 0.28 },
+    { id: 19, type: 'Lantern', x: 12, y: -0.2, z: -1.5, scale: 0.2 },
+  ]);
+
+  // Mapping of type strings to specific nodes in the low poly GLB model
+  const nodeMap = React.useMemo(() => {
+    if (!nodes) return {};
+    return {
+      'Spruce': nodes['Spruce_0'],
+      'Birch': nodes['Birch_9'],
+      'tree': nodes['tree_3'],
+      'bush': nodes['bush_17'],
+      'flower': nodes['flower_20'],
+      'Lantern': nodes['Lantern_32'],
+      'fence': nodes['fence_41'],
+    };
+  }, [nodes]);
+
+  // Configure shadows for meshes when loaded and make them shinier
+  useEffect(() => {
+    Object.values(nodeMap).forEach(node => {
+      if (node) {
+        node.traverse(child => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            if (child.material) {
+              child.material.roughness = 0.35;
+              child.material.metalness = 0.1;
+            }
+          }
+        });
+      }
+    });
+  }, [nodeMap]);
+
+  useFrame((state, delta) => {
+    if (!isRunning) return;
+    setEnvItems(prev => prev.map(item => {
+      let nextX = item.x - speed * delta * 7.5;
+      if (nextX < -18) {
+        nextX = 18 + Math.random() * 6; // Recycle back to screen-right
+      }
+      return { ...item, x: nextX };
+    }));
+  });
+
+  return (
+    <group>
+      {/* Ground runway - Green Grass */}
+      <mesh position={[0, -0.2, 0]} receiveShadow>
+        <boxGeometry args={[35, 0.4, 3]} />
+        <meshStandardMaterial color="#22c55e" roughness={0.35} />
+      </mesh>
+
+      {/* Side Track Border Grid - Wood Brown */}
+      <mesh position={[0, -0.05, 1.35]} receiveShadow>
+        <boxGeometry args={[35, 0.1, 0.15]} />
+        <meshStandardMaterial color="#854d0e" roughness={0.3} />
+      </mesh>
+      <mesh position={[0, -0.05, -1.35]} receiveShadow>
+        <boxGeometry args={[35, 0.1, 0.15]} />
+        <meshStandardMaterial color="#854d0e" roughness={0.3} />
+      </mesh>
+
+      {/* Large Grass Field Plane stretching far to cover the bottom horizon */}
+      <mesh position={[0, -0.21, -10]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial color="#4ade80" roughness={0.4} />
+      </mesh>
+
+      {/* Render the recycled low-poly decorations */}
+      {nodes && envItems.map(item => {
+        const targetNode = nodeMap[item.type];
+        if (!targetNode) return null;
+        
+        // Fences or Lanterns might look better with some rotation
+        const rotationY = item.type === 'fence' ? Math.PI / 2 : 0;
+
+        return (
+          <group 
+            key={item.id} 
+            position={[item.x, item.y, item.z]} 
+            scale={item.scale}
+            rotation={[0, rotationY, 0]}
+          >
+            <primitive object={targetNode.clone()} />
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+// ── Game Container ───────────────────────────────────────────────────────────
 
 const BunnyRun = () => {
   const navigate = useNavigate();
   const containerRef = useRef(null);
 
-  const [gameState, setGameState] = useState('menu'); // menu, ready, playing, gameover
+  const [gameState, setGameState] = useState('menu');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(5);
   const [isJumping, setIsJumping] = useState(false);
@@ -64,7 +553,7 @@ const BunnyRun = () => {
   const startGame = async (selectedLevel) => {
     soundEffects.playClick();
     setDifficulty(selectedLevel);
-    setGameState('ready');
+    setGameState('playing');
     setScore(0);
     setLives(5);
     setSpeed(0.8);
@@ -83,11 +572,6 @@ const BunnyRun = () => {
     targetObstaclesRef.current = Math.floor(Math.random() * 3) + 3;
     spawnCoins();
     generateQuestion(selectedLevel);
-  };
-
-  const startRunning = () => {
-    soundEffects.playClick();
-    setGameState('playing');
   };
 
   const handleGameOver = useCallback(() => {
@@ -162,9 +646,8 @@ const BunnyRun = () => {
         
         let hitObstacle = false;
         const elapsed = isJumpingRef.current ? (Date.now() - jumpStartTimeRef.current) / 700 : 1;
-        const isJumpingUp = isJumpingRef.current && elapsed >= 0 && elapsed <= 1;
-        
-        if (newPos <= 25 && newPos >= 18 && !isJumpingUp) {
+        const playerY = (isJumpingRef.current && elapsed >= 0 && elapsed <= 1) ? Math.sin(elapsed * Math.PI) * 2.8 : 0;
+        if (newPos <= 23 && newPos >= 18 && playerY < 0.8) {
           hitObstacle = true;
         }
 
@@ -194,6 +677,7 @@ const BunnyRun = () => {
         }
         
         if (newPos < -20) {
+           // Increment obstacle count
            obstaclesPassedRef.current += 1;
            
            if (obstaclesPassedRef.current >= targetObstaclesRef.current) {
@@ -215,7 +699,7 @@ const BunnyRun = () => {
         return prevCoins.map(c => {
           if (c.collected) return c;
           const newCoinPos = c.pos - (speed * (deltaTime / 16));
-          if (newCoinPos <= 26 && newCoinPos >= 14 && !isFallingRef.current) {
+          if (newCoinPos <= 25 && newCoinPos >= 15 && !isFallingRef.current) {
              soundEffects.playNumberClick();
              setScore(s => s + 10);
              return { ...c, pos: newCoinPos, collected: true };
@@ -243,7 +727,7 @@ const BunnyRun = () => {
             <span>Dashboard</span>
           </button>
           
-          {(gameState === 'playing' || gameState === 'ready') && (
+          {gameState === 'playing' && (
             <div className="hud" style={{ zIndex: 10 }}>
               <div className="lives">
                 {[...Array(5)].map((_, i) => (
@@ -270,92 +754,99 @@ const BunnyRun = () => {
         >
           <FullscreenButton targetRef={containerRef} />
 
-          {/* Standard 2D Sky, Mountains, and Ground elements */}
-          <div className="sky-layer sunny">
-            <div className="sun-bright">
-              <Sun size={140} color="#fcd34d" strokeWidth={3} />
-            </div>
-            <div className="sun-glow-bright"></div>
-            <div className="clouds-container">
-              <div className="cloud-p p1"></div>
-              <div className="cloud-p p2"></div>
-              <div className="cloud-p p3"></div>
-            </div>
-          </div>
-          
-          <div className="mountains-container">
-            <div className="mountain-p far"></div>
-            <div className="mountain-p mid"></div>
-          </div>
-
-          <div className="ground-world">
-            <div className="ground-surface">
-              <div className="surface-part full"></div>
-            </div>
-          </div>
-
-          {/* 2D Bunny Character */}
+          {/* Render 3D Canvas inside layout for active play sessions */}
           {gameState !== 'menu' && (
-            <div className={`bunny-node ${gameState === 'playing' && !isWaitingForAnswer && !isFalling && !isJumping ? 'running' : ''} ${isJumping ? 'jumping' : ''} ${isFalling ? 'falling' : ''}`}>
-              <svg className="bunny-svg" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M50 40 L35 10 C30 5 45 5 55 25 Z" fill="#cbd5e1" />
-                <path d="M48 35 L38 15 C35 12 42 12 48 25 Z" fill="#f43f5e" />
-                <ellipse cx="60" cy="65" rx="35" ry="28" fill="#ffffff" />
-                <circle cx="80" cy="45" r="22" fill="#ffffff" />
-                <path d="M75 35 L65 5 C60 0 75 0 85 22 Z" fill="#ffffff" />
-                <path d="M73 32 L67 10 C64 6 72 6 79 22 Z" fill="#f43f5e" />
-                <circle cx="87" cy="42" r="4" fill="#0f172a" />
-                <circle cx="88" cy="41" r="1.5" fill="#ffffff" />
-                <circle cx="101" cy="48" r="3" fill="#f43f5e" />
-                <circle cx="82" cy="50" r="5" fill="#fecdd3" />
-                <circle cx="25" cy="65" r="10" fill="#f1f5f9" />
-                <rect x="45" y="85" width="12" height="10" rx="5" fill="#e2e8f0" />
-                <rect x="75" y="85" width="12" height="10" rx="5" fill="#ffffff" />
-              </svg>
-            </div>
+            <Canvas
+              shadows
+              camera={{ position: [0, 2.3, 7.5], fov: 45 }}
+              style={{ position: 'absolute', inset: 0, zIndex: 3, background: '#bae6fd' }}
+            >
+              {/* Morning Sunshine Lighting */}
+              <ambientLight intensity={1.3} color="#f0fdf4" />
+              
+              {/* Spotlight focus tracking track */}
+              <directionalLight 
+                position={[8, 15, 6]} 
+                intensity={2.8} 
+                color="#fef08a"
+                castShadow 
+                shadow-mapSize-width={1024} 
+                shadow-mapSize-height={1024} 
+                shadow-camera-far={25}
+                shadow-camera-left={-8}
+                shadow-camera-right={8}
+                shadow-camera-top={8}
+                shadow-camera-bottom={-8}
+              />
+
+              {/* Back/Fill light for glossy effect */}
+              <directionalLight position={[-8, 10, -6]} intensity={1.5} color="#bae6fd" />
+
+              <pointLight color="#bae6fd" intensity={1.2} distance={15} position={[-3, 4, 2]} />
+
+              {/* 3D Morning Environment Ground Runway and Parallax background hills/trees */}
+              <CaveEnvironment speed={speed} isRunning={gameState === 'playing' && !isWaitingForAnswer && !isFalling} />
+
+              {/* 3D Bunny Character (Loaded model with procedural fallback) */}
+              <React.Suspense
+                fallback={
+                  <ProceduralFallback
+                    isJumping={isJumping}
+                    jumpStartTime={jumpStartTime}
+                    isFalling={isFalling}
+                    fallStartTime={fallStartTime}
+                    isRunning={gameState === 'playing' && !isWaitingForAnswer && !isFalling}
+                  />
+                }
+              >
+                <Bunny3D 
+                  isJumping={isJumping} 
+                  jumpStartTime={jumpStartTime} 
+                  isFalling={isFalling} 
+                  fallStartTime={fallStartTime}
+                  isRunning={gameState === 'playing' && !isWaitingForAnswer && !isFalling} 
+                />
+              </React.Suspense>
+
+              {/* 3D Active Obstacles (Rock, Tree, Fire) */}
+              {!isWaitingForAnswer && (
+                <Obstacle3D type={obstacleType} position={obstaclePos} />
+              )}
+
+              {/* 3D Collectible Carrots */}
+              {!isWaitingForAnswer && coins.map(coin => !coin.collected && (
+                <Carrot3D key={coin.id} position={coin.pos} />
+              ))}
+            </Canvas>
           )}
 
-          {/* 2D Active Obstacles (Rock, Tree, Fire) */}
-          {gameState === 'playing' && !isWaitingForAnswer && (
-            <div className="obstacle-node" style={{ left: `${obstaclePos}%` }}>
-              {obstacleType === 'rock' && (
-                <svg className="rock-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 70 L25 30 L50 25 L70 45 L75 70 Z" fill="#64748b" />
-                  <path d="M25 30 L50 25 L60 50 L30 65 Z" fill="#94a3b8" />
-                  <path d="M15 65 L25 45 L40 68 Z" fill="#475569" />
-                </svg>
-              )}
-              {obstacleType === 'tree' && (
-                <svg className="tree-svg" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="35" y="80" width="10" height="40" fill="#78350f" />
-                  <path d="M10 85 L40 40 L70 85 Z" fill="#15803d" />
-                  <path d="M15 60 L40 20 L65 60 Z" fill="#16a34a" />
-                  <path d="M20 35 L40 0 L60 35 Z" fill="#22c55e" />
-                </svg>
-              )}
-              {obstacleType === 'fire' && (
-                <svg className="fire-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="15" y="65" width="50" height="12" rx="5" transform="rotate(10 40 70)" fill="#451a03" />
-                  <rect x="15" y="65" width="50" height="12" rx="5" transform="rotate(-10 40 70)" fill="#78350f" />
-                  <path d="M40 10 C20 30 15 50 25 65 C35 70 45 70 55 65 C65 50 60 30 40 10 Z" fill="#ef4444" />
-                  <path d="M40 20 C28 35 25 50 32 62 C38 66 42 66 48 62 C55 50 52 35 40 20 Z" fill="#f97316" />
-                  <path d="M40 35 C33 45 32 55 36 60 C39 63 41 63 44 60 C48 55 47 45 40 35 Z" fill="#facc15" />
-                </svg>
-              )}
-            </div>
-          )}
+          {/* Standard 2D Sky elements (Fallback rendering for Game Menu) */}
+          {gameState === 'menu' && (
+            <>
+              <div className="sky-layer sunny">
+                <div className="sun-bright">
+                  <Sun size={140} color="#fcd34d" strokeWidth={3} />
+                </div>
+                <div className="sun-glow-bright"></div>
+                <div className="clouds-container">
+                  <div className="cloud-p p1"></div>
+                  <div className="cloud-p p2"></div>
+                  <div className="cloud-p p3"></div>
+                </div>
+              </div>
+              
+              <div className="mountains-container">
+                <div className="mountain-p far"></div>
+                <div className="mountain-p mid"></div>
+              </div>
 
-          {/* 2D Collectible Carrots */}
-          {gameState === 'playing' && !isWaitingForAnswer && coins.map(coin => !coin.collected && (
-            <div key={coin.id} className="collectible-node" style={{ left: `${coin.pos}%` }}>
-              <svg className="carrot-svg" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M30 25 C20 15 22 5 25 5 C28 5 30 12 30 18 C30 12 32 5 35 5 C38 5 40 15 30 25 Z" fill="#22c55e" />
-                <path d="M30 22 C36 22 35 35 30 55 C25 35 24 22 30 22 Z" fill="#f97316" />
-                <line x1="28" y1="28" x2="32" y2="28" stroke="#fdba74" strokeWidth="2" strokeLinecap="round" />
-                <line x1="29" y1="36" x2="31" y2="36" stroke="#fdba74" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </div>
-          ))}
+              <div className="ground-world">
+                <div className="ground-surface">
+                  <div className="surface-part full"></div>
+                </div>
+              </div>
+            </>
+          )}
 
           {isWaitingForAnswer && (
             <div className="math-overlay-modern" style={{ zIndex: 10 }}>
@@ -371,29 +862,11 @@ const BunnyRun = () => {
             </div>
           )}
 
-          {gameState === 'ready' && (
-            <div className="game-overlay-screen" style={{ zIndex: 10, background: 'rgba(255,255,255,0.85)' }}>
-              <div className="menu-inner">
-                <div className="game-logo" style={{ fontSize: '3.5rem', marginBottom: '2rem' }}>READY TO RUN?</div>
-                <p style={{ fontSize: '1.4rem', color: '#334155', marginBottom: '2.5rem' }}>
-                  Press the button below to start the rabbit running!
-                </p>
-                <button 
-                  className="retry-btn" 
-                  style={{ margin: '0 auto', background: 'linear-gradient(135deg, #10b981, #059669)', padding: '1.5rem 4rem', fontSize: '1.8rem' }}
-                  onClick={startRunning}
-                >
-                  🚀 START RUNNING
-                </button>
-              </div>
-            </div>
-          )}
-
           {gameState === 'menu' && (
             <div className="game-overlay-screen" style={{ zIndex: 10 }}>
               <div className="menu-inner">
                 <div className="game-logo">BUNNY RUN</div>
-                <p>Jump over obstacles and collect the carrots in colorful 2D!</p>
+                <p>Jump over obstacles and collect the carrots in full 3D!</p>
                 <div className="diff-select">
                   <button className="lvl-btn l0" onClick={() => startGame('0')}>Level 0</button>
                   <button className="lvl-btn l1" onClick={() => startGame('1')}>Level 1</button>

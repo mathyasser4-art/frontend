@@ -151,8 +151,8 @@ function CertificateModal({
                                 </p>
 
                                 <div className="battle-metadata">
-                                    For showing outstanding speed, focus, and math skills in the competition: 
-                                    <strong translate="no" className="notranslate"> "{competitionTitle || 'Abacus Arena Competition'}"</strong>
+                                    For showing outstanding speed, focus, and math skills in the live battle: 
+                                    <strong translate="no" className="notranslate"> "{competitionTitle || 'Abacus Arena Battle'}"</strong>
                                     {sScore !== undefined && totalQuestions !== undefined && (
                                         <span> by solving <strong>{sScore} out of {totalQuestions}</strong> questions correctly!</span>
                                     )}

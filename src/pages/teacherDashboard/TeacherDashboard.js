@@ -29,7 +29,8 @@ function TeacherDashboard() {
     let [timer, setTimer] = useState('')
     let [title, setTitle] = useState('')
     let [attempts, setAttempts] = useState('')
-
+    let [startDate, setStartDate] = useState('')
+    let [expiryData, setExpiryData] = useState('')
     let [classSelector, setClassSelector] = useState('')
     const [classesList, setClassesList] = useState([])
     const [classesBox, setClassesBox] = useState([])
@@ -106,7 +107,9 @@ function TeacherDashboard() {
         const findAssignment = allAsignment.filter(e => e._id === assignmentID)[0]
         
         // Pre-fill with similar data, but allow teacher to modify
-
+        // Don't set dates - force teacher to set new dates
+        setStartDate('')
+        setExpiryData('')
         
         // Pre-fill timer from original
         if (findAssignment.timer)
@@ -139,7 +142,8 @@ function TeacherDashboard() {
     const closeReassignPopup = () => {
         setError(null)
         setQuestionList([])
-
+        setStartDate('')
+        setExpiryData('')
         setTimer('')
         setTitle('')
         setForceFlashMode(false)
@@ -168,7 +172,10 @@ function TeacherDashboard() {
     const handleReassignAssignment = () => {
         if (classesBox.length === 0 || title === '') {
             setErrorOperation('You must select class first and write the title!!')
-
+        } else if (startDate === '' && expiryData !== '') {
+            setErrorOperation('You must add the start date!!')
+        } else if (startDate !== '' && expiryData === '') {
+            setErrorOperation('You must add the expiry date!!')
         } else {
             const questionPocket = []
             const classPocket = []
@@ -187,12 +194,14 @@ function TeacherDashboard() {
                 totalPoints, 
                 timer: timer === '' ? undefined : timer, 
                 attemptsNumber: 1, 
+                startDate: startDate === '' ? undefined : startDate, 
+                endDate: expiryData === '' ? undefined : expiryData, 
                 classes: classPocket, 
                 title,
                 forceFlashMode: forceFlashMode,
                 flashSpeed: forceFlashMode ? assignmentFlashSpeed : undefined
             }
-            duplicateAssignment(data, setError, assignmentID, setAllAsignment, setLoadingOperation, setPocketNumber, setQuestionList, closeReassignPopup, setTimer, setTitle, setForceFlashMode, setAssignmentFlashSpeed)
+            duplicateAssignment(data, setError, assignmentID, setAllAsignment, setLoadingOperation, setPocketNumber, setQuestionList, closeReassignPopup, setTimer, setExpiryData, setStartDate, setTitle, setForceFlashMode, setAssignmentFlashSpeed)
         }
     }
 
@@ -306,26 +315,26 @@ function TeacherDashboard() {
                 <div className="comp-panel-header">
                     <div className="comp-panel-title">
                         <Swords size={22} className="comp-sword-icon" />
-                        <h2>Create a competition</h2>
+                        <h2>Live Battle Arena</h2>
                     </div>
                     <button
                         id="create-competition-btn"
                         className="comp-create-btn"
                         onClick={() => { soundEffects.playClick(); setShowCreateComp(true); }}
                     >
-                        ⚔️ Create a competition
+                        ⚔️ Create New Battle
                     </button>
                 </div>
 
                 {/* My Competitions List */}
                 <div className="comp-list-wrapper">
-                    <h3 className="comp-list-title">Your Past Competitions</h3>
+                    <h3 className="comp-list-title">Your Past Battles</h3>
                     {compLoading ? (
-                        <div className="comp-loading-msg">Loading competitions...</div>
+                        <div className="comp-loading-msg">Loading battles...</div>
                     ) : myCompetitions.length === 0 ? (
                         <div className="comp-empty-state">
                             <Trophy size={40} className="comp-empty-icon" />
-                            <p>No competitions yet. Create your first one above!</p>
+                            <p>No battles yet. Create your first one above!</p>
                         </div>
                     ) : (
                         <div className="comp-items-grid">
@@ -500,7 +509,16 @@ function TeacherDashboard() {
                             </div>
                         </div>
 
-
+                        <div className="timer date-faild d-flex align-items-center">
+                            <div>
+                                <p>Start Date:</p>
+                                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                            </div>
+                            <div>
+                                <p>Expiry Date:</p>
+                                <input type="date" value={expiryData} onChange={(e) => setExpiryData(e.target.value)} />
+                            </div>
+                        </div>
 
                         {isTrialMode ? (
                             <UpgradePrompt 

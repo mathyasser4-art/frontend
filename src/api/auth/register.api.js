@@ -21,9 +21,7 @@ const register = (userData, setError, setLoading, navigate) => {
                     localStorage.setItem('O_authWEB', responseJson.userToken)
                     localStorage.setItem('auth_role', responseJson.role)
                     localStorage.setItem('pp_name', responseJson.userName)
-                    setTimeout(() => {
-                        window.location.href = '/';
-                    }, 100);
+                    window.location.href = '/';
                 } else {
                     // Otherwise redirect to login page
                     navigate('/auth/login')

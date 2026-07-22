@@ -1,10 +1,9 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/supervisor/addSupervisor`;
+const Token = localStorage.getItem('O_authWEB')
 
 const addSupervisor = (data, setError, setLoadingOperation, closeAddPopup, setAllSupervisor, setSupervisorNumber) => {
-    const Token = localStorage.getItem('O_authWEB');
-
     setLoadingOperation(true)
     fetch(URL, {
         method: 'post',

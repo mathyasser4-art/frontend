@@ -708,14 +708,3 @@
     height: 480px;
   }
 }
-
-@media (max-width: 600px) {
-  .tanks-container { padding: 1rem; margin: 1rem auto; width: 98%; max-width: 100%; }
-  .tanks-header { flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1rem; }
-  .tanks-menu h1 { font-size: 2.2rem; }
-  .tanks-game-wrapper { height: 380px; }
-  .game-question-panel { width: 95%; padding: 1.2rem; bottom: 10px; }
-  .tanks-opts-grid { grid-template-columns: 1fr; gap: 0.6rem; }
-  .opt-btn { padding: 0.8rem; font-size: 1.2rem; }
-  .hud-stats { flex-wrap: wrap; }
-}

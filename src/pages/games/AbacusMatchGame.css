@@ -869,15 +869,11 @@
 
   .abacus-board-card {
     padding: 1rem 0.5rem;
-    max-width: 100%;
-    overflow-x: auto;
   }
 
   .abacus-wooden-outer {
     padding: 8px;
     border-radius: 12px;
-    max-width: 100%;
-    overflow-x: auto;
   }
 
   .abacus-wooden-inner {

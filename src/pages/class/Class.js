@@ -3,7 +3,6 @@ import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import { Link } from 'react-router-dom'
 import addClass from '../../api/class/addClass.api'
-import addMultipleClasses from '../../api/class/addMultipleClasses.api'
 import getClass from '../../api/class/getClass.api'
 import updateClass from '../../api/class/updateClass.api'
 import removeClass from '../../api/class/removeClass.api'
@@ -18,7 +17,6 @@ import './Class.css'
 
 function Class() {
     const [className, setClassName] = useState('')
-    const [bulkClassNames, setBulkClassNames] = useState('')
     const [classID, setClassID] = useState()
     const [allClass, setAllClass] = useState([])
     const [loadingOperation, setLoadingOperation] = useState(false)
@@ -77,40 +75,6 @@ function Class() {
         }
     }
     // add class func end
-
-    // bulk add class func start
-    const openBulkAddPopup = () => {
-        setBulkClassNames('')
-        setError(null)
-        document.querySelector('.bulk-add-class-popup').classList.replace('d-none', 'd-flex')
-        setTimeout(() => {
-            document.querySelector('.bulk-add-class-popup').classList.remove('class-popup-hide')
-            document.querySelector('.bulk-add-class-container').classList.remove('class-top')
-        }, 50);
-    }
-
-    const closeBulkAddPopup = () => {
-        document.querySelector('.bulk-add-class-popup').classList.add('class-popup-hide')
-        document.querySelector('.bulk-add-class-container').classList.add('class-top')
-        setTimeout(() => {
-            document.querySelector('.bulk-add-class-popup').classList.replace('d-flex', 'd-none')
-        }, 300);
-    }
-
-    const handleBulkAddClasses = () => {
-        if (bulkClassNames.trim() === '') {
-            setError("Class names are required!!")
-        } else {
-            const classList = bulkClassNames.split(/[\n,]+/).map(name => name.trim()).filter(name => name !== '')
-            if (classList.length === 0) {
-                setError("Please enter valid class names")
-                return
-            }
-            const data = { classNames: classList }
-            addMultipleClasses(data, setError, setLoadingOperation, closeBulkAddPopup, setAllClass)
-        }
-    }
-    // bulk add class func end
 
     // update class func start
     const openUpdatePopup = (className, classID) => {
@@ -262,26 +226,20 @@ function Class() {
             <MobileNav role={role} />
             <Navbar />
             <div className="class-container">
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                    <div className="class-header d-flex align-items-center" onClick={openAddPopup} style={{ marginBottom: 0 }}>
-                        <p>+</p>
-                        <p>Create New Class</p>
-                    </div>
-                    <div className="class-header d-flex align-items-center" onClick={openBulkAddPopup} style={{ marginBottom: 0, backgroundColor: '#3498db' }}>
-                        <p>+</p>
-                        <p>Bulk Add Classes</p>
-                    </div>
+                <div className="class-header d-flex align-items-center" onClick={openAddPopup}>
+                    <p>+</p>
+                    <p>Create New Class</p>
                 </div>
                 {loading ? <DashboardLoading /> :
-                    allClass?.map((item, index) => {
+                    allClass?.map(item => {
                         return (
                             <div key={item._id} className="class-item d-flex justify-content-space-between align-items-center">
                                 <p 
                                     onClick={() => openStudentListPopup(item._id)}
-                                    style={{ cursor: 'pointer', flex: 1, display: 'flex', alignItems: 'center' }}
+                                    style={{ cursor: 'pointer', flex: 1 }}
                                     title="Click to view students"
                                 >
-                                    <span style={{ fontWeight: 'bold', marginRight: '10px', color: '#5d17eb' }}>{index + 1}.</span> {item.class}
+                                    {item.class}
                                 </p>
                                 <div className="class-icon d-flex align-items-center">
                                     {role !== 'Teacher' && (
@@ -322,31 +280,6 @@ function Class() {
                 </div>
             </div>
             {/* add class popup end */}
-
-            {/* bulk add class popup start */}
-            <div className="bulk-add-class-popup class-popup-hide d-none justify-content-center align-items-center">
-                <div className='bulk-add-class-container class-top'>
-                    <div className="add-popup-head">
-                        <p>Bulk Add Classes</p>
-                    </div>
-                    {error ? <div className="error error-dengare">{error}</div> : null}
-                    <div className="add-popup-body">
-                        <label>Class Names (separated by comma or newline)</label>
-                        <textarea 
-                            value={bulkClassNames} 
-                            onChange={(e) => setBulkClassNames(e.target.value)} 
-                            placeholder="Class A, Class B&#10;Class C"
-                            className="bulk-textarea"
-                            rows="5"
-                        ></textarea>
-                    </div>
-                    <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeBulkAddPopup}>Cancel</button>
-                        <button onClick={handleBulkAddClasses} className='button popup-btn2'>{loadingOperation ? <span className="loader"></span> : "Add Classes"}</button>
-                    </div>
-                </div>
-            </div>
-            {/* bulk add class popup end */}
 
             {/* update class popup start */}
             <div className="update-class-popup class-popup-hide d-none justify-content-center align-items-center">
@@ -422,10 +355,10 @@ function Class() {
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="add-to-popup-body">
                         {studentLoading ? <DashboardLoading /> : (noStudent) ? <p>Oops!!There are no any students in this class yet.</p> :
-                            classStudent.map((item, index) => {
+                            classStudent.map(item => {
                                 return (
                                     <div key={item._id} className="student-item d-flex align-items-center justify-content-space-between">
-                                        <p style={{ margin: 0, display: 'flex', alignItems: 'center' }}><span style={{fontWeight: 'bold', marginRight: '10px', color: '#5d17eb'}}>{index + 1}.</span> {item.userName}</p>
+                                        <p>{item.userName}</p>
                                         <i className="fa fa-trash" onClick={() => handleRemoveStudent(item._id)} aria-hidden="true"></i>
                                     </div>
                                 )
@@ -450,10 +383,10 @@ function Class() {
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="add-to-popup-body">
                         {noTeacher ? <p>Oops!!There are no any teachers in this class yet.</p> : 
-                        teacherList.map((item, index) => {
+                        teacherList.map(item => {
                             return (
                                 <div key={item._id} className="student-item d-flex align-items-center justify-content-space-between">
-                                    <p style={{ margin: 0, display: 'flex', alignItems: 'center' }}><span style={{fontWeight: 'bold', marginRight: '10px', color: '#5d17eb'}}>{index + 1}.</span> {item.userName}</p>
+                                    <p>{item.userName}</p>
                                     <i className="fa fa-trash" onClick={() => handleRemoveTeacher(item._id)} aria-hidden="true"></i>
                                 </div>
                             )

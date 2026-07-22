@@ -1,10 +1,9 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/assignment/updateAssignment`;
+const Token = localStorage.getItem('O_authWEB')
 
 const updateAssignment = (data, setError, assignmentID, setAllAsignment,setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setAttempts, setExpiryData, setStartDate) => {
-    const Token = localStorage.getItem('O_authWEB');
-
     setLoadingOperation(true)
     fetch(`${URL}/${assignmentID}`, {
         method: 'put',

@@ -52,19 +52,3 @@
 
 /* Reuse the other classes from ArcheryGame.css by keeping their names, but they are already global if we just import them!
 Wait, if I import HighwayRiderGame.css, it will just define these. I can reuse the lock-problem, lock-options, etc. */
-
-@media (max-width: 768px) {
-  .highway-header {
-    padding: 0.8rem 1rem;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-  }
-  .highway-menu {
-    padding: 2rem 1rem;
-    margin: 1rem auto;
-    width: 95%;
-  }
-  .highway-menu h1 {
-    font-size: 2rem;
-  }
-}

@@ -509,14 +509,6 @@
 .block-3 { height: 60px; background: linear-gradient(to bottom, #7c2d12, #451a03); }
 
 /* Rankings Table Wrapper */
-.all-rankings-table-wrapper {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    display: block;
-    -webkit-overflow-scrolling: touch;
-}
-
 .all-rankings-table-wrapper h3 {
     font-size: 18px;
     font-weight: 700;

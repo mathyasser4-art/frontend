@@ -141,7 +141,5 @@
 }
 
 @media (max-width: 480px) {
-  .minigolf-container { padding: 0.5rem; max-width: 100%; }
-  .minigolf-menu h1 { font-size: 1.8rem; }
-  .difficulty-selection { grid-template-columns: 1fr; gap: 1rem; }
+  .minigolf-container { padding: 0.5rem; }
 }

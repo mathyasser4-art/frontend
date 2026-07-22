@@ -145,25 +145,6 @@
     line-height: 1.5;
 }
 
-.compact-modal {
-    max-width: 600px;
-    padding: 2rem;
-    overflow-y: visible;
-}
-
-.compact-content {
-    gap: 1.5rem;
-}
-
-.compact-modal .help-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-}
-
-@media (max-width: 768px) {
-    .compact-modal .help-grid { grid-template-columns: 1fr; }
-}
-
 .guide-steps {
     display: flex;
     flex-direction: column;

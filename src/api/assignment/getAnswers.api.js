@@ -1,10 +1,9 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/answer/getAnswer`;
+const Token = localStorage.getItem('O_authWEB')
 
 const getAnswers = (setAllAnswers, setTime, setAssignmentData, setResult, setError, setLoading, studentID, assignmentID) => {
-    const Token = localStorage.getItem('O_authWEB');
-
     console.log('=== getAnswers API START ===');
     console.log('Student ID:', studentID);
     console.log('Assignment ID:', assignmentID);

@@ -603,19 +603,4 @@
     padding: 0.8rem;
     font-size: 1.3rem;
   }
-
-  .diff-select {
-    grid-template-columns: 1fr;
-  }
-
-  .math-card, .menu-inner {
-    max-width: 100%;
-    width: 95%;
-  }
-
-  .math-overlay-modern {
-    left: 5%;
-    transform: none;
-    width: 90%;
-  }
 }

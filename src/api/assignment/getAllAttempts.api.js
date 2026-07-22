@@ -1,10 +1,9 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/answer/getAllAttempts`;
+const Token = localStorage.getItem('O_authWEB');
 
 const getAllAttempts = async (assignmentID) => {
-    const Token = localStorage.getItem('O_authWEB');
-
     try {
         const response = await fetch(`${URL}/${assignmentID}`, {
             method: 'GET',

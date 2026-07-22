@@ -220,12 +220,12 @@
 }
 
 @media (max-width: 768px) {
-  .pattern-puzzle-container { padding: 0.5rem; max-width: 100%; }
+  .pattern-puzzle-container { padding: 0.5rem; }
   .racer-header h2 { font-size: 1.5rem; }
-  .sequence-container { padding: 2rem 1rem; max-width: 100%; }
-  .sequence-cards { gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-  .seq-card { width: 55px; height: 75px; font-size: 1.8rem; border-radius: 12px; }
-  .input-card input { font-size: 1.8rem; }
+  .sequence-container { padding: 2rem 1rem; }
+  .sequence-cards { gap: 0.5rem; }
+  .seq-card { width: 60px; height: 80px; font-size: 2rem; border-radius: 12px; }
+  .input-card input { font-size: 2rem; }
   .gameplay-actions { flex-direction: column-reverse; width: 100%; max-width: 300px; }
   .submit-btn, .hint-btn { width: 100%; justify-content: center; }
 }

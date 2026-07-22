@@ -1,10 +1,9 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/it/getIT`;
+const Token = localStorage.getItem('O_authWEB')
 
 const getIT = (setLoading, setAllIt, setItNumber) => {
-    const Token = localStorage.getItem('O_authWEB');
-
     setLoading(true)
     fetch(URL, {
         method: 'get',
