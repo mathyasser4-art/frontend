@@ -40,8 +40,19 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 if (responseJson.userID) {
                     localStorage.setItem('pp_id', responseJson.userID);
                 }
+                if (responseJson.createdBy?._id) {
+                    localStorage.setItem('teacher_id', responseJson.createdBy._id);
+                } else if (responseJson.createdBy) {
+                    localStorage.setItem('teacher_id', responseJson.createdBy);
+                }
                 const route = ROLE_ROUTES[responseJson.role] || '/';
-                window.location.href = route;
+                if (typeof navigate === 'function') {
+                    navigate(route, { replace: true });
+                } else {
+                    setTimeout(() => {
+                        window.location.href = route;
+                    }, 100);
+                }
             } else {
                 let errorMsg = responseJson.message;
                 if (errorMsg === 'This email is not registered' || errorMsg === 'Incorrect password') {

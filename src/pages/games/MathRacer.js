@@ -3,11 +3,15 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
-import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal, Users, Copy, ArrowRight, ShieldAlert } from 'lucide-react';
+import { ChevronLeft, Trophy, Timer, Star, RefreshCcw, Medal, Users, Copy, ArrowRight, ShieldAlert, BookOpen, Layers, Swords, Circle, CheckCircle2, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import getSystem from '../../api/system/getSystem.api';
+import getUnit from '../../api/unit/getUnit.api';
 import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import ArithmeticMcqDebugPanel from '../../components/debug/ArithmeticMcqDebugPanel';
 import Pusher from 'pusher-js';
 import API_BASE_URL from '../../config/api.config';
+import Draggable from 'react-draggable';
 import './MathRacer.css';
 
 const F1CarSVG = ({ color, name, isBoosting }) => (
@@ -108,6 +112,10 @@ function MathRacer() {
   const customQuestionsRef = useRef(customQuestions);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     customQuestionsRef.current = customQuestions;
   }, [customQuestions]);
 
@@ -115,18 +123,202 @@ function MathRacer() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [essayAnswer, setEssayAnswer] = useState('');
 
+  // Wizard Question Selector States
+  const { t, i18n } = useTranslation();
+  const [wizardStep, setWizardStep] = useState('system'); // Forced to system
+  const [questionTypeID, setQuestionTypeID] = useState('65a4963482dbaac16d820fc6'); // Force MCQ
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [selectedSystemId, setSelectedSystemId] = useState(null);
+  const [selectedUnitId, setSelectedUnitId] = useState(null);
+  const [systemData, setSystemData] = useState([]);
+  const [unitData, setUnitData] = useState([]);
+  const [loadingWizard, setLoadingWizard] = useState(false);
+  const [customWorksheets, setCustomWorksheets] = useState([]);
+  const [myAssignments, setMyAssignments] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedChapterId, setSelectedChapterId] = useState(location.state?.chapterId || '');
+  const [wizardError, setWizardError] = useState(null);
+
+  const loadCustomWorksheets = () => {
+      setLoadingWizard(true);
+      setWizardError(null);
+      const Token = localStorage.getItem('O_authWEB');
+      fetch(`${API_BASE_URL}/chapter/custom`, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+          }
+      })
+          .then(res => res.json())
+          .then(data => {
+              if (data.message === 'success') {
+                  setCustomWorksheets(data.chapters || []);
+                  setWizardStep('custom-ws');
+                  setSearchQuery('');
+              } else {
+                  setWizardError(data.message);
+              }
+              setLoadingWizard(false);
+          })
+          .catch(err => {
+              setWizardError(err.message);
+              setLoadingWizard(false);
+          });
+  };
+
+  const loadMyAssignments = () => {
+      setLoadingWizard(true);
+      setWizardError(null);
+      const Token = localStorage.getItem('O_authWEB');
+      fetch(`${API_BASE_URL}/teacher/getAssignment`, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+          }
+      })
+          .then(res => res.json())
+          .then(data => {
+              if (data.message === 'success') {
+                  setMyAssignments(data.allAssignment || []);
+                  setWizardStep('assignments');
+                  setSearchQuery('');
+              } else {
+                  setWizardError(data.message);
+              }
+              setLoadingWizard(false);
+          })
+          .catch(err => {
+              setWizardError(err.message);
+              setLoadingWizard(false);
+          });
+  };
+
+  useEffect(() => {
+      if (questionTypeID && questionTypeID !== 'custom') {
+          getSystem(setLoadingWizard, setSystemData, questionTypeID);
+      }
+  }, [questionTypeID]);
+
+  useEffect(() => {
+      if (selectedSubject && questionTypeID !== 'custom') {
+          getUnit(setLoadingWizard, setUnitData, questionTypeID, selectedSubject._id);
+      }
+  }, [selectedSubject, questionTypeID]);
+
+  const handleSelectType = (type) => {
+      soundEffects.playClick();
+      setQuestionTypeID(type === 'mcq' ? '65a4963482dbaac16d820fc6' : '65a4964b82dbaac16d820fc8');
+      setWizardStep('system');
+  };
+
+  const handleSelectSubject = (subject) => {
+      soundEffects.playClick();
+      setSelectedSubject(subject);
+      setWizardStep('unit');
+  };
+
+  const handleSelectChapter = (chapter) => {
+      soundEffects.playClick();
+      setLoadingWizard(true);
+      setWizardError(null);
+      setSelectedChapterId(chapter._id);
+      setChapterName(chapter.chapterName);
+      
+      const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${chapter._id}`;
+      const Token = localStorage.getItem('O_authWEB');
+      fetch(URL, {
+          method: 'get',
+          headers: { 
+              'Content-Type': 'application/json',
+              ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+          },
+      })
+          .then(r => r.json())
+          .then(responseJson => {
+              if (responseJson.message === 'success') {
+                  setCustomQuestions(responseJson.chapter?.questions || []);
+              } else {
+                  setWizardError(responseJson.message);
+              }
+              setLoadingWizard(false);
+          })
+          .catch(err => {
+              setWizardError(err.message);
+              setLoadingWizard(false);
+          });
+  };
+
+  const handleWizardBack = () => {
+      soundEffects.playClick();
+      if (wizardStep === 'custom-ws' || wizardStep === 'assignments' || wizardStep === 'type') {
+          setWizardStep('source');
+          setWizardError(null);
+      } else if (wizardStep === 'unit') {
+          setWizardStep('system');
+          setSelectedSubject(null);
+          setUnitData([]);
+          setSelectedUnitId(null);
+      } else if (wizardStep === 'system') {
+          setWizardStep('type');
+          setQuestionTypeID('');
+          setSystemData([]);
+          setSelectedSystemId(null);
+      }
+  };
+
+  const toggleSystemExpand = (id) => {
+      soundEffects.playClick();
+      setSelectedSystemId(id);
+  };
+
+  const toggleUnitExpand = (id) => {
+      soundEffects.playClick();
+      setSelectedUnitId(id);
+  };
+
+  const translateName = (name) => {
+      if (!name) return '';
+      const key = `systemNames.${name}`;
+      const translated = t(key);
+      return translated !== key ? translated : name;
+  };
+
   // Matchmaking & Multiplayer States
-  const [gameMode, setGameMode] = useState('single'); // 'single' or 'multi'
+  const userRole = localStorage.getItem('auth_role') || '';
+  const isTeacher = userRole === 'Teacher' || userRole === 'School';
+
+  const [gameMode, setGameMode] = useState(isTeacher ? 'multi' : 'single'); // 'single' or 'multi'
   const [multiRole, setMultiRole] = useState(null); // 'host' or 'guest'
   const [roomId, setRoomId] = useState('');
   const [inputRoomId, setInputRoomId] = useState('');
   const [players, setPlayers] = useState([]); // [{ id, name, color, distance, score, finished, time, isBoosting }]
   const [lobbyStatus, setLobbyStatus] = useState('');
   const [isCopied, setIsCopied] = useState(false);
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
+  const [hostQuestionCount, setHostQuestionCount] = useState(10);
+  const [activeQuestionCount, setActiveQuestionCount] = useState(10);
+  const [hostIsRacing, setHostIsRacing] = useState(false); // Default host to spectator mode
 
   // User Credentials
-  const myName = localStorage.getItem('pp_name') || 'Racer ' + Math.floor(100 + Math.random() * 900);
-  const myId = localStorage.getItem('pp_id') || 'usr_' + Math.random().toString(36).substr(2, 9);
+  const [myName] = useState(() => {
+    let name = localStorage.getItem('pp_name') || localStorage.getItem('guest_name');
+    if (!name) {
+      name = 'Racer ' + Math.floor(100 + Math.random() * 900);
+      localStorage.setItem('guest_name', name);
+    }
+    return name;
+  });
+
+  const [myId] = useState(() => {
+    let id = localStorage.getItem('pp_id') || localStorage.getItem('guest_id');
+    if (!id) {
+      id = 'usr_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('guest_id', id);
+    }
+    return id;
+  });
   
   const F1_COLORS = ['#3b82f6', '#f43f5e', '#8b5cf6', '#10b981', '#fbbf24'];
   const CAR_SKINS = { 'car_red': '#ef4444', 'car_purple': '#a855f7', 'car_gold': '#fbbf24' };
@@ -146,7 +338,8 @@ function MathRacer() {
     }
   }, []);
 
-  const [gameState, setGameState] = useState('menu'); // 'menu', 'lobby', 'playing', 'gameover'
+  const [gameState, setGameState] = useState('menu'); // 'menu', 'lobby', 'countdown', 'playing', 'gameover'
+  const [countdownValue, setCountdownValue] = useState(3);
   const [difficulty, setDifficulty] = useState('easy'); // 'easy', 'medium', 'hard'
   const [score, setScore] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -163,6 +356,7 @@ function MathRacer() {
   const timerRef = useRef(null);
   const pusherRef = useRef(null);
   const channelRef = useRef(null);
+  const lastCorrectIndexRef = useRef(-1);
 
   // Clean up socket subscriptions on unmount
   useEffect(() => {
@@ -205,8 +399,8 @@ function MathRacer() {
     disconnectPusher();
     setLobbyStatus('Connecting to server...');
 
-    const pusher = new Pusher('06df370fb33f1263ec1f', {
-      cluster: 'eu'
+    const pusher = new Pusher('app_e4ed3fcd3045501a594c2640c4d2dd75832ff677', {
+      cluster: 'us',
     });
     pusherRef.current = pusher;
 
@@ -231,12 +425,14 @@ function MathRacer() {
         score: 0,
         finished: false,
         time: null,
-        isBoosting: false
+        isBoosting: false,
+        isSpectator: !hostIsRacing
       };
       setPlayers([hostPlayer]);
 
       // Host listens for new players joining
       channel.bind('student-joined', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         soundEffects.playClick();
         setPlayers(prev => {
           if (prev.some(p => p.id === data.id)) return prev;
@@ -250,22 +446,17 @@ function MathRacer() {
             score: 0,
             finished: false,
             time: null,
-            isBoosting: false
+            isBoosting: false,
+            isSpectator: false
           };
-          const updated = [...prev, newPlayer];
           
-          // Broadcast full lobby roster back to all guest players
-          broadcastPusherEvent(roomCode, 'sync-lobby', { 
-            players: updated,
-            hasCustomQuestions: !!customQuestions,
-            chapterName: chapterName
-          });
-          return updated;
+          return [...prev, newPlayer];
         });
       });
 
       // Host listens to score/distance updates from active guest players
       channel.bind('player-progress', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, distance: data.distance, score: data.score, isBoosting: !!data.isBoosting } : p
         ));
@@ -273,6 +464,7 @@ function MathRacer() {
 
       // Host listens to finished signal from active guest players
       channel.bind('player-finished', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, finished: true, time: data.time } : p
         ));
@@ -281,8 +473,12 @@ function MathRacer() {
     } else {
       // Guest player listens to full lobby syncing from the host
       channel.bind('sync-lobby', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         console.log('[LOBBY] Synced roster from host:', data);
         setPlayers(data.players);
+        if (data.questionCount) {
+          setActiveQuestionCount(data.questionCount);
+        }
         if (data.hasCustomQuestions && data.chapterName) {
           setChapterName(data.chapterName || '');
           // Fetch custom questions from database to avoid large Pusher payloads
@@ -307,30 +503,28 @@ function MathRacer() {
 
       // Guest listens to host's race start trigger
       channel.bind('start-game', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         setDifficulty(data.difficulty);
-        setGameState('playing');
-        setScore(0);
-        setTimeElapsed(0);
-        setPlayerDistance(0);
-        setFeedback(null);
-        setCurrentQuestionIndex(0);
-        setEssayAnswer('');
-        
-        // Use custom questions from local ref first (since fetched in sync-lobby), fallback to pusher data if any
-        const localQuestions = customQuestionsRef.current;
-        if (localQuestions && localQuestions.length > 0) {
-          generateProblem(data.difficulty, 0, localQuestions);
-        } else if (data.customQuestions && data.customQuestions.length > 0) {
+        if (data.questionCount) {
+          setActiveQuestionCount(data.questionCount);
+        }
+        if (data.customQuestions && data.customQuestions.length > 0) {
           setCustomQuestions(data.customQuestions);
           customQuestionsRef.current = data.customQuestions;
-          generateProblem(data.difficulty, 0, data.customQuestions);
-        } else {
-          generateProblem(data.difficulty, 0, null);
         }
+        startCountdownThenPlay(data.difficulty, data.customQuestions || customQuestionsRef.current);
+      });
+
+      // Guest listens to host early exit
+      channel.bind('end-race-early', () => {
+        setGameState('lobby');
+        setPlayers([]);
+        alert('The host has ended the race.');
       });
 
       // Guest listens to score/distance updates from host/other guests
       channel.bind('player-progress', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, distance: data.distance, score: data.score, isBoosting: !!data.isBoosting } : p
         ));
@@ -338,9 +532,17 @@ function MathRacer() {
 
       // Guest listens to finished signals from host/other guests
       channel.bind('player-finished', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, finished: true, time: data.time } : p
         ));
+      });
+
+      channel.bind('host-end-race', () => {
+        soundEffects.playEndSound();
+        alert('The host has closed the race.');
+        disconnectPusher();
+        setGameState('menu');
       });
 
       // Notify host that we entered the room only after successful subscription
@@ -351,8 +553,47 @@ function MathRacer() {
           skinColor: mySkinColor
         });
       });
+      
+      // Fallback: public channels sometimes don't reliably fire subscription_succeeded
+      setTimeout(() => {
+        broadcastPusherEvent(roomCode, 'student-joined', {
+          id: myId,
+          name: myName,
+          skinColor: mySkinColor
+        });
+      }, 1000);
     }
   };
+
+  useEffect(() => {
+    if (gameState === 'lobby' && multiRole === 'host' && roomId) {
+      setPlayers(prev => prev.map(p => p.id === myId ? { ...p, isSpectator: !hostIsRacing } : p));
+    }
+  }, [hostIsRacing, gameState, multiRole, roomId, myId]);
+
+  useEffect(() => {
+    if (gameState === 'lobby' && multiRole === 'host' && roomId) {
+      broadcastPusherEvent(roomId, 'sync-lobby', {
+        players: players,
+        hasCustomQuestions: !!customQuestions,
+        chapterName: selectedChapterId || chapterName,
+        questionCount: hostQuestionCount
+      });
+    }
+  }, [players, hostQuestionCount, hostIsRacing, gameState, multiRole, roomId, customQuestions, selectedChapterId, chapterName]);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const roomParam = searchParams.get('room');
+    if (roomParam) {
+      setInputRoomId(roomParam);
+      setRoomId(roomParam);
+      setGameMode('multi');
+      setMultiRole('guest');
+      setGameState('lobby');
+      initPusherMultiplayer(roomParam, 'guest');
+    }
+  }, [location.search]);
 
   // Host Action: Create lobby
   const handleCreateRoom = () => {
@@ -382,8 +623,38 @@ function MathRacer() {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const copyShareLink = () => {
+    soundEffects.playClick();
+    const shareLink = `${window.location.origin}/student/games/math-racer?room=${roomId}`;
+    navigator.clipboard.writeText(shareLink);
+    setIsLinkCopied(true);
+    setTimeout(() => setIsLinkCopied(false), 2000);
+  };
+
   // Generate a random addition/subtraction MCQ problem (always consistent), or load a custom question.
   const generateProblem = (diff, index = currentQuestionIndex, questions = customQuestions) => {
+    const normalize = (val) => String(val !== undefined && val !== null ? val : "").trim();
+    const shuffleOptionsWithAntiConsecutive = (optsList, correctAns) => {
+      if (!optsList || optsList.length <= 1) return optsList;
+      let arr = [...optsList];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      let correctIdx = arr.findIndex(opt => normalize(opt) === normalize(correctAns));
+      
+      if (correctIdx !== -1 && correctIdx === lastCorrectIndexRef.current && arr.length > 1) {
+        let newIdx = (correctIdx + 1 + Math.floor(Math.random() * (arr.length - 1))) % arr.length;
+        [arr[correctIdx], arr[newIdx]] = [arr[newIdx], arr[correctIdx]];
+        correctIdx = newIdx;
+      }
+      
+      if (correctIdx !== -1) {
+        lastCorrectIndexRef.current = correctIdx;
+      }
+      return arr;
+    };
+
     if (questions && questions.length > 0) {
       const qIndex = index % questions.length;
       const q = questions[qIndex];
@@ -403,10 +674,13 @@ function MathRacer() {
         options = q.wrongPicAnswer;
       }
 
+      const answer = q.correctAnswer || (q.answer && q.answer[0]) || q.correctPicAnswer || '';
+      const shuffledOptions = shuffleOptionsWithAntiConsecutive(options, answer);
+
       setCurrentProblem({
         text: text === 'ABACUS_GRID' ? 'ABACUS_GRID' : formatQuestionText(text),
-        options,
-        answer: q.correctAnswer || (q.answer && q.answer[0]) || q.correctPicAnswer || '',
+        options: shuffledOptions,
+        answer,
         typeOfAnswer: q.typeOfAnswer,
         gridRows: gridRows || null,
         questionPic: q.questionPic || '',
@@ -454,25 +728,79 @@ function MathRacer() {
     while(options.length < 4) {
       options.push(Math.floor(Math.random() * 100));
     }
-    options.sort(() => Math.random() - 0.5);
+    const shuffledOptions = shuffleOptionsWithAntiConsecutive(options, answer);
 
-    setCurrentProblem({ text: `${num1} ${operator} ${num2} = ?`, answer, options });
+    setCurrentProblem({ text: `${num1} ${operator} ${num2} = ?`, answer, options: shuffledOptions });
   };
 
-  const startGame = (selectedLevel) => {
+  const triggerFullscreen = () => {
+    const elem = containerRef.current;
+    if (elem) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+    }
+  };
+
+  const startCountdownThenPlay = (selectedLevel, specificQuestions = null) => {
     soundEffects.playClick();
     setDifficulty(selectedLevel);
-
     setScore(0);
     setTimeElapsed(0);
     setPlayerDistance(0);
     setBot1Distance(0);
     setBot2Distance(0);
-    setGameState('playing');
     setFeedback(null);
     setCurrentQuestionIndex(0);
     setEssayAnswer('');
-    generateProblem(selectedLevel, 0, customQuestions);
+    // Auto-fullscreen disabled
+    // triggerFullscreen();
+
+    setGameState('countdown');
+    setCountdownValue(3);
+    
+    const playBeep = (freq, duration) => {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    };
+
+    playBeep(400, 0.5); // First red light
+
+    generateProblem(selectedLevel, 0, specificQuestions || customQuestions);
+
+    let count = 3;
+    const interval = setInterval(() => {
+      count -= 1;
+      if (count > 0) {
+        setCountdownValue(count);
+        playBeep(400, 0.5); // Next red lights
+      } else if (count === 0) {
+        setCountdownValue('GO!');
+        playBeep(800, 0.8); // Green light!
+      } else {
+        clearInterval(interval);
+        setGameState('playing');
+      }
+    }, 1000);
+  };
+
+  const startGame = (selectedLevel) => {
+    startCountdownThenPlay(selectedLevel, customQuestions);
   };
 
   // Host Action: Trigger race start for all players
@@ -480,22 +808,136 @@ function MathRacer() {
     if (players.length < 1) return; // Allow practice alone, or multiple
     soundEffects.playClick();
     setDifficulty(selectedLevel);
+    setActiveQuestionCount(hostQuestionCount);
     
     // Broadcast start race config to all guests
     broadcastPusherEvent(roomId, 'start-game', { 
       difficulty: selectedLevel,
-      customQuestions: null // Set to null to keep Pusher payload under 10KB size limit
+      questionCount: hostQuestionCount,
+      customQuestions: customQuestions ? customQuestions.slice(0, 30) : null
     });
     
     // Initialize host gameplay
-    setScore(0);
-    setTimeElapsed(0);
-    setPlayerDistance(0);
-    setGameState('playing');
-    setFeedback(null);
-    setCurrentQuestionIndex(0);
-    setEssayAnswer('');
-    generateProblem(selectedLevel, 0, customQuestions);
+    startCountdownThenPlay(selectedLevel, customQuestions);
+  };
+
+  const renderQuestionSelector = (isHostMode = false) => {
+    return (
+      <div style={{ textAlign: 'left', marginTop: '5px' }}>
+        <h3 style={{ color: isHostMode ? 'black' : '#3b82f6', margin: '0 0 5px', fontSize: '18px', fontWeight: 'bold' }}>
+          question resource (worksheets)
+        </h3>
+        
+        {!customQuestions ? (
+          <div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
+              {systemData.length === 0 ? (
+                <p style={{ color: '#94a3b8', fontSize: '14px' }}>{t('loading_worksheets', 'Loading worksheets...')}</p>
+              ) : (
+                <>
+                  <select
+                    value={selectedSystemId || ''}
+                    onChange={(e) => {
+                      toggleSystemExpand(e.target.value);
+                      setSelectedSubject(null);
+                      setSelectedUnitId(null);
+                      setUnitData([]);
+                    }}
+                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                  >
+                    <option value="" disabled>{t('mathRacer.select_system', 'select...')}</option>
+                    {systemData.map(system => (
+                      <option key={system._id} value={system._id}>{translateName(system.systemName)}</option>
+                    ))}
+                  </select>
+
+                  {selectedSystemId && (
+                    <select
+                      value={selectedSubject?._id || ''}
+                      onChange={(e) => {
+                        const system = systemData.find(s => s._id === selectedSystemId);
+                        const subject = system?.subjects?.find(sub => sub._id === e.target.value);
+                        if (subject) handleSelectSubject(subject);
+                      }}
+                      style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                    >
+                      <option value="" disabled>{t('mathRacer.select_subject', 'select...')}</option>
+                      {systemData.find(s => s._id === selectedSystemId)?.subjects?.map(subject => (
+                        <option key={subject._id} value={subject._id}>{translateName(subject.subjectName)}</option>
+                      ))}
+                    </select>
+                  )}
+                </>
+              )}
+            </div>
+            
+            {selectedSubject && unitData.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <select
+                  value={selectedUnitId || ''}
+                  onChange={(e) => {
+                    toggleUnitExpand(e.target.value);
+                  }}
+                  style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                >
+                  <option value="" disabled>{t('mathRacer.select_unit', 'select...')}</option>
+                  {unitData.map(unit => (
+                    <option key={unit._id} value={unit._id}>{translateName(unit.unitName)}</option>
+                  ))}
+                </select>
+
+                {selectedUnitId && (
+                  <select
+                    value=""
+                    onChange={(e) => {
+                      const unit = unitData.find(u => u._id === selectedUnitId);
+                      const chapter = unit?.chapters?.find(c => c._id === e.target.value);
+                      if (chapter) handleSelectChapter(chapter);
+                    }}
+                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                  >
+                    <option value="" disabled>{t('select_chapter', 'Select Chapter...')}</option>
+                    {unitData.find(u => u._id === selectedUnitId)?.chapters?.map(chapter => (
+                      <option key={chapter._id} value={chapter._id}>📄 {translateName(chapter.chapterName)}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ background: '#10b981', color: 'white', padding: '10px', borderRadius: '8px', fontWeight: 'bold', marginBottom: '15px' }}>
+            ✓ Selected: {chapterName} ({customQuestions.length} Qs)
+            <button onClick={() => setCustomQuestions(null)} style={{ marginLeft: '10px', background: 'transparent', border: '1px solid white', color: 'white', borderRadius: '4px', cursor: 'pointer', padding: '4px 8px' }}>Change</button>
+          </div>
+        )}
+
+        <div style={{ marginTop: '5px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h3 style={{ color: isHostMode ? '#38bdf8' : '#3b82f6', margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
+            {t('number_of_questions', 'number of questions')} ({isHostMode ? hostQuestionCount : activeQuestionCount || 10})
+          </h3>
+          <input
+            type="number"
+            min="1"
+            value={isHostMode ? hostQuestionCount : activeQuestionCount || 10} 
+            onChange={(e) => {
+              const val = parseInt(e.target.value);
+              if (val > 0) {
+                if (isHostMode) setHostQuestionCount(val);
+                else setActiveQuestionCount(val);
+              }
+            }}
+            style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px', width: '60px' }}
+          />
+        </div>
+
+        {!isHostMode && customQuestions && (
+          <button onClick={() => startGame('easy')} style={{ width: '100%', marginTop: '10px', padding: '10px', background: '#3b82f6', color: 'white', borderRadius: '8px', fontWeight: 'bold', fontSize: '16px', border: 'none', cursor: 'pointer' }}>
+            {t('start_single_player', 'Start Single Player Race')}
+          </button>
+        )}
+      </div>
+    );
   };
 
   const endGame = () => {
@@ -527,7 +969,7 @@ function MathRacer() {
             return newDist;
           });
           setPlayerDistance(prev => {
-            if (prev >= RACE_LENGTH) endGame();
+            if (prev >= RACE_LENGTH - 0.01) endGame();
             return prev;
           });
         }, 100);
@@ -543,6 +985,17 @@ function MathRacer() {
   // Real-time Multiplayer Distance Synchronizer
   useEffect(() => {
     if (gameState === 'playing' && gameMode === 'multi' && roomId) {
+      if (multiRole === 'host' && !hostIsRacing) {
+        // If host is spectator, check if any active racer finished or all finished
+        const activeRacers = players.filter(p => !p.isSpectator);
+        if (activeRacers.length > 0 && activeRacers.some(p => p.finished)) {
+          if (activeRacers.every(p => p.finished)) {
+            endGame();
+          }
+        }
+        return;
+      }
+
       // Synchronize player distance with others in room
       broadcastPusherEvent(roomId, 'player-progress', {
         id: myId,
@@ -552,7 +1005,7 @@ function MathRacer() {
       });
 
       // Victory Check
-      if (playerDistance >= RACE_LENGTH) {
+      if (playerDistance >= RACE_LENGTH - 0.01) {
         const finalTime = `${timeElapsed}s`;
         
         broadcastPusherEvent(roomId, 'player-finished', {
@@ -568,7 +1021,7 @@ function MathRacer() {
         endGame();
       }
     }
-  }, [playerDistance, gameState, gameMode, roomId]);
+  }, [playerDistance, gameState, gameMode, roomId, multiRole, hostIsRacing, players]);
 
   const handleOptionClick = (selectedOpt) => {
     const normalize = (val) => String(val !== undefined && val !== null ? val : "").trim();
@@ -613,7 +1066,7 @@ function MathRacer() {
     setScore(prev => prev + 10);
     
     setPlayerDistance(prev => {
-      const jumpDist = difficulty === 'easy' || difficulty === '0' ? 15 : difficulty === 'medium' || difficulty === '1' ? 12 : 10;
+      const jumpDist = (gameMode === 'multi' && activeQuestionCount) ? (RACE_LENGTH / activeQuestionCount) : (difficulty === 'easy' || difficulty === '0' ? 15 : difficulty === 'medium' || difficulty === '1' ? 12 : 10);
       const newDistance = prev + jumpDist;
       
       // Update our local visual lane coordinates
@@ -684,7 +1137,7 @@ function MathRacer() {
       return place;
     } else {
       // Count how many players have a greater distance or completed faster
-      const sorted = [...players].sort((a, b) => {
+      const sorted = [...players].filter(p => !p.isSpectator).sort((a, b) => {
         if (a.finished && !b.finished) return -1;
         if (!a.finished && b.finished) return 1;
         if (a.finished && b.finished) {
@@ -698,28 +1151,60 @@ function MathRacer() {
   };
 
   const getVisualPosition = (distance) => {
-    // Player is always anchored at ~20% visually. We scale the relative distance.
-    const relative = distance - playerDistance;
+    const cameraDistance = (multiRole === 'host' && !hostIsRacing) ? Math.max(0, ...players.map(p => p.distance || 0)) : playerDistance;
+    const relative = distance - cameraDistance;
     const visual = 20 + (relative * 0.6); 
     return Math.max(-20, Math.min(90, visual));
   };
 
   const getFinishLineVisualPosition = () => {
-    const relative = RACE_LENGTH - playerDistance;
+    const cameraDistance = (multiRole === 'host' && !hostIsRacing) ? Math.max(0, ...players.map(p => p.distance || 0)) : playerDistance;
+    const relative = RACE_LENGTH - cameraDistance;
     const visual = 20 + (relative * 0.6); 
     return visual;
   };
 
-  // Lobby cleanup when leaving waiting lobby
   const handleLeaveLobby = () => {
+    if (multiRole === 'host') {
+      const confirmLeave = window.confirm('Are you sure you want to exit? This will close the lobby for all connected students.');
+      if (!confirmLeave) return;
+      broadcastPusherEvent(roomId, 'end-race-early', {});
+    }
     soundEffects.playClick();
-    disconnectPusher();
+    if (channelRef.current) {
+      pusherRef.current.unsubscribe(`mathracer-${roomId}`);
+      channelRef.current = null;
+    }
     setGameState('menu');
+    setMultiRole(null);
+    setRoomId('');
+    setPlayers([]);
+  };
+
+  // Add beforeunload listener to warn host if they try to close tab during race or lobby
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (multiRole === 'host' && (gameState === 'lobby' || gameState === 'playing' || gameState === 'countdown')) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [multiRole, gameState]);
+
+  const handleHostCloseRace = () => {
+    if (window.confirm('Are you sure you want to end the race for all players?')) {
+      soundEffects.playClick();
+      broadcastPusherEvent(roomId, 'host-end-race', {});
+      disconnectPusher();
+      setGameState('menu');
+    }
   };
 
   // Get final placement list for podium
   const getPodiumList = () => {
-    return [...players].sort((a, b) => {
+    return [...players].filter(p => !p.isSpectator).sort((a, b) => {
       if (a.finished && !b.finished) return -1;
       if (!a.finished && b.finished) return 1;
       if (a.finished && b.finished) {
@@ -739,9 +1224,17 @@ function MathRacer() {
         <div className="racer-header">
           <button onClick={() => { soundEffects.playClick(); navigate(-1); }} className="back-button">
             <ChevronLeft size={20} />
-            <span>Back</span>
+            <span>{t('back', 'Back')}</span>
           </button>
-          <h2>Math Racer 🏎️💨</h2>
+          <h2>{t('math_racer', 'Math Racer')} 🏎️💨</h2>
+          
+
+
+          {multiRole === 'host' && (gameState === 'playing' || gameState === 'lobby') && (
+            <button onClick={handleHostCloseRace} className="host-close-race-btn" title={t('close_race', 'Close Race for All Players')}>
+              ✕ {t('close_race', 'Close Race')}
+            </button>
+          )}
         </div>
 
         {gameState === 'menu' && (
@@ -763,87 +1256,56 @@ function MathRacer() {
             )}
             
             {/* Premium Lobby Selection Tabs */}
-            <div className="game-mode-tabs">
-              <button 
-                className={`mode-tab ${gameMode === 'single' ? 'active' : ''}`}
-                onClick={() => { soundEffects.playClick(); setGameMode('single'); }}
-              >
-                🤖 Single Player VS Bots
-              </button>
-              <button 
-                className={`mode-tab ${gameMode === 'multi' ? 'active' : ''}`}
-                onClick={() => { soundEffects.playClick(); setGameMode('multi'); }}
-              >
-                👥 Real-Time Multiplayer VS Friends
-              </button>
-            </div>
+            {!isTeacher && (
+              <div className="game-mode-tabs">
+                <button 
+                  className={`mode-tab ${gameMode === 'single' ? 'active' : ''}`}
+                  onClick={() => { soundEffects.playClick(); setGameMode('single'); }}
+                >
+                  🤖 {t('mathRacer.single_player', 'Single Player')}
+                </button>
+                <button 
+                  className={`mode-tab ${gameMode === 'multi' ? 'active' : ''}`}
+                  onClick={() => { soundEffects.playClick(); setGameMode('multi'); }}
+                >
+                  👥 {t('mathRacer.multiplayer', 'Multiplayer')}
+                </button>
+              </div>
+            )}
 
             {gameMode === 'single' ? (
               <div className="single-player-setup">
-                {customQuestions ? (
-                  <>
-                    <h3>Start Custom Race!</h3>
-                    <p>Compete against AI racers on the endless highway using the questions loaded from the custom set.</p>
-                    <div className="difficulty-buttons">
-                      <button className="diff-btn easy" style={{ width: '100%', maxWidth: '300px' }} onClick={() => startGame('easy')}>
-                        🏎️ Start Custom Race
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h3>Select Difficulty to Race!</h3>
-                    <p>Compete against AI racers on the endless highway. Solve math problems correctly to accelerate your car and take 1st place!</p>
-                    
-                    <div className="difficulty-buttons">
-                      <button className="diff-btn easy" onClick={() => startGame('0')}>
-                        Level 0
-                      </button>
-                      <button className="diff-btn medium" onClick={() => startGame('1')}>
-                        Level 1
-                      </button>
-                      <button className="diff-btn hard" onClick={() => startGame('2')}>
-                        Level 2
-                      </button>
-                      <button className="diff-btn hard" style={{background: '#4f46e5'}} onClick={() => startGame('3')}>
-                        Level 3
-                      </button>
-                    </div>
-                  </>
-                )}
+                {renderQuestionSelector(false)}
               </div>
             ) : (
-              <div className="multi-player-setup">
-                <h3>Challenge Friends in Real-Time!</h3>
-                <p>Host your own private F1 room and share your code, or enter a friend's room code to start the high-speed competition!</p>
+              <div className="multi-player-setup compact-multiplayer">
+                <h3>{t('mathRacer.challenge_friends', 'Challenge Friends in Real-Time!')}</h3>
                 
-                <div className="multiplayer-actions-panel">
-                  <div className="host-section-card">
-                    <h4>Host a New Match</h4>
-                    <p>Start a racing room and invite up to 4 competitors!</p>
+                <div className="multiplayer-actions-panel compact-panel">
+                  <div className="host-section-card compact-card">
+                    <h4>{t('mathRacer.host_new_match', 'Host a New Match')}</h4>
                     <button className="btn-multi-host" onClick={handleCreateRoom}>
-                      🚀 Host a Race
+                      🚀 {t('mathRacer.host_a_race', 'Host a Race')}
                     </button>
                   </div>
                   
                   <div className="join-divider">
-                    <span>OR</span>
+                    <span>{t('or', 'OR')}</span>
                   </div>
 
-                  <div className="join-section-card">
-                    <h4>Join Existing Match</h4>
-                    <p>Enter your competitor's room code to connect:</p>
+                  <div className="join-section-card compact-card">
+                    <h4>{t('mathRacer.join_existing_match', 'Join Existing Match')}</h4>
                     <div className="join-input-group">
                       <input 
                         type="text" 
-                        placeholder="Enter 2-Digit Code"
+                        placeholder={t('mathRacer.enter_code', 'ENTER CODE')}
                         maxLength="2"
                         value={inputRoomId}
                         onChange={(e) => setInputRoomId(e.target.value)}
                         className="multi-join-input"
                       />
                       <button className="btn-multi-join" onClick={handleJoinRoom}>
-                        Join Roster
+                        {t('mathRacer.join_roster', 'Join')}
                       </button>
                     </div>
                   </div>
@@ -856,97 +1318,117 @@ function MathRacer() {
         {/* ============================================================
            MULTIPLAYER LOBBY SCREEN (LOBBY WAITING SCREEN)
            ============================================================ */}
-        {gameState === 'lobby' && (
-          <div className="racer-lobby-panel">
-            <div className="lobby-header-row">
-              <h3>🏁 Match Roster Lobby</h3>
-              <button className="btn-leave-lobby" onClick={handleLeaveLobby}>
-                Exit Lobby
-              </button>
-            </div>
+        {['lobby', 'countdown', 'playing'].includes(gameState) && (
+          <div className="racer-gameplay" ref={containerRef}>
+            {gameState === 'playing' && <FullscreenButton targetRef={containerRef} />}
+            
+            {gameState === 'lobby' && (
+              <Draggable handle=".lobby-drag-handle">
+                <div className="racer-lobby-panel" style={{ background: 'white', padding: '10px', borderRadius: '12px', border: '2px solid #ef4444' }}>
+                  <div className="lobby-drag-handle" style={{ background: '#ef4444', color: 'white', padding: '8px', textAlign: 'center', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', cursor: 'move' }}>
+                    {t('mathRacer.matchLobby', 'Racers Room')}
+                  </div>
 
-            {chapterName && (
-              <div className="lobby-custom-badge">
-                🏎️ Custom Race: Chapter {chapterName}
-              </div>
+                  {multiRole === 'host' && (
+                    <div style={{ marginBottom: '10px' }}>
+                      <h4 style={{ color: '#ef4444', fontSize: '16px', margin: '0 0 5px', fontWeight: 'bold' }}>{t('mathRacer.connectedRacers', 'Connected Racers')}</h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        {players.map((player, idx) => (
+                          <div key={player.id || idx} style={{ color: '#eab308', fontSize: '15px', fontWeight: 'bold', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span>• {player.name}</span>
+                            {player.id === myId && multiRole === 'host' && (
+                               <span style={{ color: '#f97316', fontSize: '13px' }}>
+                                 (Host - {player.isSpectator ? 'Watching' : 'Participating'})
+                                 <button className="switch-btn-glow" onClick={() => setHostIsRacing(!!player.isSpectator)} style={{ marginLeft: '10px', padding: '4px 12px', fontSize: '14px', background: '#f97316', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                                   Switch
+                                 </button>
+                               </span>
+                            )}
+                          </div>
+                        ))}
+                        {players.length === 0 && (
+                          <div style={{ color: '#eab308', fontSize: '14px' }}>Loading...</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {multiRole === 'host' ? (
+                    <div style={{ marginBottom: '5px' }}>
+                      {renderQuestionSelector(true)}
+
+                      <div style={{ background: '#f0fdf4', border: '2px dashed #10b981', borderRadius: '8px', padding: '15px', textAlign: 'center', marginTop: '10px' }}>
+                        <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px', fontSize: '18px' }}>Use Code: <span style={{ fontSize: '24px', letterSpacing: '2px' }}>{roomId}</span></p>
+                        <p style={{ color: '#64748b', fontSize: '14px', margin: '8px 0', fontWeight: 'bold' }}>OR</p>
+                        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                          <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? t('mathRacer.linkCopied', 'Copied!') : t('mathRacer.copyLink', 'Copy Invite Link')}</button>
+                        </div>
+                      </div>
+
+                      <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                        <button className="start-race-btn-glow" onClick={() => { if(!customQuestions){ alert('Please select questions first'); return;} handleHostStartRace('easy'); }}>
+                          {t('start_race', 'Start Race')}
+                        </button>
+                        <button onClick={handleLeaveLobby} style={{ padding: '10px', background: '#ef4444', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
+                          {t('cancel', 'Cancel')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ marginBottom: '10px', color: '#10b981', fontWeight: 'bold', textAlign: 'center', fontSize: '1.2rem', padding: '20px' }}>
+                      🏎️ {t('mathRacer.waitingHost', 'Waiting for Host to start...')}
+                    </div>
+                  )}
+                </div>
+              </Draggable>
             )}
 
-            <div className="room-code-display-card">
-              <span className="room-label">ROOM ENTRY CODE</span>
-              <div className="code-badge-group">
-                <span className="room-code-value">{roomId}</span>
-                <button className="btn-copy-code" onClick={copyRoomCode}>
-                  {isCopied ? 'Copied! ✓' : <><Copy size={16} /> Copy Code</>}
-                </button>
-              </div>
-              <p className="server-status-label">🚦 {lobbyStatus}</p>
-            </div>
-
-            <div className="lobby-players-grid">
-              <h4>Connected Racers ({players.length} / 4)</h4>
-              <div className="roster-list">
-                {players.map((player, idx) => (
-                  <div key={player.id || idx} className="roster-player-item">
-                    <div className="player-badge-color" style={{ backgroundColor: player.color }}></div>
-                    <div className="player-profile-detail">
-                      <span className="roster-player-name">{player.name}</span>
-                      <span className="roster-player-rank">{idx === 0 ? '🏁 Room Host' : '🔥 Contender'}</span>
-                    </div>
-                    <span className="ready-indicator">Ready to Race ✓</span>
-                  </div>
-                ))}
-                {players.length === 0 && (
-                  <div className="empty-roster-state">
-                    <i className="fa fa-spinner fa-spin"></i>
-                    <p>Entering the room roster...</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {multiRole === 'host' ? (
-              <div className="host-launch-panel">
-                {customQuestions ? (
-                  <>
-                    <h4>Launch Custom Race:</h4>
-                    <div className="difficulty-buttons">
-                      <button className="diff-btn easy" style={{ width: '100%', maxWidth: '300px' }} onClick={() => handleHostStartRace('easy')}>
-                        🚀 Launch Custom Race
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h4>Select Difficulty & Launch Race:</h4>
-                    <div className="difficulty-buttons">
-                      <button className="diff-btn easy" onClick={() => handleHostStartRace('0')}>
-                        🚀 Launch Level 0
-                      </button>
-                      <button className="diff-btn medium" onClick={() => handleHostStartRace('1')}>
-                        🚀 Launch Level 1
-                      </button>
-                      <button className="diff-btn hard" onClick={() => handleHostStartRace('2')}>
-                        🚀 Launch Level 2
-                      </button>
-                      <button className="diff-btn hard" style={{background: '#4f46e5'}} onClick={() => handleHostStartRace('3')}>
-                        🚀 Launch Level 3
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="guest-waiting-panel">
-                <div className="guest-spinner"></div>
-                <p>Waiting for Host to launch the F1 race...</p>
-              </div>
-            )}
+        {/* ============================================================
+           COUNTDOWN OVERLAY (CRASH BANDICOOT STYLE)
+           ============================================================ */}
+        {gameState === 'countdown' && (
+          <div className="traffic-light-container" style={{
+            position: 'absolute',
+            top: '20%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 150,
+            display: 'flex',
+            gap: '20px',
+            background: '#1e293b',
+            padding: '20px 30px',
+            borderRadius: '40px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.8)',
+            border: '4px solid #334155'
+          }}>
+            {[3, 2, 1].map((num) => {
+              const isOn = typeof countdownValue === 'number' ? countdownValue <= num : true;
+              const isGreen = countdownValue === 'GO!';
+              return (
+                <div key={num} className="traffic-light" style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: isGreen ? '#10b981' : (isOn ? '#ef4444' : '#475569'),
+                  boxShadow: isGreen 
+                    ? '0 0 40px #10b981, inset 0 0 20px rgba(255,255,255,0.5)' 
+                    : (isOn ? '0 0 40px #ef4444, inset 0 0 20px rgba(255,255,255,0.5)' : 'inset 0 0 10px rgba(0,0,0,0.5)'),
+                  border: '4px solid #0f172a',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.1s ease',
+                  opacity: isOn ? 1 : 0.4
+                }}>
+                  {isGreen && <span style={{color:'white', fontWeight:'900', fontSize:'20px'}}>GO</span>}
+                </div>
+              );
+            })}
           </div>
         )}
 
         {gameState === 'playing' && (
-          <div className="racer-gameplay" ref={containerRef}>
-            <FullscreenButton targetRef={containerRef} />
+          <>
             <div className="game-stats">
               <div className="stat-box timer-box">
                 <Timer size={24} color="#fff" />
@@ -961,9 +1443,12 @@ function MathRacer() {
                 <span>{score}</span>
               </div>
             </div>
+          </>
+        )}
 
-            {/* The Infinite Journey Track */}
-            <div className={`track-container ${gameState === 'playing' ? 'is-moving' : ''}`}>
+        {/* The Infinite Journey Track (VISIBLE IN LOBBY, COUNTDOWN, AND PLAYING) */}
+        {['lobby', 'countdown', 'playing'].includes(gameState) && (
+          <div className={`track-container ${gameState === 'playing' ? 'is-moving' : ''}`}>
               <div className="sky-bg"></div>
               <div className="mountains-bg"></div>
               <div className="trees-bg"></div>
@@ -1008,7 +1493,7 @@ function MathRacer() {
                   /* ============================================================
                      MULTIPLAYER REAL-TIME DYNAMIC ROSTER LANES
                      ============================================================ */
-                  players.map((player, idx) => {
+                  players.filter(p => !p.isSpectator).map((player, idx) => {
                     const isMe = player.id === myId;
                     const carDistance = isMe ? playerDistance : player.distance;
                     const visualLeft = getVisualPosition(carDistance);
@@ -1032,121 +1517,162 @@ function MathRacer() {
                 )}
               </div>
             </div>
+          )}
 
-            <div className={`problem-container ${feedback} ${currentProblem.typeOfAnswer || ''} ${customQuestions ? 'side-by-side' : ''}`}>
-              
-              <div className="racer-question-section">
-                {/* Optional Question Image */}
-                {currentProblem.questionPic && (
-                  <div className="racer-question-image-wrapper">
-                    <img src={currentProblem.questionPic} alt="Question Diagram" className="racer-question-image" />
+            {gameState === 'playing' && (
+              <>
+                {multiRole === 'host' && !hostIsRacing ? (
+                  <div className="racer-spectator-panel" style={{
+                    background: 'rgba(15, 23, 42, 0.85)',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                    padding: '20px 30px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '15px'
+                  }}>
+                    <h3 style={{ color: '#38bdf8', fontSize: '20px', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span>🏎️</span> Live Race Spectator Dashboard
+                    </h3>
+                    <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0, textAlign: 'center' }}>
+                      You are hosting this race in spectator mode. Watch your students compete live on the track above!
+                    </p>
+                    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                      <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                        <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>Active Racers</span>
+                        <strong style={{ color: '#10b981', fontSize: '18px' }}>{players.filter(p => !p.isSpectator).length}</strong>
+                      </div>
+                      <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                        <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>Target Questions</span>
+                        <strong style={{ color: '#a78bfa', fontSize: '18px' }}>{activeQuestionCount || 'Unlimited'}</strong>
+                      </div>
+                    </div>
+                    <button
+                      onClick={endGame}
+                      style={{
+                        background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
+                        border: 'none',
+                        borderRadius: '10px',
+                        color: '#fff',
+                        padding: '10px 24px',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)'
+                      }}
+                    >
+                      🏁 End Race & Show Podium
+                    </button>
                   </div>
-                )}
+                ) : (
+                <div className={`problem-container ${feedback} ${currentProblem.typeOfAnswer || ''} ${customQuestions ? 'side-by-side' : ''}`}>
+                  
+                  <div className="racer-question-section">
+                    {/* Optional Question Image */}
+                    {currentProblem.questionPic && (
+                      <div className="racer-question-image-wrapper">
+                        <img src={currentProblem.questionPic} alt="Question Diagram" className="racer-question-image" />
+                      </div>
+                    )}
 
-                {/* Problem Content */}
-                {currentProblem.text === 'ABACUS_GRID' && currentProblem.gridRows ? (
-                  <div className="racer-abacus-grid-view">
-                    <table className="racer-abacus-display-table">
-                      <tbody>
-                        {currentProblem.gridRows.map((row, i) => (
-                          <tr key={i}>
-                            <td className="op-cell">{getRowOp(row)}</td>
-                            <td className="val-cell">{getRowVal(row)}</td>
-                          </tr>
+                    {/* Problem Content */}
+                    {currentProblem.text === 'ABACUS_GRID' && currentProblem.gridRows ? (
+                      <div className="racer-abacus-grid-view">
+                        <table className="racer-abacus-display-table">
+                          <tbody>
+                            {currentProblem.gridRows.map((row, i) => (
+                              <tr key={i}>
+                                <td className="op-cell">{getRowOp(row)}</td>
+                                <td className="val-cell">{getRowVal(row)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="problem-text" style={{ whiteSpace: 'pre-wrap' }}>{currentProblem.text}</div>
+                    )}
+                  </div>
+
+                  <div className="racer-answer-section">
+                    {/* Answer Inputs / Choices */}
+                    {currentProblem.typeOfAnswer === 'Essay' ? (
+                      <form 
+                        onSubmit={(e) => { 
+                          e.preventDefault(); 
+                          handleEssaySubmit(essayAnswer); 
+                        }} 
+                        className="racer-essay-input-container"
+                      >
+                        <div className="racer-essay-input-row">
+                          <input 
+                            type="text" 
+                            value={essayAnswer} 
+                            onChange={(e) => setEssayAnswer(e.target.value)}
+                            readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
+                            placeholder="Type Answer..." 
+                            className="racer-essay-input"
+                            autoFocus
+                          />
+                          <button 
+                            type="submit"
+                            className="racer-essay-submit-btn"
+                          >
+                            OK
+                          </button>
+                        </div>
+                        
+                        <div className="racer-keypad">
+                          {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'].map(num => (
+                            <button 
+                              key={num} 
+                              type="button"
+                              onClick={() => setEssayAnswer(prev => prev + num)}
+                              className="racer-keypad-btn digit"
+                            >
+                              {num}
+                            </button>
+                          ))}
+                          <button 
+                            type="button"
+                            onClick={() => setEssayAnswer(prev => prev.slice(0, -1))}
+                            className="racer-keypad-btn clear"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </form>
+                    ) : currentProblem.typeOfAnswer === 'Graph' ? (
+                      <div className="math-racer-graph-options">
+                        {currentProblem.options && currentProblem.options.map((opt, i) => (
+                          <button 
+                            key={i} 
+                            className="racer-graph-option-btn"
+                            onClick={() => handleOptionClick(opt)}
+                          >
+                            <img src={opt} alt={`Graph choice ${i + 1}`} />
+                          </button>
                         ))}
-                      </tbody>
-                    </table>
+                      </div>
+                    ) : (
+                      <div className="math-racer-options">
+                        {currentProblem.options && currentProblem.options.map((opt, i) => (
+                          <button 
+                            key={i} 
+                            className="racer-option-btn"
+                            onClick={() => handleOptionClick(opt)}
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="problem-text" style={{ whiteSpace: 'pre-wrap' }}>{currentProblem.text}</div>
+                </div>
                 )}
-              </div>
-
-              <div className="racer-answer-section">
-                {/* Answer Inputs / Choices */}
-                {currentProblem.typeOfAnswer === 'Essay' ? (
-                  /* ==========================================
-                     ESSAY / NUMERIC keypad input view
-                     ========================================== */
-                  <form 
-                    onSubmit={(e) => { 
-                      e.preventDefault(); 
-                      handleEssaySubmit(essayAnswer); 
-                    }} 
-                    className="racer-essay-input-container"
-                  >
-                    <div className="racer-essay-input-row">
-                      <input 
-                        type="text" 
-                        value={essayAnswer} 
-                        onChange={(e) => setEssayAnswer(e.target.value)}
-                        readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
-                        placeholder="Type Answer..." 
-                        className="racer-essay-input"
-                        autoFocus
-                      />
-                      <button 
-                        type="submit"
-                        className="racer-essay-submit-btn"
-                      >
-                        OK
-                      </button>
-                    </div>
-                    
-                    {/* Visual keypad grid */}
-                    <div className="racer-keypad">
-                      {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'].map(num => (
-                        <button 
-                          key={num} 
-                          type="button"
-                          onClick={() => setEssayAnswer(prev => prev + num)}
-                          className="racer-keypad-btn digit"
-                        >
-                          {num}
-                        </button>
-                      ))}
-                      <button 
-                        type="button"
-                        onClick={() => setEssayAnswer(prev => prev.slice(0, -1))}
-                        className="racer-keypad-btn clear"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </form>
-                ) : currentProblem.typeOfAnswer === 'Graph' ? (
-                  /* ==========================================
-                     GRAPH image choices
-                     ========================================== */
-                  <div className="math-racer-graph-options">
-                    {currentProblem.options && currentProblem.options.map((opt, i) => (
-                      <button 
-                        key={i} 
-                        className="racer-graph-option-btn"
-                        onClick={() => handleOptionClick(opt)}
-                      >
-                        <img src={opt} alt={`Graph choice ${i + 1}`} />
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  /* ==========================================
-                     MCQ (or standard arithmetic fallback)
-                     ========================================== */
-                  <div className="math-racer-options">
-                    {currentProblem.options && currentProblem.options.map((opt, i) => (
-                      <button 
-                        key={i} 
-                        className="racer-option-btn"
-                        onClick={() => handleOptionClick(opt)}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+              </>
+            )}
           </div>
         )}
 

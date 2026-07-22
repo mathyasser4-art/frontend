@@ -6,14 +6,55 @@ import ProfileLoading from '../../components/profileLoading/ProfileLoading'
 import NotLogin from '../../components/notLogin/NotLogin'
 import avatar from '../../img/avatar.png'
 import userInfo from '../../api/authorize/userInfo.api'
+import updateProfile from '../../api/user/updateProfile.api'
 import '../../reusable.css'
 import './User.css'
 
 function User() {
     const [userData, setUserData] = useState()
     const [loading, setLoading] = useState(true)
+    const [editUserName, setEditUserName] = useState('')
+    const [editPassword, setEditPassword] = useState('')
+    const [error, setError] = useState(null)
+    const [loadingOperation, setLoadingOperation] = useState(false)
     const isAuth = localStorage.getItem('O_authWEB')
     const role = localStorage.getItem('auth_role')
+
+    const openEditPopup = () => {
+        setEditUserName(userData?.userName || '')
+        setEditPassword('')
+        setError(null)
+        document.querySelector('.edit-profile-popup').classList.replace('d-none', 'd-flex')
+        setTimeout(() => {
+            document.querySelector('.edit-profile-popup').classList.remove('profile-popup-hide')
+            document.querySelector('.edit-profile-container').classList.remove('update-top')
+        }, 50);
+    }
+
+    const closeEditPopup = () => {
+        document.querySelector('.edit-profile-popup').classList.add('profile-popup-hide')
+        document.querySelector('.edit-profile-container').classList.add('update-top')
+        setTimeout(() => {
+            document.querySelector('.edit-profile-popup').classList.replace('d-flex', 'd-none')
+        }, 300);
+    }
+
+    const showPassword = () => {
+        const inputPassword = document.querySelector('.input-password')
+        if (inputPassword.type === 'password')
+            inputPassword.type = 'text'
+        else
+            inputPassword.type = 'password'
+    }
+
+    const handleUpdateProfile = () => {
+        if (editUserName === '') {
+            setError('Username is required!')
+        } else {
+            const data = { userName: editUserName, password: editPassword !== '' ? editPassword : undefined }
+            updateProfile(data, setError, setLoadingOperation, closeEditPopup, setUserData)
+        }
+    }
 
     useEffect(() => {
         const userToken = localStorage.getItem('O_authWEB')
@@ -55,10 +96,7 @@ function User() {
                         <i className="fa fa-user-o" aria-hidden="true"></i>
                         <p>{userData?.userName}</p>
                     </div>
-                    <div className="info d-flex align-items-center">
-                        <i className="fa fa-envelope-o" aria-hidden="true"></i>
-                        <p>{userData?.email}</p>
-                    </div>
+
                     <div className="info d-flex align-items-center">
                         <i className="fa fa-id-card-o" aria-hidden="true"></i>
                         <p>{userData?.role}</p>
@@ -68,7 +106,10 @@ function User() {
                         <p>{userData?.createdBy?.userName}</p>
                     </div> : null : null}
                 </div>
-                <div onClick={logOut} className="user-btn">LogOut
+                <div onClick={openEditPopup} className="user-btn" style={{marginTop: '2.5rem'}}>Edit Profile
+                    <div className="user-btn2"></div>
+                </div>
+                <div onClick={logOut} className="user-btn" style={{marginTop: '1rem', background: 'linear-gradient(-45deg, #ff3131, #ff6b6b, #ff3131, #ff6b6b)'}}>LogOut
                     <div className="user-btn2"></div>
                 </div>
                 <div className="user-footer">
@@ -77,6 +118,30 @@ function User() {
                 </div>
             </div>
             }
+            {/* edit profile popup start */}
+            <div className="edit-profile-popup profile-popup-hide d-none justify-content-center align-items-center">
+                <div className='edit-profile-container update-top'>
+                    <div className="update-popup-head">
+                        <p>Edit Profile</p>
+                    </div>
+                    {error ? <div className="error error-dengare">{error}</div> : null}
+                    <div className="update-popup-body">
+                        <label>New Username</label>
+                        <input value={editUserName} onChange={(e) => setEditUserName(e.target.value)} type="text" placeholder='Your Name' />
+                        <label>New Password (Optional)</label>
+                        <input value={editPassword} onChange={(e) => setEditPassword(e.target.value)} className='input-password' type="password" placeholder='Leave blank to keep current' />
+                        <div className="show-password d-flex align-items-center">
+                            <input type="checkbox" onClick={showPassword} />
+                            <p>Show Password</p>
+                        </div>
+                    </div>
+                    <div className="update-popup-footer">
+                        <button className='button popup-btn' onClick={closeEditPopup}>Cancel</button>
+                        <button className='button popup-btn2' onClick={handleUpdateProfile}>{loadingOperation ? <span className="loader"></span> : "Save"}</button>
+                    </div>
+                </div>
+            </div>
+            {/* edit profile popup end */}
         </>
     )
 }

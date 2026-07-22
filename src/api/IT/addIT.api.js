@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
 
 const URL = `${API_BASE_URL}/it/addIT`;
-const Token = localStorage.getItem('O_authWEB')
 
 const addIT = (data, setError, setLoadingOperation, closeAddPopup, setAllIt, setItNumber) => {
+    const Token = localStorage.getItem('O_authWEB');
+
     setLoadingOperation(true)
     fetch(URL, {
         method: 'post',

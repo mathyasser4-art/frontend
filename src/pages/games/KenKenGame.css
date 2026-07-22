@@ -164,3 +164,13 @@
   from { transform: scale(0.5); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+@media (max-width: 600px) {
+  .kenken-container { padding: 1rem; }
+  .kenken-header { flex-wrap: wrap; gap: 0.8rem; }
+  .kenken-menu { padding: 2rem 1rem; }
+  .diff-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .num-btn { width: 42px; height: 50px; font-size: 1.2rem; }
+  .kenken-cell { width: 48px; height: 48px; }
+  .cell-value { font-size: 1.3rem; }
+}

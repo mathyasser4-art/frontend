@@ -24,7 +24,7 @@ const formatElapsedMs = (finishedAt, startedAt) => {
     
     let formatted = "";
     if (mins > 0) {
-        formatted += `${mins}m `;
+        formatted += `${mins}min `;
     }
     formatted += `${secs}s ${ms}ms`;
     return `${formatted}`;
@@ -58,8 +58,17 @@ function StudentCompetition() {
     const [badges, setBadges] = useState([]);
     const [isCertOpen, setIsCertOpen] = useState(false);
 
-    const studentID = localStorage.getItem('pp_id');
-    const studentName = localStorage.getItem('pp_name') || 'Student';
+    let studentID = localStorage.getItem('pp_id');
+    let studentName = localStorage.getItem('pp_name');
+    if (!studentID) {
+        studentID = localStorage.getItem('guest_id');
+        if (!studentID) {
+            studentID = 'guest_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('guest_id', studentID);
+        }
+        studentName = localStorage.getItem('guest_name') || 'Guest ' + Math.floor(100 + Math.random() * 900);
+        localStorage.setItem('guest_name', studentName);
+    }
 
     // Refs to always have latest counts for background score sync
     const correctCountRef = useRef(0);
@@ -109,11 +118,11 @@ function StudentCompetition() {
         };
 
         // Try immediately
-        enterFullscreen();
+        // enterFullscreen(); // disabled
 
-        // Aggressively attempt fullscreen and wake lock on user clicks/touches (even before game starts!)
+        // Aggressively attempt wake lock on user clicks/touches (even before game starts!)
         const handleGesture = () => {
-            enterFullscreen();
+            // enterFullscreen(); // disabled
             requestWakeLock();
         };
         document.addEventListener('click', handleGesture);
@@ -172,7 +181,7 @@ function StudentCompetition() {
                 // Join the lobby
                 console.log('[Competition] Joining competition:', competitionId);
                 console.log('[Competition] API Base URL:', API_BASE_URL);
-                const joinRes = await joinCompetition(competitionId);
+                const joinRes = await joinCompetition(competitionId, { guestId: studentID, guestName: studentName });
                 console.log('[Competition] Join response:', JSON.stringify(joinRes));
                 if (joinRes.message !== 'success') {
                     console.warn("[Competition] Could not join lobby:", joinRes.message);
@@ -206,6 +215,30 @@ function StudentCompetition() {
                         const elapsed = Math.floor((Date.now() - new Date(detailsRes.competition.startedAt).getTime()) / 1000);
                         const remaining = detailsRes.competition.timer - elapsed;
                         setTimerRemaining(remaining > 0 ? remaining : 0);
+
+                        // Restore answers if any
+                        const myDetails = (detailsRes.competition.participants || []).find(p => String(p.student?._id || p.student) === String(studentID) || String(p.guestId) === String(studentID));
+                        if (myDetails && myDetails.answers) {
+                            const initAnswersMap = {};
+                            let newCorrectCount = 0;
+                            let newWrongCount = 0;
+                            myDetails.answers.forEach(a => {
+                                initAnswersMap[a.question] = { answer: a.studentAnswer, checked: true, correct: a.isCorrect };
+                                if (a.isCorrect) newCorrectCount++;
+                                else newWrongCount++;
+                            });
+                            setAnswersMap(initAnswersMap);
+                            answersMapRef.current = initAnswersMap;
+                            
+                            setCorrectCount(newCorrectCount);
+                            correctCountRef.current = newCorrectCount;
+                            
+                            setWrongCount(newWrongCount);
+                            wrongCountRef.current = newWrongCount;
+                            
+                            setTotalAnswered(myDetails.answers.length);
+                            totalAnsweredRef.current = myDetails.answers.length;
+                        }
                     } else if (compStatus === 'finished') {
                         setTriggerConfetti(true);
                         calculateBadges(detailsRes.competition.participants || [], detailsRes.competition.questions?.length || 0);
@@ -227,15 +260,15 @@ function StudentCompetition() {
         if (!competitionId) return;
 
         Pusher.logToConsole = true;
-        const pusher = new Pusher('06df370fb33f1263ec1f', {
-            cluster: 'eu',
-            forceTLS: true
+        const pusher = new Pusher('app_e4ed3fcd3045501a594c2640c4d2dd75832ff677', {
+            cluster: 'us',
         });
 
         const channel = pusher.subscribe(`competition-${competitionId}`);
 
         // Listen for other students joining the lobby
         channel.bind('student-joined', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setParticipants(prev => {
                 const exists = prev.some(p => String(p.student?._id || p.student) === String(data.studentId));
                 if (exists) return prev;
@@ -245,6 +278,7 @@ function StudentCompetition() {
 
         // Listen for live score updates from other participants
         channel.bind('score-updated', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setParticipants(prev => {
                 return prev.map(p => {
                     const pId = p.student?._id || p.student;
@@ -264,6 +298,7 @@ function StudentCompetition() {
 
         // Listen for teacher starting the competition
         channel.bind('start-competition', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             soundEffects.playClick();
             setStatus('countdown');
             setLobbyCountdown(3);
@@ -273,9 +308,24 @@ function StudentCompetition() {
         });
 
         // Listen for teacher ending the competition
-        channel.bind('competition-finished', () => {
+        channel.bind('competition-finished', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+            console.log('[Pusher] competition-finished event received:', data);
             setStatus('finished');
             setTriggerConfetti(true);
+            if (data && data.competition) {
+                setCompetition(data.competition);
+                setParticipants(data.competition.participants || []);
+                calculateBadges(data.competition.participants || [], data.competition.questions?.length || 0);
+            } else {
+                getCompetitionDetails(competitionId).then(res => {
+                    if (res.message === 'success') {
+                        setCompetition(res.competition);
+                        setParticipants(res.competition.participants || []);
+                        calculateBadges(res.competition.participants || [], res.competition.questions?.length || 0);
+                    }
+                });
+            }
         });
 
         return () => {
@@ -301,7 +351,7 @@ function StudentCompetition() {
 
     // Live Game Timer countdown trigger
     useEffect(() => {
-        if (status === 'active' && timerRemaining !== null) {
+        if ((status === 'active' || status === 'waiting-for-end') && timerRemaining !== null) {
             if (timerRemaining > 0) {
                 const timer = setTimeout(() => {
                     setTimerRemaining(prev => prev - 1);
@@ -309,7 +359,19 @@ function StudentCompetition() {
                 return () => clearTimeout(timer);
             } else {
                 // Game auto-ends on client timer expiry
-                handleFinishExam();
+                if (status === 'active') {
+                    handleFinishExam(true);
+                } else if (status === 'waiting-for-end') {
+                    setStatus('finished');
+                    setTriggerConfetti(true);
+                    getCompetitionDetails(competitionId).then(res => {
+                        if (res.message === 'success') {
+                            setCompetition(res.competition);
+                            setParticipants(res.competition.participants || []);
+                            calculateBadges(res.competition.participants || [], res.competition.questions?.length || 0);
+                        }
+                    });
+                }
             }
         }
     }, [status, timerRemaining]);
@@ -364,65 +426,62 @@ function StudentCompetition() {
         requestWakeLock();
     };
 
-    // Background answer check (fire & forget) — like homework flow
+    // Background answer check (fire & forget) — secure flow
     const syncAnswerWithBackend = async (questionId, questionAnswer) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/question/checkTheAnswer/${questionId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'authrization': `pracYas09${localStorage.getItem('O_authWEB')}`
-                },
-                body: JSON.stringify({ questionAnswer: questionAnswer.trim() })
-            });
-            const result = await response.json();
-            const isCorrect = result.message === 'success';
-
-            // Update the answers map
+            // First update the answersMap locally (optimistic)
             setAnswersMap(prev => {
                 const updated = {
                     ...prev,
-                    [questionId]: { ...prev[questionId], checked: true, correct: isCorrect }
+                    [questionId]: { ...prev[questionId], checked: true, answer: questionAnswer } // correct status unknown yet
                 };
                 answersMapRef.current = updated;
                 return updated;
             });
 
-            // Update counts
-            if (isCorrect) {
-                correctCountRef.current += 1;
-                setCorrectCount(correctCountRef.current);
-            } else {
-                wrongCountRef.current += 1;
-                setWrongCount(wrongCountRef.current);
-            }
+            // Send score update
+            const response = await updateLiveScore(competitionId, {
+                studentId: studentID,
+                userName: studentName,
+                finished: false,
+                answers: Object.entries(answersMapRef.current).map(([qId, data]) => ({
+                    question: qId,
+                    studentAnswer: data.answer || ""
+                }))
+            });
 
-            // Broadcast live score update to other participants
-            try {
-                await updateLiveScore(competitionId, {
-                    score: correctCountRef.current,
-                    totalAnswered: totalAnsweredRef.current,
-                    wrongAnswers: wrongCountRef.current,
-                    finished: false,
-                    answers: Object.entries(answersMapRef.current).map(([qId, data]) => ({
-                        question: qId,
-                        studentAnswer: data.answer || "",
-                        isCorrect: !!data.correct
-                    }))
-                });
-            } catch (e) {
-                console.error("Failed to broadcast score:", e);
+            // The backend returns the secure answers map containing isCorrect
+            if (response && response.answers) {
+                 const secureAnswers = response.answers;
+                 let newCorrectCount = 0;
+                 let newWrongCount = 0;
+                 let newTotalAnswered = secureAnswers.length;
+                 
+                 setAnswersMap(prev => {
+                     const updated = { ...prev };
+                     secureAnswers.forEach(ans => {
+                         if (updated[ans.question]) {
+                             updated[ans.question].correct = ans.isCorrect;
+                             updated[ans.question].checked = true;
+                         } else {
+                             updated[ans.question] = { answer: ans.studentAnswer, checked: true, correct: ans.isCorrect };
+                         }
+                         if (ans.isCorrect) newCorrectCount++;
+                         else newWrongCount++;
+                     });
+                     answersMapRef.current = updated;
+                     return updated;
+                 });
+                 
+                 correctCountRef.current = newCorrectCount;
+                 setCorrectCount(newCorrectCount);
+                 wrongCountRef.current = newWrongCount;
+                 setWrongCount(newWrongCount);
+                 totalAnsweredRef.current = newTotalAnswered;
+                 setTotalAnswered(newTotalAnswered);
             }
         } catch (err) {
             console.error('Background sync failed for question', questionId, err);
-            setAnswersMap(prev => {
-                const updated = {
-                    ...prev,
-                    [questionId]: { ...prev[questionId], checked: false, correct: false }
-                };
-                answersMapRef.current = updated;
-                return updated;
-            });
         }
     };
 
@@ -452,7 +511,7 @@ function StudentCompetition() {
 
         soundEffects.playClick();
 
-        // Move to next question immediately or finish if last
+        // Move to next question or auto-submit if last
         const isLastQuestion = currentIndex === questions.length - 1;
         setAnswer('');
         
@@ -532,11 +591,15 @@ function StudentCompetition() {
         }
     };
 
-    const handleFinishExam = async () => {
+    const handleFinishExam = async (isTimerExpired = false) => {
         const now = new Date();
         setLocalFinishedAt(now);
-        setStatus('finished');
-        setTriggerConfetti(true);
+        if (isTimerExpired === true || (timerRemaining !== null && timerRemaining <= 0)) {
+            setStatus('finished');
+            setTriggerConfetti(true);
+        } else {
+            setStatus('waiting-for-end');
+        }
         setIsCheckingAnswers(true);
 
         // Wait a moment for any pending background checks to complete
@@ -545,6 +608,8 @@ function StudentCompetition() {
         // Final score broadcast
         try {
             await updateLiveScore(competitionId, {
+                studentId: studentID,
+                userName: studentName,
                 score: correctCountRef.current,
                 totalAnswered: totalAnsweredRef.current,
                 wrongAnswers: wrongCountRef.current,
@@ -737,6 +802,47 @@ function StudentCompetition() {
                         )}
                     </div>
                     <p className="countdown-sub">Get ready to race...</p>
+                </div>
+            )}
+
+            {/* 2.5 WAITING FOR END OVERLAY */}
+            {status === 'waiting-for-end' && (
+                <div className="waiting-for-end-wrapper" style={{
+                    minHeight: '100vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '32px',
+                    color: '#f8fafc',
+                    textAlign: 'center',
+                    background: 'radial-gradient(circle at center, #1e293b 0%, #090d16 100%)'
+                }}>
+                    <div className="pulse-circle" style={{ marginBottom: '24px', width: '96px', height: '96px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(59, 130, 246, 0.1)', border: '2px solid #3b82f6', borderRadius: '50%' }}>
+                        <Timer size={48} className="glowing-icon" style={{ color: '#3b82f6', animation: 'pulse 2s infinite' }} />
+                    </div>
+                    <div className="loader" style={{ marginBottom: '24px' }}></div>
+                    <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '16px', background: 'linear-gradient(135deg, #60a5fa, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                        ⏳ Waiting for Competition to Conclude...
+                    </h1>
+                    <p style={{ fontSize: '20px', color: '#94a3b8', maxWidth: '600px', marginBottom: '32px' }}>
+                        Loading final results... You have successfully completed all questions! Please wait while the remaining time ticks down or until the creator officially concludes the event.
+                    </p>
+                    <div className="live-timer-box" style={{
+                        background: 'rgba(15, 23, 42, 0.6)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '24px',
+                        padding: '24px 48px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
+                        <span style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '2px', color: '#64748b' }}>Time Remaining</span>
+                        <span style={{ fontSize: '48px', fontWeight: 'mono', color: '#38bdf8', fontFamily: 'monospace' }}>
+                            {formatTimer(timerRemaining)}
+                        </span>
+                    </div>
                 </div>
             )}
 

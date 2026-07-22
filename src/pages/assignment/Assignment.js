@@ -298,8 +298,13 @@ function Assignment() {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const inputRef = useRef(null);
   const keyboardRef = useRef(null);
-  const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+  const translateNumbers = (text, toArabic) => {
+    if (!toArabic || text == null) return text;
+    return String(text).replace(/[0-9]/g, d => arabicDigits[parseInt(d, 10)]);
+  };
 
   
 
@@ -569,31 +574,63 @@ function Assignment() {
   // Flash Mode Functions
   const getQuestionLines = () => {
     if (!thisQuestion?.question) return [];
+    const toArabic = isArabic;
     const grid = parseAbacusGrid(thisQuestion.question);
-    if (grid) return grid.map(row => `${rowOp(row)} ${rowVal(row)}`);
-    return formatQuestionText(thisQuestion.question).split('\n').filter(line => line.trim());
+    if (grid) {
+      return grid.map(row => `${rowOp(row)} ${translateNumbers(rowVal(row), toArabic)}`);
+    }
+    return formatQuestionText(thisQuestion.question)
+      .split('\n')
+      .filter(line => line.trim())
+      .map(line => {
+        const hasPlus = line.startsWith('+');
+        const restOfLine = translateNumbers(line.replace(/^\+/, ''), toArabic);
+        return hasPlus ? `+${restOfLine}` : restOfLine;
+      });
   };
 
   const renderQuestion = () => {
     if (!thisQuestion?.question) return null;
+    const toArabic = isArabic;
     const grid = parseAbacusGrid(thisQuestion.question);
     if (grid) {
       return (
         <div className="abacus-grid-view">
           <table className="abacus-display-table">
             <tbody>
-              {grid.map((row, i) => (
-                <tr key={i}>
-                  <td className="op-cell">{rowOp(row)}</td>
-                  <td className="val-cell">{rowVal(row)}</td>
-                </tr>
-              ))}
+              {grid.map((row, i) => {
+                let op = rowOp(row);
+                return (
+                  <tr key={i}>
+                    <td className="op-cell">
+                      <span style={{ color: op === '+' ? 'transparent' : 'inherit', width: op === '+' ? '1ch' : 'auto', display: 'inline-block', textAlign: 'center' }}>
+                        {op}
+                      </span>
+                    </td>
+                    <td className="val-cell">{translateNumbers(rowVal(row), toArabic)}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       );
     }
-    return <pre>{formatQuestionText(thisQuestion.question)}</pre>;
+    const lines = formatQuestionText(thisQuestion.question).split('\n');
+    return (
+      <pre>
+        {lines.map((line, i) => {
+          const hasPlus = line.startsWith('+');
+          const restOfLine = translateNumbers(line.replace(/^\+/, ''), toArabic);
+          return (
+            <span key={i} style={{ display: 'block' }}>
+              {hasPlus && <span style={{ color: 'transparent', width: '1ch', display: 'inline-block', textAlign: 'center' }}>+</span>}
+              <span>{restOfLine}</span>
+            </span>
+          );
+        })}
+      </pre>
+    );
   };
 
   const toggleFullscreen = () => {
@@ -611,16 +648,17 @@ function Assignment() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  // Auto-enter fullscreen when student enters assignment
+  // Auto-enter fullscreen disabled
+  /*
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!document.fullscreenElement) {
         toggleFullscreen();
       }
-    }, 100); // Small delay to ensure DOM ready
-
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
+  */
 
   const toggleFlashMode = () => {
     // Prevent toggling if flash mode is forced by teacher
@@ -694,6 +732,15 @@ function Assignment() {
       }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-enable Arabic mode if the teacher set the assignment to be Arabic
+  useEffect(() => {
+    if (questionData && questionData.length > 0) {
+      if (questionData[0].isArabic) {
+        setIsArabic(true);
+      }
+    }
+  }, [questionData]);
 
   // Debug: Track forceFlashMode state changes
   useEffect(() => {
@@ -1496,8 +1543,29 @@ function Assignment() {
                     </select>
                   </div>
                 )}
-                <div title="Open Abacus" className="abacus-button" onClick={() => setShowAbacus(!showAbacus)}>
-                  <Calculator size={24} strokeWidth={2.5} style={{ color: '#65C6EE' }} />
+                <div title="Open Abacus" className="custom-abacus-btn" style={{ width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE140', backgroundImage: 'linear-gradient(135deg, #FEE140 0%, #ffb347 100%)', borderRadius: '50%', padding: '0', boxShadow: '0 8px 18px rgba(254, 225, 64, 0.35)', border: 'none', cursor: 'pointer', margin: '0 4px' }} onClick={() => setShowAbacus(!showAbacus)}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="5" width="20" height="14" rx="2" stroke="#4A4A4A" strokeWidth="2.5"/>
+                    <line x1="7" y1="5" x2="7" y2="19" stroke="#4A4A4A" strokeWidth="1.5"/>
+                    <line x1="12" y1="5" x2="12" y2="19" stroke="#4A4A4A" strokeWidth="1.5"/>
+                    <line x1="17" y1="5" x2="17" y2="19" stroke="#4A4A4A" strokeWidth="1.5"/>
+                    <line x1="2" y1="10" x2="22" y2="10" stroke="#4A4A4A" strokeWidth="1.5"/>
+                    <circle cx="7" cy="7.5" r="1.8" fill="#FF6B6B"/>
+                    <circle cx="7" cy="13" r="1.8" fill="#4ECDC4"/>
+                    <circle cx="7" cy="16" r="1.8" fill="#4ECDC4"/>
+                    <circle cx="12" cy="7.5" r="1.8" fill="#FFE66D"/>
+                    <circle cx="12" cy="15" r="1.8" fill="#FF6B6B"/>
+                    <circle cx="17" cy="14" r="1.8" fill="#FFE66D"/>
+                    <circle cx="17" cy="17" r="1.8" fill="#FFE66D"/>
+                  </svg>
+                </div>
+                <div 
+                  title={isArabic ? 'Math' : 'عربي'} 
+                  className="pocket-button" 
+                  style={{ width: 'auto', padding: '0 10px', fontSize: '14px', fontWeight: 'bold' }}
+                  onClick={() => { soundEffects.playClick(); setIsArabic(!isArabic); }}
+                >
+                  {isArabic ? 'Math' : 'عربي'}
                 </div>
 
 
@@ -1601,7 +1669,7 @@ function Assignment() {
                         checked={answer && answer === item}
                         onChange={e => handleChecked(e.target.value)} 
                       />
-                      <span className='mcq-text'>{item}</span>
+                      <span className='mcq-text'>{translateNumbers(item, isArabic)}</span>
                     </label>
                   ))}
                 </div>

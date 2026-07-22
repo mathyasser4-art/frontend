@@ -64,14 +64,7 @@ function ClassHomework() {
                                         <Clock className="detail-icon" />
                                         <span>Time Limit: {assignment.timer ? `${assignment.timer} mins` : 'None'}</span>
                                     </div>
-                                    <div className="detail-row">
-                                        <Calendar className="detail-icon" />
-                                        <span>Start: {formatDate(assignment.startDate)}</span>
-                                    </div>
-                                    <div className="detail-row">
-                                        <Calendar className="detail-icon" />
-                                        <span>End: {formatDate(assignment.endDate)}</span>
-                                    </div>
+
                                 </div>
 
                                 <Link 

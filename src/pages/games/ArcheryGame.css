@@ -203,3 +203,34 @@
   margin-top: 2rem;
   flex-wrap: wrap;
 }
+
+@media (max-width: 768px) {
+  .archery-header {
+    padding: 0.8rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  .archery-menu {
+    padding: 2rem 1rem;
+    margin: 1rem auto;
+    width: 95%;
+  }
+  .archery-menu h1 {
+    font-size: 2rem;
+  }
+  .math-lock-content {
+    padding: 1.2rem 1rem;
+    width: 95%;
+  }
+  .lock-problem {
+    font-size: 1.5rem;
+  }
+  .lock-options {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .lock-option-btn {
+    padding: 0.8rem;
+    font-size: 1.2rem;
+  }
+}

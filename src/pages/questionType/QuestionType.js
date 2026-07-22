@@ -34,8 +34,8 @@ function QuestionType() {
     <div id="academy-section" className={`questionType ${isTopsoroban ? 'topsoroban-theme' : ''}`}>
       {/* Academy Main Header */}
       <div className="academy-section-header">
-        <h2 className="academy-main-title">🚀 Start Solving Questions & Playing Games Now!</h2>
-        <p className="academy-main-subtitle">Practice worksheets or play interactive abacus math games</p>
+        <h2 className="academy-main-title">{t('academy.mainTitle', '🚀 Start Solving Questions & Playing Games Now!')}</h2>
+        <p className="academy-main-subtitle">{t('academy.mainSubtitle', 'Practice worksheets or play interactive abacus math games')}</p>
       </div>
 
       <div className="questionType-container">
@@ -56,7 +56,7 @@ function QuestionType() {
           <div className="line" style={{ marginTop: '0.2rem' }}></div>
           
           {/* Sub-header above the cards */}
-          <h4 className="cards-selection-title">Choose the type of questions or play games:</h4>
+          <h4 className="cards-selection-title">{t('academy.chooseType', 'Choose the type of questions or play games:')}</h4>
         </div>
 
         <div className="questionType-options">
@@ -72,7 +72,7 @@ function QuestionType() {
             <div className="option-icon-wrapper">
               <BookOpen size={64} strokeWidth={2} className="resources-icon" style={{ color: '#3b82f6' }} />
             </div>
-            <h3 className="option-title">Worksheets</h3>
+            <h3 className="option-title">{t('academy.worksheetsCard', 'Worksheets')}</h3>
             <img src="/img/mcq_preview.png" alt="Pre-made Worksheets Preview" className="card-preview-screenshot" />
           </span>
 
@@ -89,7 +89,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Gamepad2 size={64} strokeWidth={2} className="mcq-icon" />
               </div>
-              <h3 className="option-title">Fun Games <span className="card-lock-badge">🔒</span></h3>
+              <h3 className="option-title">{t('academy.funGamesCard', 'Fun Games')} <span className="card-lock-badge">🔒</span></h3>
               <img src="/img/games/racer_cover.png" alt="Fun Games Preview" className="card-preview-screenshot" />
             </span>
           ) : (
@@ -97,12 +97,12 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Gamepad2 size={64} strokeWidth={2} className="mcq-icon" />
               </div>
-              <h3 className="option-title">Fun Games</h3>
+              <h3 className="option-title">{t('academy.funGamesCard', 'Fun Games')}</h3>
               <img src="/img/games/racer_cover.png" alt="Fun Games Preview" className="card-preview-screenshot" />
             </Link>
           )}
 
-          {/* Card 3: Live Battles */}
+          {/* Card 3: Live Battles / Create a Competition */}
           {!isAuth ? (
             <span 
               className="questionType-option battle-card-option locked-card" 
@@ -115,7 +115,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Swords size={64} strokeWidth={2} className="mcq-icon" />
               </div>
-              <h3 className="option-title">Live Battles <span className="card-lock-badge">🔒</span></h3>
+              <h3 className="option-title">{t('academy.createCompetitionCard', 'Create a Competition')} <span className="card-lock-badge">🔒</span></h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
             </span>
           ) : userRole === 'Student' ? (
@@ -129,7 +129,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Swords size={64} strokeWidth={2} className="mcq-icon" style={{ color: '#fff' }} />
               </div>
-              <h3 className="option-title">Live Battles</h3>
+              <h3 className="option-title">{t('academy.liveBattlesCard', 'Live Battles')}</h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
             </span>
           ) : userRole === 'Teacher' ? (
@@ -144,7 +144,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Swords size={64} strokeWidth={2} className="mcq-icon" style={{ color: '#fff' }} />
               </div>
-              <h3 className="option-title">Live Battles</h3>
+              <h3 className="option-title">{t('academy.createCompetitionCard', 'Create a Competition')}</h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
             </span>
           ) : (
@@ -156,7 +156,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Swords size={64} strokeWidth={2} className="mcq-icon" />
               </div>
-              <h3 className="option-title">Live Battles</h3>
+              <h3 className="option-title">{t('academy.createCompetitionCard', 'Create a Competition')}</h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
             </Link>
           )}
@@ -167,7 +167,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Plus size={64} strokeWidth={2} className="create-icon" style={{ color: '#eab308' }} />
               </div>
-              <h3 className="option-title">Create Questions</h3>
+              <h3 className="option-title">{t('academy.createQuestionsCard', 'Create Questions')}</h3>
               <img src="/img/create_questions_cover.png" alt="Create Questions Preview" className="card-preview-screenshot" />
             </Link>
           )}
@@ -241,14 +241,6 @@ function QuestionType() {
                   if (!id) { setJoinCompError('Please paste a valid Competition ID from your teacher.'); return; }
                   soundEffects.playClick();
                   
-                  // Eagerly trigger automatic fullscreen using active user gesture
-                  const docEl = document.documentElement;
-                  if (docEl.requestFullscreen) {
-                      docEl.requestFullscreen().catch(() => {});
-                  } else if (docEl.webkitRequestFullscreen) {
-                      docEl.webkitRequestFullscreen();
-                  }
-
                   setJoiningComp(true);
                   navigate(`/student/competition/${id}`);
                 }}

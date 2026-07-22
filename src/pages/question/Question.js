@@ -59,25 +59,51 @@ const formatQuestionText = (text) => {
     }).join('\n');
 };
 
-const renderQuestion = (question) => {
+const translateNumbers = (text, toArabic) => {
+    if (!toArabic || text == null) return text;
+    return String(text).replace(/[0-9]/g, d => ARABIC_DIGITS[parseInt(d, 10)]);
+};
+
+const renderQuestion = (question, useArabicNumerals) => {
     const gridRows = parseGridRows(question?.question);
     if (gridRows) {
         return (
             <div className="abacus-grid-view">
                 <table className="abacus-display-table">
                     <tbody>
-                        {gridRows.map((row, i) => (
-                            <tr key={i}>
-                                <td className="op-cell">{getRowOp(row)}</td>
-                                <td className="val-cell">{getRowVal(row)}</td>
-                            </tr>
-                        ))}
+                        {gridRows.map((row, i) => {
+                            let op = getRowOp(row);
+                            return (
+                                <tr key={i}>
+                                    <td className="op-cell">
+                                        <span style={{ color: op === '+' ? 'transparent' : 'inherit' }}>{op}</span>
+                                    </td>
+                                    <td className="val-cell">{translateNumbers(getRowVal(row), useArabicNumerals)}</td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
         );
     }
-    return <pre>{formatQuestionText(question?.question)}</pre>;
+    
+    let lines = formatQuestionText(question?.question).split('\n');
+    return (
+        <pre>
+            {lines.map((line, i) => {
+                const hasPlus = line.startsWith('+');
+                const restOfLine = translateNumbers(line.replace(/^\+/, ''), useArabicNumerals);
+                return (
+                    <span key={i}>
+                        {hasPlus && <span style={{ color: 'transparent' }}>+</span>}
+                        {restOfLine}
+                        {i < lines.length - 1 && '\n'}
+                    </span>
+                );
+            })}
+        </pre>
+    );
 };
 
 // Helper functions for PDF worksheet generation
@@ -126,6 +152,7 @@ function Question() {
     
     // State for Abacus visibility
     const [showAbacus, setShowAbacus] = useState(false);
+    const [useArabicNumerals, setUseArabicNumerals] = useState(false);
 
     // State for Flash Mode
     const [flashMode, setFlashMode] = useState(false);
@@ -223,8 +250,7 @@ function Question() {
     let [pocketNumber, setPocketNumber] = useState(0);
     let [timer, setTimer] = useState('');
     let [attempts, setAttempts] = useState('');
-    let [startDate, setStartDate] = useState('');
-    let [expiryData, setExpiryData] = useState('');
+
     let [title, setTitle] = useState('');
     let [answeredQuestions, setAnsweredQuestions] = useState(0);
     const [forceFlashMode, setForceFlashMode] = useState(false);
@@ -430,8 +456,29 @@ function Question() {
     const getQuestionLines = () => {
         if (!thisQuestion?.question) return [];
         const gridRows = parseGridRows(thisQuestion.question);
-        if (gridRows) return gridRows.map(row => `${getRowOp(row)}${getRowVal(row)}`);
-        return formatQuestionText(thisQuestion.question).split('\n').filter(line => line.trim());
+        if (gridRows) return gridRows.map((row, i) => {
+            let op = getRowOp(row);
+            let val = translateNumbers(getRowVal(row), useArabicNumerals);
+            return (
+                <span key={i} style={{ display: 'inline-flex' }}>
+                    <span style={{ color: op === '+' ? 'transparent' : 'inherit', width: op === '+' ? '1ch' : 'auto', textAlign: 'center' }}>{op}</span>
+                    <span>{val}</span>
+                </span>
+            );
+        });
+        return formatQuestionText(thisQuestion.question)
+            .split('\n')
+            .filter(line => line.trim())
+            .map((line, i) => {
+                const hasPlus = line.startsWith('+');
+                const restOfLine = translateNumbers(line.replace(/^\+/, ''), useArabicNumerals);
+                return (
+                    <span key={i} style={{ display: 'inline-flex' }}>
+                        {hasPlus && <span style={{ color: 'transparent', width: '1ch', textAlign: 'center' }}>+</span>}
+                        <span>{restOfLine}</span>
+                    </span>
+                );
+            });
     };
 
     const toggleFullscreen = () => {
@@ -783,7 +830,10 @@ function Question() {
     const addAllToPocket = () => {
         // Merge existing questions with new ones, filtering out duplicates
         const existingIds = questionList.map(q => q._id);
-        const newQuestions = questionData.filter(q => !existingIds.includes(q._id));
+        const newQuestions = questionData.filter(q => !existingIds.includes(q._id)).map(q => ({
+            ...q,
+            isArabic: useArabicNumerals
+        }));
         const newQuestionList = [...questionList, ...newQuestions];
         
         setQuestionList(newQuestionList);
@@ -820,24 +870,20 @@ function Question() {
     const handleCreateAssignment = () => {
         if (classesBox.length === 0 || !title) {
             setError(t('questionPage.mustSelectClassAndTitle'));
-        } else if (startDate && !expiryData) {
-            setError(t('questionPage.mustAddExpiryDate'));
-        } else if (!startDate && expiryData) {
-            setError(t('questionPage.mustAddStartDate'));
+
         } else {
             const data = {
                 questions: questionList.map(q => q._id),
                 totalPoints: questionList.reduce((sum, q) => sum + q.questionPoints, 0),
                 timer: timer || undefined,
                 attemptsNumber: 1,
-                startDate: startDate || undefined,
-                endDate: expiryData || undefined,
+
                 classes: classesBox.map(c => c._id),
                 title,
                 forceFlashMode: forceFlashMode,
                 flashSpeed: forceFlashMode ? assignmentFlashSpeed : undefined
             };
-            createAssignment(data, setError, setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setExpiryData, setStartDate, setTitle, setClassesBox, setForceFlashMode, setAssignmentFlashSpeed);
+            createAssignment(data, setError, setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setTitle, setClassesBox, setForceFlashMode, setAssignmentFlashSpeed);
         }
     };
 
@@ -865,8 +911,6 @@ function Question() {
         setPocketNumber(0);
         setQuestionList([]);
         setTimer('');
-        setExpiryData('');
-        setStartDate('');
         setTitle('');
         setClassesBox([]);
         setForceFlashMode(false);
@@ -940,15 +984,6 @@ function Question() {
                             <div className='question-form-head d-flex justify-content-space-between align-items-center'>
                                 <p>Q{thisQuestionNumber}/{questionData?.length || 0}</p>
                                 <div className='end-head d-flex align-items-center'>
-                                    <button
-                                        type="button"
-                                    title={t('questionPage.downloadWorksheet', 'Download Worksheet PDF')}
-                                    className="worksheet-print-btn"
-                                    onClick={downloadWorksheetPDF}
-                                    disabled={!questionData?.length}
-                                >
-                                    <Printer size={18} color="#fff" />
-                                </button>
                                 <button
                                     type="button"
                                     title={t('questionPage.gamify', 'Gamify with Math Racer')}
@@ -997,28 +1032,40 @@ function Question() {
                                         </select>
                                     </div>
                                 )}
-                                <div title={t('questionPage.openAbacus')} className="abacus-button" onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
-                                    <i className="fa fa-calculator" aria-hidden="true"></i>
+                                <div title={t('questionPage.openAbacus')} className="custom-abacus-btn" style={{ width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE140', backgroundImage: 'linear-gradient(135deg, #FEE140 0%, #ffb347 100%)', borderRadius: '50%', padding: '0', boxShadow: '0 8px 18px rgba(254, 225, 64, 0.35)', border: 'none', cursor: 'pointer', margin: '0 4px' }} onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="2" y="5" width="20" height="14" rx="2" stroke="#4A4A4A" strokeWidth="2.5"/>
+                                        <line x1="7" y1="5" x2="7" y2="19" stroke="#4A4A4A" strokeWidth="1.5"/>
+                                        <line x1="12" y1="5" x2="12" y2="19" stroke="#4A4A4A" strokeWidth="1.5"/>
+                                        <line x1="17" y1="5" x2="17" y2="19" stroke="#4A4A4A" strokeWidth="1.5"/>
+                                        <line x1="2" y1="10" x2="22" y2="10" stroke="#4A4A4A" strokeWidth="1.5"/>
+                                        <circle cx="7" cy="7.5" r="1.8" fill="#FF6B6B"/>
+                                        <circle cx="7" cy="13" r="1.8" fill="#4ECDC4"/>
+                                        <circle cx="7" cy="16" r="1.8" fill="#4ECDC4"/>
+                                        <circle cx="12" cy="7.5" r="1.8" fill="#FFE66D"/>
+                                        <circle cx="12" cy="15" r="1.8" fill="#FF6B6B"/>
+                                        <circle cx="17" cy="14" r="1.8" fill="#FFE66D"/>
+                                        <circle cx="17" cy="17" r="1.8" fill="#FFE66D"/>
+                                    </svg>
                                 </div>
                                 {role === 'Teacher' && (
 
                                     <div 
                                         title={t('questionPage.addAllToPocket')} 
-                                        className="pocket-all-button" 
+                                        style={{ position: 'relative', width: '42px', height: '42px', padding: '0', margin: '0 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FA709A', backgroundImage: 'linear-gradient(135deg, #FA709A 0%, #FEE140 100%)', borderRadius: '50%', color: 'white', cursor: 'pointer', boxShadow: '0 8px 18px rgba(250, 112, 154, 0.35)', userSelect: 'none' }}
                                         onClick={() => { soundEffects.playClick(); addAllToPocket(); }}
                                     >
-                                        <i className="fa fa-plus-square-o" aria-hidden="true"></i>
+                                        <span style={{ position: 'absolute', top: '50%', left: '22%', transform: 'translate(-50%, -50%)', margin: 0, padding: 0, fontSize: '15px', fontWeight: 'bold', border: 'none', outline: 'none' }}>HW</span>
                                     </div>
                                 )}
-                                {role === 'Teacher' && (
-                                    <div 
-                                        title={t('questionPage.addToPocket')} 
-                                        className="pocket-button" 
-                                        onClick={() => { soundEffects.playClick(); addToPocket(); }}
-                                    >
-                                        <i className="fa fa-plus" aria-hidden="true"></i>
-                                    </div>
-                                )}
+                                <div 
+                                    title={useArabicNumerals ? 'Math' : 'عربي'} 
+                                    className="pocket-button" 
+                                    style={{ width: 'auto', padding: '0 10px', fontSize: '14px', fontWeight: 'bold' }}
+                                    onClick={() => { soundEffects.playClick(); setUseArabicNumerals(!useArabicNumerals); }}
+                                >
+                                    {useArabicNumerals ? 'Math' : 'عربي'}
+                                </div>
                             </div>
 
                         </div>
@@ -1048,7 +1095,7 @@ function Question() {
                                     )}
                                 </div>
                             ) : (
-                                renderQuestion(thisQuestion)
+                                renderQuestion(thisQuestion, useArabicNumerals)
                             )}
 
                             {thisQuestion?.typeOfAnswer === 'Essay' && (
@@ -1097,7 +1144,7 @@ function Question() {
                                                 checked={answer && answer === item}
                                                 onChange={e => handleChecked(e.target.value)} 
                                             />
-                                            <span className='mcq-text'>{item}</span>
+                                            <span className='mcq-text'>{translateNumbers(item, useArabicNumerals)}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -1216,10 +1263,7 @@ function Question() {
                         <div className='timer d-flex align-items-center'>
                             <div style={{width: '100%'}}><p>{t('questionPage.timerMinutes')}</p><input type='number' value={timer} onChange={e => setTimer(e.target.value)} placeholder={t('questionPage.optional')} /></div>
                         </div>
-                        <div className='timer date-faild d-flex align-items-center'>
-                            <div><p>{t('questionPage.startDate')}</p><input type='date' value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
-                            <div><p>{t('questionPage.expiryDate')}</p><input type='date' value={expiryData} onChange={e => setExpiryData(e.target.value)} /></div>
-                        </div>
+
                         <div className='select-container d-flex'>
                             <div className='select-class'>
                                 <select value={classSelector} onChange={e => setClassSelector(e.target.value)} translate="no" className="notranslate">

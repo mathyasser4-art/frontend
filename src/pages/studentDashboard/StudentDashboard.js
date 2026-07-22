@@ -48,24 +48,36 @@ function StudentDashboard() {
         } catch (e) { return false }
     }
 
+    const countdownIntervalRef = React.useRef(null)
+
     // Full-page countdown 3-2-1 then navigate
     const startCountdown = (assignmentId) => {
         setCountdownActive(true)
         setCountdownNum(3)
         soundEffects.playClick()
         let count = 3
-        const interval = setInterval(() => {
+        if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current)
+        countdownIntervalRef.current = setInterval(() => {
             count--
             if (count > 0) {
                 setCountdownNum(count)
             } else {
-                clearInterval(interval)
+                clearInterval(countdownIntervalRef.current)
+                countdownIntervalRef.current = null
                 setCountdownActive(false)
                 setCountdownNum(null)
                 navigate(`/student/assignment/${assignmentId}`)
             }
         }, 900)
     }
+
+    useEffect(() => {
+        return () => {
+            if (countdownIntervalRef.current) {
+                clearInterval(countdownIntervalRef.current)
+            }
+        }
+    }, [])
 
     // Fetch results for all completed assignments when the popup opens
     const fetchCompletedResults = async (assignments) => {
@@ -236,7 +248,7 @@ function StudentDashboard() {
                                 </div>
                             </div>
 
-                            {/* Card 2: Live Battle Arena */}
+                            {/* Card 2: Competition Arena */}
                             <div className="premium-action-card battle-arena-card">
                                 <span className="card-badge">Live PVP</span>
                                 <div>
@@ -245,11 +257,11 @@ function StudentDashboard() {
                                             <Swords size={24} style={{ color: '#fff' }} />
                                         </div>
                                         <div className="card-title-text">
-                                            <h3>Live Battle Arena</h3>
+                                            <h3>Competition Arena</h3>
                                         </div>
                                     </div>
                                     <p className="card-desc-text">
-                                        Your teacher started a live battle! Paste the Competition ID here to join the race.
+                                        Your teacher started a competition! Paste the Competition ID here to join the race.
                                     </p>
                                 </div>
                                 <div className="card-action-box">
@@ -272,14 +284,6 @@ function StudentDashboard() {
                                                     const id = compIdInput.trim();
                                                     if (!id) { setJoinCompError('Please paste a valid Competition ID from your teacher.'); return; }
                                                     soundEffects.playClick();
-                                                    
-                                                    // Eagerly trigger automatic fullscreen using active user gesture
-                                                    const docEl = document.documentElement;
-                                                    if (docEl.requestFullscreen) {
-                                                        docEl.requestFullscreen().catch(() => {});
-                                                    } else if (docEl.webkitRequestFullscreen) {
-                                                        docEl.webkitRequestFullscreen();
-                                                    }
                                                     
                                                     setJoiningComp(true);
                                                     navigate(`/student/competition/${id}`);
@@ -346,10 +350,7 @@ function StudentDashboard() {
                                                 </div>
                                             </div>
 
-                                            <div className="card-dates">
-                                                {item.startDate && <p><strong>Start:</strong> {item.startDate}</p>}
-                                                {item.endDate && <p><strong>Due:</strong> {item.endDate}</p>}
-                                            </div>
+
 
                                             <div className="card-footer-action">
                                                 {isCompleted ? (
@@ -428,4 +429,4 @@ function StudentDashboard() {
     )
 }
 
-export default StudentDashboard
+export default React.memo(StudentDashboard)

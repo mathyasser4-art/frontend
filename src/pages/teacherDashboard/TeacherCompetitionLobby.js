@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Pusher from 'pusher-js';
-import { getCompetitionDetails, startCompetition, finishCompetition } from '../../api/competition/competition.api';
+import { getCompetitionDetails, startCompetition, finishCompetition, joinCompetition } from '../../api/competition/competition.api';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
+import API_BASE_URL from '../../config/api.config';
 import { Play, Users, Trophy, Flag, Timer, Award, CheckCircle } from 'lucide-react';
 import soundEffects from '../../utils/soundEffects';
 import Confetti from 'react-confetti';
@@ -23,7 +24,7 @@ const formatElapsedMs = (finishedAt, startedAt) => {
     
     let formatted = "";
     if (mins > 0) {
-        formatted += `${mins}m `;
+        formatted += `${mins}min `;
     }
     formatted += `${secs}s ${ms}ms`;
     return `${formatted} (${diffMs.toLocaleString()} ms)`;
@@ -40,6 +41,10 @@ function TeacherCompetitionLobby() {
     const [selectedStudentReport, setSelectedStudentReport] = useState(null);
     const [selectedCertStudent, setSelectedCertStudent] = useState(null);
     const [isBulkCertOpen, setIsBulkCertOpen] = useState(false);
+    const [myStudents, setMyStudents] = useState([]);
+    const [loadingStudents, setLoadingStudents] = useState(false);
+    const [selectedStudentId, setSelectedStudentId] = useState('');
+    const [timerRemaining, setTimerRemaining] = useState(null);
 
     const wakeLockRef = useRef(null);
 
@@ -138,6 +143,10 @@ function TeacherCompetitionLobby() {
                     setStatus(res.competition.status || 'lobby');
                     if (res.competition.status === 'finished') {
                         setTriggerConfetti(true);
+                    } else if (res.competition.status === 'active' && res.competition.startedAt) {
+                        const elapsed = Math.floor((Date.now() - new Date(res.competition.startedAt).getTime()) / 1000);
+                        const remaining = res.competition.timer - elapsed;
+                        setTimerRemaining(remaining > 0 ? remaining : 0);
                     }
                 } else {
                     setError(res.message);
@@ -150,6 +159,31 @@ function TeacherCompetitionLobby() {
         };
         fetchDetails();
     }, [competitionId]);
+
+    useEffect(() => {
+        const fetchStudents = async () => {
+            setLoadingStudents(true);
+            try {
+                const Token = localStorage.getItem('O_authWEB');
+                const res = await fetch(`${API_BASE_URL}/student/getStudent/1`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'authrization': `pracYas09${Token}`
+                    }
+                });
+                const data = await res.json();
+                if (data.message === 'success') {
+                    setMyStudents(data.allStudent || []);
+                }
+            } catch (err) {
+                console.error('Failed to fetch students:', err);
+            } finally {
+                setLoadingStudents(false);
+            }
+        };
+        fetchStudents();
+    }, []);
 
     // Polling fallback: re-fetch participants every 5 seconds while in lobby/active state
     // This guarantees the teacher sees new students even if Pusher events are missed
@@ -179,6 +213,10 @@ function TeacherCompetitionLobby() {
                         setStatus(res.competition.status);
                         if (res.competition.status === 'finished') {
                             setTriggerConfetti(true);
+                        } else if (res.competition.status === 'active' && res.competition.startedAt) {
+                            const elapsed = Math.floor((Date.now() - new Date(res.competition.startedAt).getTime()) / 1000);
+                            const remaining = res.competition.timer - elapsed;
+                            setTimerRemaining(remaining > 0 ? remaining : 0);
                         }
                     }
                 }
@@ -196,15 +234,15 @@ function TeacherCompetitionLobby() {
 
         // Initialize Pusher Channels
         Pusher.logToConsole = true;
-        const pusher = new Pusher('06df370fb33f1263ec1f', {
-            cluster: 'eu',
-            forceTLS: true
+        const pusher = new Pusher('app_e4ed3fcd3045501a594c2640c4d2dd75832ff677', {
+            cluster: 'us',
         });
 
         const channel = pusher.subscribe(`competition-${competitionId}`);
 
         // Listen for new student joining
         channel.bind('student-joined', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             soundEffects.playClick();
             setParticipants(prev => {
                 const exists = prev.some(p => String(p.student?._id || p.student) === String(data.studentId));
@@ -215,6 +253,7 @@ function TeacherCompetitionLobby() {
 
         // Listen for live score updates from students
         channel.bind('score-updated', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setParticipants(prev => {
                 return prev.map(p => {
                     const pId = p.student?._id || p.student;
@@ -234,14 +273,30 @@ function TeacherCompetitionLobby() {
         });
 
         // Listen for competition start (e.g. if page was reloaded by teacher)
-        channel.bind('start-competition', () => {
+        channel.bind('start-competition', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setStatus('active');
+            if (data && data.timer) {
+                setTimerRemaining(data.timer);
+            }
         });
 
         // Listen for competition finished
-        channel.bind('competition-finished', () => {
+        channel.bind('competition-finished', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setStatus('finished');
             setTriggerConfetti(true);
+            if (data && data.competition) {
+                setCompetition(data.competition);
+                setParticipants(data.competition.participants || []);
+            } else {
+                getCompetitionDetails(competitionId).then(res => {
+                    if (res.message === 'success') {
+                        setCompetition(res.competition);
+                        setParticipants(res.competition.participants || []);
+                    }
+                });
+            }
         });
 
         return () => {
@@ -258,6 +313,7 @@ function TeacherCompetitionLobby() {
             if (res.message === 'success') {
                 setStatus('active');
                 setCompetition(res.competition);
+                setTimerRemaining(res.competition.timer);
             } else {
                 alert(res.message);
             }
@@ -278,6 +334,48 @@ function TeacherCompetitionLobby() {
             }
         } catch (err) {
             console.error("Failed to finish competition:", err);
+        }
+    };
+
+    // Live Game Timer countdown trigger for Teacher (automatically ends competition when time expires)
+    useEffect(() => {
+        if (status === 'active' && timerRemaining !== null) {
+            if (timerRemaining > 0) {
+                const timer = setTimeout(() => {
+                    setTimerRemaining(prev => prev - 1);
+                }, 1000);
+                return () => clearTimeout(timer);
+            } else {
+                // Timer expired! Automatically call handleFinish to end the competition for everyone and show the podium
+                handleFinish();
+            }
+        }
+    }, [status, timerRemaining]);
+
+    const handleForceJoinStudent = async (studentId) => {
+        if (!studentId) return;
+        const student = myStudents.find(s => s._id === studentId);
+        if (!student) return;
+
+        soundEffects.playClick();
+        try {
+            await joinCompetition(competitionId, { studentId: student._id, userName: student.userName });
+            await fetch(`${API_BASE_URL}/competition/mathracer/trigger`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    channelName: 'global-battle-arena',
+                    eventName: 'force-join-student',
+                    eventData: {
+                        studentId: student._id,
+                        competitionId: competitionId
+                    }
+                })
+            });
+            alert(`Successfully summoned ${student.userName} into the competition!`);
+        } catch (err) {
+            console.error('Failed to force join student:', err);
+            alert('Failed to summon student. Please try again.');
         }
     };
 
@@ -414,7 +512,7 @@ function TeacherCompetitionLobby() {
                 const secs = rawTime ? Math.floor((rawTime % 60000) / 1000) : 0;
                 const ms = rawTime ? rawTime % 1000 : 0;
                 const cleanTimeStr = rawTime !== null 
-                    ? (mins > 0 ? `${mins}m ${secs}s ${ms}ms` : `${secs}s ${ms}ms`) 
+                    ? (mins > 0 ? `${mins}min ${secs}s ${ms}ms` : `${secs}s ${ms}ms`) 
                     : "—";
 
                 doc.text(cleanTimeStr, 440, yPos);
@@ -473,7 +571,7 @@ function TeacherCompetitionLobby() {
                 const secs = rawTime ? Math.floor((rawTime % 60000) / 1000) : 0;
                 const ms = rawTime ? rawTime % 1000 : 0;
                 const cleanTimeStr = rawTime !== null 
-                    ? (mins > 0 ? `${mins}m ${secs}s ${ms}ms` : `${secs}s ${ms}ms`) 
+                    ? (mins > 0 ? `${mins}min ${secs}s ${ms}ms` : `${secs}s ${ms}ms`) 
                     : "—";
 
                 doc.text(cleanTimeStr, 420, yPos + 40);
@@ -600,7 +698,7 @@ function TeacherCompetitionLobby() {
                 <header className="lobby-header-card">
                     <div className="header-text">
                         <h1>{competition.title}</h1>
-                        <p className="subtitle">Live Battle Arena Host Dashboard</p>
+                        <p className="subtitle">Create a competition Host Dashboard</p>
                         
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'center' }}>
                             <div className="battle-id-badge" style={{
@@ -613,13 +711,13 @@ function TeacherCompetitionLobby() {
                                 alignItems: 'center',
                                 gap: '10px'
                             }}>
-                                <span style={{ fontSize: '13px', color: '#a78bfa', fontWeight: 'bold' }}>BATTLE ID:</span>
+                                <span style={{ fontSize: '13px', color: '#a78bfa', fontWeight: 'bold' }}>COMPETITION ID:</span>
                                 <span style={{ fontFamily: 'monospace', fontSize: '14px', letterSpacing: '0.05em' }}>{competitionId}</span>
                                 <button
                                     onClick={() => {
                                         navigator.clipboard.writeText(competitionId);
                                         soundEffects.playClick();
-                                        alert("Battle ID copied! Share it with your students.");
+                                        alert("Competition ID copied! Share it with your students.");
                                     }}
                                     style={{
                                         background: 'linear-gradient(135deg, #7c3aed, #db2777)',
@@ -653,7 +751,7 @@ function TeacherCompetitionLobby() {
                                         const inviteLink = `${window.location.origin}/student/competition/${competitionId}`;
                                         navigator.clipboard.writeText(inviteLink);
                                         soundEffects.playClick();
-                                        alert("Invite Link copied! Share it with your students.");
+                                        alert("Invite Link copied! Share it with anyone to join.");
                                     }}
                                     style={{
                                         background: 'linear-gradient(135deg, #ec4899, #f43f5e)',
@@ -679,7 +777,11 @@ function TeacherCompetitionLobby() {
                         </div>
                         <div className="stat-pill">
                             <Timer size={16} />
-                            <span>{competition.timer / 60} min Duration</span>
+                            <span>
+                                {status === 'active' && timerRemaining !== null 
+                                    ? `Time Left: ${Math.floor(timerRemaining / 60).toString().padStart(2, '0')}:${(timerRemaining % 60).toString().padStart(2, '0')}` 
+                                    : `${competition.timer / 60} min Duration`}
+                            </span>
                         </div>
                     </div>
                 </header>
@@ -695,10 +797,63 @@ function TeacherCompetitionLobby() {
                             <p>Students must join this competition from their dashboard.</p>
                         </div>
 
+                        <div className="teacher-student-selector-card" style={{
+                            background: 'rgba(255, 255, 255, 0.03)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '16px',
+                            padding: '24px',
+                            margin: '24px 0',
+                            textAlign: 'left'
+                        }}>
+                            <h3 style={{ fontSize: '18px', color: '#f8fafc', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                👥 Force Join Your Students
+                            </h3>
+                            <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '16px' }}>
+                                Select a student below to instantly pull them into this competition lobby. If they are online, their screen will automatically open the competition.
+                            </p>
+                            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                <select 
+                                    value={selectedStudentId}
+                                    onChange={e => setSelectedStudentId(e.target.value)}
+                                    style={{
+                                        flex: '1 1 250px',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
+                                        background: '#1e293b',
+                                        color: '#f8fafc',
+                                        border: '1px solid #334155',
+                                        outline: 'none',
+                                        fontSize: '15px'
+                                    }}
+                                >
+                                    <option value="">-- Select a student --</option>
+                                    {myStudents.map(s => (
+                                        <option key={s._id} value={s._id}>{s.userName} ({s.email})</option>
+                                    ))}
+                                </select>
+                                <button
+                                    onClick={() => handleForceJoinStudent(selectedStudentId)}
+                                    disabled={!selectedStudentId}
+                                    style={{
+                                        padding: '12px 24px',
+                                        borderRadius: '12px',
+                                        background: selectedStudentId ? 'linear-gradient(135deg, #3b82f6, #2563eb)' : '#334155',
+                                        color: '#fff',
+                                        border: 'none',
+                                        fontWeight: 'bold',
+                                        cursor: selectedStudentId ? 'pointer' : 'not-allowed',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    🚀 Pull Student into Lobby
+                                </button>
+                            </div>
+                        </div>
+
                         <div className="participants-grid-wrapper">
                             <h3>Lobby Roster ({participants.length})</h3>
                             {participants.length === 0 ? (
-                                <p className="empty-roster-msg">No competitors have joined yet. Tell your students to click "Join Live Battle" on their dashboards.</p>
+                                <p className="empty-roster-msg">No competitors have joined yet. Tell your students to click "Join Competition" on their dashboards or share the invite link.</p>
                             ) : (
                                 <div className="avatar-waiting-grid">
                                     {participants.map((p, idx) => (
@@ -730,15 +885,35 @@ function TeacherCompetitionLobby() {
                 {/* 2. ACTIVE LIVE RACING SCOREBOARD */}
                 {status === 'active' && (
                     <div className="status-container live-scoring-box">
-                        <div className="live-header-bar">
-                            <div className="live-indicator">
-                                <span className="live-dot"></span>
-                                <h2>Live Competition in Progress</h2>
+                        <div className="live-header-bar" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                <div className="live-indicator">
+                                    <span className="live-dot"></span>
+                                    <h2>Live Competition in Progress</h2>
+                                </div>
+                                <button onClick={handleFinish} className="action-button end-game-btn">
+                                    <Flag size={18} />
+                                    <span>End Competition & Show Podium</span>
+                                </button>
                             </div>
-                            <button onClick={handleFinish} className="action-button end-game-btn">
-                                <Flag size={18} />
-                                <span>End Battle & Show Podium</span>
-                            </button>
+                            {timerRemaining !== null && (
+                                <div style={{ 
+                                    alignSelf: 'center', 
+                                    background: 'rgba(15, 23, 42, 0.8)', 
+                                    border: '2px solid rgba(59, 130, 246, 0.4)', 
+                                    borderRadius: '16px', 
+                                    padding: '12px 32px', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '12px',
+                                    boxShadow: '0 8px 32px rgba(59, 130, 246, 0.15)'
+                                }}>
+                                    <Timer size={28} color="#38bdf8" />
+                                    <span style={{ fontSize: '32px', fontWeight: 'bold', color: '#38bdf8', fontFamily: 'monospace', letterSpacing: '2px' }}>
+                                        {Math.floor(timerRemaining / 60).toString().padStart(2, '0')}:{(timerRemaining % 60).toString().padStart(2, '0')}
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         <div className="live-race-track-list">
@@ -800,7 +975,7 @@ function TeacherCompetitionLobby() {
                     <div className="status-container podium-results-box">
                         <div className="celebration-title">
                             <Trophy size={48} className="gold-trophy" />
-                            <h2>Battle Concluded!</h2>
+                            <h2>Competition Concluded!</h2>
                             <p>Here are the champions of the Abacus Arena</p>
                         </div>
 

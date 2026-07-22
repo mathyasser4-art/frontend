@@ -11,6 +11,10 @@ import updateTeacher from '../../api/teacher/updateTeacher.api'
 import removeTeacher from '../../api/teacher/removeTeacher.api'
 import searchTeacher from '../../api/teacher/searchTeacher.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
+import API_BASE_URL from '../../config/api.config'
+import html2pdf from 'html2pdf.js'
+import logo from '../../logo.png'
+import schoolLogo from '../../img/school-avatar.png'
 import '../../reusable.css'
 import './Teacher.css'
 
@@ -196,6 +200,242 @@ function Teacher() {
     const toggleExpandTeacher = (teacherID) => {
         setExpandedTeacherId(prev => prev === teacherID ? null : teacherID)
     }
+
+    const exportToCSV = async () => {
+        setLoadingOperation(true);
+        try {
+            const token = localStorage.getItem('O_authWEB');
+            let allExtracted = [];
+            for (let p = 1; p <= totalPage; p++) {
+                const res = await fetch(`${API_BASE_URL}/teacher/getTeachers/${p}`, {
+                    headers: { 'authrization': `pracYas09${token}` }
+                });
+                const data = await res.json();
+                if (data.message === 'success' && data.allTeachers) {
+                    allExtracted = [...allExtracted, ...data.allTeachers];
+                }
+            }
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "Name,Email,Subject,Student Limit\n";
+            allExtracted.forEach(item => {
+                let row = `${item.userName},${item.email},${item?.subject?.schoolSubjectName || ''},${item.maxStudents || 0}`;
+                csvContent += row + "\n";
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "teachers_list.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (e) {
+            console.error('Export error', e);
+        }
+        setLoadingOperation(false);
+    }
+
+    const exportAllTeachersPDF = async () => {
+        setLoadingOperation(true);
+        try {
+            const token = localStorage.getItem('O_authWEB');
+            let allExtracted = [];
+            for (let p = 1; p <= totalPage; p++) {
+                const res = await fetch(`${API_BASE_URL}/teacher/getTeachers/${p}`, {
+                    headers: { 'authrization': `pracYas09${token}` }
+                });
+                const data = await res.json();
+                if (data.message === 'success' && data.allTeachers) {
+                    allExtracted = [...allExtracted, ...data.allTeachers];
+                }
+            }
+
+            const schoolName = localStorage.getItem('pp_name') || 'School';
+
+            const container = document.createElement('div');
+            container.style.padding = '40px';
+            container.style.fontFamily = 'Arial, sans-serif';
+            container.style.color = '#333';
+            container.style.backgroundColor = '#ffffff';
+            
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.justifyContent = 'space-between';
+            header.style.alignItems = 'center';
+            header.style.borderBottom = '3px solid #10b981';
+            header.style.paddingBottom = '20px';
+            header.style.marginBottom = '30px';
+
+            const logoSection = document.createElement('div');
+            logoSection.style.display = 'flex';
+            logoSection.style.alignItems = 'center';
+            logoSection.innerHTML = `<img src="${logo}" alt="AbacusHeroes" style="height: 50px; margin-right: 15px;" />
+                                     <div>
+                                        <h1 style="color: #5d17eb; margin: 0; font-size: 28px;">AbacusHeroes</h1>
+                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teachers Login Credentials</p>
+                                     </div>`;
+            
+            const schoolSection = document.createElement('div');
+            schoolSection.style.display = 'flex';
+            schoolSection.style.alignItems = 'center';
+            schoolSection.innerHTML = `<div style="text-align: right; margin-right: 15px;">
+                                          <h2 style="color: #1e293b; margin: 0; font-size: 22px;">${schoolName}</h2>
+                                       </div>
+                                       <img src="${schoolLogo}" alt="Academy Logo" style="height: 50px;" />`;
+
+            header.appendChild(logoSection);
+            header.appendChild(schoolSection);
+            container.appendChild(header);
+
+            const grid = document.createElement('div');
+            grid.style.display = 'flex';
+            grid.style.flexWrap = 'wrap';
+            grid.style.gap = '20px';
+
+            allExtracted.forEach(teacher => {
+                const card = document.createElement('div');
+                card.style.border = '1px solid #e2e8f0';
+                card.style.borderRadius = '12px';
+                card.style.padding = '20px';
+                card.style.backgroundColor = '#f8fafc';
+                card.style.pageBreakInside = 'avoid';
+                card.style.width = 'calc(50% - 10px)';
+                card.style.boxSizing = 'border-box';
+
+                card.innerHTML = `
+                    <div style="font-size: 20px; font-weight: bold; color: #0f172a; margin-bottom: 10px;">
+                        Username: <span style="color: #4338ca; font-weight: normal;">${teacher.userName}</span>
+                    </div>
+                    <div style="font-size: 20px; font-weight: bold; color: #0f172a;">
+                        Password: <span style="color: #4338ca; font-weight: normal;">1234</span>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+            
+            const opt = {
+                margin:       10,
+                filename:     'Teachers_Credentials.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            await html2pdf().from(container).set(opt).save();
+
+        } catch (e) {
+            console.error('Export error', e);
+        }
+        setLoadingOperation(false);
+    }
+
+    const exportTeacherPDF = async (teacher) => {
+        setLoadingOperation(true);
+        try {
+            const schoolName = localStorage.getItem('pp_name') || 'School';
+
+            const container = document.createElement('div');
+            container.style.padding = '40px';
+            container.style.fontFamily = 'Arial, sans-serif';
+            container.style.color = '#333';
+            container.style.backgroundColor = '#ffffff';
+            
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.justifyContent = 'space-between';
+            header.style.alignItems = 'center';
+            header.style.borderBottom = '3px solid #10b981';
+            header.style.paddingBottom = '20px';
+            header.style.marginBottom = '30px';
+
+            const logoSection = document.createElement('div');
+            logoSection.style.display = 'flex';
+            logoSection.style.alignItems = 'center';
+            logoSection.innerHTML = `<img src="${logo}" alt="AbacusHeroes" style="height: 50px; margin-right: 15px;" />
+                                     <div>
+                                        <h1 style="color: #5d17eb; margin: 0; font-size: 28px;">AbacusHeroes</h1>
+                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teacher & Classes Report</p>
+                                     </div>`;
+            
+            const schoolSection = document.createElement('div');
+            schoolSection.style.display = 'flex';
+            schoolSection.style.alignItems = 'center';
+            schoolSection.innerHTML = `<div style="text-align: right; margin-right: 15px;">
+                                          <h2 style="color: #1e293b; margin: 0; font-size: 22px;">${schoolName}</h2>
+                                       </div>
+                                       <img src="${schoolLogo}" alt="Academy Logo" style="height: 50px;" />`;
+
+            header.appendChild(logoSection);
+            header.appendChild(schoolSection);
+            container.appendChild(header);
+
+            const card = document.createElement('div');
+            card.style.border = '1px solid #e2e8f0';
+            card.style.borderRadius = '12px';
+            card.style.padding = '20px';
+            card.style.backgroundColor = '#f8fafc';
+
+            const tName = document.createElement('h3');
+            tName.style.margin = '0 0 10px 0';
+            tName.style.color = '#0f172a';
+            tName.style.fontSize = '24px';
+            tName.innerHTML = `&#128104;&#8205;&#127979; ${teacher.userName}`;
+            card.appendChild(tName);
+
+            const classLabel = document.createElement('p');
+            classLabel.style.margin = '20px 0 10px 0';
+            classLabel.style.fontWeight = 'bold';
+            classLabel.style.color = '#334155';
+            classLabel.style.fontSize = '18px';
+            classLabel.innerText = 'Assigned Classes:';
+            card.appendChild(classLabel);
+
+            const classesDiv = document.createElement('div');
+            classesDiv.style.display = 'flex';
+            classesDiv.style.flexDirection = 'column';
+            classesDiv.style.gap = '10px';
+
+            if (teacher.classList && teacher.classList.length > 0) {
+                teacher.classList.forEach(cls => {
+                    const classPill = document.createElement('div');
+                    classPill.style.backgroundColor = '#e0e7ff';
+                    classPill.style.color = '#4338ca';
+                    classPill.style.padding = '10px 15px';
+                    classPill.style.borderRadius = '10px';
+                    classPill.style.fontSize = '16px';
+                    classPill.style.fontWeight = 'bold';
+                    classPill.innerText = `\uD83C\uDFEB ${cls.class}`;
+                    classesDiv.appendChild(classPill);
+                });
+            } else {
+                const noClass = document.createElement('div');
+                noClass.style.color = '#94a3b8';
+                noClass.style.fontStyle = 'italic';
+                noClass.style.fontSize = '16px';
+                noClass.innerText = 'No classes assigned';
+                classesDiv.appendChild(noClass);
+            }
+
+            card.appendChild(classesDiv);
+            container.appendChild(card);
+            
+            const opt = {
+                margin:       10,
+                filename:     `Teacher_${teacher.userName}_Classes.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            await html2pdf().from(container).set(opt).save();
+
+        } catch (e) {
+            console.error('Export error', e);
+        }
+        setLoadingOperation(false);
+    }
     return (
         <>
             <MobileNav role={role} />
@@ -203,7 +443,13 @@ function Teacher() {
             <div className="teacher-container">
                 <div className="teacher-header d-flex align-items-center">
                     <input type="text" onChange={(e) => search(e.target.value)} placeholder='Enter teacher name...' />
-                    <div className='add-squer d-flex justify-content-space-around align-items-center' onClick={openAddPopup}><p>+</p></div>
+                    <div className='add-squer d-flex justify-content-space-around align-items-center' onClick={openAddPopup} title="Add Teacher"><p>+</p></div>
+                    <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportToCSV} style={{ backgroundColor: '#10b981', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
+                        Export CSV
+                    </div>
+                    <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportAllTeachersPDF} style={{ backgroundColor: '#ef4444', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
+                        Export PDF
+                    </div>
                 </div>
                 <div className="teacher-body">
                     {loading ? <DashboardLoading /> : <table>
@@ -218,12 +464,12 @@ function Teacher() {
                                 <td>Action ⌄</td>
                             </tr>
                         </tbody>
-                        {allTeacher?.map(item => {
+                        {allTeacher?.map((item, index) => {
                             return (
                                 <React.Fragment key={item._id}>
                                     <tbody className={`teacher-row ${expandedTeacherId === item._id ? 'expanded' : ''}`}>
                                         <tr onClick={() => toggleExpandTeacher(item._id)} style={{ cursor: 'pointer' }}>
-                                            <td>{number++}</td>
+                                            <td><span style={{fontWeight: 'bold', color: '#5d17eb', fontSize: '1.1rem'}}>{(pageNumber - 1) * 20 + index + 1}.</span></td>
                                             <td className='d-flex teacher-name align-items-center'>
                                                 <img src={student} alt="" />
                                                 <p>{item.userName}</p>
@@ -237,8 +483,9 @@ function Teacher() {
                                                 </div>
                                             </td>
                                             <td className="teacher-action" onClick={(e) => e.stopPropagation()}>
-                                                <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item?.subject?.schoolSubjectName, item.maxStudents)} aria-hidden="true"></i>
-                                                <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true"></i>
+                                                <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item?.subject?.schoolSubjectName, item.maxStudents)} aria-hidden="true" title="Edit Teacher"></i>
+                                                <i className="fa fa-file-pdf-o" onClick={() => exportTeacherPDF(item)} style={{ color: '#ef4444', marginRight: '0.7rem', cursor: 'pointer' }} aria-hidden="true" title="Export PDF"></i>
+                                                <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true" title="Remove Teacher"></i>
                                             </td>
                                         </tr>
                                         {expandedTeacherId === item._id && (

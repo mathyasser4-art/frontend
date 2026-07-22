@@ -63,15 +63,7 @@ function Home() {
     return () => clearInterval(timer)
   }, [])
 
-  React.useEffect(() => {
-    const isAuthUser = localStorage.getItem('O_authWEB');
-    const hasSeenDemo = localStorage.getItem('hasSeenDemoQuiz') === 'true';
-    if (!isAuthUser && !hasSeenDemo) {
-      // Auto open demo quiz overlay for first-time guest visitors
-      setShowDemoQuiz(true);
-    }
-  }, []);
-
+  // Auto open demo quiz removed based on user request
   return (
     <>
       <MobileNav role={role} />
@@ -87,13 +79,13 @@ function Home() {
             <div className="hero-left">
               <div className="hero-text-box">
                 <div className="home-title">
-                  <h1 className="text-dark">Smart Games.</h1>
-                  <h1 className="text-dark">Smarter Teaching.</h1>
-                  <h1 className="text-red">Better Results.</h1>
+                  <h1 className="text-dark">{t('home.smartGames', 'Smart Games.')}</h1>
+                  <h1 className="text-dark">{t('home.smarterTeaching', 'Smarter Teaching.')}</h1>
+                  <h1 className="text-red">{t('home.betterResults', 'Better Results.')}</h1>
                 </div>
                 <div className="home-paragraph">
-                  <p>The all-in-one platform for abacus learning,</p>
-                  <p>homework management & automatic correction.</p>
+                  <p>{t('home.heroDesc1', 'The all-in-one platform for abacus learning,')}</p>
+                  <p>{t('home.heroDesc2', 'homework management & automatic correction.')}</p>
                 </div>
                 <div className="hero-buttons">
                   <div className="hero-btn-wrapper">
@@ -101,9 +93,9 @@ function Home() {
                       className="home-btn pink-btn"
                       onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}
                     >
-                      <span className="btn-text">👤 I'M A TEACHER</span>
+                      <span className="btn-text">👤 {t('home.explainingTeachers', 'EXPLAINING FOR TEACHERS')}</span>
                     </button>
-                    <div className="btn-subtitle">Manage my class & homework</div>
+                    <div className="btn-subtitle">{t('home.teacherSubtitle', 'Manage my class & homework')}</div>
                   </div>
                   <div className="hero-btn-wrapper">
                     <button 
@@ -113,9 +105,9 @@ function Home() {
                         setShowStudentHelp(true);
                       }}
                     >
-                      <span className="btn-text">🎓 I'M A STUDENT</span>
+                      <span className="btn-text">🎓 {t('home.explainingStudents', 'EXPLAINING FOR STUDENTS')}</span>
                     </button>
-                    <div className="btn-subtitle">Play, practice & solve homework</div>
+                    <div className="btn-subtitle">{t('home.studentSubtitle', 'Play, practice & solve homework')}</div>
                   </div>
                 </div>
               </div>
@@ -124,7 +116,7 @@ function Home() {
             {/* ── RIGHT: Showcase & Illustration ── */}
             <div className="hero-right">
               <div className="showcase-title">
-                <h2>See How It Works</h2>
+                <h2>{t('home.seeHowItWorks', 'See How It Works')}</h2>
               </div>
               <div className="hero-showcase small-showcase">
                 <div className="magical-screen-wrapper">
@@ -172,9 +164,9 @@ function Home() {
         <div className="mobile-hero-container">
            <div className="hero-text-box mobile-hero-box">
              <div className="home-title mobile-title text-center">
-                <h1 className="text-dark">Smart Games.</h1>
-                <h1 className="text-dark">Smarter Teaching.</h1>
-                <h1 className="text-red">Better Results.</h1>
+                <h1 className="text-dark">{t('home.smartGames', 'Smart Games.')}</h1>
+                <h1 className="text-dark">{t('home.smarterTeaching', 'Smarter Teaching.')}</h1>
+                <h1 className="text-red">{t('home.betterResults', 'Better Results.')}</h1>
              </div>
            </div>
            <div className="hero-showcase mobile-hero-showcase">
@@ -196,15 +188,15 @@ function Home() {
           <div className="hero-buttons mobile-buttons">
               <div className="hero-btn-wrapper">
                 <button className="home-btn pink-btn" onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}>
-                  <span className="btn-text">👨‍🏫 I'M A TEACHER</span>
+                  <span className="btn-text">👨‍🏫 {t('home.explainingTeachers', 'EXPLAINING FOR TEACHERS')}</span>
                 </button>
-                <div className="btn-subtitle">Manage class & homework</div>
+                <div className="btn-subtitle">{t('home.teacherSubtitle', 'Manage class & homework')}</div>
               </div>
               <div className="hero-btn-wrapper">
                 <button className="home-btn blue-btn" onClick={() => { soundEffects.playClick(); setShowStudentHelp(true); }}>
-                  <span className="btn-text">🎓 I'M A STUDENT</span>
+                  <span className="btn-text">🎓 {t('home.explainingStudents', 'EXPLAINING FOR STUDENTS')}</span>
                 </button>
-                <div className="btn-subtitle">Play & solve homework</div>
+                <div className="btn-subtitle">{t('home.studentSubtitle', 'Play & solve homework')}</div>
               </div>
           </div>
           {/* Scroll Down Arrow Mobile (Request 6) */}

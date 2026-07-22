@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AbacusHeroes</string>
+    <string name="title_activity_main">AbacusHeroes</string>
+    <string name="package_name">com.abacusheroes.app</string>
+    <string name="custom_url_scheme">com.abacusheroes.app</string>
+</resources>
