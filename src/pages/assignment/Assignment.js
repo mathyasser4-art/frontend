@@ -127,6 +127,7 @@ function Assignment() {
   const role = localStorage.getItem('auth_role');
   const userID = localStorage.getItem('pp_id') || 'unknown';
   const progressKey = `assignment_progress_${assignmentID}_${userID}`;
+  const isNavigatingRef = useRef(false);
   const initialized = useRef(false);
   const hasSubmittedRef = useRef(false);
   const [time, setTime] = useState(0);
@@ -797,7 +798,9 @@ function Assignment() {
       // If focused on the main input, let native input handle it
       if (document.activeElement && document.activeElement.classList.contains('input-style')) {
         if (e.key === 'Enter') {
-          checkedQuestion();
+          if (!isNavigatingRef.current) {
+            checkedQuestion();
+          }
         }
         return;
       }
@@ -807,7 +810,9 @@ function Assignment() {
       } else if (e.key === 'Backspace') {
         setAnswer(prev => prev.slice(0, -1));
       } else if (e.key === 'Enter') {
-        checkedQuestion();
+        if (!isNavigatingRef.current) {
+          checkedQuestion();
+        }
       }
     };
 
@@ -940,43 +945,46 @@ function Assignment() {
   }
 
   const nextQuestion = () => {
+    if (isNavigatingRef.current) return;
+    isNavigatingRef.current = true;
+    setTimeout(() => { isNavigatingRef.current = false; }, 250);
+
     soundEffects.playClick();
     const activeNumber = thisQuestionNumber;
     
     // Check if this is the last question - auto-end exam
-    if (activeNumber === questionData.length) {
+    if (activeNumber >= questionData.length) {
       handleManualEndExam();
       return;
     }
     
-    if (activeNumber !== questionData.length) {
-      const newNumber = activeNumber + 1;
-      
-      // Update DOM only if question numbers are visible (desktop)
-      const numbers = document.querySelectorAll(".question-number p");
-      if (numbers.length > 0) {
-        let newActive = '';
-        for (let i = 0; i < numbers.length; i++) {
-          numbers[i].classList.remove('active-question')
-          if (numbers[i].innerText === String(newNumber)) newActive = numbers[i]
-        }
-        if (newActive) newActive.classList.add("active-question");
+    const newNumber = activeNumber + 1;
+    
+    // Update DOM only if question numbers are visible (desktop)
+    const numbers = document.querySelectorAll(".question-number p");
+    if (numbers.length > 0) {
+      let newActive = '';
+      for (let i = 0; i < numbers.length; i++) {
+        numbers[i].classList.remove('active-question');
+        if (numbers[i].innerText === String(newNumber)) newActive = numbers[i];
       }
-      
-      const question = questionData[newNumber - 1]
-      setThisQuestion(question)
-      setThisQuestionNumber(newNumber)
-      setAnswer('')
-      setError('')
-      setImage('')
-      clearWhiteboard()
-      if (question.questionAnswer) setAnswer(question.questionAnswer); else setAnswer('');
-    } else {
-      setShowKeyboard(false);
+      if (newActive) newActive.classList.add("active-question");
     }
+    
+    const question = questionData[newNumber - 1];
+    setThisQuestion(question);
+    setThisQuestionNumber(newNumber);
+    setAnswer(question?.questionAnswer || '');
+    setError('');
+    setImage('');
+    clearWhiteboard();
   }
 
   const previousQuestion = () => {
+    if (isNavigatingRef.current) return;
+    isNavigatingRef.current = true;
+    setTimeout(() => { isNavigatingRef.current = false; }, 250);
+
     soundEffects.playClick();
     const activeNumber = thisQuestionNumber;
     if (activeNumber !== 1) {
@@ -987,20 +995,19 @@ function Assignment() {
       if (numbers.length > 0) {
         let newActive = '';
         for (let i = 0; i < numbers.length; i++) {
-          numbers[i].classList.remove('active-question')
-          if (numbers[i].innerText === String(newNumber)) newActive = numbers[i]
+          numbers[i].classList.remove('active-question');
+          if (numbers[i].innerText === String(newNumber)) newActive = numbers[i];
         }
         if (newActive) newActive.classList.add("active-question");
       }
       
-      const question = questionData[newNumber - 1]
-      setThisQuestion(question)
-      setThisQuestionNumber(newNumber)
-      setAnswer('')
-      setError('')
-      setImage('')
-      clearWhiteboard()
-      if (question.questionAnswer) setAnswer(question.questionAnswer); else setAnswer('');
+      const question = questionData[newNumber - 1];
+      setThisQuestion(question);
+      setThisQuestionNumber(newNumber);
+      setAnswer(question?.questionAnswer || '');
+      setError('');
+      setImage('');
+      clearWhiteboard();
     }
   }
 
@@ -1024,11 +1031,10 @@ function Assignment() {
     const question = questionData[numberOfQuestion];
     setThisQuestion(question)
     setThisQuestionNumber(numberOfQuestion + 1)
-    setAnswer('')
+    setAnswer(question?.questionAnswer || '')
     setError('')
     setImage('')
     clearWhiteboard()
-    if (question.questionAnswer) setAnswer(question.questionAnswer); else setAnswer('');
   }
 
   const showAlert = () => {
@@ -1075,16 +1081,19 @@ function Assignment() {
   }
 
   const handleChecked = (value) => {
+    if (isNavigatingRef.current) return;
     setAnswer(value);
     // For MCQ and Graph questions, save answer and move to next (no checking yet)
     if (thisQuestion?.typeOfAnswer === 'MCQ' || thisQuestion?.typeOfAnswer === 'Graph') {
       const index = questionData.findIndex(item => item._id === thisQuestion._id);
-      questionData[index].questionAnswer = value;
-      // Fire background check immediately on MCQ/Graph selection
-      syncAnswerWithBackend(thisQuestion._id, value, index);
+      if (index !== -1) {
+        questionData[index].questionAnswer = value;
+        // Fire background check immediately on MCQ/Graph selection
+        syncAnswerWithBackend(thisQuestion._id, value, index);
+      }
       setTimeout(() => {
         nextQuestion();
-      }, 300);
+      }, 250);
     }
   };
 
@@ -1113,23 +1122,26 @@ function Assignment() {
   };
 
   const checkedQuestion = () => {
+    if (isNavigatingRef.current) return;
     setShowKeyboard(true);
-    setResultError('')
+    setResultError('');
     if (answer !== '') {
-      setError('')
+      setError('');
       const index = questionData.findIndex(item => item._id === thisQuestion._id);
-      questionData[index].questionAnswer = answer;
-      // Fire background check — don't await, student moves on immediately
-      syncAnswerWithBackend(thisQuestion._id, answer, index);
+      if (index !== -1) {
+        questionData[index].questionAnswer = answer;
+        // Fire background check — don't await, student moves on immediately
+        syncAnswerWithBackend(thisQuestion._id, answer, index);
+      }
 
       // Check if this is the last question - auto-end exam
-      if (thisQuestionNumber === questionData.length) {
+      if (thisQuestionNumber >= questionData.length) {
         handleManualEndExam();
       } else {
         nextQuestion();
       }
     } else {
-      setError('There is no answer yet!!')
+      setError('There is no answer yet!!');
     }
   }
 
@@ -1636,7 +1648,7 @@ function Assignment() {
                       onChange={(e) => setAnswer(e.target.value)}
                       onFocus={(e) => handleInputFocus(e)}
                       readOnly={/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)}
-                      placeholder={isArabic ? 'Enter the answer' : 'Enter the answer'}
+                      placeholder={isArabic ? 'أدخل الإجابة' : 'Enter the answer'}
                       className="input-style"
                       autoFocus
                     />
@@ -1701,7 +1713,7 @@ function Assignment() {
           </div>
 
           {resultError ? <div className='d-flex end-exam-error justify-content-flex-start'><p className='error-line'>You must answer at least one question first!!</p></div> : null}
-          <div className="alert"> Congratulations! your answer is coreect.</div>
+          <div className="alert"> Congratulations! your answer is correct.</div>
           <div className="alert alert-question"> Wrong!❌</div>
         </div>
       }

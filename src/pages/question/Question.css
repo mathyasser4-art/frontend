@@ -2209,51 +2209,119 @@ input[type="radio"] {
         top: 60px;
     }
 }
-/* 3D toolbar buttons */
+/* Header Toolbar buttons */
+.end-assignment-btn,
+.gamify-button,
 .worksheet-print-btn,
 .fullscreen-button,
 .flash-mode-button,
 .abacus-button,
+.custom-abacus-btn,
 .add-question-icon,
 .all-question-icon,
-.pocket-button,
 .pocket-all-button {
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-    background: linear-gradient(135deg, #4b5563 0%, #1f2937 100%);
-    box-shadow: 0 8px 18px rgba(31, 41, 55, 0.28);
-    color: #fff;
-    text-decoration: none;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    border: none !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    margin: 0 4px !important;
+    padding: 0 !important;
 }
 
+.end-assignment-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #c62828 100%) !important;
+    box-shadow: 0 8px 18px rgba(239, 68, 68, 0.35) !important;
+}
+
+.gamify-button {
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
+    box-shadow: 0 8px 18px rgba(221, 36, 118, 0.35) !important;
+}
+
+.worksheet-print-btn {
+    background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%) !important;
+    box-shadow: 0 8px 18px rgba(255, 107, 157, 0.35) !important;
+}
+
+.fullscreen-button {
+    background: linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%) !important;
+    box-shadow: 0 8px 18px rgba(79, 172, 254, 0.35) !important;
+}
+
+.flash-mode-button {
+    background: linear-gradient(135deg, #FA709A 0%, #FEE140 100%) !important;
+    box-shadow: 0 8px 18px rgba(250, 112, 154, 0.35) !important;
+}
+
+.flash-mode-button.flash-active {
+    background: linear-gradient(135deg, #43E97B 0%, #38F9D7 100%) !important;
+    box-shadow: 0 8px 18px rgba(67, 233, 123, 0.35) !important;
+}
+
+.abacus-button,
+.custom-abacus-btn {
+    background: linear-gradient(135deg, #FEE140 0%, #ffb347 100%) !important;
+    box-shadow: 0 8px 18px rgba(254, 225, 64, 0.35) !important;
+}
+
+.pocket-all-button {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+    box-shadow: 0 8px 18px rgba(240, 147, 251, 0.35) !important;
+}
+
+.pocket-button {
+    height: 42px !important;
+    border-radius: 21px !important;
+    padding: 0 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important;
+    box-shadow: 0 8px 18px rgba(142, 45, 226, 0.35) !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    margin: 0 4px !important;
+}
+
+.end-assignment-btn:hover,
+.gamify-button:hover:not(:disabled),
 .worksheet-print-btn:hover:not(:disabled),
 .fullscreen-button:hover,
 .flash-mode-button:hover,
 .abacus-button:hover,
+.custom-abacus-btn:hover,
 .add-question-icon:hover,
 .all-question-icon:hover,
 .pocket-button:hover,
 .pocket-all-button:hover {
-    transform: scale(1.06);
-    color: #fff;
+    transform: scale(1.06) !important;
+    color: #ffffff !important;
 }
 
+.end-assignment-btn:active,
+.gamify-button:active:not(:disabled),
 .worksheet-print-btn:active:not(:disabled),
 .fullscreen-button:active,
 .flash-mode-button:active,
 .abacus-button:active,
+.custom-abacus-btn:active,
 .add-question-icon:active,
 .all-question-icon:active,
 .pocket-button:active,
 .pocket-all-button:active {
-    transform: scale(0.95);
+    transform: scale(0.95) !important;
 }
 
 .worksheet-print-btn:disabled {

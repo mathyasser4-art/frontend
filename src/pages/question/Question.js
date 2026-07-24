@@ -149,6 +149,7 @@ const normalizeToWesternDigits = (str) => {
 function Question() {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const isNavigatingRef = useRef(false);
     
     // State for Abacus visibility
     const [showAbacus, setShowAbacus] = useState(false);
@@ -558,7 +559,9 @@ function Question() {
             // If focused on the main input, let native input handle it
             if (document.activeElement && document.activeElement.classList.contains('input-style')) {
                 if (e.key === 'Enter') {
-                    checkedQuestion();
+                    if (!isNavigatingRef.current) {
+                        checkedQuestion();
+                    }
                 }
                 return;
             }
@@ -568,7 +571,9 @@ function Question() {
             } else if (e.key === 'Backspace') {
                 setAnswer(prev => prev.slice(0, -1));
             } else if (e.key === 'Enter') {
-                checkedQuestion();
+                if (!isNavigatingRef.current) {
+                    checkedQuestion();
+                }
             }
         };
 
@@ -580,34 +585,40 @@ function Question() {
     }, [thisQuestion, answer, thisQuestionNumber]);
 
     const nextQuestion = () => {
+        if (isNavigatingRef.current) return;
+        isNavigatingRef.current = true;
+        setTimeout(() => { isNavigatingRef.current = false; }, 250);
+
         soundEffects.playClick();
-        const activeNumber = parseInt(document.querySelector('.active-question').innerText);
+        const activeNumber = thisQuestionNumber;
         
         // Check if this is the last question - auto-end exam
-        if (activeNumber === questionData.length) {
+        if (activeNumber >= questionData.length) {
             openResulPopup();
             return;
         }
         
-        if (activeNumber < questionData.length) {
-            const newNumber = activeNumber + 1;
-            document.querySelectorAll('.question-number p').forEach(p => {
-                p.classList.remove('active-question');
-                if (parseInt(p.innerText) === newNumber) {
-                    p.classList.add('active-question');
-                }
-            });
-            const question = questionData[newNumber - 1];
-            setThisQuestion(question);
-            setThisQuestionNumber(newNumber);
-            setAnswer(question.questionAnswer || '');
-            setError('');
-        }
+        const newNumber = activeNumber + 1;
+        document.querySelectorAll('.question-number p').forEach(p => {
+            p.classList.remove('active-question');
+            if (parseInt(p.innerText) === newNumber) {
+                p.classList.add('active-question');
+            }
+        });
+        const question = questionData[newNumber - 1];
+        setThisQuestion(question);
+        setThisQuestionNumber(newNumber);
+        setAnswer(question.questionAnswer || '');
+        setError('');
     };
 
     const previousQuestion = () => {
+        if (isNavigatingRef.current) return;
+        isNavigatingRef.current = true;
+        setTimeout(() => { isNavigatingRef.current = false; }, 250);
+
         soundEffects.playClick();
-        const activeNumber = parseInt(document.querySelector('.active-question').innerText);
+        const activeNumber = thisQuestionNumber;
         if (activeNumber > 1) {
             const newNumber = activeNumber - 1;
             document.querySelectorAll('.question-number p').forEach(p => {
@@ -683,16 +694,18 @@ function Question() {
     };
 
     const handleChecked = (value) => {
+        if (isNavigatingRef.current) return;
         setAnswer(value);
         // For MCQ and Graph questions, save answer and move to next
         if (thisQuestion?.typeOfAnswer === 'MCQ' || thisQuestion?.typeOfAnswer === 'Graph') {
             const index = questionData.findIndex(item => item._id === thisQuestion._id);
-            questionData[index].questionAnswer = value;
-            // Fire background check immediately on MCQ/Graph selection
-            syncAnswerWithBackend(thisQuestion._id, value, index);
+            if (index !== -1) {
+                questionData[index].questionAnswer = value;
+                syncAnswerWithBackend(thisQuestion._id, value, index);
+            }
             setTimeout(() => {
                 nextQuestion();
-            }, 300);
+            }, 250);
         }
     };
 
@@ -718,15 +731,18 @@ function Question() {
     };
 
     const checkedQuestion = () => {
+        if (isNavigatingRef.current) return;
         if (answer) {
             setError('');
             const index = questionData.findIndex(item => item._id === thisQuestion._id);
-            questionData[index].questionAnswer = answer;
-            // Fire background check — don't await, student moves on immediately
-            syncAnswerWithBackend(thisQuestion._id, answer, index);
+            if (index !== -1) {
+                questionData[index].questionAnswer = answer;
+                // Fire background check — don't await, student moves on immediately
+                syncAnswerWithBackend(thisQuestion._id, answer, index);
+            }
 
             // Check if this is the last question - auto-end exam
-            if (thisQuestionNumber === questionData.length) {
+            if (thisQuestionNumber >= questionData.length) {
                 openResulPopup();
             } else {
                 nextQuestion();
