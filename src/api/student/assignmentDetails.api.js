@@ -4,7 +4,7 @@ import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 const URL = `${API_BASE_URL}/student/assignmentDetails`;
 
 
-const assignmentDetails = (setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode, setCurrentAttempt, setTotalAttempts, setRemainingAttempts, setFlashSpeed) => {
+const assignmentDetails = (setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode, setCurrentAttempt, setTotalAttempts, setRemainingAttempts, setFlashSpeed, setAllowGlitchRetry) => {
     const Token = localStorage.getItem('O_authWEB');
 
     setLoading(true)
@@ -108,6 +108,44 @@ const assignmentDetails = (setLoading, setOperationError, setQuestionData, setTh
                     console.log('Assignment already completed. Showing message...');
                     setLoading(false);
                     setOperationError('This assignment has been completed. You have used all your attempts.');
+
+                    // APPROACH A: Check if previous attempt was a glitch/interrupted attempt
+                    if (setAllowGlitchRetry) {
+                        const userID = localStorage.getItem('pp_id') || 'unknown';
+                        const progressKey = `assignment_progress_${assignmentID}_${userID}`;
+                        const hadSavedProgress = !!localStorage.getItem(progressKey) || !!localStorage.getItem(`assignment_progress_${assignmentID}`);
+
+                        fetch(`${API_BASE_URL}/answer/getResult/${assignmentID}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'authrization': `pracYas09${Token}`
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(resultJson => {
+                            if (resultJson.message === 'success') {
+                                const res = resultJson.result || {};
+                                const questionsAns = parseInt(res.questionsNumber || 0);
+                                const totalScore = parseInt(res.total || 0);
+                                const timeStr = String(res.time || '0:00');
+                                const isZeroTime = timeStr === '0:00' || timeStr === '0:01' || timeStr === '0:02' || timeStr === '0:03' || timeStr === '0:05';
+                                
+                                if (questionsAns === 0 || totalScore === 0 || isZeroTime || hadSavedProgress) {
+                                    console.log('🔄 Glitch attempt detected (0 questions/instant exit/interrupted). Enabling auto-retry!');
+                                    setAllowGlitchRetry(true);
+                                } else {
+                                    setAllowGlitchRetry(false);
+                                }
+                            } else {
+                                // If result not found or error, enable retry if progress existed or as fallback
+                                setAllowGlitchRetry(true);
+                            }
+                        })
+                        .catch(err => {
+                            setAllowGlitchRetry(true);
+                        });
+                    }
                 } else if (responseJson.message && responseJson.message.toLowerCase().includes('expired')) {
                     // Assignment time period has expired (different from attempts expired)
                     setLoading(false);

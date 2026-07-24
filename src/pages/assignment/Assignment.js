@@ -716,10 +716,35 @@ function Assignment() {
     }
   }, [thisQuestion?._id, flashMode, hasFlashedOnce, forceFlashMode]);
 
+  const [allowGlitchRetry, setAllowGlitchRetry] = useState(false);
+
   const handleGetQuestion = () => {
     console.log('📡 Fetching assignment details for assignment ID:', assignmentID);
-    assignmentDetails(setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode, setCurrentAttempt, setTotalAttempts, setRemainingAttempts, setFlashSpeed)
+    assignmentDetails(setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode, setCurrentAttempt, setTotalAttempts, setRemainingAttempts, setFlashSpeed, setAllowGlitchRetry)
   }
+
+  const handleGlitchRetry = async () => {
+    soundEffects.playClick();
+    setLoading(true);
+    setAllowGlitchRetry(false);
+    clearSavedProgress();
+
+    try {
+      const Token = localStorage.getItem('O_authWEB');
+      await fetch(`${API_BASE_URL}/answer/resetGlitchAttempt/${assignmentID}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'authrization': `pracYas09${Token}`
+        }
+      });
+    } catch (err) {
+      console.log('Reset glitch attempt:', err);
+    }
+
+    setOperationError(null);
+    handleGetQuestion();
+  };
 
   useEffect(() => {
     if (!initialized.current) {
@@ -1416,7 +1441,27 @@ function Assignment() {
           ) : null}
           <p className='text-center' style={{fontSize: '22px', fontWeight: '500', color: operationError.includes('completed') || operationError.includes('attempts') ? '#4CAF50' : '#F875AA'}}>{operationError}</p>
           {operationError.includes('completed') || operationError.includes('attempts') ? (
-            <div style={{ marginTop: '20px' }}>
+            <div style={{ marginTop: '20px', display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {allowGlitchRetry && (
+                <button 
+                  className='button' 
+                  style={{
+                    backgroundColor: '#FF9800', 
+                    backgroundImage: 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)', 
+                    padding: '0.8rem 2rem', 
+                    fontSize: '1.2rem',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    boxShadow: '0 6px 16px rgba(255, 152, 0, 0.35)'
+                  }}
+                  onClick={handleGlitchRetry}
+                >
+                  🔄 Retry Assignment (Glitch Detected)
+                </button>
+              )}
               <Link to='/dashboard/student'>
                 <button className='button' style={{backgroundColor: '#4CAF50', padding: '0.8rem 2rem', fontSize: '1.2rem'}}>Back to Dashboard</button>
               </Link>
