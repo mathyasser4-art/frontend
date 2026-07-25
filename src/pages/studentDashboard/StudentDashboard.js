@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import { useNavigate } from 'react-router-dom'
@@ -9,11 +10,11 @@ import TutorialVideoModal from '../../components/tutorialVideoModal/TutorialVide
 import AttemptHistory from '../../components/attemptHistory/AttemptHistory'
 import API_BASE_URL from '../../config/api.config'
 import soundEffects from '../../utils/soundEffects'
-import { Swords, Zap, Gamepad } from 'lucide-react'
 import '../../reusable.css'
 import './StudentDashboard.css'
 
 function StudentDashboard() {
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const [teacherList, setTeacherList] = useState([])
     const [allAsignment, setAllAsignment] = useState([])
@@ -186,128 +187,27 @@ function StudentDashboard() {
                 {loading ? <DashboardLoading /> : (
                     <div className="dashboard-main-menu">
                         <div className="welcome-header">
-                            <h2 className="welcome-title">Hello, {userName}! 👋</h2>
+                            <h2 className="welcome-title">{t('studentDashboard.hello', 'Hello, {{name}}! 👋', { name: userName })}</h2>
                             {className ? (
-                                <p className="class-subtitle">Class: <span className="class-highlight">{className}</span></p>
+                                <p className="class-subtitle">{t('studentDashboard.classLabel', 'Class:')} <span className="class-highlight">{className}</span></p>
                             ) : (
-                                <p className="text-red text-center">You are not placed in any class yet</p>
+                                <p className="text-red text-center">{t('studentDashboard.noClass', 'You are not placed in any class yet')}</p>
                             )}
-                        </div>
-
-                        {/* Stats Overview Bar */}
-                        <div className="dashboard-stats-row">
-                            <div className="dashboard-stat-card unsolved">
-                                <span className="stat-num">{unsolvedAssignments}</span>
-                                <span className="stat-lbl">Pending Homework</span>
-                            </div>
-                            <div className="dashboard-stat-card completed">
-                                <span className="stat-num">{totalAssignments - unsolvedAssignments}</span>
-                                <span className="stat-lbl">Completed Homework</span>
-                            </div>
-                            <div className="dashboard-stat-card total">
-                                <span className="stat-num">{totalAssignments}</span>
-                                <span className="stat-lbl">Total Assigned</span>
-                            </div>
                         </div>
 
                         {/* Assignment List Header */}
                         <div className="assignment-list-header">
-                            <h3>📝 Your Homework List</h3>
-                            <p className="list-tagline">Solve pending assignments or review your grades below.</p>
+                            <h3>{t('studentDashboard.homeworkListTitle', '📝 Your Homework List')}</h3>
+                            <p className="list-tagline">{t('studentDashboard.homeworkListTagline', 'Solve pending assignments or review your grades below.')}</p>
                         </div>
-
-                        {/* ===== PREMIUM DUAL ACTION CARDS (GAME ROOM & BATTLE ARENA SIDE-BY-SIDE) ===== */}
-                        <div className="student-dashboard-actions-grid">
-                            
-                            {/* Card 1: Adventure Game Room */}
-                            <div className="premium-action-card game-room-card">
-                                <span className="card-badge">Level Up!</span>
-                                <div>
-                                    <div className="card-header-row">
-                                        <div className="card-icon-ring">
-                                            <Gamepad size={24} style={{ color: '#fff' }} />
-                                        </div>
-                                        <div className="card-title-text">
-                                            <h3>Adventure Games</h3>
-                                        </div>
-                                    </div>
-                                    <p className="card-desc-text">
-                                        Enter the magical games arena, play fun abacus adventure games, and climb the scoreboard!
-                                    </p>
-                                </div>
-                                <div className="card-action-box">
-                                    <button 
-                                        className="premium-action-btn"
-                                        onClick={() => {
-                                            soundEffects.playClick();
-                                            navigate('/student/games-menu');
-                                        }}
-                                    >
-                                        <span>Enter Game Room 🎮</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Card 2: Competition Arena */}
-                            <div className="premium-action-card battle-arena-card">
-                                <span className="card-badge">Live PVP</span>
-                                <div>
-                                    <div className="card-header-row">
-                                        <div className="card-icon-ring">
-                                            <Swords size={24} style={{ color: '#fff' }} />
-                                        </div>
-                                        <div className="card-title-text">
-                                            <h3>Competition Arena</h3>
-                                        </div>
-                                    </div>
-                                    <p className="card-desc-text">
-                                        Your teacher started a competition! Paste the Competition ID here to join the race.
-                                    </p>
-                                </div>
-                                <div className="card-action-box">
-                                    <div className="battle-inputs-wrapper">
-                                        <div className="battle-input-row">
-                                            <input
-                                                id="comp-id-join-input"
-                                                type="text"
-                                                className="battle-id-input-field"
-                                                placeholder="Paste Competition ID here..."
-                                                value={compIdInput}
-                                                onChange={e => { setCompIdInput(e.target.value); setJoinCompError(null); }}
-                                            />
-                                            <button
-                                                id="join-battle-btn"
-                                                className="premium-action-btn"
-                                                style={{ width: 'auto', flexShrink: 0 }}
-                                                disabled={joiningComp}
-                                                onClick={() => {
-                                                    const id = compIdInput.trim();
-                                                    if (!id) { setJoinCompError('Please paste a valid Competition ID from your teacher.'); return; }
-                                                    soundEffects.playClick();
-                                                    
-                                                    setJoiningComp(true);
-                                                    navigate(`/student/competition/${id}`);
-                                                }}
-                                            >
-                                                <Zap size={14} />
-                                                <span>{joiningComp ? 'Entering...' : 'Join!'}</span>
-                                            </button>
-                                        </div>
-                                        {joinCompError && <p className="battle-error-message">{joinCompError}</p>}
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        {/* ===== PREMIUM DUAL ACTION CARDS END ===== */}
 
                         {assignmentsLoading ? (
                             <DashboardLoading />
                         ) : allAsignment.length === 0 ? (
                             <div className="no-assignments-box">
                                 <span className="box-icon">🎉</span>
-                                <h4>All caught up!</h4>
-                                <p>You have no homework assignments at the moment.</p>
+                                <h4>{t('studentDashboard.allCaughtUp', 'All caught up!')}</h4>
+                                <p>{t('studentDashboard.noAssignments', 'You have no homework assignments at the moment.')}</p>
                             </div>
                         ) : (
                             <div className="assignments-grid-modern">
@@ -338,28 +238,26 @@ function StudentDashboard() {
                                             <div className="card-stats-row">
                                                 <div className="card-stat">
                                                     <span className="card-stat-icon">📋</span>
-                                                    <span className="card-stat-value">{item.questionsNumber || 'Multiple'} Qs</span>
+                                                    <span className="card-stat-value">{item.questionsNumber || 'Multiple'} {t('studentDashboard.qs', 'Qs')}</span>
                                                 </div>
                                                 <div className="card-stat">
                                                     <span className="card-stat-icon">⏱️</span>
-                                                    <span className="card-stat-value">{item.timer ? `${item.timer} Min` : 'Unlimited'}</span>
+                                                    <span className="card-stat-value">{item.timer ? `${item.timer} ${t('studentDashboard.min', 'Min')}` : t('studentDashboard.unlimited', 'Unlimited')}</span>
                                                 </div>
                                                 <div className="card-stat">
                                                     <span className="card-stat-icon">🔄</span>
-                                                    <span className="card-stat-value">{item.attemptsNumber || 1} Attempts</span>
+                                                    <span className="card-stat-value">{item.attemptsNumber || 1} {t('studentDashboard.attempts', 'Attempts')}</span>
                                                 </div>
                                             </div>
-
-
 
                                             <div className="card-footer-action">
                                                 {isCompleted ? (
                                                     <div className="completed-action-row">
-                                                        <span className="completed-badge">✓ COMPLETED</span>
+                                                        <span className="completed-badge">{t('studentDashboard.completed', '✓ COMPLETED')}</span>
                                                         {cachedResult && (
                                                             <div className="compact-score-display">
                                                                 <span className="score-val">{cachedResult.score}</span>
-                                                                <span className="score-tot">/{cachedResult.total} pts</span>
+                                                                <span className="score-tot">/{cachedResult.total} {t('studentDashboard.pts', 'pts')}</span>
                                                             </div>
                                                         )}
                                                     </div>
@@ -371,7 +269,7 @@ function StudentDashboard() {
                                                         }}
                                                         className="assignment-btn resume"
                                                     >
-                                                        ▶ Resume Homework
+                                                        {t('studentDashboard.resumeHomework', '▶ Resume Homework')}
                                                     </button>
                                                 ) : (
                                                     <button
@@ -381,7 +279,7 @@ function StudentDashboard() {
                                                         }}
                                                         className="assignment-btn start"
                                                     >
-                                                        🚀 Start Homework
+                                                        {t('studentDashboard.startHomework', '🚀 Start Homework')}
                                                     </button>
                                                 )}
                                             </div>
@@ -420,7 +318,7 @@ function StudentDashboard() {
                             <span className="fullpage-countdown-number">{countdownNum}</span>
                         </div>
                         <p className="fullpage-countdown-text">
-                            {countdownNum === 3 ? 'Get Ready...' : countdownNum === 2 ? 'Set...' : 'Go! 🚀'}
+                            {countdownNum === 3 ? t('studentDashboard.getReady', 'Get Ready...') : countdownNum === 2 ? t('studentDashboard.set', 'Set...') : t('studentDashboard.go', 'Go! 🚀')}
                         </p>
                     </div>
                 </div>

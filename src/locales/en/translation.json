@@ -503,6 +503,26 @@
     "homeworkDesc": "Do your assignments easily.",
     "goHomework": "📚 GO TO MY HOMEWORK",
     "loginStart": "🔑 LOGIN TO START HOMEWORK"
+  },
+  "studentDashboard": {
+    "hello": "Hello, {{name}}! 👋",
+    "classLabel": "Class:",
+    "noClass": "You are not placed in any class yet",
+    "homeworkListTitle": "📝 Your Homework List",
+    "homeworkListTagline": "Solve pending assignments or review your grades below.",
+    "allCaughtUp": "All caught up!",
+    "noAssignments": "You have no homework assignments at the moment.",
+    "qs": "Qs",
+    "min": "Min",
+    "unlimited": "Unlimited",
+    "attempts": "Attempts",
+    "pts": "pts",
+    "completed": "✓ COMPLETED",
+    "resumeHomework": "▶ Resume Homework",
+    "startHomework": "🚀 Start Homework",
+    "getReady": "Get Ready...",
+    "set": "Set...",
+    "go": "Go! 🚀"
   }
 }
 

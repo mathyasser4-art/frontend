@@ -187,6 +187,17 @@ const Navbar = () => {
                     <Link to="/contact" onClick={() => soundEffects.playClick()} className="nav-link">{t('navbar.contact', 'Contact')}</Link>
                 </div>
 
+                {/* Student Centered Header Homework Button */}
+                {role === 'Student' && (
+                    <div className="student-header-hw-center">
+                        <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}>
+                            <div className="student-navbar-hw-btn">
+                                <span>📝 {t('navbar.homework', 'HOMEWORK')}</span>
+                            </div>
+                        </Link>
+                    </div>
+                )}
+
                 {/* Mobile Menu Toggle */}
                 {isAuth && (
                     <button 
@@ -243,7 +254,6 @@ const Navbar = () => {
                     {role === 'Student' ? (
                         <>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn">{t('navbar.games', 'GAMES')}</div></Link>
-                            <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link>
                         </>
                     ) : null}
                     {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
