@@ -45,6 +45,11 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 } else if (responseJson.createdBy) {
                     localStorage.setItem('teacher_id', responseJson.createdBy);
                 }
+                if (responseJson.remainingDays !== undefined && responseJson.remainingDays !== null) {
+                    localStorage.setItem('trial_remaining_days', responseJson.remainingDays);
+                } else {
+                    localStorage.removeItem('trial_remaining_days');
+                }
                 const route = ROLE_ROUTES[responseJson.role] || '/';
                 if (typeof navigate === 'function') {
                     navigate(route, { replace: true });

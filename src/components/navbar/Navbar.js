@@ -212,7 +212,26 @@ const Navbar = () => {
                 )}
 
                 <div className={`nav-right-side d-flex align-items-center ${isAuth ? 'auth-menu' : 'unauth-menu'} ${isMobileMenuOpen ? 'mobile-open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
-                    <div style={{ marginRight: '15px' }}>
+                    <div style={{ marginRight: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {isAuth && isTopsoroban && localStorage.getItem('trial_remaining_days') !== null && (
+                            <div style={{
+                                backgroundColor: Number(localStorage.getItem('trial_remaining_days')) <= 5 ? '#dc2626' : '#f59e0b',
+                                color: '#ffffff',
+                                padding: '5px 12px',
+                                borderRadius: '20px',
+                                fontSize: '0.82rem',
+                                fontWeight: 'bold',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.15)',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                whiteSpace: 'nowrap'
+                            }}>
+                                ⏳ {i18n.language === 'ar' 
+                                    ? `تجريبي: متبقي ${localStorage.getItem('trial_remaining_days')} يوم` 
+                                    : `Trial: ${localStorage.getItem('trial_remaining_days')} days left`}
+                            </div>
+                        )}
                         <div 
                             className="nav-btn" 
                             style={{ backgroundColor: '#10b981', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', gap: '5px' }}

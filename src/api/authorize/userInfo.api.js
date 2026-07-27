@@ -18,6 +18,11 @@ const userInfo = (userToken, setLoading, setUserData) => {
                 } else if (responseJson.userInfo?.createdBy?.userName) {
                     localStorage.setItem('school_name', responseJson.userInfo.createdBy.userName)
                 }
+                if (responseJson.remainingDays !== undefined && responseJson.remainingDays !== null) {
+                    localStorage.setItem('trial_remaining_days', responseJson.remainingDays);
+                } else if (responseJson.userInfo?.remainingDays !== undefined && responseJson.userInfo?.remainingDays !== null) {
+                    localStorage.setItem('trial_remaining_days', responseJson.userInfo.remainingDays);
+                }
             } else {
                 console.log(responseJson.message)
                 setLoading(false)
