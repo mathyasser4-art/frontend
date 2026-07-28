@@ -361,3 +361,8 @@
         width: 95%;
     }
 }
+
+.class-search-input:focus {
+    border-color: #5d17eb !important;
+    box-shadow: 0 0 0 3px rgba(93, 23, 235, 0.15) !important;
+}

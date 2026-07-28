@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import { Link } from 'react-router-dom'
+import { Search } from 'lucide-react'
 import addClass from '../../api/class/addClass.api'
 import addMultipleClasses from '../../api/class/addMultipleClasses.api'
 import getClass from '../../api/class/getClass.api'
@@ -19,6 +20,7 @@ import './Class.css'
 function Class() {
     const [className, setClassName] = useState('')
     const [bulkClassNames, setBulkClassNames] = useState('')
+    const [searchTerm, setSearchTerm] = useState('')
     const [classID, setClassID] = useState()
     const [allClass, setAllClass] = useState([])
     const [loadingOperation, setLoadingOperation] = useState(false)
@@ -101,7 +103,12 @@ function Class() {
         if (bulkClassNames.trim() === '') {
             setError("Class names are required!!")
         } else {
-            const classList = bulkClassNames.split(/[\n,]+/).map(name => name.trim()).filter(name => name !== '')
+            const classList = [...new Set(
+                bulkClassNames
+                    .split(/[\r\n,]+/)
+                    .map(name => name.trim())
+                    .filter(name => name !== '')
+            )]
             if (classList.length === 0) {
                 setError("Please enter valid class names")
                 return
@@ -257,51 +264,92 @@ function Class() {
     // teacher list func end
 
 
+    const filteredClasses = allClass?.filter(item => {
+        if (!searchTerm.trim()) return true
+        const term = searchTerm.toLowerCase()
+        const classNameMatches = item.class?.toLowerCase().includes(term)
+        const teacherMatches = item.teachers?.some(t => t.userName?.toLowerCase().includes(term))
+        return classNameMatches || teacherMatches
+    })
+
     return (
         <>
             <MobileNav role={role} />
             <Navbar />
             <div className="class-container">
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                    <div className="class-header d-flex align-items-center" onClick={openAddPopup} style={{ marginBottom: 0 }}>
-                        <p>+</p>
-                        <p>Create New Class</p>
+                <div className="class-top-bar" style={{ display: 'flex', gap: '15px', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                        <div className="class-header d-flex align-items-center" onClick={openAddPopup} style={{ marginBottom: 0 }}>
+                            <p>+</p>
+                            <p>Create New Class</p>
+                        </div>
+                        <div className="class-header d-flex align-items-center" onClick={openBulkAddPopup} style={{ marginBottom: 0, backgroundColor: '#3498db' }}>
+                            <p>+</p>
+                            <p>Bulk Add Classes</p>
+                        </div>
                     </div>
-                    <div className="class-header d-flex align-items-center" onClick={openBulkAddPopup} style={{ marginBottom: 0, backgroundColor: '#3498db' }}>
-                        <p>+</p>
-                        <p>Bulk Add Classes</p>
+
+                    {/* Search Bar for School & Teacher accounts */}
+                    <div className="class-search-box" style={{ position: 'relative', flex: '1', minWidth: '240px', maxWidth: '380px' }}>
+                        <Search size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+                        <input 
+                            type="text" 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Search class or teacher..."
+                            className="class-search-input"
+                            style={{ 
+                                width: '100%', 
+                                padding: '10px 18px 10px 42px', 
+                                borderRadius: '14px', 
+                                border: '1px solid rgba(0,0,0,0.15)', 
+                                fontSize: '15px', 
+                                outline: 'none', 
+                                background: '#fff',
+                                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
+                                transition: 'all 0.2s ease-in-out'
+                            }}
+                        />
                     </div>
                 </div>
-                {loading ? <DashboardLoading /> :
-                    allClass?.map((item, index) => {
-                        return (
-                            <div key={item._id} className="class-item d-flex justify-content-space-between align-items-center">
-                                <p 
-                                    onClick={() => openStudentListPopup(item._id)}
-                                    style={{ cursor: 'pointer', flex: 1, display: 'flex', alignItems: 'center' }}
-                                    title="Click to view students"
-                                >
-                                    <span style={{ fontWeight: 'bold', marginRight: '10px', color: '#5d17eb' }}>{index + 1}.</span> {item.class}
-                                </p>
-                                <div className="class-icon d-flex align-items-center">
-                                    {role !== 'Teacher' && (
-                                        <i className="fa fa-plus" onClick={() => openAddToPopup(item.class, item._id)} aria-hidden="true"></i>
-                                    )}
-                                    <i className="fa fa-pencil" onClick={() => openUpdatePopup(item.class, item._id)} aria-hidden="true"></i>
-                                    <i className="fa fa-trash" onClick={() => openRemovePopup(item.class, item._id)} aria-hidden="true"></i>
-                                    <div className="dropdown">
-                                        <button className="dropbtn">▼</button>
-                                        <div className="dropdown-content">
-                                            <p onClick={() => openStudentListPopup(item._id)}>Show Students</p>
-                                            {role !== 'Teacher' && (
-                                                <p onClick={() => openTeacherListPopup(item._id, item.teachers)}>Show Teachers</p>
-                                            )}
+
+                {loading ? <DashboardLoading /> : (
+                    filteredClasses?.length === 0 ? (
+                        <div style={{ textTransform: 'none', textAlign: 'center', padding: '3rem 1rem', background: '#fff', borderRadius: '12px', color: '#64748b', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontWeight: '600' }}>
+                            {searchTerm ? `No classes found matching "${searchTerm}"` : 'No classes available yet.'}
+                        </div>
+                    ) : (
+                        filteredClasses?.map((item, index) => {
+                            return (
+                                <div key={item._id} className="class-item d-flex justify-content-space-between align-items-center">
+                                    <p 
+                                        onClick={() => openStudentListPopup(item._id)}
+                                        style={{ cursor: 'pointer', flex: 1, display: 'flex', alignItems: 'center' }}
+                                        title="Click to view students"
+                                    >
+                                        <span style={{ fontWeight: 'bold', marginRight: '10px', color: '#5d17eb' }}>{index + 1}.</span> {item.class}
+                                    </p>
+                                    <div className="class-icon d-flex align-items-center">
+                                        {role !== 'Teacher' && (
+                                            <i className="fa fa-plus" onClick={() => openAddToPopup(item.class, item._id)} aria-hidden="true"></i>
+                                        )}
+                                        <i className="fa fa-pencil" onClick={() => openUpdatePopup(item.class, item._id)} aria-hidden="true"></i>
+                                        <i className="fa fa-trash" onClick={() => openRemovePopup(item.class, item._id)} aria-hidden="true"></i>
+                                        <div className="dropdown">
+                                            <button className="dropbtn">▼</button>
+                                            <div className="dropdown-content">
+                                                <p onClick={() => openStudentListPopup(item._id)}>Show Students</p>
+                                                {role !== 'Teacher' && (
+                                                    <p onClick={() => openTeacherListPopup(item._id, item.teachers)}>Show Teachers</p>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )
-                    })}
+                            )
+                        })
+                    )
+                )}
             </div>
 
             {/* add class popup start */}
