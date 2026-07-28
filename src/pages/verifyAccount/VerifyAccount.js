@@ -19,9 +19,9 @@ function VerifyAccount() {
   const navigate = useNavigate()
 
   const showAlert = () => {
-    document.querySelector('.alert').classList.add('alert-active')
+    document.querySelector('.alert')?.classList.add('alert-active')
     setTimeout(() => {
-      document.querySelector('.alert').classList.remove('alert-active')
+      document.querySelector('.alert')?.classList.remove('alert-active')
     }, 3500);
   }
 

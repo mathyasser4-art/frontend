@@ -24,25 +24,32 @@ function User() {
         setEditUserName(userData?.userName || '')
         setEditPassword('')
         setError(null)
-        document.querySelector('.edit-profile-popup').classList.replace('d-none', 'd-flex')
+        const popup = document.querySelector('.edit-profile-popup')
+        const container = document.querySelector('.edit-profile-container')
+        popup?.classList.replace('d-none', 'd-flex')
         setTimeout(() => {
-            document.querySelector('.edit-profile-popup').classList.remove('profile-popup-hide')
-            document.querySelector('.edit-profile-container').classList.remove('update-top')
+            popup?.classList.remove('profile-popup-hide')
+            container?.classList.remove('update-top')
         }, 50);
     }
 
     const closeEditPopup = () => {
-        document.querySelector('.edit-profile-popup').classList.add('profile-popup-hide')
-        document.querySelector('.edit-profile-container').classList.add('update-top')
+        const popup = document.querySelector('.edit-profile-popup')
+        const container = document.querySelector('.edit-profile-container')
+        popup?.classList.add('profile-popup-hide')
+        container?.classList.add('update-top')
         setTimeout(() => {
-            document.querySelector('.edit-profile-popup').classList.replace('d-flex', 'd-none')
+            popup?.classList.replace('d-flex', 'd-none')
         }, 300);
     }
 
     const showPassword = () => {
         const inputPassword = document.querySelector('.input-password')
-        if (inputPassword.type === 'password')
+        if (inputPassword && inputPassword.type === 'password')
             inputPassword.type = 'text'
+        else if (inputPassword)
+            inputPassword.type = 'password'
+    }
         else
             inputPassword.type = 'password'
     }
