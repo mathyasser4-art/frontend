@@ -271,7 +271,7 @@ function Teacher() {
             logoSection.innerHTML = `<img src="${logo}" alt="AbacusHeroes" style="height: 50px; margin-right: 15px;" />
                                      <div>
                                         <h1 style="color: #5d17eb; margin: 0; font-size: 28px;">AbacusHeroes</h1>
-                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teachers Login Credentials</p>
+                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teachers Login Credentials — <a href="https://abacusheroes.com" target="_blank" style="color: #4338ca; text-decoration: underline; font-weight: bold;">abacusheroes.com</a></p>
                                      </div>`;
             
             const schoolSection = document.createElement('div');
@@ -305,17 +305,21 @@ function Teacher() {
             grid.style.flexWrap = 'wrap';
             grid.style.gap = '20px';
 
-            allExtracted.forEach(teacher => {
+            allExtracted.forEach((teacher, index) => {
                 const card = document.createElement('div');
                 card.style.border = '1px solid #e2e8f0';
                 card.style.borderRadius = '12px';
                 card.style.padding = '20px';
                 card.style.backgroundColor = '#f8fafc';
                 card.style.pageBreakInside = 'avoid';
+                card.style.breakInside = 'avoid';
                 card.style.width = 'calc(50% - 10px)';
                 card.style.boxSizing = 'border-box';
 
                 card.innerHTML = `
+                    <div style="font-size: 14px; font-weight: bold; color: #4338ca; margin-bottom: 6px;">
+                        Account #${index + 1}
+                    </div>
                     <div style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 8px;">
                         username: <span style="color: #4338ca; font-weight: normal;">${teacher.userName}</span>
                     </div>
@@ -334,7 +338,9 @@ function Teacher() {
                 filename:     'Teachers_Credentials.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['css', 'legacy'] },
+                enableLinks:  true
             };
 
             await html2pdf().from(container).set(opt).save();
@@ -350,6 +356,7 @@ function Teacher() {
         try {
             const schoolName = localStorage.getItem('pp_name') || 'School';
             const token = localStorage.getItem('O_authWEB');
+            let accountCounter = 1;
 
             const container = document.createElement('div');
             container.style.padding = '40px';
@@ -371,7 +378,7 @@ function Teacher() {
             logoSection.innerHTML = `<img src="${logo}" alt="AbacusHeroes" style="height: 50px; margin-right: 15px;" />
                                      <div>
                                         <h1 style="color: #5d17eb; margin: 0; font-size: 28px;">AbacusHeroes</h1>
-                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teacher & Students Credentials Report</p>
+                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teacher & Students Credentials Report — <a href="https://abacusheroes.com" target="_blank" style="color: #4338ca; text-decoration: underline; font-weight: bold;">abacusheroes.com</a></p>
                                      </div>`;
             
             const schoolSection = document.createElement('div');
@@ -406,6 +413,16 @@ function Teacher() {
             card.style.padding = '20px';
             card.style.backgroundColor = '#f8fafc';
             card.style.marginBottom = '25px';
+            card.style.pageBreakInside = 'avoid';
+            card.style.breakInside = 'avoid';
+
+            const tAccNum = document.createElement('div');
+            tAccNum.style.fontSize = '14px';
+            tAccNum.style.fontWeight = 'bold';
+            tAccNum.style.color = '#4338ca';
+            tAccNum.style.marginBottom = '6px';
+            tAccNum.innerText = `Account #${accountCounter++} (Teacher)`;
+            card.appendChild(tAccNum);
 
             const tName = document.createElement('h3');
             tName.style.margin = '0 0 6px 0';
@@ -442,6 +459,8 @@ function Teacher() {
                     classBox.style.backgroundColor = '#ffffff';
                     classBox.style.border = '1px solid #cbd5e1';
                     classBox.style.borderRadius = '10px';
+                    classBox.style.pageBreakInside = 'avoid';
+                    classBox.style.breakInside = 'avoid';
 
                     const classTitle = document.createElement('h4');
                     classTitle.style.margin = '0 0 12px 0';
@@ -467,8 +486,13 @@ function Teacher() {
                                 studCard.style.backgroundColor = '#f1f5f9';
                                 studCard.style.borderRadius = '8px';
                                 studCard.style.border = '1px solid #e2e8f0';
+                                studCard.style.pageBreakInside = 'avoid';
+                                studCard.style.breakInside = 'avoid';
 
                                 studCard.innerHTML = `
+                                    <div style="font-size: 13px; font-weight: bold; color: #4338ca; margin-bottom: 4px;">
+                                        Account #${accountCounter++}
+                                    </div>
                                     <div style="font-weight: bold; color: #1e293b; font-size: 15px; margin-bottom: 4px;">
                                         👤 username: <span style="color: #2563eb; font-weight: normal;">${stud.userName}</span>
                                     </div>
@@ -509,7 +533,9 @@ function Teacher() {
                 filename:     `Teacher_${teacher.userName}_Credentials.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['css', 'legacy'] },
+                enableLinks:  true
             };
 
             await html2pdf().from(container).set(opt).save();

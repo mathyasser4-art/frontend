@@ -266,7 +266,7 @@ function TeacherAssignmentReports() {
 
         <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #ddd; text-align: center; color: #999; font-size: 12px;">
           <p style="margin: 0;">Report Generated: ${new Date().toLocaleString()}</p>
-          <p style="margin: 5px 0 0 0;">Abacus Heroes - Educational Platform</p>
+          <p style="margin: 5px 0 0 0;">Abacus Heroes - Educational Platform — <a href="https://abacusheroes.com" target="_blank" style="color: #28a745; text-decoration: underline; font-weight: bold;">abacusheroes.com</a></p>
         </div>
       `;
 
