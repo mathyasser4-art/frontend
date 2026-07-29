@@ -50,9 +50,6 @@ function User() {
         else if (inputPassword)
             inputPassword.type = 'password'
     }
-        else
-            inputPassword.type = 'password'
-    }
 
     const handleUpdateProfile = () => {
         if (editUserName === '') {
