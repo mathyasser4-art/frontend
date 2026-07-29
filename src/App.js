@@ -5,6 +5,7 @@ import Footer from './components/footer/Footer';
 import LiveChatWidget from './components/liveChat/LiveChatWidget';
 import DashboardLoading from './components/dashboardLoading/DashboardLoading';
 import ErrorBoundary from './components/errorBoundary/ErrorBoundary';
+import MobileAppDownloadPopup from './components/mobileAppPopup/MobileAppDownloadPopup';
 import { Analytics } from '@vercel/analytics/react';
 
 // Lazy-loaded route components for optimal bundle splitting
@@ -159,6 +160,7 @@ function App() {
       </Suspense>
       {location.pathname === '/' && (!role || role === 'Student') && <LiveChatWidget />}
       {['/', '/pricing', '/about', '/privacy', '/contact'].includes(location.pathname) && <Footer />}
+      <MobileAppDownloadPopup />
     </ErrorBoundary>
   );
 }

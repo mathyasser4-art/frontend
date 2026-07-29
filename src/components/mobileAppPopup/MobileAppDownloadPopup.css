@@ -1,0 +1,273 @@
+/* Mobile App Download Popup Backdrop */
+.mobile-app-popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 99998;
+  animation: fadeInBackdrop 0.3s ease-out forwards;
+}
+
+/* Main Popup Card */
+.mobile-app-popup-card {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(93, 23, 235, 0.1);
+  z-index: 99999;
+  padding: 24px 20px 18px;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: slideUpPopup 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Close Button */
+.mobile-app-popup-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 20px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.mobile-app-popup-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Header */
+.mobile-app-popup-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.mobile-app-popup-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(93, 23, 235, 0.25);
+}
+
+.mobile-app-popup-title-group h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.mobile-app-popup-title-group p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #5d17eb;
+  font-weight: 600;
+}
+
+/* Body */
+.mobile-app-popup-desc {
+  font-size: 14px;
+  color: #475569;
+  margin: 0 0 16px 0;
+  line-height: 1.45;
+}
+
+/* Primary Install CTA Button */
+.mobile-app-popup-install-btn {
+  width: 100%;
+  padding: 13px 18px;
+  background: linear-gradient(135deg, #5d17eb 0%, #4338ca 100%);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(93, 23, 235, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mobile-app-popup-install-btn:active {
+  transform: scale(0.98);
+}
+
+/* App Store Badges */
+.mobile-app-popup-store-badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.store-badge {
+  height: 38px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.store-badge:hover {
+  transform: scale(1.04);
+}
+
+/* Footer */
+.mobile-app-popup-footer {
+  margin-top: 14px;
+  text-align: center;
+}
+
+.mobile-app-popup-dismiss-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  text-decoration: underline;
+}
+
+.mobile-app-popup-dismiss-btn:hover {
+  color: #64748b;
+}
+
+/* iOS Install Instructions Modal */
+.ios-install-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 100000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.ios-install-content {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 28px 22px 24px;
+  box-sizing: border-box;
+  position: relative;
+  animation: slideUpModal 0.35s ease-out forwards;
+  text-align: center;
+}
+
+.ios-install-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 20px;
+  color: #475569;
+  cursor: pointer;
+}
+
+.ios-install-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+
+.ios-install-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.ios-install-content p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 16px 0;
+}
+
+.ios-install-steps {
+  text-align: left;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 18px 14px 34px;
+  margin: 0 0 18px 0;
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.ios-share-icon {
+  height: 18px;
+  vertical-align: middle;
+  margin: 0 4px;
+}
+
+.ios-install-gotit-btn {
+  width: 100%;
+  padding: 12px;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* Keyframe Animations */
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpPopup {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 40px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes slideUpModal {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
