@@ -263,7 +263,7 @@ function Teacher() {
             header.style.alignItems = 'center';
             header.style.borderBottom = '3px solid #10b981';
             header.style.paddingBottom = '20px';
-            header.style.marginBottom = '30px';
+            header.style.marginBottom = '25px';
 
             const logoSection = document.createElement('div');
             logoSection.style.display = 'flex';
@@ -286,6 +286,20 @@ function Teacher() {
             header.appendChild(schoolSection);
             container.appendChild(header);
 
+            const noteBox = document.createElement('div');
+            noteBox.style.backgroundColor = '#fef3c7';
+            noteBox.style.border = '1px solid #f59e0b';
+            noteBox.style.borderRadius = '10px';
+            noteBox.style.padding = '12px 18px';
+            noteBox.style.marginBottom = '25px';
+            noteBox.style.color = '#92400e';
+            noteBox.style.fontSize = '16px';
+            noteBox.style.fontWeight = 'bold';
+            noteBox.style.direction = 'rtl';
+            noteBox.style.textAlign = 'right';
+            noteBox.innerText = '📌 ملاحظة: الاسم بدون مسافة و يجب الالتزام بنفس الحروف تماما كما هو مكتوب';
+            container.appendChild(noteBox);
+
             const grid = document.createElement('div');
             grid.style.display = 'flex';
             grid.style.flexWrap = 'wrap';
@@ -302,11 +316,11 @@ function Teacher() {
                 card.style.boxSizing = 'border-box';
 
                 card.innerHTML = `
-                    <div style="font-size: 20px; font-weight: bold; color: #0f172a; margin-bottom: 10px;">
-                        Username: <span style="color: #4338ca; font-weight: normal;">${teacher.userName}</span>
+                    <div style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 8px;">
+                        username: <span style="color: #4338ca; font-weight: normal;">${teacher.userName}</span>
                     </div>
-                    <div style="font-size: 20px; font-weight: bold; color: #0f172a;">
-                        Password: <span style="color: #4338ca; font-weight: normal;">1234</span>
+                    <div style="font-size: 18px; font-weight: bold; color: #0f172a;">
+                        password: <span style="color: #4338ca; font-weight: normal;">1234</span>
                     </div>
                 `;
 
@@ -335,6 +349,7 @@ function Teacher() {
         setLoadingOperation(true);
         try {
             const schoolName = localStorage.getItem('pp_name') || 'School';
+            const token = localStorage.getItem('O_authWEB');
 
             const container = document.createElement('div');
             container.style.padding = '40px';
@@ -348,7 +363,7 @@ function Teacher() {
             header.style.alignItems = 'center';
             header.style.borderBottom = '3px solid #10b981';
             header.style.paddingBottom = '20px';
-            header.style.marginBottom = '30px';
+            header.style.marginBottom = '25px';
 
             const logoSection = document.createElement('div');
             logoSection.style.display = 'flex';
@@ -356,7 +371,7 @@ function Teacher() {
             logoSection.innerHTML = `<img src="${logo}" alt="AbacusHeroes" style="height: 50px; margin-right: 15px;" />
                                      <div>
                                         <h1 style="color: #5d17eb; margin: 0; font-size: 28px;">AbacusHeroes</h1>
-                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teacher & Classes Report</p>
+                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Teacher & Students Credentials Report</p>
                                      </div>`;
             
             const schoolSection = document.createElement('div');
@@ -371,44 +386,112 @@ function Teacher() {
             header.appendChild(schoolSection);
             container.appendChild(header);
 
+            const noteBox = document.createElement('div');
+            noteBox.style.backgroundColor = '#fef3c7';
+            noteBox.style.border = '1px solid #f59e0b';
+            noteBox.style.borderRadius = '10px';
+            noteBox.style.padding = '12px 18px';
+            noteBox.style.marginBottom = '25px';
+            noteBox.style.color = '#92400e';
+            noteBox.style.fontSize = '16px';
+            noteBox.style.fontWeight = 'bold';
+            noteBox.style.direction = 'rtl';
+            noteBox.style.textAlign = 'right';
+            noteBox.innerText = '📌 ملاحظة: الاسم بدون مسافة و يجب الالتزام بنفس الحروف تماما كما هو مكتوب';
+            container.appendChild(noteBox);
+
             const card = document.createElement('div');
-            card.style.border = '1px solid #e2e8f0';
+            card.style.border = '1px solid #cbd5e1';
             card.style.borderRadius = '12px';
             card.style.padding = '20px';
             card.style.backgroundColor = '#f8fafc';
+            card.style.marginBottom = '25px';
 
             const tName = document.createElement('h3');
-            tName.style.margin = '0 0 10px 0';
+            tName.style.margin = '0 0 6px 0';
             tName.style.color = '#0f172a';
-            tName.style.fontSize = '24px';
-            tName.innerHTML = `&#128104;&#8205;&#127979; ${teacher.userName}`;
+            tName.style.fontSize = '22px';
+            tName.innerHTML = `👨‍🏫 username: <span style="color: #4338ca;">${teacher.userName}</span>`;
             card.appendChild(tName);
 
+            const tPass = document.createElement('p');
+            tPass.style.margin = '0 0 20px 0';
+            tPass.style.color = '#475569';
+            tPass.style.fontSize = '18px';
+            tPass.style.fontWeight = 'bold';
+            tPass.innerHTML = `🔑 password: <span style="color: #4338ca; font-weight: normal;">1234</span>`;
+            card.appendChild(tPass);
+
             const classLabel = document.createElement('p');
-            classLabel.style.margin = '20px 0 10px 0';
+            classLabel.style.margin = '10px 0 15px 0';
             classLabel.style.fontWeight = 'bold';
             classLabel.style.color = '#334155';
             classLabel.style.fontSize = '18px';
-            classLabel.innerText = 'Assigned Classes:';
+            classLabel.innerText = 'Assigned Classes & Students:';
             card.appendChild(classLabel);
 
             const classesDiv = document.createElement('div');
             classesDiv.style.display = 'flex';
             classesDiv.style.flexDirection = 'column';
-            classesDiv.style.gap = '10px';
+            classesDiv.style.gap = '15px';
 
             if (teacher.classList && teacher.classList.length > 0) {
-                teacher.classList.forEach(cls => {
-                    const classPill = document.createElement('div');
-                    classPill.style.backgroundColor = '#e0e7ff';
-                    classPill.style.color = '#4338ca';
-                    classPill.style.padding = '10px 15px';
-                    classPill.style.borderRadius = '10px';
-                    classPill.style.fontSize = '16px';
-                    classPill.style.fontWeight = 'bold';
-                    classPill.innerText = `\uD83C\uDFEB ${cls.class}`;
-                    classesDiv.appendChild(classPill);
-                });
+                for (const cls of teacher.classList) {
+                    const classBox = document.createElement('div');
+                    classBox.style.padding = '15px';
+                    classBox.style.backgroundColor = '#ffffff';
+                    classBox.style.border = '1px solid #cbd5e1';
+                    classBox.style.borderRadius = '10px';
+
+                    const classTitle = document.createElement('h4');
+                    classTitle.style.margin = '0 0 12px 0';
+                    classTitle.style.color = '#4338ca';
+                    classTitle.style.fontSize = '18px';
+                    classTitle.innerText = `🏫 Class: ${cls.class}`;
+                    classBox.appendChild(classTitle);
+
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/class/getStudent/${cls._id}`, {
+                            headers: { 'authrization': `pracYas09${token}` }
+                        });
+                        const data = await res.json();
+                        if (data.message === 'success' && data.allStudent && data.allStudent.length > 0) {
+                            const studentsGrid = document.createElement('div');
+                            studentsGrid.style.display = 'grid';
+                            studentsGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(220px, 1fr))';
+                            studentsGrid.style.gap = '12px';
+
+                            data.allStudent.forEach((stud) => {
+                                const studCard = document.createElement('div');
+                                studCard.style.padding = '10px 14px';
+                                studCard.style.backgroundColor = '#f1f5f9';
+                                studCard.style.borderRadius = '8px';
+                                studCard.style.border = '1px solid #e2e8f0';
+
+                                studCard.innerHTML = `
+                                    <div style="font-weight: bold; color: #1e293b; font-size: 15px; margin-bottom: 4px;">
+                                        👤 username: <span style="color: #2563eb; font-weight: normal;">${stud.userName}</span>
+                                    </div>
+                                    <div style="font-weight: bold; color: #475569; font-size: 14px;">
+                                        🔑 password: <span style="color: #2563eb; font-weight: normal;">1234</span>
+                                    </div>
+                                `;
+                                studentsGrid.appendChild(studCard);
+                            });
+                            classBox.appendChild(studentsGrid);
+                        } else {
+                            const noStud = document.createElement('p');
+                            noStud.style.color = '#94a3b8';
+                            noStud.style.fontStyle = 'italic';
+                            noStud.style.margin = '0';
+                            noStud.innerText = 'No students in this class yet';
+                            classBox.appendChild(noStud);
+                        }
+                    } catch (err) {
+                        console.error('Error fetching class students for PDF', err);
+                    }
+                    classesDiv.appendChild(classBox);
+                }
             } else {
                 const noClass = document.createElement('div');
                 noClass.style.color = '#94a3b8';
@@ -423,7 +506,7 @@ function Teacher() {
             
             const opt = {
                 margin:       10,
-                filename:     `Teacher_${teacher.userName}_Classes.pdf`,
+                filename:     `Teacher_${teacher.userName}_Credentials.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
