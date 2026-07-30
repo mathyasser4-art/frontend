@@ -3,6 +3,7 @@ import googlePlay from '../../img/google-play.png';
 import appStore from '../../img/app-store.png';
 import appIcon from '../../img/icon-app.png';
 import isoIcon from '../../img/ios-icon.png';
+import { safeSessionStorage } from '../../utils/safeStorage';
 import './MobileAppDownloadPopup.css';
 
 function MobileAppDownloadPopup() {
@@ -19,7 +20,7 @@ function MobileAppDownloadPopup() {
     setIsIOS(iosDevice);
 
     // 2. Check if user already dismissed popup in this session
-    const isDismissed = sessionStorage.getItem('abacus_mobile_app_popup_dismissed');
+    const isDismissed = safeSessionStorage.getItem('abacus_mobile_app_popup_dismissed');
 
     if (isMobileDevice && !isDismissed) {
       // Show popup after a small delay for smooth entrance
@@ -60,7 +61,7 @@ function MobileAppDownloadPopup() {
   const handleClose = () => {
     setShowPopup(false);
     setShowIosGuide(false);
-    sessionStorage.setItem('abacus_mobile_app_popup_dismissed', 'true');
+    safeSessionStorage.setItem('abacus_mobile_app_popup_dismissed', 'true');
   };
 
   if (!showPopup) return null;

@@ -2,9 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css';
 import logo from '../../logo.png';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function Footer() {
-  const schoolName = localStorage.getItem('school_name') || '';
+  const schoolName = safeLocalStorage.getItem('school_name') || '';
   const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban');
 
   return (

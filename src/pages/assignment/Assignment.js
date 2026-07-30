@@ -1435,38 +1435,25 @@ function Assignment() {
 
 
       {loading ? <QuestionLoading /> : operationError ?
-        <div className='assignment-error-ops d-flex justify-content-center flex-direction-column align-items-center'>
-          {operationError.includes('completed') || operationError.includes('attempts') ? (
-            <CircleCheck size={200} style={{ color: '#4CAF50', marginBottom: '1rem' }} strokeWidth={1.5} />
-          ) : null}
-          <p className='text-center' style={{fontSize: '22px', fontWeight: '500', color: operationError.includes('completed') || operationError.includes('attempts') ? '#4CAF50' : '#F875AA'}}>{operationError}</p>
-          {operationError.includes('completed') || operationError.includes('attempts') ? (
-            <div style={{ marginTop: '20px', display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-              {allowGlitchRetry && (
-                <button 
-                  className='button' 
-                  style={{
-                    backgroundColor: '#FF9800', 
-                    backgroundImage: 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)', 
-                    padding: '0.8rem 2rem', 
-                    fontSize: '1.2rem',
-                    border: 'none',
-                    borderRadius: '8px',
-                    color: '#fff',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    boxShadow: '0 6px 16px rgba(255, 152, 0, 0.35)'
-                  }}
-                  onClick={handleGlitchRetry}
-                >
-                  🔄 Retry Assignment (Glitch Detected)
-                </button>
-              )}
-              <Link to='/dashboard/student'>
-                <button className='button' style={{backgroundColor: '#4CAF50', padding: '0.8rem 2rem', fontSize: '1.2rem'}}>Back to Dashboard</button>
-              </Link>
-            </div>
-          ) : null}
+        <div className='assignment-error-ops d-flex justify-content-center flex-direction-column align-items-center' style={{ minHeight: '60vh' }}>
+          <button 
+            className='button' 
+            style={{
+              backgroundColor: '#4CAF50', 
+              backgroundImage: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)', 
+              padding: '1rem 2.5rem', 
+              fontSize: '1.4rem',
+              border: 'none',
+              borderRadius: '12px',
+              color: '#fff',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              boxShadow: '0 6px 16px rgba(76, 175, 80, 0.35)'
+            }}
+            onClick={handleGlitchRetry}
+          >
+            Start the Homework
+          </button>
         </div> :
         <div className={`question-container ${isFullscreen ? (isMobile ? 'mobile-fullscreen' : 'desktop-fullscreen') : ''} d-flex justify-content-center flex-direction-column align-items-center`}>
           {/* Question numbers - desktop only, hidden in fullscreen */}

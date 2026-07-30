@@ -11,6 +11,7 @@ import TeacherHelpModal from '../../components/teacherHelpModal/TeacherHelpModal
 import StudentHelpModal from '../../components/studentHelpModal/StudentHelpModal'
 import DemoQuizModal from '../../components/demoQuiz/DemoQuizModal'
 import soundEffects from '../../utils/soundEffects'
+import { safeLocalStorage } from '../../utils/safeStorage'
 import { GraduationCap, Presentation } from 'lucide-react'
 import '../../reusable.css'
 import './Home.css'
@@ -39,7 +40,7 @@ const GAME_PREVIEWS = [
 
 function Home() {
   const { t } = useTranslation()
-  const role = localStorage.getItem('auth_role')
+  const role = safeLocalStorage.getItem('auth_role')
   const navigate = useNavigate()
   const [showTutorialModal, setShowTutorialModal] = useState(false)
   const [showTeacherTrialModal, setShowTeacherTrialModal] = useState(false)

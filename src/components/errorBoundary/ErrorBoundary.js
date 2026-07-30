@@ -12,10 +12,30 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('Unhandled UI Error caught by ErrorBoundary:', error, errorInfo);
+    
+    // Auto-retry once for ChunkLoadError (dynamic module loading failures on weak mobile connections)
+    if (error && (
+      error.name === 'ChunkLoadError' || 
+      error.message?.includes('Loading chunk') ||
+      error.message?.includes('dynamically imported module')
+    )) {
+      try {
+        const hasReloaded = sessionStorage.getItem('eb_chunk_auto_reloaded');
+        if (!hasReloaded) {
+          sessionStorage.setItem('eb_chunk_auto_reloaded', 'true');
+          window.location.reload();
+        }
+      } catch (e) {}
+    }
   }
 
   handleReload = () => {
-    window.location.reload();
+    try {
+      sessionStorage.removeItem('eb_chunk_auto_reloaded');
+      sessionStorage.removeItem('chunk_reload_attempted');
+    } catch(e) {}
+    // Force a fresh reload from server bypassing browser cache
+    window.location.href = window.location.origin + window.location.pathname + '?t=' + Date.now();
   };
 
   render() {

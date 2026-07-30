@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { safeLocalStorage } from './utils/safeStorage';
 
 // Import translation files
 import enTranslation from './locales/en/translation.json';
@@ -14,8 +15,8 @@ const resources = {
   }
 };
 
-// Get saved language from localStorage or default to English
-const savedLanguage = localStorage.getItem('language') || 'en';
+// Get saved language from safeLocalStorage or default to English
+const savedLanguage = safeLocalStorage.getItem('language') || 'en';
 
 i18n
   .use(initReactI18next)
@@ -34,7 +35,7 @@ i18n
 
 // Save language preference when it changes
 i18n.on('languageChanged', (lng) => {
-  localStorage.setItem('language', lng);
+  safeLocalStorage.setItem('language', lng);
   // Force LTR direction always
   document.documentElement.setAttribute('dir', 'ltr');
 });

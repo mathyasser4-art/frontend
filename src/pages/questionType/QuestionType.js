@@ -5,6 +5,7 @@ import { CheckCircle2, Circle, Gamepad2, Swords, BookOpen, Plus } from 'lucide-r
 import soundEffects from '../../utils/soundEffects'
 import CreateCompetitionModal from '../../components/navbar/CreateCompetitionModal';
 import { ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
+import { safeLocalStorage } from '../../utils/safeStorage'
 import '../../reusable.css'
 import './QuestionType.css'
 
@@ -21,11 +22,11 @@ function QuestionType() {
   const [joinCompError, setJoinCompError] = useState(null)
   const [joiningComp, setJoiningComp] = useState(false)
 
-  const isAuth = localStorage.getItem('O_authWEB')
+  const isAuth = safeLocalStorage.getItem('O_authWEB')
   
-  const schoolName = localStorage.getItem('school_name') || '';
-  const userName = localStorage.getItem('pp_name') || '';
-  const userRole = localStorage.getItem('auth_role') || '';
+  const schoolName = safeLocalStorage.getItem('school_name') || '';
+  const userName = safeLocalStorage.getItem('pp_name') || '';
+  const userRole = safeLocalStorage.getItem('auth_role') || '';
   
   const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
                       (userRole === 'School' && userName.toLowerCase() === 'topsoroban');

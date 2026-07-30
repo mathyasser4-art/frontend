@@ -12,6 +12,7 @@ import StudentHelpModal from '../studentHelpModal/StudentHelpModal'
 import CreateHomeworkModal from './CreateHomeworkModal'
 import CreateCompetitionModal from './CreateCompetitionModal'
 import TutorialVideoModal from '../tutorialVideoModal/TutorialVideoModal'
+import { safeLocalStorage } from '../../utils/safeStorage'
 import '../../reusable.css'
 import './Navbar.css'
 import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
@@ -19,11 +20,11 @@ import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.conf
 const Navbar = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const isAuth = localStorage.getItem('O_authWEB')
-    const role = localStorage.getItem('auth_role')
-    const schoolName = localStorage.getItem('school_name') || '';
-    const userName = localStorage.getItem('pp_name') || '';
-    const userRole = localStorage.getItem('auth_role') || '';
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const role = safeLocalStorage.getItem('auth_role')
+    const schoolName = safeLocalStorage.getItem('school_name') || '';
+    const userName = safeLocalStorage.getItem('pp_name') || '';
+    const userRole = safeLocalStorage.getItem('auth_role') || '';
     
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
                         (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
@@ -51,7 +52,7 @@ const Navbar = () => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
                 console.log('[NOTIFICATION] Global live battle event received:', data);
                 
-                const myTeacherId = localStorage.getItem('teacher_id');
+                const myTeacherId = safeLocalStorage.getItem('teacher_id');
                 // Allow notification if student was created by this teacher, OR student was created by the teacher's school (common in Topsoroban)
                 if (myTeacherId && data.teacherId) {
                     const matchesTeacher = String(myTeacherId) === String(data.teacherId);
@@ -79,7 +80,7 @@ const Navbar = () => {
             channel.bind('force-join-student', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
                 console.log('[NOTIFICATION] Force join event received:', data);
-                if (String(data.studentId) === String(localStorage.getItem('pp_id'))) {
+                if (String(data.studentId) === String(safeLocalStorage.getItem('pp_id'))) {
                     navigate(`/student/competition/${data.competitionId}`);
                 }
             });
@@ -88,7 +89,7 @@ const Navbar = () => {
             let dismissTimer;
             channel.bind('battle-created', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
-                const myTeacherId = localStorage.getItem('teacher_id');
+                const myTeacherId = safeLocalStorage.getItem('teacher_id');
                 if (myTeacherId && data.teacherId) {
                     const matchesTeacher = String(myTeacherId) === String(data.teacherId);
                     const matchesSchool = data.schoolId && String(myTeacherId) === String(data.schoolId);
@@ -121,18 +122,18 @@ const Navbar = () => {
     const handleSaveTeacher = (data) => {
         // Save to school account with teacher attribution
         // Append teacher ID to identify which teacher submitted the data
-        const teacherID = localStorage.getItem('pp_id')
+        const teacherID = safeLocalStorage.getItem('pp_id')
         const dataWithTeacherId = {
             ...data,
             submittedByTeacherId: teacherID,
-            submittedByTeacherName: localStorage.getItem('pp_name'),
+            submittedByTeacherName: safeLocalStorage.getItem('pp_name'),
             status: 'under_construction'
         }
         
         // Store in a combined key that includes teacher data
-        const existingTeachers = JSON.parse(localStorage.getItem('school_teachers') || '[]')
+        const existingTeachers = JSON.parse(safeLocalStorage.getItem('school_teachers') || '[]')
         existingTeachers.push(dataWithTeacherId)
-        localStorage.setItem('school_teachers', JSON.stringify(existingTeachers))
+        safeLocalStorage.setItem('school_teachers', JSON.stringify(existingTeachers))
         
         soundEffects.playClick()
         setShowTeacherForm(false)
@@ -213,9 +214,9 @@ const Navbar = () => {
 
                 <div className={`nav-right-side d-flex align-items-center ${isAuth ? 'auth-menu' : 'unauth-menu'} ${isMobileMenuOpen ? 'mobile-open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                     <div style={{ marginRight: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        {isAuth && isTopsoroban && localStorage.getItem('trial_remaining_days') !== null && (
+                        {isAuth && isTopsoroban && safeLocalStorage.getItem('trial_remaining_days') !== null && (
                             <div style={{
-                                backgroundColor: Number(localStorage.getItem('trial_remaining_days')) <= 5 ? '#dc2626' : '#f59e0b',
+                                backgroundColor: Number(safeLocalStorage.getItem('trial_remaining_days')) <= 5 ? '#dc2626' : '#f59e0b',
                                 color: '#ffffff',
                                 padding: '5px 12px',
                                 borderRadius: '20px',
@@ -228,8 +229,8 @@ const Navbar = () => {
                                 whiteSpace: 'nowrap'
                             }}>
                                 ⏳ {i18n.language === 'ar' 
-                                    ? `تجريبي: متبقي ${localStorage.getItem('trial_remaining_days')} يوم` 
-                                    : `Trial: ${localStorage.getItem('trial_remaining_days')} days left`}
+                                    ? `تجريبي: متبقي ${safeLocalStorage.getItem('trial_remaining_days')} يوم` 
+                                    : `Trial: ${safeLocalStorage.getItem('trial_remaining_days')} days left`}
                             </div>
                         )}
                         <div 

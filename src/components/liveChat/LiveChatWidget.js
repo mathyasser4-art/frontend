@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 import './LiveChatWidget.css';
 
 const LiveChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
-  const [userName, setUserName] = useState(localStorage.getItem('chatUserName') || '');
-  const [userPhone, setUserPhone] = useState(localStorage.getItem('chatUserPhone') || '');
+  const [userName, setUserName] = useState(safeLocalStorage.getItem('chatUserName') || '');
+  const [userPhone, setUserPhone] = useState(safeLocalStorage.getItem('chatUserPhone') || '');
   const [hasUnread, setHasUnread] = useState(false);
   const messagesEndRef = useRef(null);
   
   // Use a ref to store sessionId to prevent unnecessary re-renders or stale closures
-  const sessionIdRef = useRef(localStorage.getItem('chatSessionId'));
+  const sessionIdRef = useRef(safeLocalStorage.getItem('chatSessionId'));
 
   // Dragging state logic
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -100,7 +101,7 @@ const LiveChatWidget = () => {
     if (!sessionIdRef.current) {
       // Generate a random anonymous ID
       sessionIdRef.current = 'anon_' + Math.random().toString(36).substring(2, 15);
-      localStorage.setItem('chatSessionId', sessionIdRef.current);
+      safeLocalStorage.setItem('chatSessionId', sessionIdRef.current);
     }
     
     // Initial fetch
@@ -158,8 +159,8 @@ const LiveChatWidget = () => {
         })
       });
       // Save to local storage after first successful send
-      localStorage.setItem('chatUserName', userName);
-      localStorage.setItem('chatUserPhone', userPhone);
+      safeLocalStorage.setItem('chatUserName', userName);
+      safeLocalStorage.setItem('chatUserPhone', userPhone);
       syncChat();
     } catch (error) {
       console.error('Error sending message:', error);
@@ -199,7 +200,7 @@ const LiveChatWidget = () => {
           </div>
 
           <form onSubmit={sendMessage} className="chat-input-area">
-            {(!localStorage.getItem('chatUserName') || !localStorage.getItem('chatUserPhone')) && (
+            {(!safeLocalStorage.getItem('chatUserName') || !safeLocalStorage.getItem('chatUserPhone')) && (
               <div className="chat-user-info">
                 <input 
                   type="text" 

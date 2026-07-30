@@ -7,75 +7,90 @@ import DashboardLoading from './components/dashboardLoading/DashboardLoading';
 import ErrorBoundary from './components/errorBoundary/ErrorBoundary';
 import MobileAppDownloadPopup from './components/mobileAppPopup/MobileAppDownloadPopup';
 import { Analytics } from '@vercel/analytics/react';
+import { safeLocalStorage, safeSessionStorage } from './utils/safeStorage';
+
+// Safe lazy import with auto-retry on dynamic chunk loading failures (common on mobile networks)
+const safeLazy = (importFn) => lazy(async () => {
+  try {
+    return await importFn();
+  } catch (error) {
+    const hasReloaded = safeSessionStorage.getItem('chunk_reload_attempted');
+    if (!hasReloaded) {
+      safeSessionStorage.setItem('chunk_reload_attempted', 'true');
+      window.location.reload();
+    }
+    throw error;
+  }
+});
 
 // Lazy-loaded route components for optimal bundle splitting
-const Home = lazy(() => import('./pages/Home/Home'));
-const About = lazy(() => import('./pages/about/About'));
-const Privacy = lazy(() => import('./pages/privacy/Privacy'));
-const Login = lazy(() => import('./pages/login/Login'));
-const Register = lazy(() => import('./pages/register/Register'));
-const System = lazy(() => import('./pages/system/System'));
-const User = lazy(() => import('./pages/user/User'));
-const ContactMobile = lazy(() => import('./pages/contactMobile/ContactMobile'));
-const Question = lazy(() => import('./pages/question/Question'));
-const VerifyAccount = lazy(() => import('./pages/verifyAccount/VerifyAccount'));
-const ResPasEmail = lazy(() => import('./pages/resPasEmail/ResPasEmail'));
-const ResPasCode = lazy(() => import('./pages/resPasCode/ResPasCode'));
-const ResetPassword = lazy(() => import('./pages/resetPassword/ResetPassword'));
-const Unit = lazy(() => import('./pages/unit/Unit'));
-const DashboardSchool = lazy(() => import('./pages/dashboardSchool/DashboardSchool'));
-const Student = lazy(() => import('./pages/student/Student'));
-const Class = lazy(() => import('./pages/class/Class'));
-const Subject = lazy(() => import('./pages/subject/Subject'));
-const Teacher = lazy(() => import('./pages/teacher/Teacher'));
-const StudentDashboard = lazy(() => import('./pages/studentDashboard/StudentDashboard'));
-const TeacherDashboard = lazy(() => import('./pages/teacherDashboard/TeacherDashboard'));
-const TeacherRegistrationPage = lazy(() => import('./pages/teacherRegistrationPage/TeacherRegistrationPage'));
-const Assignment = lazy(() => import('./pages/assignment/Assignment'));
-const AssignmentReport = lazy(() => import('./pages/assignmentReport/AssignmentReport'));
-const StudentReport = lazy(() => import('./pages/studentReport/StudentReport'));
-const IT = lazy(() => import('./pages/IT/IT'));
-const Supervisor = lazy(() => import('./pages/supervisor/Supervisor'));
-const SupervisorDashboard = lazy(() => import('./pages/supervisorDashboard/SupervisorDashboard'));
-const TeacherAssignmentReports = lazy(() => import('./components/teacherReports/TeacherAssignmentReports'));
-const StudentHistory = lazy(() => import('./components/studentHistory/StudentHistory'));
-const Pricing = lazy(() => import('./pages/pricing/Pricing'));
-const MathRacer = lazy(() => import('./pages/games/MathRacer'));
-const SuperMarioGame = lazy(() => import('./pages/games/SuperMarioGame'));
-const CaveRunner = lazy(() => import('./pages/games/CaveRunner'));
-const MazeGame = lazy(() => import('./pages/games/MazeGame'));
-const JetSkiGame = lazy(() => import('./pages/games/JetSkiGame'));
-const CartoonAirplanesGame = lazy(() => import('./pages/games/CartoonAirplanesGame'));
-const SudokuGame = lazy(() => import('./pages/games/SudokuGame'));
-const KenKenGame = lazy(() => import('./pages/games/KenKenGame'));
-const AbacusMatchGame = lazy(() => import('./pages/games/AbacusMatchGame'));
-const TanksGame = lazy(() => import('./pages/games/TanksGame'));
-const MinigolfGame = lazy(() => import('./pages/games/MinigolfGame'));
-const GamesMenu = lazy(() => import('./pages/studentDashboard/GamesMenu'));
-const ChatManagement = lazy(() => import('./pages/dashboardSchool/ChatManagement'));
-const ReportedQuestions = lazy(() => import('./pages/dashboardSchool/ReportedQuestions'));
-const ClassHomework = lazy(() => import('./pages/classHomework/ClassHomework'));
-const TeacherCompetitionLobby = lazy(() => import('./pages/teacherDashboard/TeacherCompetitionLobby'));
-const StudentCompetition = lazy(() => import('./pages/studentDashboard/StudentCompetition'));
-const TeacherQuestionBank = lazy(() => import('./pages/teacherDashboard/TeacherQuestionBank'));
-const Shop = lazy(() => import('./pages/shop/Shop'));
-const LiveAdminDashboard = lazy(() => import('./pages/dashboardSchool/LiveAdminDashboard'));
+const Home = safeLazy(() => import('./pages/Home/Home'));
+const About = safeLazy(() => import('./pages/about/About'));
+const Privacy = safeLazy(() => import('./pages/privacy/Privacy'));
+const Login = safeLazy(() => import('./pages/login/Login'));
+const Register = safeLazy(() => import('./pages/register/Register'));
+const System = safeLazy(() => import('./pages/system/System'));
+const User = safeLazy(() => import('./pages/user/User'));
+const ContactMobile = safeLazy(() => import('./pages/contactMobile/ContactMobile'));
+const Question = safeLazy(() => import('./pages/question/Question'));
+const VerifyAccount = safeLazy(() => import('./pages/verifyAccount/VerifyAccount'));
+const ResPasEmail = safeLazy(() => import('./pages/resPasEmail/ResPasEmail'));
+const ResPasCode = safeLazy(() => import('./pages/resPasCode/ResPasCode'));
+const ResetPassword = safeLazy(() => import('./pages/resetPassword/ResetPassword'));
+const Unit = safeLazy(() => import('./pages/unit/Unit'));
+const DashboardSchool = safeLazy(() => import('./pages/dashboardSchool/DashboardSchool'));
+const Student = safeLazy(() => import('./pages/student/Student'));
+const Class = safeLazy(() => import('./pages/class/Class'));
+const Subject = safeLazy(() => import('./pages/subject/Subject'));
+const Teacher = safeLazy(() => import('./pages/teacher/Teacher'));
+const StudentDashboard = safeLazy(() => import('./pages/studentDashboard/StudentDashboard'));
+const TeacherDashboard = safeLazy(() => import('./pages/teacherDashboard/TeacherDashboard'));
+const TeacherRegistrationPage = safeLazy(() => import('./pages/teacherRegistrationPage/TeacherRegistrationPage'));
+const Assignment = safeLazy(() => import('./pages/assignment/Assignment'));
+const AssignmentReport = safeLazy(() => import('./pages/assignmentReport/AssignmentReport'));
+const StudentReport = safeLazy(() => import('./pages/studentReport/StudentReport'));
+const IT = safeLazy(() => import('./pages/IT/IT'));
+const Supervisor = safeLazy(() => import('./pages/supervisor/Supervisor'));
+const SupervisorDashboard = safeLazy(() => import('./pages/supervisorDashboard/SupervisorDashboard'));
+const TeacherAssignmentReports = safeLazy(() => import('./components/teacherReports/TeacherAssignmentReports'));
+const StudentHistory = safeLazy(() => import('./components/studentHistory/StudentHistory'));
+const Pricing = safeLazy(() => import('./pages/pricing/Pricing'));
+const MathRacer = safeLazy(() => import('./pages/games/MathRacer'));
+const SuperMarioGame = safeLazy(() => import('./pages/games/SuperMarioGame'));
+const CaveRunner = safeLazy(() => import('./pages/games/CaveRunner'));
+const MazeGame = safeLazy(() => import('./pages/games/MazeGame'));
+const JetSkiGame = safeLazy(() => import('./pages/games/JetSkiGame'));
+const CartoonAirplanesGame = safeLazy(() => import('./pages/games/CartoonAirplanesGame'));
+const SudokuGame = safeLazy(() => import('./pages/games/SudokuGame'));
+const KenKenGame = safeLazy(() => import('./pages/games/KenKenGame'));
+const AbacusMatchGame = safeLazy(() => import('./pages/games/AbacusMatchGame'));
+const TanksGame = safeLazy(() => import('./pages/games/TanksGame'));
+const MinigolfGame = safeLazy(() => import('./pages/games/MinigolfGame'));
+const GamesMenu = safeLazy(() => import('./pages/studentDashboard/GamesMenu'));
+const ChatManagement = safeLazy(() => import('./pages/dashboardSchool/ChatManagement'));
+const ReportedQuestions = safeLazy(() => import('./pages/dashboardSchool/ReportedQuestions'));
+const ClassHomework = safeLazy(() => import('./pages/classHomework/ClassHomework'));
+const TeacherCompetitionLobby = safeLazy(() => import('./pages/teacherDashboard/TeacherCompetitionLobby'));
+const StudentCompetition = safeLazy(() => import('./pages/studentDashboard/StudentCompetition'));
+const TeacherQuestionBank = safeLazy(() => import('./pages/teacherDashboard/TeacherQuestionBank'));
+const Shop = safeLazy(() => import('./pages/shop/Shop'));
+const LiveAdminDashboard = safeLazy(() => import('./pages/dashboardSchool/LiveAdminDashboard'));
 
 function App() {
-  const isAuth = localStorage.getItem('O_authWEB');
-  const role = localStorage.getItem('auth_role');
+  const isAuth = safeLocalStorage.getItem('O_authWEB');
+  const role = safeLocalStorage.getItem('auth_role');
   const location = useLocation();
 
   useEffect(() => {
-    localStorage.removeItem('cartona');
+    safeLocalStorage.removeItem('cartona');
   }, []);
 
   // Heartbeat mechanism for live dashboard tracking
   useEffect(() => {
-    let sessionId = localStorage.getItem('site_session_id');
+    let sessionId = safeLocalStorage.getItem('site_session_id');
     if (!sessionId) {
       sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      localStorage.setItem('site_session_id', sessionId);
+      safeLocalStorage.setItem('site_session_id', sessionId);
     }
 
     const pingHeartbeat = () => {
@@ -87,9 +102,9 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId,
-          userId: localStorage.getItem('pp_id') || null,
-          role: localStorage.getItem('auth_role') || 'Visitor',
-          userName: localStorage.getItem('pp_name') || 'Anonymous'
+          userId: safeLocalStorage.getItem('pp_id') || null,
+          role: safeLocalStorage.getItem('auth_role') || 'Visitor',
+          userName: safeLocalStorage.getItem('pp_name') || 'Anonymous'
         })
       }).catch(err => console.error("Heartbeat error", err));
     };
