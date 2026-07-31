@@ -351,6 +351,101 @@ function Teacher() {
         setLoadingOperation(false);
     }
 
+    const exportAllTeachersWord = async () => {
+        setLoadingOperation(true);
+        try {
+            const token = localStorage.getItem('O_authWEB');
+            let allExtracted = [];
+            for (let p = 1; p <= totalPage; p++) {
+                const res = await fetch(`${API_BASE_URL}/teacher/getTeachers/${p}`, {
+                    headers: { 'authrization': `pracYas09${token}` }
+                });
+                const data = await res.json();
+                if (data.message === 'success' && data.allTeachers) {
+                    allExtracted = [...allExtracted, ...data.allTeachers];
+                }
+            }
+
+            const schoolName = localStorage.getItem('pp_name') || 'School';
+
+            let teachersRows = '';
+            allExtracted.forEach((teacher, index) => {
+                teachersRows += `
+                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f8fafc;">
+                        <div style="font-size: 11pt; font-weight: bold; color: #4338ca; margin-bottom: 5px;">
+                            Account #${index + 1}
+                        </div>
+                        <div style="font-size: 14pt; font-weight: bold; color: #0f172a; margin-bottom: 5px;">
+                            username: <span style="color: #4338ca; font-weight: normal;">${teacher.userName}</span>
+                        </div>
+                        <div style="font-size: 14pt; font-weight: bold; color: #0f172a;">
+                            password: <span style="color: #4338ca; font-weight: normal;">1234</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const htmlContent = `
+                <html xmlns:o='urn:schemas-microsoft-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Teachers Credentials</title>
+                    <!--[if gte mso 9]>
+                    <xml>
+                    <w:WordDocument>
+                    <w:View>Print</w:View>
+                    <w:Zoom>100</w:Zoom>
+                    <w:DoNotOptimizeForBrowser/>
+                    </w:WordDocument>
+                    </xml>
+                    <![endif]-->
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+                        .header-table { width: 100%; border-bottom: 3px solid #10b981; padding-bottom: 15px; margin-bottom: 20px; }
+                        .title { color: #5d17eb; margin: 0; font-size: 24pt; font-weight: bold; }
+                        .subtitle { margin: 5px 0 0; color: #666; font-size: 11pt; }
+                        .school-name { color: #1e293b; margin: 0; font-size: 18pt; font-weight: bold; text-align: right; }
+                        .note-box { background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 18px; margin-bottom: 20px; color: #92400e; font-size: 13pt; font-weight: bold; text-align: right; direction: rtl; }
+                    </style>
+                </head>
+                <body>
+                    <table class="header-table">
+                        <tr>
+                            <td>
+                                <div class="title">AbacusHeroes</div>
+                                <div class="subtitle">Teachers Login Credentials — <a href="https://abacusheroes.com" style="color: #4338ca; text-decoration: underline; font-weight: bold;">abacusheroes.com</a></div>
+                            </td>
+                            <td style="text-align: right;">
+                                <div class="school-name">${schoolName}</div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="note-box">📌 ملاحظة: الاسم بدون مسافة و يجب الالتزام بنفس الحروف تماما كما هو مكتوب</div>
+                    <div>
+                        ${teachersRows}
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff' + htmlContent], {
+                type: 'application/msword'
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Teachers_Credentials.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+        } catch (e) {
+            console.error('Export error', e);
+        }
+        setLoadingOperation(false);
+    }
+
     const exportTeacherPDF = async (teacher) => {
         setLoadingOperation(true);
         try {
@@ -545,6 +640,130 @@ function Teacher() {
         }
         setLoadingOperation(false);
     }
+
+    const exportTeacherWord = async (teacher) => {
+        setLoadingOperation(true);
+        try {
+            const schoolName = localStorage.getItem('pp_name') || 'School';
+            const token = localStorage.getItem('O_authWEB');
+            let accountCounter = 1;
+
+            let classesHtml = '';
+            if (teacher.classList && teacher.classList.length > 0) {
+                for (const cls of teacher.classList) {
+                    let studentsHtml = '';
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/class/getStudent/${cls._id}`, {
+                            headers: { 'authrization': `pracYas09${token}` }
+                        });
+                        const data = await res.json();
+                        if (data.message === 'success' && data.allStudent && data.allStudent.length > 0) {
+                            data.allStudent.forEach((stud) => {
+                                studentsHtml += `
+                                    <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; margin-bottom: 8px; background-color: #f1f5f9;">
+                                        <div style="font-size: 10pt; font-weight: bold; color: #4338ca; margin-bottom: 3px;">
+                                            Account #${accountCounter++}
+                                        </div>
+                                        <div style="font-size: 11pt; font-weight: bold; color: #1e293b; margin-bottom: 3px;">
+                                            👤 username: <span style="color: #2563eb; font-weight: normal;">${stud.userName}</span>
+                                        </div>
+                                        <div style="font-size: 11pt; font-weight: bold; color: #475569;">
+                                            🔑 password: <span style="color: #2563eb; font-weight: normal;">1234</span>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            studentsHtml = `<p style="color: #94a3b8; font-style: italic;">No students in this class yet</p>`;
+                        }
+                    } catch (err) {
+                        console.error('Error fetching class students for Word export', err);
+                    }
+
+                    classesHtml += `
+                        <div style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #ffffff;">
+                            <h4 style="margin: 0 0 10px 0; color: #4338ca; font-size: 14pt;">🏫 Class: ${cls.class}</h4>
+                            ${studentsHtml}
+                        </div>
+                    `;
+                }
+            } else {
+                classesHtml = `<div style="color: #94a3b8; font-style: italic; font-size: 12pt;">No classes assigned</div>`;
+            }
+
+            const htmlContent = `
+                <html xmlns:o='urn:schemas-microsoft-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Teacher & Students Credentials Report</title>
+                    <!--[if gte mso 9]>
+                    <xml>
+                    <w:WordDocument>
+                    <w:View>Print</w:View>
+                    <w:Zoom>100</w:Zoom>
+                    <w:DoNotOptimizeForBrowser/>
+                    </w:WordDocument>
+                    </xml>
+                    <![endif]-->
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+                        .header-table { width: 100%; border-bottom: 3px solid #10b981; padding-bottom: 15px; margin-bottom: 20px; }
+                        .title { color: #5d17eb; margin: 0; font-size: 24pt; font-weight: bold; }
+                        .subtitle { margin: 5px 0 0; color: #666; font-size: 11pt; }
+                        .school-name { color: #1e293b; margin: 0; font-size: 18pt; font-weight: bold; text-align: right; }
+                        .note-box { background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 18px; margin-bottom: 20px; color: #92400e; font-size: 13pt; font-weight: bold; text-align: right; direction: rtl; }
+                        .teacher-card { border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; background-color: #f8fafc; margin-bottom: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <table class="header-table">
+                        <tr>
+                            <td>
+                                <div class="title">AbacusHeroes</div>
+                                <div class="subtitle">Teacher & Students Credentials Report — <a href="https://abacusheroes.com" style="color: #4338ca; text-decoration: underline; font-weight: bold;">abacusheroes.com</a></div>
+                            </td>
+                            <td style="text-align: right;">
+                                <div class="school-name">${schoolName}</div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="note-box">📌 ملاحظة: الاسم بدون مسافة و يجب الالتزام بنفس الحروف تماما كما هو مكتوب</div>
+                    <div class="teacher-card">
+                        <div style="font-size: 11pt; font-weight: bold; color: #4338ca; margin-bottom: 5px;">
+                            Account #${accountCounter++} (Teacher)
+                        </div>
+                        <h3 style="margin: 0 0 5px 0; color: #0f172a; font-size: 16pt;">
+                            👨‍🏫 username: <span style="color: #4338ca;">${teacher.userName}</span>
+                        </h3>
+                        <p style="margin: 0 0 15px 0; color: #475569; font-size: 14pt; font-weight: bold;">
+                            🔑 password: <span style="color: #4338ca; font-weight: normal;">1234</span>
+                        </p>
+                        <p style="margin: 10px 0 10px 0; font-weight: bold; color: #334155; font-size: 14pt;">
+                            Assigned Classes & Students:
+                        </p>
+                        ${classesHtml}
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff' + htmlContent], {
+                type: 'application/msword'
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Teacher_${teacher.userName}_Credentials.doc`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+        } catch (e) {
+            console.error('Export error', e);
+        }
+        setLoadingOperation(false);
+    }
     return (
         <>
             <MobileNav role={role} />
@@ -558,6 +777,9 @@ function Teacher() {
                     </div>
                     <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportAllTeachersPDF} style={{ backgroundColor: '#ef4444', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
                         Export PDF
+                    </div>
+                    <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportAllTeachersWord} style={{ backgroundColor: '#2563eb', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
+                        Export Word
                     </div>
                 </div>
                 <div className="teacher-body">
@@ -594,6 +816,7 @@ function Teacher() {
                                             <td className="teacher-action" onClick={(e) => e.stopPropagation()}>
                                                 <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item?.subject?.schoolSubjectName, item.maxStudents)} aria-hidden="true" title="Edit Teacher"></i>
                                                 <i className="fa fa-file-pdf-o" onClick={() => exportTeacherPDF(item)} style={{ color: '#ef4444', marginRight: '0.7rem', cursor: 'pointer' }} aria-hidden="true" title="Export PDF"></i>
+                                                <i className="fa fa-file-word-o" onClick={() => exportTeacherWord(item)} style={{ color: '#2563eb', marginRight: '0.7rem', cursor: 'pointer' }} aria-hidden="true" title="Export Word"></i>
                                                 <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true" title="Remove Teacher"></i>
                                             </td>
                                         </tr>
