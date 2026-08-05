@@ -53,13 +53,12 @@ const Navbar = () => {
                 if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
                 console.log('[NOTIFICATION] Global live battle event received:', data);
                 
-                const myTeacherId = safeLocalStorage.getItem('teacher_id') || safeLocalStorage.getItem('school_id') || safeLocalStorage.getItem('created_by');
+                const myTeacherId = safeLocalStorage.getItem('teacher_id') || safeLocalStorage.getItem('created_by');
                 if (myTeacherId && data.teacherId) {
                     const matchesTeacher = String(myTeacherId) === String(data.teacherId);
-                    const matchesSchool = data.schoolId && String(myTeacherId) === String(data.schoolId);
                     
-                    if (!matchesTeacher && !matchesSchool) {
-                        console.log('[NOTIFICATION] Ignoring battle created by a different teacher/school:', data.teacherId);
+                    if (!matchesTeacher) {
+                        console.log('[NOTIFICATION] Ignoring battle created by a different teacher:', data.teacherId);
                         return;
                     }
                 }
