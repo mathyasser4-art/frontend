@@ -247,7 +247,7 @@ function CreateCompetitionModal({ onClose }) {
                 {/* Header */}
                 <div className="comp-wizard-header">
                     <div className="comp-header-left">
-                        {step !== 'type' && (
+                        {step !== 'source' && (
                             <button className="comp-wizard-back-btn" onClick={handleBack} title="Back">
                                 <ArrowLeft size={20} />
                             </button>
