@@ -367,6 +367,7 @@ function StudentCompetition() {
                 return () => clearTimeout(timer);
             } else {
                 // Game auto-ends on client timer expiry
+                setTimerRemaining(null);
                 if (status === 'active') {
                     handleFinishExam(true);
                 } else if (status === 'waiting-for-end') {

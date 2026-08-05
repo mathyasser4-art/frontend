@@ -12,61 +12,65 @@ const getHeaders = () => {
     };
 };
 
+const safeJsonFetch = async (url, options) => {
+    try {
+        const response = await fetch(url, options);
+        const data = await response.json();
+        return data;
+    } catch (err) {
+        console.error('API Fetch error:', url, err);
+        return { message: "Network request failed. Please check your connection.", error: true };
+    }
+};
+
 export const createCompetition = async (data) => {
-    const response = await fetch(`${API_BASE_URL}/competition/create`, {
+    return safeJsonFetch(`${API_BASE_URL}/competition/create`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(data)
     });
-    return response.json();
 };
 
 export const getTeacherCompetitions = async () => {
-    const response = await fetch(`${API_BASE_URL}/competition/teacher-list`, {
+    return safeJsonFetch(`${API_BASE_URL}/competition/teacher-list`, {
         method: 'GET',
         headers: getHeaders()
     });
-    return response.json();
 };
 
 export const getCompetitionDetails = async (competitionId) => {
-    const response = await fetch(`${API_BASE_URL}/competition/${competitionId}/details`, {
+    return safeJsonFetch(`${API_BASE_URL}/competition/${competitionId}/details`, {
         method: 'GET',
         headers: getHeaders()
     });
-    return response.json();
 };
 
 export const joinCompetition = async (competitionId, guestData = null) => {
-    const response = await fetch(`${API_BASE_URL}/competition/${competitionId}/join`, {
+    return safeJsonFetch(`${API_BASE_URL}/competition/${competitionId}/join`, {
         method: 'POST',
         headers: getHeaders(),
         body: guestData ? JSON.stringify(guestData) : undefined
     });
-    return response.json();
 };
 
 export const startCompetition = async (competitionId) => {
-    const response = await fetch(`${API_BASE_URL}/competition/${competitionId}/start`, {
+    return safeJsonFetch(`${API_BASE_URL}/competition/${competitionId}/start`, {
         method: 'POST',
         headers: getHeaders()
     });
-    return response.json();
 };
 
 export const updateLiveScore = async (competitionId, scoreData) => {
-    const response = await fetch(`${API_BASE_URL}/competition/${competitionId}/score`, {
+    return safeJsonFetch(`${API_BASE_URL}/competition/${competitionId}/score`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(scoreData)
     });
-    return response.json();
 };
 
 export const finishCompetition = async (competitionId) => {
-    const response = await fetch(`${API_BASE_URL}/competition/${competitionId}/finish`, {
+    return safeJsonFetch(`${API_BASE_URL}/competition/${competitionId}/finish`, {
         method: 'POST',
         headers: getHeaders()
     });
-    return response.json();
 };

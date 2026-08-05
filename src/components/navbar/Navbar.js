@@ -41,19 +41,19 @@ const Navbar = () => {
 
     // Global real-time listener for live battle creations (exclusive to logged-in students)
     useEffect(() => {
-        if (isAuth && role === 'Student') {
+        if (isAuth && role && role.toLowerCase() === 'student') {
             const pusher = new Pusher('app_e4ed3fcd3045501a594c2640c4d2dd75832ff677', {
                 cluster: 'us',
             });
 
             const channel = pusher.subscribe('global-battle-arena');
+            let dismissTimer = null;
             
             channel.bind('battle-created', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+                if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
                 console.log('[NOTIFICATION] Global live battle event received:', data);
                 
-                const myTeacherId = safeLocalStorage.getItem('teacher_id');
-                // Allow notification if student was created by this teacher, OR student was created by the teacher's school (common in Topsoroban)
+                const myTeacherId = safeLocalStorage.getItem('teacher_id') || safeLocalStorage.getItem('school_id') || safeLocalStorage.getItem('created_by');
                 if (myTeacherId && data.teacherId) {
                     const matchesTeacher = String(myTeacherId) === String(data.teacherId);
                     const matchesSchool = data.schoolId && String(myTeacherId) === String(data.schoolId);
@@ -68,47 +68,38 @@ const Navbar = () => {
                 setActiveBattleNotification({
                     competitionId: data.competitionId,
                     title: data.title,
-                    teacherName: data.teacherName
+                    teacherName: data.teacherName || "Your Teacher"
                 });
 
-                // Play a warm click sound to notify student
+                // Play a click sound to notify student
                 try {
                     soundEffects.playClick();
                 } catch (e) {}
+
+                // Auto-dismiss after 60 seconds
+                if (dismissTimer) clearTimeout(dismissTimer);
+                dismissTimer = setTimeout(() => {
+                    setActiveBattleNotification(null);
+                }, 60000);
             });
 
             channel.bind('force-join-student', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+                if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
                 console.log('[NOTIFICATION] Force join event received:', data);
-                if (String(data.studentId) === String(safeLocalStorage.getItem('pp_id'))) {
+                const myStudentId = safeLocalStorage.getItem('pp_id') || safeLocalStorage.getItem('user_id') || safeLocalStorage.getItem('guest_id');
+                if (data && data.studentId && myStudentId && String(data.studentId) === String(myStudentId)) {
                     navigate(`/student/competition/${data.competitionId}`);
                 }
             });
 
-            // Set up a 60 seconds auto-dismiss timer whenever a battle is received
-            let dismissTimer;
-            channel.bind('battle-created', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
-                const myTeacherId = safeLocalStorage.getItem('teacher_id');
-                if (myTeacherId && data.teacherId) {
-                    const matchesTeacher = String(myTeacherId) === String(data.teacherId);
-                    const matchesSchool = data.schoolId && String(myTeacherId) === String(data.schoolId);
-                    if (!matchesTeacher && !matchesSchool) return;
-                }
-                clearTimeout(dismissTimer);
-                dismissTimer = setTimeout(() => {
-                    setActiveBattleNotification(null);
-                }, 60000); // 60 seconds auto-dismiss
-            });
-
             return () => {
-                clearTimeout(dismissTimer);
+                if (dismissTimer) clearTimeout(dismissTimer);
                 channel.unbind_all();
                 channel.unsubscribe();
                 pusher.disconnect();
             };
         }
-    }, [isAuth, role]);
+    }, [isAuth, role, navigate]);
 
     const openTeacherForm = () => {
         soundEffects.playClick()

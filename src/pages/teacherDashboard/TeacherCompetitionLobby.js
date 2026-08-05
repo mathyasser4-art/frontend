@@ -331,24 +331,28 @@ function TeacherCompetitionLobby() {
             if (res.message === 'success') {
                 setStatus('active');
                 setCompetition(res.competition);
-                setTimerRemaining(res.competition.timer);
+                setTimerRemaining(res.competition.timer || 300);
             } else {
-                alert(res.message);
+                setError(res.message);
             }
         } catch (err) {
             console.error("Failed to start competition:", err);
+            setError("Failed to start competition. Please try again.");
         }
     };
 
     const handleFinish = async () => {
         soundEffects.playClick();
+        setStatus('finished');
+        setTriggerConfetti(true);
+        setTimerRemaining(null);
         try {
             const res = await finishCompetition(competitionId);
-            if (res.message === 'success') {
-                setStatus('finished');
-                setTriggerConfetti(true);
-            } else {
-                alert(res.message);
+            if (res.message === 'success' && res.competition) {
+                setCompetition(res.competition);
+                if (res.competition.participants) {
+                    setParticipants(res.competition.participants);
+                }
             }
         } catch (err) {
             console.error("Failed to finish competition:", err);
@@ -365,6 +369,7 @@ function TeacherCompetitionLobby() {
                 return () => clearTimeout(timer);
             } else {
                 // Timer expired! Automatically call handleFinish to end the competition for everyone and show the podium
+                setTimerRemaining(null);
                 handleFinish();
             }
         }
