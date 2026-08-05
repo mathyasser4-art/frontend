@@ -218,35 +218,37 @@ function StudentCompetition() {
                     const compStatus = detailsRes.competition.status;
                     setStatus(compStatus);
 
+                    // Restore answers & score counts if any
+                    const myDetails = (detailsRes.competition.participants || []).find(p => String(getParticipantId(p)) === String(studentID));
+                    if (myDetails) {
+                        const initAnswersMap = {};
+                        let newCorrectCount = myDetails.score || 0;
+                        let newWrongCount = myDetails.wrongAnswers || 0;
+                        
+                        if (myDetails.answers && Array.isArray(myDetails.answers)) {
+                            myDetails.answers.forEach(a => {
+                                initAnswersMap[a.question] = { answer: a.studentAnswer, checked: true, correct: a.isCorrect };
+                            });
+                            setAnswersMap(initAnswersMap);
+                            answersMapRef.current = initAnswersMap;
+                        }
+                        
+                        setCorrectCount(newCorrectCount);
+                        correctCountRef.current = newCorrectCount;
+                        
+                        setWrongCount(newWrongCount);
+                        wrongCountRef.current = newWrongCount;
+                        
+                        const ansCount = myDetails.totalAnswered || (myDetails.answers ? myDetails.answers.length : 0);
+                        setTotalAnswered(ansCount);
+                        totalAnsweredRef.current = ansCount;
+                    }
+
                     if (compStatus === 'active') {
                         // If already active, sync the timer based on startedAt
                         const elapsed = Math.floor((Date.now() - new Date(detailsRes.competition.startedAt).getTime()) / 1000);
                         const remaining = detailsRes.competition.timer - elapsed;
                         setTimerRemaining(remaining > 0 ? remaining : 0);
-
-                        // Restore answers if any
-                        const myDetails = (detailsRes.competition.participants || []).find(p => String(getParticipantId(p)) === String(studentID));
-                        if (myDetails && myDetails.answers) {
-                            const initAnswersMap = {};
-                            let newCorrectCount = 0;
-                            let newWrongCount = 0;
-                            myDetails.answers.forEach(a => {
-                                initAnswersMap[a.question] = { answer: a.studentAnswer, checked: true, correct: a.isCorrect };
-                                if (a.isCorrect) newCorrectCount++;
-                                else newWrongCount++;
-                            });
-                            setAnswersMap(initAnswersMap);
-                            answersMapRef.current = initAnswersMap;
-                            
-                            setCorrectCount(newCorrectCount);
-                            correctCountRef.current = newCorrectCount;
-                            
-                            setWrongCount(newWrongCount);
-                            wrongCountRef.current = newWrongCount;
-                            
-                            setTotalAnswered(myDetails.answers.length);
-                            totalAnsweredRef.current = myDetails.answers.length;
-                        }
                     } else if (compStatus === 'finished') {
                         setTriggerConfetti(true);
                         calculateBadges(detailsRes.competition.participants || [], detailsRes.competition.questions?.length || 0);
@@ -1042,32 +1044,39 @@ function StudentCompetition() {
                         )}
 
                         {/* Your personal results summary */}
-                        <div className="personal-results-summary">
-                            <div className="result-stat">
-                                <span className="result-label">Correct</span>
-                                <span className="result-value correct-val">{correctCount}</span>
-                            </div>
-                            <div className="result-stat">
-                                <span className="result-label">Wrong</span>
-                                <span className="result-value wrong-val">{wrongCount}</span>
-                            </div>
-                            <div className="result-stat">
-                                <span className="result-label">Unanswered</span>
-                                <span className="result-value unanswered-val">{totalQuestions - totalAnswered}</span>
-                            </div>
-                            <div className="result-stat">
-                                <span className="result-label">Elapsed Time</span>
-                                <span className="result-value" style={{ color: '#38bdf8', fontSize: '20px', fontWeight: '800', marginTop: '6px' }}>
-                                    {(() => {
-                                        const myDetails = participants.find(p => String(p.student?._id || p.student) === String(studentID));
-                                        const finishedVal = myDetails?.finishedAt || localFinishedAt;
-                                        return finishedVal && competition?.startedAt
-                                            ? formatElapsedMs(finishedVal, competition.startedAt)
-                                            : "—";
-                                    })()}
-                                </span>
-                            </div>
-                        </div>
+                        {(() => {
+                            const myDetails = participants.find(p => String(getParticipantId(p)) === String(studentID));
+                            const displayCorrect = myDetails?.score !== undefined ? myDetails.score : correctCount;
+                            const displayWrong = myDetails?.wrongAnswers !== undefined ? myDetails.wrongAnswers : wrongCount;
+                            const displayAnswered = myDetails?.totalAnswered !== undefined ? myDetails.totalAnswered : totalAnswered;
+                            const displayUnanswered = Math.max(0, totalQuestions - displayAnswered);
+                            const finishedVal = myDetails?.finishedAt || localFinishedAt;
+
+                            return (
+                                <div className="personal-results-summary">
+                                    <div className="result-stat">
+                                        <span className="result-label">Correct</span>
+                                        <span className="result-value correct-val">{displayCorrect}</span>
+                                    </div>
+                                    <div className="result-stat">
+                                        <span className="result-label">Wrong</span>
+                                        <span className="result-value wrong-val">{displayWrong}</span>
+                                    </div>
+                                    <div className="result-stat">
+                                        <span className="result-label">Unanswered</span>
+                                        <span className="result-value unanswered-val">{displayUnanswered}</span>
+                                    </div>
+                                    <div className="result-stat">
+                                        <span className="result-label">Elapsed Time</span>
+                                        <span className="result-value" style={{ color: '#38bdf8', fontSize: '20px', fontWeight: '800', marginTop: '6px' }}>
+                                            {finishedVal && competition?.startedAt
+                                                ? formatElapsedMs(finishedVal, competition.startedAt)
+                                                : "—"}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })()}
 
                         {/* 3D Podium */}
                         <div className="podium-3d-arena">

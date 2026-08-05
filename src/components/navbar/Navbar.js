@@ -49,15 +49,16 @@ const Navbar = () => {
             const channel = pusher.subscribe('global-battle-arena');
             let dismissTimer = null;
             
-            channel.bind('battle-created', (data) => {
+            const handleBattleCreated = (data) => {
                 if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
                 console.log('[NOTIFICATION] Global live battle event received:', data);
                 
-                const myTeacherId = safeLocalStorage.getItem('teacher_id') || safeLocalStorage.getItem('created_by');
-                if (myTeacherId && data.teacherId) {
-                    const matchesTeacher = String(myTeacherId) === String(data.teacherId);
+                const myTeacherId = safeLocalStorage.getItem('teacher_id') || safeLocalStorage.getItem('school_id') || safeLocalStorage.getItem('created_by') || safeLocalStorage.getItem('teacher');
+                if (myTeacherId && (data.teacherId || data.schoolId)) {
+                    const matchesTeacher = data.teacherId && String(myTeacherId) === String(data.teacherId);
+                    const matchesSchool = data.schoolId && String(myTeacherId) === String(data.schoolId);
                     
-                    if (!matchesTeacher) {
+                    if (!matchesTeacher && !matchesSchool) {
                         console.log('[NOTIFICATION] Ignoring battle created by a different teacher:', data.teacherId);
                         return;
                     }
@@ -80,7 +81,9 @@ const Navbar = () => {
                 dismissTimer = setTimeout(() => {
                     setActiveBattleNotification(null);
                 }, 60000);
-            });
+            };
+
+            channel.bind('battle-created', handleBattleCreated);
 
             channel.bind('force-join-student', (data) => {
                 if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
@@ -91,7 +94,20 @@ const Navbar = () => {
                 }
             });
 
+            // Reconnect Pusher on mobile when tab becomes visible after backgrounding
+            const handleVisibilityChange = () => {
+                if (document.visibilityState === 'visible') {
+                    try {
+                        if (pusher.connection.state === 'disconnected' || pusher.connection.state === 'unavailable') {
+                            pusher.connect();
+                        }
+                    } catch (e) {}
+                }
+            };
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+
             return () => {
+                document.removeEventListener('visibilitychange', handleVisibilityChange);
                 if (dismissTimer) clearTimeout(dismissTimer);
                 channel.unbind_all();
                 channel.unsubscribe();
