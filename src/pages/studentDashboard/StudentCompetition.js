@@ -317,6 +317,19 @@ function StudentCompetition() {
             setCompetition(prev => ({ ...prev, startedAt: data.startedAt }));
         });
 
+        // Listen for student kicked event
+        channel.bind('student-kicked', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+            const myId = String(studentID);
+            const myGuestId = safeLocalStorage.getItem('guest_id') || safeLocalStorage.getItem('pp_id');
+            if (data && data.studentId && (String(data.studentId) === myId || String(data.studentId) === String(myGuestId))) {
+                alert("You were removed from this competition by the host teacher.");
+                navigate('/student/dashboard');
+            } else if (data && data.studentId) {
+                setParticipants(prev => prev.filter(p => String(getParticipantId(p)) !== String(data.studentId)));
+            }
+        });
+
         // Listen for teacher ending the competition
         channel.bind('competition-finished', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }

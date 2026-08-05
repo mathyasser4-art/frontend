@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Pusher from 'pusher-js';
-import { getCompetitionDetails, startCompetition, finishCompetition, joinCompetition } from '../../api/competition/competition.api';
+import { getCompetitionDetails, startCompetition, finishCompetition, joinCompetition, removeParticipant } from '../../api/competition/competition.api';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import API_BASE_URL from '../../config/api.config';
@@ -299,6 +299,14 @@ function TeacherCompetitionLobby() {
             }
         });
 
+        // Listen for student kicked/removed event
+        channel.bind('student-kicked', (data) => {
+            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+            if (data && data.studentId) {
+                setParticipants(prev => prev.filter(item => getParticipantId(item) !== String(data.studentId)));
+            }
+        });
+
         // Listen for competition finished
         channel.bind('competition-finished', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
@@ -399,6 +407,25 @@ function TeacherCompetitionLobby() {
         } catch (err) {
             console.error('Failed to force join student:', err);
             alert('Failed to summon student. Please try again.');
+        }
+    };
+
+    const handleKickParticipant = async (p) => {
+        const targetId = getParticipantId(p);
+        if (!targetId) return;
+        soundEffects.playClick();
+
+        // Optimistically update local UI state immediately
+        setParticipants(prev => prev.filter(item => getParticipantId(item) !== targetId));
+
+        try {
+            const res = await removeParticipant(competitionId, targetId);
+            if (res.message === 'success' && res.competition) {
+                setCompetition(res.competition);
+                setParticipants(res.competition.participants || []);
+            }
+        } catch (err) {
+            console.error('Failed to remove participant:', err);
         }
     };
 
@@ -880,7 +907,33 @@ function TeacherCompetitionLobby() {
                             ) : (
                                 <div className="avatar-waiting-grid">
                                     {participants.map((p, idx) => (
-                                        <div key={getParticipantId(p) || idx} className="student-avatar-card">
+                                        <div key={getParticipantId(p) || idx} className="student-avatar-card" style={{ position: 'relative' }}>
+                                            <button 
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); handleKickParticipant(p); }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '-6px',
+                                                    right: '-6px',
+                                                    background: '#dc2626',
+                                                    color: '#ffffff',
+                                                    border: '2px solid #0f172a',
+                                                    borderRadius: '50%',
+                                                    width: '24px',
+                                                    height: '24px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '12px',
+                                                    fontWeight: 'bold',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                                                    zIndex: 10
+                                                }}
+                                                title={`Remove ${getStudentName(p)} from competition`}
+                                            >
+                                                ✕
+                                            </button>
                                             <div className="avatar-circle">
                                                 {getStudentName(p).charAt(0).toUpperCase()}
                                             </div>
@@ -956,6 +1009,24 @@ function TeacherCompetitionLobby() {
                                             >
                                                 {getStudentName(p)} 📊
                                             </span>
+                                            <button 
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); handleKickParticipant(p); }}
+                                                style={{
+                                                    background: 'rgba(239, 68, 68, 0.2)',
+                                                    color: '#f87171',
+                                                    border: '1px solid rgba(239, 68, 68, 0.4)',
+                                                    borderRadius: '6px',
+                                                    padding: '2px 8px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '11px',
+                                                    fontWeight: 'bold',
+                                                    marginLeft: '8px'
+                                                }}
+                                                title={`Remove ${getStudentName(p)} from competition`}
+                                            >
+                                                ✕ Kick
+                                            </button>
                                             <span className="score-ratio">
                                                 {p.totalAnswered || 0} / {totalQuestions} Solved ({p.score} Correct, {p.wrongAnswers || 0} Wrong)
                                                 {isFinished && competition.startedAt && (

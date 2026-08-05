@@ -74,3 +74,11 @@ export const finishCompetition = async (competitionId) => {
         headers: getHeaders()
     });
 };
+
+export const removeParticipant = async (competitionId, targetId) => {
+    return safeJsonFetch(`${API_BASE_URL}/competition/${competitionId}/remove-participant`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ participantId: targetId, studentId: targetId })
+    });
+};
