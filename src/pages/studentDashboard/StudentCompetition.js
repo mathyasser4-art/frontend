@@ -312,9 +312,12 @@ function StudentCompetition() {
             soundEffects.playClick();
             setStatus('countdown');
             setLobbyCountdown(3);
-            setTimerRemaining(data.timer);
-            // Save startedAt so elapsed time can be calculated later
-            setCompetition(prev => ({ ...prev, startedAt: data.startedAt }));
+            
+            const startedTime = data && data.startedAt ? new Date(data.startedAt).getTime() : Date.now();
+            const elapsed = Math.max(0, Math.floor((Date.now() - startedTime) / 1000));
+            const remaining = Math.max(0, (data?.timer || 300) - elapsed);
+            setTimerRemaining(remaining);
+            setCompetition(prev => ({ ...prev, startedAt: data?.startedAt || new Date().toISOString() }));
         });
 
         // Listen for student kicked event
@@ -336,19 +339,14 @@ function StudentCompetition() {
             console.log('[Pusher] competition-finished event received:', data);
             setStatus('finished');
             setTriggerConfetti(true);
-            if (data && data.competition) {
-                setCompetition(data.competition);
-                setParticipants(data.competition.participants || []);
-                calculateBadges(data.competition.participants || [], data.competition.questions?.length || 0);
-            } else {
-                getCompetitionDetails(competitionId).then(res => {
-                    if (res.message === 'success') {
-                        setCompetition(res.competition);
-                        setParticipants(res.competition.participants || []);
-                        calculateBadges(res.competition.participants || [], res.competition.questions?.length || 0);
-                    }
-                });
-            }
+            setTimerRemaining(null);
+            getCompetitionDetails(competitionId).then(res => {
+                if (res.message === 'success' && res.competition) {
+                    setCompetition(res.competition);
+                    setParticipants(res.competition.participants || []);
+                    calculateBadges(res.competition.participants || [], res.competition.questions?.length || 0);
+                }
+            });
         });
 
         return () => {

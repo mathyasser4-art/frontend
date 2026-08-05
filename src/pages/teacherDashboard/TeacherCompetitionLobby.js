@@ -312,17 +312,13 @@ function TeacherCompetitionLobby() {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setStatus('finished');
             setTriggerConfetti(true);
-            if (data && data.competition) {
-                setCompetition(data.competition);
-                setParticipants(data.competition.participants || []);
-            } else {
-                getCompetitionDetails(competitionId).then(res => {
-                    if (res.message === 'success') {
-                        setCompetition(res.competition);
-                        setParticipants(res.competition.participants || []);
-                    }
-                });
-            }
+            setTimerRemaining(null);
+            getCompetitionDetails(competitionId).then(res => {
+                if (res.message === 'success' && res.competition) {
+                    setCompetition(res.competition);
+                    setParticipants(res.competition.participants || []);
+                }
+            });
         });
 
         return () => {
@@ -336,10 +332,13 @@ function TeacherCompetitionLobby() {
         soundEffects.playClick();
         try {
             const res = await startCompetition(competitionId);
-            if (res.message === 'success') {
+            if (res.message === 'success' && res.competition) {
                 setStatus('active');
                 setCompetition(res.competition);
-                setTimerRemaining(res.competition.timer || 300);
+                const startedTime = res.competition.startedAt ? new Date(res.competition.startedAt).getTime() : Date.now();
+                const elapsed = Math.max(0, Math.floor((Date.now() - startedTime) / 1000));
+                const remaining = Math.max(0, (res.competition.timer || 300) - elapsed);
+                setTimerRemaining(remaining);
             } else {
                 setError(res.message);
             }
@@ -355,12 +354,11 @@ function TeacherCompetitionLobby() {
         setTriggerConfetti(true);
         setTimerRemaining(null);
         try {
-            const res = await finishCompetition(competitionId);
+            await finishCompetition(competitionId);
+            const res = await getCompetitionDetails(competitionId);
             if (res.message === 'success' && res.competition) {
                 setCompetition(res.competition);
-                if (res.competition.participants) {
-                    setParticipants(res.competition.participants);
-                }
+                setParticipants(res.competition.participants || []);
             }
         } catch (err) {
             console.error("Failed to finish competition:", err);
