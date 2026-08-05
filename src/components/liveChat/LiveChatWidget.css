@@ -2,8 +2,15 @@
   position: fixed;
   bottom: 30px;
   right: 30px;
-  z-index: 9999;
+  z-index: 9998;
   font-family: system-ui, -apple-system, sans-serif;
+}
+
+@media (max-width: 768px) {
+  .live-chat-container {
+    bottom: 76px !important;
+    right: 14px !important;
+  }
 }
 
 .chat-fab {

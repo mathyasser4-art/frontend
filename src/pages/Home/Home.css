@@ -859,4 +859,27 @@
         box-shadow: 0 4px 25px rgba(234, 179, 8, 0.7);
         transform: scale(1.03);
     }
+}
+
+/* ── Mobile Phone Screen Edge-to-Edge Fixes ── */
+@media (max-width: 768px) {
+    .home {
+        background-attachment: scroll !important;
+        padding-bottom: 80px !important;
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+    }
+    .home-container {
+        padding: 0.5rem 0.75rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 auto 1rem auto !important;
+    }
+    .hero-hybrid, .hero-left, .hero-right, .hero-text-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
 }
