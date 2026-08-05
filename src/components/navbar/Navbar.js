@@ -42,8 +42,8 @@ const Navbar = () => {
     // Global real-time listener for live battle creations (exclusive to logged-in students)
     useEffect(() => {
         if (isAuth && role && role.toLowerCase() === 'student') {
-            const pusher = new Pusher('app_e4ed3fcd3045501a594c2640c4d2dd75832ff677', {
-                cluster: 'us',
+            const pusher = new Pusher('06df370fb33f1263ec1f', {
+                cluster: 'eu',
             });
 
             const channel = pusher.subscribe('global-battle-arena');
