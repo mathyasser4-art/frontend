@@ -12,6 +12,22 @@ import { jsPDF } from 'jspdf';
 import './TeacherCompetitionLobby.css';
 import CertificateModal from '../../components/certificate/CertificateModal';
 
+// Helper to extract participant ID safely (handling populated student object, ObjectId string, and guestId)
+const getParticipantId = (p) => {
+    if (!p) return null;
+    if (typeof p === 'string') return p;
+    return p.student?._id || (typeof p.student === 'string' ? p.student : null) || p.guestId || p._id || null;
+};
+
+// Helper to extract student display name safely for authenticated users and guests
+const getStudentName = (p) => {
+    if (!p) return "Student";
+    if (p.student?.userName) return p.student.userName;
+    if (p.guestName) return p.guestName;
+    if (typeof p.student === 'string') return p.student;
+    return "Student";
+};
+
 // Helper to format elapsed time in minutes, seconds and milliseconds
 const formatElapsedMs = (finishedAt, startedAt) => {
     if (!finishedAt || !startedAt) return "—";
@@ -132,8 +148,9 @@ function TeacherCompetitionLobby() {
                         const dbParticipants = res.competition.participants || [];
                         const merged = [...dbParticipants];
                         prev.forEach(p => {
-                            const pId = p.student?._id || p.student;
-                            const exists = merged.some(dbP => String(dbP.student?._id || dbP.student) === String(pId));
+                            const pId = getParticipantId(p);
+                            if (!pId) return;
+                            const exists = merged.some(dbP => String(getParticipantId(dbP)) === String(pId));
                             if (!exists) {
                                 merged.push(p);
                             }
@@ -200,8 +217,9 @@ function TeacherCompetitionLobby() {
                     setParticipants(prev => {
                         const merged = [...dbParticipants];
                         prev.forEach(p => {
-                            const pId = p.student?._id || p.student;
-                            const exists = merged.some(dbP => String(dbP.student?._id || dbP.student) === String(pId));
+                            const pId = getParticipantId(p);
+                            if (!pId) return;
+                            const exists = merged.some(dbP => String(getParticipantId(dbP)) === String(pId));
                             if (!exists) {
                                 merged.push(p);
                             }
@@ -245,9 +263,9 @@ function TeacherCompetitionLobby() {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             soundEffects.playClick();
             setParticipants(prev => {
-                const exists = prev.some(p => String(p.student?._id || p.student) === String(data.studentId));
+                const exists = prev.some(p => String(getParticipantId(p)) === String(data.studentId));
                 if (exists) return prev;
-                return [...prev, { student: { _id: data.studentId, userName: data.userName }, score: 0, totalAnswered: 0, wrongAnswers: 0 }];
+                return [...prev, { student: { _id: data.studentId, userName: data.userName }, guestId: data.studentId, guestName: data.userName, score: 0, totalAnswered: 0, wrongAnswers: 0 }];
             });
         });
 
@@ -256,7 +274,7 @@ function TeacherCompetitionLobby() {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setParticipants(prev => {
                 return prev.map(p => {
-                    const pId = p.student?._id || p.student;
+                    const pId = getParticipantId(p);
                     if (String(pId) === String(data.studentId)) {
                         return { 
                             ...p, 
@@ -497,7 +515,7 @@ function TeacherCompetitionLobby() {
                 doc.setFont("helvetica", "bold");
                 doc.text(`#${idx + 1}`, 50, yPos);
                 doc.setFont("helvetica", "normal");
-                doc.text(p.student?.userName || "Unknown Student", 100, yPos);
+                doc.text(getStudentName(p), 100, yPos);
                 doc.text(`${p.score} / ${totalQ}`, 240, yPos);
                 doc.text(`${p.wrongAnswers || 0}`, 300, yPos);
                 
@@ -532,7 +550,7 @@ function TeacherCompetitionLobby() {
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(18);
                 doc.setTextColor(255, 255, 255);
-                doc.text(`Student Performance: ${p.student?.userName || "Student"}`, 40, 42);
+                doc.text(`Student Performance: ${getStudentName(p)}`, 40, 42);
                 
                 doc.setFontSize(10);
                 doc.setFont("helvetica", "normal");
@@ -857,11 +875,11 @@ function TeacherCompetitionLobby() {
                             ) : (
                                 <div className="avatar-waiting-grid">
                                     {participants.map((p, idx) => (
-                                        <div key={p.student?._id || idx} className="student-avatar-card">
+                                        <div key={getParticipantId(p) || idx} className="student-avatar-card">
                                             <div className="avatar-circle">
-                                                {p.student?.userName?.charAt(0).toUpperCase()}
+                                                {getStudentName(p).charAt(0).toUpperCase()}
                                             </div>
-                                            <span className="student-name">{p.student?.userName}</span>
+                                            <span className="student-name">{getStudentName(p)}</span>
                                             <span className="joined-badge">Ready</span>
                                         </div>
                                     ))}
@@ -922,7 +940,7 @@ function TeacherCompetitionLobby() {
                                 const isFinished = !!p.finishedAt;
 
                                 return (
-                                    <div key={p.student?._id || idx} className="race-track-row">
+                                    <div key={getParticipantId(p) || idx} className="race-track-row">
                                         <div className="racer-rank">#{idx + 1}</div>
                                         <div className="racer-name-tag">
                                             <span 
@@ -931,7 +949,7 @@ function TeacherCompetitionLobby() {
                                                 title="Click to view detailed report card"
                                                 style={{ cursor: 'pointer', textDecoration: 'underline', color: '#38bdf8' }}
                                             >
-                                                {p.student?.userName} 📊
+                                                {getStudentName(p)} 📊
                                             </span>
                                             <span className="score-ratio">
                                                 {p.totalAnswered || 0} / {totalQuestions} Solved ({p.score} Correct, {p.wrongAnswers || 0} Wrong)

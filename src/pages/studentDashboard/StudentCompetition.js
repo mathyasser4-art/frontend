@@ -12,6 +12,13 @@ import './StudentCompetition.css';
 import CertificateModal from '../../components/certificate/CertificateModal';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 
+// Helper to extract participant ID safely (handling populated student object, ObjectId string, and guestId)
+const getParticipantId = (p) => {
+    if (!p) return null;
+    if (typeof p === 'string') return p;
+    return p.student?._id || (typeof p.student === 'string' ? p.student : null) || p.guestId || p._id || null;
+};
+
 // Helper to format elapsed time in minutes, seconds and milliseconds
 const formatElapsedMs = (finishedAt, startedAt) => {
     if (!finishedAt || !startedAt) return "—";
@@ -58,11 +65,11 @@ function StudentCompetition() {
     const [badges, setBadges] = useState([]);
     const [isCertOpen, setIsCertOpen] = useState(false);
 
-    let studentID = localStorage.getItem('pp_id');
-    let studentName = localStorage.getItem('pp_name');
-    if (!studentID) {
+    let studentID = localStorage.getItem('pp_id') || localStorage.getItem('user_id') || localStorage.getItem('userId');
+    let studentName = localStorage.getItem('pp_name') || localStorage.getItem('user_name') || localStorage.getItem('userName');
+    if (!studentID || studentID === 'undefined' || studentID === 'null') {
         studentID = localStorage.getItem('guest_id');
-        if (!studentID) {
+        if (!studentID || studentID === 'undefined' || studentID === 'null') {
             studentID = 'guest_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('guest_id', studentID);
         }
@@ -197,8 +204,9 @@ function StudentCompetition() {
                         const dbParticipants = detailsRes.competition.participants || [];
                         const merged = [...dbParticipants];
                         prev.forEach(p => {
-                            const pId = p.student?._id || p.student;
-                            const exists = merged.some(dbP => String(dbP.student?._id || dbP.student) === String(pId));
+                            const pId = getParticipantId(p);
+                            if (!pId) return;
+                            const exists = merged.some(dbP => String(getParticipantId(dbP)) === String(pId));
                             if (!exists) {
                                 merged.push(p);
                             }
@@ -217,7 +225,7 @@ function StudentCompetition() {
                         setTimerRemaining(remaining > 0 ? remaining : 0);
 
                         // Restore answers if any
-                        const myDetails = (detailsRes.competition.participants || []).find(p => String(p.student?._id || p.student) === String(studentID) || String(p.guestId) === String(studentID));
+                        const myDetails = (detailsRes.competition.participants || []).find(p => String(getParticipantId(p)) === String(studentID));
                         if (myDetails && myDetails.answers) {
                             const initAnswersMap = {};
                             let newCorrectCount = 0;
@@ -270,9 +278,9 @@ function StudentCompetition() {
         channel.bind('student-joined', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setParticipants(prev => {
-                const exists = prev.some(p => String(p.student?._id || p.student) === String(data.studentId));
+                const exists = prev.some(p => String(getParticipantId(p)) === String(data.studentId));
                 if (exists) return prev;
-                return [...prev, { student: { _id: data.studentId, userName: data.userName }, score: 0, totalAnswered: 0, wrongAnswers: 0 }];
+                return [...prev, { student: { _id: data.studentId, userName: data.userName }, guestId: data.studentId, guestName: data.userName, score: 0, totalAnswered: 0, wrongAnswers: 0 }];
             });
         });
 
@@ -281,7 +289,7 @@ function StudentCompetition() {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setParticipants(prev => {
                 return prev.map(p => {
-                    const pId = p.student?._id || p.student;
+                    const pId = getParticipantId(p);
                     if (String(pId) === String(data.studentId)) {
                         return { 
                             ...p, 
@@ -640,7 +648,7 @@ function StudentCompetition() {
     };
 
     const calculateBadges = (allParticipants, total) => {
-        const myDetails = allParticipants.find(p => String(p.student?._id || p.student) === String(studentID));
+        const myDetails = allParticipants.find(p => String(getParticipantId(p)) === String(studentID));
         if (!myDetails) return;
 
         const myScore = myDetails.score;
@@ -672,7 +680,7 @@ function StudentCompetition() {
             }
             return (b.totalAnswered || 0) - (a.totalAnswered || 0);
         });
-        const rank = sorted.findIndex(p => String(p.student?._id || p.student) === String(studentID)) + 1;
+        const rank = sorted.findIndex(p => String(getParticipantId(p)) === String(studentID)) + 1;
 
         if (rank === 1) {
             currentBadges.push({ name: "Arena Champion", desc: "Finished 1st place in the battle!", icon: <Trophy size={24} /> });

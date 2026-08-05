@@ -1,9 +1,12 @@
 import API_BASE_URL from '../../config/api.config';
 
 const getHeaders = () => {
-    const Token = localStorage.getItem('O_authWEB');
+    let Token = localStorage.getItem('O_authWEB');
+    if (!Token || Token === 'null' || Token === 'undefined') {
+        Token = localStorage.getItem('token') || localStorage.getItem('userToken') || localStorage.getItem('auth_token') || '';
+    }
 
-        return {
+    return {
         'Content-Type': 'application/json',
         'authrization': `pracYas09${Token}`
     };
