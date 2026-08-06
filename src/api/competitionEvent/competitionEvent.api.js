@@ -46,6 +46,14 @@ export const registerStudentsForEvent = async (eventId, studentIds) => {
     });
 };
 
+export const updateCompetitionEvent = async (eventId, data) => {
+    return safeJsonFetch(`${API_BASE_URL}/competition-event/${eventId}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(data)
+    });
+};
+
 export const deleteCompetitionEvent = async (eventId) => {
     return safeJsonFetch(`${API_BASE_URL}/competition-event/${eventId}`, {
         method: 'DELETE',

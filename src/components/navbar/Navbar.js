@@ -13,6 +13,7 @@ import CreateHomeworkModal from './CreateHomeworkModal'
 import CreateCompetitionModal from './CreateCompetitionModal'
 import TutorialVideoModal from '../tutorialVideoModal/TutorialVideoModal'
 import { safeLocalStorage } from '../../utils/safeStorage'
+import { getSchoolCompetitionEvents } from '../../api/competitionEvent/competitionEvent.api'
 import '../../reusable.css'
 import './Navbar.css'
 import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
@@ -35,12 +36,31 @@ const Navbar = () => {
     const [showCreateHomework, setShowCreateHomework] = useState(false)
     const [showCreateCompetition, setShowCreateCompetition] = useState(false)
     const [showCompetitionsDropdown, setShowCompetitionsDropdown] = useState(false)
+    const [hasUnreadEvents, setHasUnreadEvents] = useState(false)
     const [showTutorialVideo, setShowTutorialVideo] = useState(false)
     const [tutorialRole, setTutorialRole] = useState('Teacher')
     const [activeBattleNotification, setActiveBattleNotification] = useState(null)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-    // Global real-time listener for live battle creations (exclusive to logged-in students)
+    // Check for unread competition events published by school for teacher accounts
+    useEffect(() => {
+        if (isAuth && role === 'Teacher') {
+            getSchoolCompetitionEvents().then(res => {
+                if (res.message === 'success' && Array.isArray(res.events) && res.events.length > 0) {
+                    const lastView = safeLocalStorage.getItem('teacher_last_competitions_view');
+                    if (!lastView) {
+                        setHasUnreadEvents(true);
+                    } else {
+                        const lastViewTime = new Date(lastView).getTime();
+                        const hasNewer = res.events.some(e => new Date(e.createdAt || e.updatedAt || 0).getTime() > lastViewTime);
+                        setHasUnreadEvents(hasNewer);
+                    }
+                }
+            }).catch(err => console.error("Error checking competition events in navbar", err));
+        }
+    }, [isAuth, role]);
+
+    // Cleanup and heartbeat listeners for live battle creations (exclusive to logged-in students)
     useEffect(() => {
         if (isAuth && role && role.toLowerCase() === 'student') {
             const pusher = new Pusher('06df370fb33f1263ec1f', {
@@ -273,14 +293,18 @@ const Navbar = () => {
                         <div style={{ position: 'relative', display: 'inline-block', marginRight: '6px' }}>
                             <button
                                 type="button"
-                                className="nav-btn"
+                                className={`nav-btn ${hasUnreadEvents ? 'competitions-btn-red-glow' : ''}`}
                                 onClick={() => {
                                     soundEffects.playClick();
                                     setShowCompetitionsDropdown(prev => !prev);
+                                    if (hasUnreadEvents) {
+                                        setHasUnreadEvents(false);
+                                        safeLocalStorage.setItem('teacher_last_competitions_view', new Date().toISOString());
+                                    }
                                 }}
                                 style={{
-                                    background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
-                                    color: '#000000',
+                                    background: hasUnreadEvents ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
+                                    color: hasUnreadEvents ? '#ffffff' : '#000000',
                                     border: 'none',
                                     fontWeight: '900',
                                     fontSize: '13px',
@@ -290,10 +314,23 @@ const Navbar = () => {
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: '6px',
-                                    boxShadow: '0 4px 12px rgba(245, 158, 11, 0.35)'
+                                    boxShadow: hasUnreadEvents ? '0 4px 14px rgba(239, 68, 68, 0.45)' : '0 4px 12px rgba(245, 158, 11, 0.35)'
                                 }}
                             >
                                 {t('navbar.competitionsDropdown', '🏆 COMPETITIONS ▾')}
+                                {hasUnreadEvents && (
+                                    <span style={{
+                                        backgroundColor: '#ffffff',
+                                        color: '#dc2626',
+                                        borderRadius: '10px',
+                                        padding: '2px 6px',
+                                        fontSize: '10px',
+                                        fontWeight: '800',
+                                        marginLeft: '4px'
+                                    }}>
+                                        NEW
+                                    </span>
+                                )}
                             </button>
 
                             {showCompetitionsDropdown && (

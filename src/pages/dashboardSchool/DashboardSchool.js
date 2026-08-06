@@ -12,8 +12,9 @@ import sopreviser from '../../img/sopreviser-bannar.png';
 import classes from '../../img/classes.png';
 import IT from '../../img/it.png';
 import API_BASE_URL from '../../config/api.config';
-import { createCompetitionEvent, getSchoolCompetitionEvents, deleteCompetitionEvent } from '../../api/competitionEvent/competitionEvent.api';
+import { createCompetitionEvent, getSchoolCompetitionEvents, updateCompetitionEvent, deleteCompetitionEvent } from '../../api/competitionEvent/competitionEvent.api';
 import { jsPDF } from 'jspdf';
+import { Edit2 } from 'lucide-react';
 import '../../reusable.css';
 import './DashboardSchool.css';
 
@@ -30,6 +31,14 @@ function DashboardSchool() {
     const [newDesc, setNewDesc] = useState('');
     const [newDate, setNewDate] = useState('');
     const [isCreating, setIsCreating] = useState(false);
+
+    // Edit Competition Card State
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editEventId, setEditEventId] = useState(null);
+    const [editTitle, setEditTitle] = useState('');
+    const [editDesc, setEditDesc] = useState('');
+    const [editDate, setEditDate] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         const fetchReports = async () => {
@@ -87,6 +96,37 @@ function DashboardSchool() {
             console.error('Failed to create competition event:', err);
         } finally {
             setIsCreating(false);
+        }
+    };
+
+    const handleOpenEdit = (evt) => {
+        setEditEventId(evt._id);
+        setEditTitle(evt.title || '');
+        setEditDesc(evt.description || '');
+        setEditDate(evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '');
+        setShowEditModal(true);
+    };
+
+    const handleSaveEdit = async (e) => {
+        e.preventDefault();
+        if (!editTitle.trim() || !editEventId) return;
+        setIsEditing(true);
+        try {
+            const res = await updateCompetitionEvent(editEventId, {
+                title: editTitle,
+                description: editDesc,
+                eventDate: editDate
+            });
+            if (res.message === 'success') {
+                setShowEditModal(false);
+                fetchEvents();
+            } else {
+                alert(res.message || 'Failed to update card');
+            }
+        } catch (err) {
+            console.error('Failed to update competition event:', err);
+        } finally {
+            setIsEditing(false);
         }
     };
 
@@ -404,13 +444,22 @@ function DashboardSchool() {
                                             <div>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                                                     <h3 style={{ margin: 0, color: '#0f172a', fontSize: '18px' }}>{evt.title}</h3>
-                                                    <button 
-                                                        onClick={() => handleDeleteEvent(evt._id)}
-                                                        style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
-                                                        title="Delete Card"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
+                                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                                        <button 
+                                                            onClick={() => handleOpenEdit(evt)}
+                                                            style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', padding: '4px' }}
+                                                            title="Edit Card"
+                                                        >
+                                                            <Edit2 size={16} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleDeleteEvent(evt._id)}
+                                                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                                                            title="Delete Card"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                                 <p style={{ margin: '0 0 12px 0', color: '#64748b', fontSize: '13px', lineHeight: '1.4' }}>
                                                     {evt.description || 'School competition tournament.'}
@@ -592,6 +641,121 @@ function DashboardSchool() {
                                         }}
                                     >
                                         {isCreating ? t('competitionEvents.publishing', 'Publishing...') : t('competitionEvents.publishBtn', 'Publish Card')}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+                {/* Edit Competition Card Modal */}
+                {showEditModal && (
+                    <div style={{
+                        position: 'fixed',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        backgroundColor: 'rgba(15, 23, 42, 0.65)',
+                        backdropFilter: 'blur(6px)',
+                        zIndex: 9999,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '20px'
+                    }}>
+                        <div style={{
+                            background: 'white',
+                            borderRadius: '20px',
+                            padding: '30px',
+                            maxWidth: '500px',
+                            width: '100%',
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+                        }}>
+                            <h3 style={{ margin: '0 0 16px 0', color: '#0f172a' }}>Edit Competition Card</h3>
+                            <form onSubmit={handleSaveEdit}>
+                                <div style={{ marginBottom: '16px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>
+                                        {t('competitionEvents.compTitleLabel', 'Competition Title *')}
+                                    </label>
+                                    <input 
+                                        type="text"
+                                        required
+                                        value={editTitle}
+                                        onChange={e => setEditTitle(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '10px 14px',
+                                            borderRadius: '8px',
+                                            border: '1px solid #cbd5e1',
+                                            outline: 'none',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+                                <div style={{ marginBottom: '16px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>
+                                        {t('competitionEvents.compDescLabel', 'Description')}
+                                    </label>
+                                    <textarea 
+                                        rows={3}
+                                        value={editDesc}
+                                        onChange={e => setEditDesc(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '10px 14px',
+                                            borderRadius: '8px',
+                                            border: '1px solid #cbd5e1',
+                                            outline: 'none',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+                                <div style={{ marginBottom: '24px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>
+                                        {t('competitionEvents.eventDateLabel', 'Event Date')}
+                                    </label>
+                                    <input 
+                                        type="date"
+                                        value={editDate}
+                                        onChange={e => setEditDate(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '10px 14px',
+                                            borderRadius: '8px',
+                                            border: '1px solid #cbd5e1',
+                                            outline: 'none',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                                    <button 
+                                        type="button"
+                                        onClick={() => setShowEditModal(false)}
+                                        style={{
+                                            background: '#e2e8f0',
+                                            color: '#475569',
+                                            border: 'none',
+                                            padding: '10px 18px',
+                                            borderRadius: '8px',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        {t('competitionEvents.cancelBtn', 'Cancel')}
+                                    </button>
+                                    <button 
+                                        type="submit"
+                                        disabled={isEditing}
+                                        style={{
+                                            background: '#3b82f6',
+                                            color: 'white',
+                                            border: 'none',
+                                            padding: '10px 18px',
+                                            borderRadius: '8px',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        {isEditing ? 'Saving...' : 'Save Changes'}
                                     </button>
                                 </div>
                             </form>
