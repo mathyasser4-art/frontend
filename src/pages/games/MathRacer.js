@@ -11,6 +11,7 @@ import FullscreenButton from '../../components/fullscreenButton/FullscreenButton
 import ArithmeticMcqDebugPanel from '../../components/debug/ArithmeticMcqDebugPanel';
 import Pusher from 'pusher-js';
 import API_BASE_URL from '../../config/api.config';
+import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import Draggable from 'react-draggable';
 import './MathRacer.css';
 
@@ -237,8 +238,9 @@ function MathRacer() {
       })
           .then(r => r.json())
           .then(responseJson => {
-              if (responseJson.message === 'success') {
-                  setCustomQuestions(responseJson.chapter?.questions || []);
+              if (responseJson.message === 'success' && Array.isArray(responseJson.chapter?.questions)) {
+                  const shuffled = adjustQuestionOrderAndShuffleMCQ(responseJson.chapter.questions);
+                  setCustomQuestions(shuffled);
               } else {
                   setWizardError(responseJson.message);
               }
@@ -493,8 +495,9 @@ function MathRacer() {
             .then(res => res.json())
             .then(resJson => {
               if (resJson.message === 'success' && resJson.chapter?.questions) {
-                setCustomQuestions(resJson.chapter.questions);
-                customQuestionsRef.current = resJson.chapter.questions;
+                const shuffled = adjustQuestionOrderAndShuffleMCQ(resJson.chapter.questions);
+                setCustomQuestions(shuffled);
+                customQuestionsRef.current = shuffled;
               }
             })
             .catch(err => console.error('[MathRacer] Error fetching guest questions:', err));
