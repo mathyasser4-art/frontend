@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import { getSchoolCompetitionEvents, registerStudentsForEvent } from '../../api/competitionEvent/competitionEvent.api';
-import getTeacherStudents from '../../api/teacher/getTeacherStudents.api';
+import API_BASE_URL from '../../config/api.config';
 import { Trophy, Calendar, Users, CheckCircle, Search, X } from 'lucide-react';
 import soundEffects from '../../utils/soundEffects';
 import './UpcomingCompetitionsHub.css';
@@ -26,19 +26,23 @@ function UpcomingCompetitionsHub() {
     const fetchData = async () => {
         setLoading(true);
         try {
+            const token = localStorage.getItem('O_authWEB');
             const [eventsRes, studentsRes] = await Promise.all([
                 getSchoolCompetitionEvents(),
-                getTeacherStudents(teacherID)
+                fetch(`${API_BASE_URL}/student/getStudent/1`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'authrization': `pracYas09${token}`
+                    }
+                }).then(r => r.json()).catch(() => ({ message: 'error' }))
             ]);
 
             if (eventsRes.message === 'success') {
                 setEvents(eventsRes.events || []);
             }
 
-            if (studentsRes && Array.isArray(studentsRes.students)) {
-                setMyStudents(studentsRes.students);
-            } else if (studentsRes && Array.isArray(studentsRes)) {
-                setMyStudents(studentsRes);
+            if (studentsRes && studentsRes.message === 'success' && Array.isArray(studentsRes.allStudent)) {
+                setMyStudents(studentsRes.allStudent);
             }
         } catch (err) {
             console.error('Error fetching competitions hub data:', err);
