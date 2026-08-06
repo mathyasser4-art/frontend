@@ -71,6 +71,7 @@ const ChatManagement = safeLazy(() => import('./pages/dashboardSchool/ChatManage
 const ReportedQuestions = safeLazy(() => import('./pages/dashboardSchool/ReportedQuestions'));
 const ClassHomework = safeLazy(() => import('./pages/classHomework/ClassHomework'));
 const TeacherCompetitionLobby = safeLazy(() => import('./pages/teacherDashboard/TeacherCompetitionLobby'));
+const UpcomingCompetitionsHub = safeLazy(() => import('./pages/teacherDashboard/UpcomingCompetitionsHub'));
 const StudentCompetition = safeLazy(() => import('./pages/studentDashboard/StudentCompetition'));
 const TeacherQuestionBank = safeLazy(() => import('./pages/teacherDashboard/TeacherQuestionBank'));
 const Shop = safeLazy(() => import('./pages/shop/Shop'));
@@ -150,6 +151,7 @@ function App() {
           <Route path='/student/competition/:competitionId' element={<StudentCompetition />} />
           <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/' />} />
           <Route path='/teacher/competition/:competitionId' element={isAuth && role === 'Teacher' ? <TeacherCompetitionLobby /> : <Navigate to='/' />} />
+          <Route path='/teacher/competitions-hub' element={isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? <UpcomingCompetitionsHub /> : <Navigate to='/' />} />
           <Route path='/teacher/question-bank' element={isAuth && role === 'Teacher' && ENABLE_CUSTOM_QUESTION_BANK ? <TeacherQuestionBank /> : <Navigate to='/' />} />
           <Route path='/teacher/registration' element={<TeacherRegistrationPage />} />
           <Route path='/dashboard/supervisor' element={isAuth && role === 'Supervisor' ? <SupervisorDashboard /> : <Navigate to='/' />} />

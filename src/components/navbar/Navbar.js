@@ -276,6 +276,14 @@ const Navbar = () => {
                         </>
                     ) : null}
 
+                    {isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? (
+                        <Link to={'/teacher/competitions-hub'} onClick={() => soundEffects.playClick()}>
+                            <div className="nav-btn" style={{ background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)', color: '#000', border: 'none', marginRight: '6px', fontWeight: '800' }}>
+                                🏆 COMPETITIONS
+                            </div>
+                        </Link>
+                    ) : null}
+
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn"><span className="text-desktop">{t('navbar.homeworkReports', 'HOMEWORK REPORTS')}</span><span className="text-mobile">REPORTS</span></div></Link> : null}
                     {role === 'Student' ? (
                         <>
