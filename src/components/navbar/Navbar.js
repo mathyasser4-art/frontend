@@ -290,18 +290,19 @@ const Navbar = () => {
                         </div>
                     ) : null}
                     {isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? (
-                        <div style={{ position: 'relative', display: 'inline-block', marginRight: '6px' }}>
-                            <button
-                                type="button"
+                        <Link 
+                            to="/teacher/competitions-hub" 
+                            onClick={() => {
+                                soundEffects.playClick();
+                                if (hasUnreadEvents) {
+                                    setHasUnreadEvents(false);
+                                    safeLocalStorage.setItem('teacher_last_competitions_view', new Date().toISOString());
+                                }
+                            }}
+                            style={{ textDecoration: 'none', marginRight: '6px' }}
+                        >
+                            <div
                                 className={`nav-btn ${hasUnreadEvents ? 'competitions-btn-red-glow' : ''}`}
-                                onClick={() => {
-                                    soundEffects.playClick();
-                                    setShowCompetitionsDropdown(prev => !prev);
-                                    if (hasUnreadEvents) {
-                                        setHasUnreadEvents(false);
-                                        safeLocalStorage.setItem('teacher_last_competitions_view', new Date().toISOString());
-                                    }
-                                }}
                                 style={{
                                     background: hasUnreadEvents ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
                                     color: hasUnreadEvents ? '#ffffff' : '#000000',
@@ -317,7 +318,7 @@ const Navbar = () => {
                                     boxShadow: hasUnreadEvents ? '0 4px 14px rgba(239, 68, 68, 0.45)' : '0 4px 12px rgba(245, 158, 11, 0.35)'
                                 }}
                             >
-                                {t('navbar.competitionsDropdown', '🏆 COMPETITIONS ▾')}
+                                {t('navbar.competitionsHub', '🏆 COMPETITIONS')}
                                 {hasUnreadEvents && (
                                     <span style={{
                                         backgroundColor: '#ffffff',
@@ -331,81 +332,8 @@ const Navbar = () => {
                                         NEW
                                     </span>
                                 )}
-                            </button>
-
-                            {showCompetitionsDropdown && (
-                                <div 
-                                    style={{
-                                        position: 'absolute',
-                                        top: 'calc(100% + 8px)',
-                                        right: 0,
-                                        background: '#1e293b',
-                                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                                        borderRadius: '16px',
-                                        boxShadow: '0 12px 32px rgba(0, 0, 0, 0.4)',
-                                        padding: '8px',
-                                        minWidth: '220px',
-                                        zIndex: 10000,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: '4px'
-                                    }}
-                                >
-                                    {role === 'Teacher' && (
-                                        <button
-                                            onClick={() => {
-                                                soundEffects.playClick();
-                                                setShowCompetitionsDropdown(false);
-                                                setShowCreateCompetition(true);
-                                            }}
-                                            style={{
-                                                background: 'rgba(255, 255, 255, 0.05)',
-                                                border: 'none',
-                                                color: '#f8fafc',
-                                                padding: '10px 14px',
-                                                borderRadius: '10px',
-                                                cursor: 'pointer',
-                                                textAlign: 'left',
-                                                fontSize: '13px',
-                                                fontWeight: '700',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '8px',
-                                                transition: 'background 0.2s'
-                                            }}
-                                        >
-                                            <span>⚔️ {t('navbar.createCompetition', 'Create Live Battle')}</span>
-                                        </button>
-                                    )}
-                                    <Link
-                                        to="/teacher/competitions-hub"
-                                        onClick={() => {
-                                            soundEffects.playClick();
-                                            setShowCompetitionsDropdown(false);
-                                        }}
-                                        style={{ textDecoration: 'none' }}
-                                    >
-                                        <div
-                                            style={{
-                                                background: 'rgba(251, 191, 36, 0.15)',
-                                                border: '1px solid rgba(251, 191, 36, 0.3)',
-                                                color: '#fbbf24',
-                                                padding: '10px 14px',
-                                                borderRadius: '10px',
-                                                cursor: 'pointer',
-                                                fontSize: '13px',
-                                                fontWeight: '700',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '8px'
-                                            }}
-                                        >
-                                            <span>📋 {t('competitionEvents.officialCardsTitle', 'Official Competitions Hub')}</span>
-                                        </div>
-                                    </Link>
-                                </div>
-                            )}
-                        </div>
+                            </div>
+                        </Link>
                     ) : null}
 
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn"><span className="text-desktop">{t('navbar.homeworkReports', 'HOMEWORK REPORTS')}</span><span className="text-mobile">REPORTS</span></div></Link> : null}
