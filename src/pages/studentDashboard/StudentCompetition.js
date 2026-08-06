@@ -11,6 +11,7 @@ import API_BASE_URL from '../../config/api.config';
 import './StudentCompetition.css';
 import CertificateModal from '../../components/certificate/CertificateModal';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 // Helper to extract participant ID safely (handling populated student object, ObjectId string, and guestId)
 const getParticipantId = (p) => {
