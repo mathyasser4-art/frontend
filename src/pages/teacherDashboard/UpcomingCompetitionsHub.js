@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import { getSchoolCompetitionEvents, registerStudentsForEvent } from '../../api/competitionEvent/competitionEvent.api';
@@ -8,6 +9,7 @@ import soundEffects from '../../utils/soundEffects';
 import './UpcomingCompetitionsHub.css';
 
 function UpcomingCompetitionsHub() {
+    const { t } = useTranslation();
     const [events, setEvents] = useState([]);
     const [myStudents, setMyStudents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -115,8 +117,8 @@ function UpcomingCompetitionsHub() {
 
             <div className="competitions-hub-container">
                 <div className="competitions-hub-header">
-                    <h1>🏆 Upcoming Competitions Hub</h1>
-                    <p>Select a competition card below to register and submit participating students from your classes.</p>
+                    <h1>{t('competitionEvents.hubTitle', '🏆 Upcoming Competitions Hub')}</h1>
+                    <p>{t('competitionEvents.hubSubtitle', 'Select a competition card below to register and submit participating students from your classes.')}</p>
                 </div>
 
                 {toastMessage && (
@@ -136,7 +138,7 @@ function UpcomingCompetitionsHub() {
 
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '60px 0', color: '#94a3b8' }}>
-                        Loading competition cards...
+                        {t('common.loading', 'Loading competition cards...')}
                     </div>
                 ) : events.length === 0 ? (
                     <div style={{
@@ -147,8 +149,8 @@ function UpcomingCompetitionsHub() {
                         border: '1px solid rgba(255, 255, 255, 0.1)'
                     }}>
                         <Trophy size={48} color="#fbbf24" style={{ marginBottom: '16px' }} />
-                        <h3 style={{ fontSize: '20px', color: '#f8fafc', margin: '0 0 8px 0' }}>No Upcoming Competition Cards Yet</h3>
-                        <p style={{ color: '#94a3b8', margin: 0 }}>Your school account has not published any official competition cards yet. Check back soon!</p>
+                        <h3 style={{ fontSize: '20px', color: '#f8fafc', margin: '0 0 8px 0' }}>{t('competitionEvents.noEventsTitle', 'No Upcoming Competition Cards Yet')}</h3>
+                        <p style={{ color: '#94a3b8', margin: 0 }}>{t('competitionEvents.noEventsMessage', 'Your school account has not published any official competition cards yet. Check back soon!')}</p>
                     </div>
                 ) : (
                     <div className="events-cards-grid">
@@ -162,10 +164,10 @@ function UpcomingCompetitionsHub() {
                                 <div key={evt._id} className="event-card">
                                     <div>
                                         <div className="event-card-header">
-                                            <span className="event-card-badge">Official Tournament</span>
+                                            <span className="event-card-badge">{t('competitionEvents.officialCardBadge', 'Official Tournament')}</span>
                                             {myEnrolledCount > 0 && (
                                                 <span style={{ fontSize: '12px', color: '#10b981', fontWeight: '700' }}>
-                                                    ✓ {myEnrolledCount} Selected
+                                                    ✓ {myEnrolledCount} {t('competitionEvents.selected', 'Selected')}
                                                 </span>
                                             )}
                                         </div>
@@ -180,7 +182,7 @@ function UpcomingCompetitionsHub() {
                                             )}
                                             <div className="event-card-meta-item">
                                                 <Users size={15} color="#38bdf8" />
-                                                <span>{totalEnrolled} Total Enrolled</span>
+                                                <span>{totalEnrolled} {t('competitionEvents.totalEnrolled', 'Total Enrolled')}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -189,7 +191,7 @@ function UpcomingCompetitionsHub() {
                                         onClick={() => handleOpenSelector(evt)}
                                     >
                                         <CheckCircle size={16} />
-                                        <span>Select Participating Students</span>
+                                        <span>{t('competitionEvents.selectStudentsBtn', 'Select Participating Students')}</span>
                                     </button>
                                 </div>
                             );
@@ -206,7 +208,7 @@ function UpcomingCompetitionsHub() {
                             <div>
                                 <h3>{selectedEvent.title}</h3>
                                 <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#94a3b8' }}>
-                                    Check off your students who will participate in this competition.
+                                    {t('competitionEvents.modalSubtitle', 'Check off your students who will participate in this competition.')}
                                 </p>
                             </div>
                             <button className="selector-modal-close" onClick={() => setSelectedEvent(null)}>
@@ -230,7 +232,7 @@ function UpcomingCompetitionsHub() {
                                     <Search size={16} color="#94a3b8" />
                                     <input 
                                         type="text"
-                                        placeholder="Search students..."
+                                        placeholder={t('competitionEvents.searchStudents', 'Search students...')}
                                         value={searchTerm}
                                         onChange={e => setSearchTerm(e.target.value)}
                                         style={{
@@ -256,13 +258,13 @@ function UpcomingCompetitionsHub() {
                                         whiteSpace: 'nowrap'
                                     }}
                                 >
-                                    {selectedStudentIds.length === filteredStudents.length ? 'Deselect All' : 'Select All'}
+                                    {selectedStudentIds.length === filteredStudents.length ? t('competitionEvents.deselectAll', 'Deselect All') : t('competitionEvents.selectAll', 'Select All')}
                                 </button>
                             </div>
 
                             {filteredStudents.length === 0 ? (
                                 <p style={{ textAlign: 'center', color: '#94a3b8', padding: '30px 0' }}>
-                                    No students found.
+                                    {t('common.noData', 'No students found.')}
                                 </p>
                             ) : (
                                 <div className="students-checklist-grid">
@@ -300,14 +302,14 @@ function UpcomingCompetitionsHub() {
 
                         <div className="selector-modal-footer">
                             <span style={{ color: '#94a3b8', fontSize: '14px' }}>
-                                Selected: <strong style={{ color: '#fbbf24' }}>{selectedStudentIds.length}</strong> students
+                                {t('competitionEvents.selected', 'Selected')}: <strong style={{ color: '#fbbf24' }}>{selectedStudentIds.length}</strong>
                             </span>
                             <button 
                                 className="submit-registration-btn"
                                 onClick={handleSubmitRegistration}
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? 'Saving...' : 'Submit Selection'}
+                                {isSubmitting ? t('competitionEvents.saving', 'Saving...') : t('competitionEvents.submitSelection', 'Submit Selection')}
                             </button>
                         </div>
                     </div>

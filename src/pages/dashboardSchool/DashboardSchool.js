@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import TeachersList from '../../components/teachersList/TeachersList';
@@ -17,6 +18,7 @@ import '../../reusable.css';
 import './DashboardSchool.css';
 
 function DashboardSchool() {
+    const { t } = useTranslation();
     const role = localStorage.getItem('auth_role');
     const userName = localStorage.getItem('pp_name');
     const [reportCount, setReportCount] = useState(0);
@@ -65,10 +67,12 @@ function DashboardSchool() {
         if (!newTitle.trim()) return;
         setIsCreating(true);
         try {
+            const schoolId = localStorage.getItem('pp_id');
             const res = await createCompetitionEvent({
                 title: newTitle,
                 description: newDesc,
-                eventDate: newDate
+                eventDate: newDate,
+                createdBy: schoolId
             });
             if (res.message === 'success') {
                 setNewTitle('');
@@ -76,6 +80,8 @@ function DashboardSchool() {
                 setNewDate('');
                 setShowCreateModal(false);
                 fetchEvents();
+            } else {
+                alert(res.message || 'Failed to publish card');
             }
         } catch (err) {
             console.error('Failed to create competition event:', err);
@@ -328,10 +334,10 @@ function DashboardSchool() {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
                             <div>
                                 <h2 style={{ margin: 0, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <Trophy color="#f59e0b" size={28} /> Official Competition Cards
+                                    <Trophy color="#f59e0b" size={28} /> {t('competitionEvents.officialCardsTitle', 'Official Competition Cards')}
                                 </h2>
                                 <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '14px' }}>
-                                    Create competition cards for your school. Teachers can enroll students and you can export Word & PDF reports.
+                                    {t('competitionEvents.officialCardsSubtitle', 'Create competition cards for your school. Teachers can enroll students and you can export Word & PDF reports.')}
                                 </p>
                             </div>
                             <div style={{ display: 'flex', gap: '12px' }}>
@@ -348,7 +354,7 @@ function DashboardSchool() {
                                         alignItems: 'center',
                                         gap: '8px'
                                     }}>
-                                        🏆 View Teacher Hub
+                                        {t('competitionEvents.viewTeacherHub', '🏆 View Teacher Hub')}
                                     </button>
                                 </Link>
                                 <button 
@@ -366,14 +372,14 @@ function DashboardSchool() {
                                         gap: '8px'
                                     }}
                                 >
-                                    <Plus size={18} /> Create Competition Card
+                                    <Plus size={18} /> {t('competitionEvents.createCardBtn', 'Create Competition Card')}
                                 </button>
                             </div>
                         </div>
 
                         {events.length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-                                No competition cards published yet. Click "Create Competition Card" to publish your first tournament!
+                                {t('competitionEvents.noEventsMessage', 'No competition cards published yet. Click "Create Competition Card" to publish your first tournament!')}
                             </div>
                         ) : (
                             <div style={{
@@ -496,11 +502,11 @@ function DashboardSchool() {
                             width: '100%',
                             boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
                         }}>
-                            <h3 style={{ margin: '0 0 16px 0', color: '#0f172a' }}>Publish New Competition Card</h3>
+                            <h3 style={{ margin: '0 0 16px 0', color: '#0f172a' }}>{t('competitionEvents.publishModalTitle', 'Publish New Competition Card')}</h3>
                             <form onSubmit={handleCreateEvent}>
                                 <div style={{ marginBottom: '16px' }}>
                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>
-                                        Competition Title *
+                                        {t('competitionEvents.compTitleLabel', 'Competition Title *')}
                                     </label>
                                     <input 
                                         type="text"
@@ -520,7 +526,7 @@ function DashboardSchool() {
                                 </div>
                                 <div style={{ marginBottom: '16px' }}>
                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>
-                                        Description
+                                        {t('competitionEvents.compDescLabel', 'Description')}
                                     </label>
                                     <textarea 
                                         rows={3}
@@ -539,7 +545,7 @@ function DashboardSchool() {
                                 </div>
                                 <div style={{ marginBottom: '24px' }}>
                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>
-                                        Event Date
+                                        {t('competitionEvents.eventDateLabel', 'Event Date')}
                                     </label>
                                     <input 
                                         type="date"
@@ -570,7 +576,7 @@ function DashboardSchool() {
                                             cursor: 'pointer'
                                         }}
                                     >
-                                        Cancel
+                                        {t('competitionEvents.cancelBtn', 'Cancel')}
                                     </button>
                                     <button 
                                         type="submit"
@@ -585,7 +591,7 @@ function DashboardSchool() {
                                             cursor: 'pointer'
                                         }}
                                     >
-                                        {isCreating ? 'Publishing...' : 'Publish Card'}
+                                        {isCreating ? t('competitionEvents.publishing', 'Publishing...') : t('competitionEvents.publishBtn', 'Publish Card')}
                                     </button>
                                 </div>
                             </form>

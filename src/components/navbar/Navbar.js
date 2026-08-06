@@ -279,7 +279,7 @@ const Navbar = () => {
                     {isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? (
                         <Link to={'/teacher/competitions-hub'} onClick={() => soundEffects.playClick()}>
                             <div className="nav-btn" style={{ background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)', color: '#000', border: 'none', marginRight: '6px', fontWeight: '800' }}>
-                                🏆 COMPETITIONS
+                                {t('navbar.competitionsHub', '🏆 COMPETITIONS')}
                             </div>
                         </Link>
                     ) : null}
