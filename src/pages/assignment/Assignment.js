@@ -242,6 +242,12 @@ function Assignment() {
             remainingSecs = Math.max(0, Math.floor((time.getTime() - now.getTime()) / 1000));
           }
 
+          // Calculate elapsed seconds so far for accurate time reporting on restore
+          let elapsedSecs = 0;
+          if (totalTime > 0 && remainingSecs !== null) {
+            elapsedSecs = Math.max(0, (totalTime * 60) - remainingSecs);
+          }
+
           const progress = {
             assignmentID,
             questionData,
@@ -251,6 +257,7 @@ function Assignment() {
             totalTime,
             time: time?.toISOString?.() || null,
             remainingSeconds: remainingSecs,
+            elapsedSeconds: elapsedSecs,
             totalSummation,
             forceFlashMode,
             flashSpeed,
@@ -272,9 +279,21 @@ function Assignment() {
         // Use sendBeacon for reliable submission on page close
         const hasAnswers = questionData.some(q => q.questionAnswer && q.questionAnswer !== '');
         if (hasAnswers && navigator.sendBeacon) {
+          // Calculate time from localStorage timer if timeSpent hasn't been set yet
+          let emergencyTime = timeSpent || '0:00';
+          if (emergencyTime === '0:00' && totalTime > 0) {
+            const savedRemaining = localStorage.getItem('timer_remaining_seconds');
+            if (savedRemaining !== null && savedRemaining !== '') {
+              const remaining = parseInt(savedRemaining, 10);
+              const elapsed = Math.max(0, (totalTime * 60) - remaining);
+              const mins = Math.floor(elapsed / 60);
+              const secs = elapsed % 60;
+              emergencyTime = `${mins}:${String(secs).padStart(2, '0')}`;
+            }
+          }
           const data = JSON.stringify({
             assignmentID,
-            time: timeSpent || '0:00',
+            time: emergencyTime,
             answeredCount: questionData.filter(q => q.questionAnswer).length
           });
           navigator.sendBeacon(`${API_BASE_URL}/answer/emergencySubmit`, new Blob([data], { type: 'application/json' }));
@@ -900,11 +919,19 @@ function Assignment() {
         newTime.setSeconds(newTime.getSeconds() + progress.remainingSeconds);
         setTime(newTime);
       } else {
-        // Timer expired
-        setTimeSpent(`${progress.totalTime || 0}:00`);
+        // Timer expired — use saved elapsed time if available, otherwise fall back to total time
+        let expiredTime;
+        if (progress.elapsedSeconds > 0) {
+          const mins = Math.floor(progress.elapsedSeconds / 60);
+          const secs = progress.elapsedSeconds % 60;
+          expiredTime = `${mins}:${String(secs).padStart(2, '0')}`;
+        } else {
+          expiredTime = `${progress.totalTime || 0}:00`;
+        }
+        setTimeSpent(expiredTime);
         setExamCompleted(true);
         setIsCheckingAnswers(true);
-        checkAllAnswers(`${progress.totalTime || 0}:00`);
+        checkAllAnswers(expiredTime);
       }
     } else if (progress.time) {
       // Fallback to old absolute time logic for backward compatibility
@@ -913,11 +940,19 @@ function Assignment() {
       if (savedTime > now) {
         setTime(savedTime);
       } else {
-        // Timer expired while away — auto-submit immediately
-        setTimeSpent(`${progress.totalTime || 0}:00`);
+        // Timer expired while away — use saved elapsed time if available
+        let expiredTime;
+        if (progress.elapsedSeconds > 0) {
+          const mins = Math.floor(progress.elapsedSeconds / 60);
+          const secs = progress.elapsedSeconds % 60;
+          expiredTime = `${mins}:${String(secs).padStart(2, '0')}`;
+        } else {
+          expiredTime = `${progress.totalTime || 0}:00`;
+        }
+        setTimeSpent(expiredTime);
         setExamCompleted(true);
         setIsCheckingAnswers(true);
-        checkAllAnswers(`${progress.totalTime || 0}:00`);
+        checkAllAnswers(expiredTime);
       }
     }
 
@@ -1208,29 +1243,38 @@ function Assignment() {
     setShowKeyboard(false);
     
     // Calculate elapsed time based on total time and remaining time
-    // The timer shows REMAINING time, we need ELAPSED time
-    const timerElement = document.querySelector('.timer .time_item');
+    // Primary: read from localStorage (Timer.js saves remaining seconds every 5s)
+    // Fallback: read from DOM elements
     let elapsedTime = '0:00';
-    
-    if (timerElement) {
+    let remainingSeconds = null;
+
+    // Method 1: localStorage (reliable, saved by Timer.js every 5 seconds)
+    const savedRemaining = localStorage.getItem('timer_remaining_seconds');
+    if (savedRemaining !== null && savedRemaining !== '') {
+      remainingSeconds = parseInt(savedRemaining, 10);
+    }
+
+    // Method 2 (fallback): DOM scraping, only if localStorage had nothing
+    if (remainingSeconds === null) {
       const allTimeItems = document.querySelectorAll('.timer .time_item');
       if (allTimeItems.length >= 2) {
         const remainingMinutes = parseInt(allTimeItems[0].textContent) || 0;
-        const remainingSeconds = parseInt(allTimeItems[1].textContent) || 0;
-        
-        // Calculate elapsed time
-        const totalTimeInSeconds = totalTime * 60;
-        const remainingTimeInSeconds = (remainingMinutes * 60) + remainingSeconds;
-        const elapsedTimeInSeconds = totalTimeInSeconds - remainingTimeInSeconds;
-        
-        const elapsedMinutes = Math.floor(elapsedTimeInSeconds / 60);
-        const elapsedSecs = elapsedTimeInSeconds % 60;
-        elapsedTime = `${elapsedMinutes}:${String(elapsedSecs).padStart(2, '0')}`;
-        
-        console.log('Manual end exam - Total time:', totalTime, 'minutes');
-        console.log('Manual end exam - Remaining:', remainingMinutes, 'minutes', remainingSeconds, 'seconds');
-        console.log('Manual end exam - Elapsed time:', elapsedTime);
+        const remainingSecs = parseInt(allTimeItems[1].textContent) || 0;
+        remainingSeconds = (remainingMinutes * 60) + remainingSecs;
       }
+    }
+
+    if (remainingSeconds !== null && totalTime > 0) {
+      const totalTimeInSeconds = totalTime * 60;
+      const elapsedTimeInSeconds = Math.max(0, totalTimeInSeconds - remainingSeconds);
+      
+      const elapsedMinutes = Math.floor(elapsedTimeInSeconds / 60);
+      const elapsedSecs = elapsedTimeInSeconds % 60;
+      elapsedTime = `${elapsedMinutes}:${String(elapsedSecs).padStart(2, '0')}`;
+      
+      console.log('Manual end exam - Total time:', totalTime, 'minutes');
+      console.log('Manual end exam - Remaining seconds:', remainingSeconds);
+      console.log('Manual end exam - Elapsed time:', elapsedTime);
     }
     
     setTimeSpent(elapsedTime);

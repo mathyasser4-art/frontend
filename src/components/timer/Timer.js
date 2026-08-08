@@ -14,7 +14,7 @@ function MyTimer({ expiryTimestamp, handleGetResult, totalTime, stopTimer }) {
     autoStart: true,
     onExpire: () => {
       console.log('Timer expired!');
-      calculateAndStoreTime();
+      calculateAndStoreTime(true);
     }
   });
 
@@ -22,17 +22,19 @@ function MyTimer({ expiryTimestamp, handleGetResult, totalTime, stopTimer }) {
   const startTimeRef = useRef(null); // Track when timer actually started
 
   // CORRECTED: Calculate elapsed time properly
-  const calculateAndStoreTime = useCallback(() => {
+  // isExpired=true means timer naturally reached 0, so remaining is definitively 0
+  const calculateAndStoreTime = useCallback((isExpired = false) => {
     if (hasStoredTimeRef.current) return;
     hasStoredTimeRef.current = true;
 
     // Calculate elapsed time based on total time minus remaining time
     const totalDurationInSeconds = totalTime * 60;
-    const remainingTimeInSeconds = (minutes * 60) + seconds;
+    // When timer naturally expires, remaining is 0 regardless of stale closure values
+    const remainingTimeInSeconds = isExpired ? 0 : ((minutes * 60) + seconds);
     const elapsedTimeInSeconds = totalDurationInSeconds - remainingTimeInSeconds;
     
     console.log('Timer - Total duration:', totalDurationInSeconds, 'seconds');
-    console.log('Timer - Remaining time:', remainingTimeInSeconds, 'seconds');
+    console.log('Timer - Remaining time:', remainingTimeInSeconds, 'seconds (isExpired:', isExpired, ')');
     console.log('Timer - Elapsed time:', elapsedTimeInSeconds, 'seconds');
     
     // Ensure we have at least 1 second
