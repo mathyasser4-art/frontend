@@ -105,7 +105,8 @@ function App() {
           sessionId,
           userId: safeLocalStorage.getItem('pp_id') || null,
           role: safeLocalStorage.getItem('auth_role') || 'Visitor',
-          userName: safeLocalStorage.getItem('pp_name') || 'Anonymous'
+          userName: safeLocalStorage.getItem('pp_name') || 'Anonymous',
+          schoolId: safeLocalStorage.getItem('school_id') || safeLocalStorage.getItem('created_by') || null
         })
       }).catch(err => console.error("Heartbeat error", err));
     };

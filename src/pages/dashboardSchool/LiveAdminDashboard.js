@@ -18,7 +18,10 @@ const LiveAdminDashboard = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await fetch(`${API_BASE_URL}/live-stats`);
+                const token = localStorage.getItem('O_authWEB');
+                const res = await fetch(`${API_BASE_URL}/live-stats`, {
+                    headers: token ? { 'authrization': 'pracYas09' + token } : {}
+                });
                 const data = await res.json();
                 if (data.success) {
                     setStats({ totalVisitors: data.totalVisitors, users: data.users });
@@ -37,7 +40,10 @@ const LiveAdminDashboard = () => {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const res = await fetch(`${API_BASE_URL}/historical-stats?date=${historyDate}`);
+                const token = localStorage.getItem('O_authWEB');
+                const res = await fetch(`${API_BASE_URL}/historical-stats?date=${historyDate}`, {
+                    headers: token ? { 'authrization': 'pracYas09' + token } : {}
+                });
                 const data = await res.json();
                 if (data.success) {
                     setHistoryStats({ users: data.users });
