@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import logo from '../../logo.png'
 import avatarExam from '../../img/avatar-exam.png'
@@ -131,6 +131,11 @@ function Assignment() {
   const isNavigatingRef = useRef(false);
   const initialized = useRef(false);
   const hasSubmittedRef = useRef(false);
+  const [time, setTime] = useState(0);
+  const [totalTime, setTotalTime] = useState(0);
+  const navigate = useNavigate();
+  const mf = useRef();
+  let modify = useRef();
   const startTimeRef = useRef(null);
 
   // Helper to calculate exact active elapsed time (Date.now() - startTimeRef)
