@@ -134,13 +134,13 @@ function Assignment() {
   const startTimeRef = useRef(null);
 
   // Helper to calculate exact active elapsed time (Date.now() - startTimeRef)
-  const getRealElapsedTime = () => {
+  const getRealElapsedTime = useCallback(() => {
     if (!startTimeRef.current) return '0:00';
     const elapsedSeconds = Math.max(1, Math.floor((Date.now() - startTimeRef.current) / 1000));
     const mins = Math.floor(elapsedSeconds / 60);
     const secs = elapsedSeconds % 60;
     return `${mins}:${String(secs).padStart(2, '0')}`;
-  };
+  }, []);
 
   // --- Start Sound Additions ---
   const audioRef = useRef(null);
@@ -305,7 +305,7 @@ function Assignment() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('pagehide', handlePageHide);
     };
-  }, [examCompleted, questionData, thisQuestionNumber, answer, assignmentID, time, totalTime, timeSpent]);
+  }, [examCompleted, questionData, thisQuestionNumber, answer, assignmentID, time, totalTime, timeSpent, getRealElapsedTime]);
 
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
