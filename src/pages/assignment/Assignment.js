@@ -131,11 +131,16 @@ function Assignment() {
   const isNavigatingRef = useRef(false);
   const initialized = useRef(false);
   const hasSubmittedRef = useRef(false);
-  const [time, setTime] = useState(0);
-  const [totalTime, setTotalTime] = useState(0);
-  const navigate = useNavigate()
-  const mf = useRef();
-  let modify = useRef();
+  const startTimeRef = useRef(null);
+
+  // Helper to calculate exact active elapsed time (Date.now() - startTimeRef)
+  const getRealElapsedTime = () => {
+    if (!startTimeRef.current) return '0:00';
+    const elapsedSeconds = Math.max(1, Math.floor((Date.now() - startTimeRef.current) / 1000));
+    const mins = Math.floor(elapsedSeconds / 60);
+    const secs = elapsedSeconds % 60;
+    return `${mins}:${String(secs).padStart(2, '0')}`;
+  };
 
   // --- Start Sound Additions ---
   const audioRef = useRef(null);
@@ -255,6 +260,7 @@ function Assignment() {
             thisQuestionNumber,
             answer,
             timestamp: Date.now(),
+            startTime: startTimeRef.current || Date.now(),
             totalTime,
             time: time?.toISOString?.() || null,
             remainingSeconds: remainingSecs,
@@ -280,18 +286,8 @@ function Assignment() {
         // Use sendBeacon for reliable submission on page close
         const hasAnswers = questionData.some(q => q.questionAnswer && q.questionAnswer !== '');
         if (hasAnswers && navigator.sendBeacon) {
-          // Calculate time from localStorage timer if timeSpent hasn't been set yet
-          let emergencyTime = timeSpent || '0:00';
-          if (emergencyTime === '0:00' && totalTime > 0) {
-            const savedRemaining = localStorage.getItem('timer_remaining_seconds');
-            if (savedRemaining !== null && savedRemaining !== '') {
-              const remaining = parseInt(savedRemaining, 10);
-              const elapsed = Math.max(0, (totalTime * 60) - remaining);
-              const mins = Math.floor(elapsed / 60);
-              const secs = elapsed % 60;
-              emergencyTime = `${mins}:${String(secs).padStart(2, '0')}`;
-            }
-          }
+          // Calculate time using getRealElapsedTime() if timeSpent hasn't been set yet
+          let emergencyTime = (timeSpent && timeSpent !== '0:00') ? timeSpent : getRealElapsedTime();
           const data = JSON.stringify({
             assignmentID,
             time: emergencyTime,
@@ -779,9 +775,12 @@ function Assignment() {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-enable Arabic mode if the teacher set the assignment to be Arabic
+  // Auto-enable Arabic mode if the teacher set the assignment to be Arabic & initialize active start timer
   useEffect(() => {
     if (questionData && questionData.length > 0) {
+      if (!startTimeRef.current) {
+        startTimeRef.current = Date.now();
+      }
       if (questionData[0].isArabic) {
         setIsArabic(true);
       }
@@ -899,6 +898,7 @@ function Assignment() {
     soundEffects.playClick();
 
     const progress = savedProgressData;
+    if (progress.startTime) startTimeRef.current = progress.startTime;
     setQuestionData(progress.questionData);
     setThisQuestion(progress.questionData[progress.thisQuestionNumber - 1]);
     setNumberOfQuestion(progress.questionData.map((_, i) => i + 1));
@@ -1221,7 +1221,10 @@ function Assignment() {
     setStopTimer(true);
     setShowKeyboard(false);
     
-    const finalTime = mmssFromTimer || '0:00';
+    // Always use real-time timestamp calculation if startTimeRef is available
+    const realTime = getRealElapsedTime();
+    const finalTime = (realTime && realTime !== '0:00') ? realTime : (mmssFromTimer || '0:00');
+    
     setTimeSpent(finalTime);
     setExamCompleted(true);
     
@@ -1229,10 +1232,10 @@ function Assignment() {
     clearSavedProgress();
     
     console.log('handleGetResult - Received time from timer:', mmssFromTimer);
+    console.log('handleGetResult - Real elapsed time calculated:', realTime);
     console.log('handleGetResult - Final time to save:', finalTime);
-    console.log('handleGetResult - questionData available:', questionData ? 'yes' : 'no');
     
-    // Start checking all answers (checkAllAnswers will handle if questionData is not available)
+    // Start checking all answers
     setIsCheckingAnswers(true);
     checkAllAnswers(finalTime);
   }
@@ -1243,40 +1246,10 @@ function Assignment() {
     setStopTimer(true);
     setShowKeyboard(false);
     
-    // Calculate elapsed time based on total time and remaining time
-    // Primary: read from localStorage (Timer.js saves remaining seconds every 5s)
-    // Fallback: read from DOM elements
-    let elapsedTime = '0:00';
-    let remainingSeconds = null;
-
-    // Method 1: localStorage (reliable, saved by Timer.js every 5 seconds)
-    const savedRemaining = localStorage.getItem('timer_remaining_seconds');
-    if (savedRemaining !== null && savedRemaining !== '') {
-      remainingSeconds = parseInt(savedRemaining, 10);
-    }
-
-    // Method 2 (fallback): DOM scraping, only if localStorage had nothing
-    if (remainingSeconds === null) {
-      const allTimeItems = document.querySelectorAll('.timer .time_item');
-      if (allTimeItems.length >= 2) {
-        const remainingMinutes = parseInt(allTimeItems[0].textContent) || 0;
-        const remainingSecs = parseInt(allTimeItems[1].textContent) || 0;
-        remainingSeconds = (remainingMinutes * 60) + remainingSecs;
-      }
-    }
-
-    if (remainingSeconds !== null && totalTime > 0) {
-      const totalTimeInSeconds = totalTime * 60;
-      const elapsedTimeInSeconds = Math.max(0, totalTimeInSeconds - remainingSeconds);
-      
-      const elapsedMinutes = Math.floor(elapsedTimeInSeconds / 60);
-      const elapsedSecs = elapsedTimeInSeconds % 60;
-      elapsedTime = `${elapsedMinutes}:${String(elapsedSecs).padStart(2, '0')}`;
-      
-      console.log('Manual end exam - Total time:', totalTime, 'minutes');
-      console.log('Manual end exam - Remaining seconds:', remainingSeconds);
-      console.log('Manual end exam - Elapsed time:', elapsedTime);
-    }
+    // Calculate active elapsed time directly via timestamp subtraction (Date.now() - startTimeRef)
+    const elapsedTime = getRealElapsedTime();
+    
+    console.log('Manual end exam - Real elapsed time calculated:', elapsedTime);
     
     setTimeSpent(elapsedTime);
     setExamCompleted(true);
