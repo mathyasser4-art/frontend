@@ -22,6 +22,7 @@ import './Assignment.css'
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
+// Homework elapsed active time tracking engine
 function Assignment() {
   // State for mobile detection and exit confirmation
   const [isMobile, setIsMobile] = useState(false);
