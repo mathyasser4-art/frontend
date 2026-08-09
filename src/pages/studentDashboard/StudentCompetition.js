@@ -84,6 +84,7 @@ function StudentCompetition() {
     const totalAnsweredRef = useRef(0);
     const answersMapRef = useRef({});
     const [localFinishedAt, setLocalFinishedAt] = useState(null);
+    const lastAnswerClickTimeRef = useRef(null);
     const wakeLockRef = useRef(null);
     const currentQuestion = questions[currentIndex];
 
@@ -553,6 +554,7 @@ function StudentCompetition() {
         soundEffects.playClick();
         setAnswer(selectedVal);
         requestWakeLock();
+        lastAnswerClickTimeRef.current = new Date();
 
         // Save answer locally immediately
         setAnswersMap(prev => {
@@ -615,7 +617,7 @@ function StudentCompetition() {
     };
 
     const handleFinishExam = async (isTimerExpired = false) => {
-        const now = new Date();
+        const now = lastAnswerClickTimeRef.current || new Date();
         setLocalFinishedAt(now);
         if (isTimerExpired === true || (timerRemaining !== null && timerRemaining <= 0)) {
             setStatus('finished');

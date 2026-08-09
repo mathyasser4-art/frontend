@@ -61,6 +61,7 @@ function TeacherCompetitionLobby() {
     const [loadingStudents, setLoadingStudents] = useState(false);
     const [selectedStudentId, setSelectedStudentId] = useState('');
     const [timerRemaining, setTimerRemaining] = useState(null);
+    const [lobbyCountdown, setLobbyCountdown] = useState(null);
 
     const wakeLockRef = useRef(null);
 
@@ -293,7 +294,8 @@ function TeacherCompetitionLobby() {
         // Listen for competition start (e.g. if page was reloaded by teacher)
         channel.bind('start-competition', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
-            setStatus('active');
+            setStatus('countdown');
+            setLobbyCountdown(3);
             if (data && data.timer) {
                 setTimerRemaining(data.timer);
             }
@@ -333,7 +335,8 @@ function TeacherCompetitionLobby() {
         try {
             const res = await startCompetition(competitionId);
             if (res.message === 'success' && res.competition) {
-                setStatus('active');
+                setStatus('countdown');
+                setLobbyCountdown(3);
                 setCompetition(res.competition);
                 const startedTime = res.competition.startedAt ? new Date(res.competition.startedAt).getTime() : Date.now();
                 const elapsed = Math.max(0, Math.floor((Date.now() - startedTime) / 1000));
@@ -347,6 +350,21 @@ function TeacherCompetitionLobby() {
             setError("Failed to start competition. Please try again.");
         }
     };
+
+    // 3-2-1 Lobby countdown trigger for Teacher (Synchronized with Students)
+    useEffect(() => {
+        if (status === 'countdown' && lobbyCountdown !== null) {
+            if (lobbyCountdown > 0) {
+                const timer = setTimeout(() => {
+                    setLobbyCountdown(prev => prev - 1);
+                }, 1000);
+                return () => clearTimeout(timer);
+            } else {
+                setStatus('active');
+                setLobbyCountdown(null);
+            }
+        }
+    }, [status, lobbyCountdown]);
 
     const handleFinish = async () => {
         soundEffects.playClick();
@@ -741,6 +759,20 @@ function TeacherCompetitionLobby() {
             <Navbar />
 
             {triggerConfetti && <Confetti recycle={false} numberOfPieces={300} />}
+
+            {/* SYNCHRONIZED 3-2-1 COUNTDOWN OVERLAY FOR TEACHER */}
+            {status === 'countdown' && (
+                <div className="countdown-overlay-fullscreen">
+                    <div className="countdown-giant-digits">
+                        {lobbyCountdown === 0 ? (
+                            <h1 className="bounce-digit text-success">GO!</h1>
+                        ) : (
+                            <h1 className="bounce-digit">{lobbyCountdown}</h1>
+                        )}
+                    </div>
+                    <p className="countdown-sub">Get ready to lead...</p>
+                </div>
+            )}
 
             <div className="lobby-content-container">
                 <header className="lobby-header-card">
