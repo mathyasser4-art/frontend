@@ -299,7 +299,7 @@ function StudentCompetition() {
                             score: data.score,
                             totalAnswered: data.totalAnswered,
                             wrongAnswers: data.wrongAnswers,
-                            finishedAt: data.finished ? new Date() : p.finishedAt 
+                            finishedAt: data.finishedAt ? new Date(data.finishedAt) : (data.finished ? new Date() : p.finishedAt) 
                         };
                     }
                     return p;
@@ -637,6 +637,7 @@ function StudentCompetition() {
                 totalAnswered: totalAnsweredRef.current,
                 wrongAnswers: wrongCountRef.current,
                 finished: true,
+                finishedAt: now.toISOString(),
                 answers: Object.entries(answersMapRef.current).map(([qId, data]) => ({
                     question: qId,
                     studentAnswer: data.answer || "",
