@@ -85,6 +85,51 @@
     flex-shrink: 0;
 }
 
+/* Simple Waiting Lobby Card (Large White Font) */
+.simple-waiting-card {
+    text-align: center;
+    padding: 60px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+}
+
+.simple-competition-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+}
+
+.simple-waiting-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.circle-dots-loader-large {
+    width: 44px;
+    height: 44px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-top: 4px solid #ffffff;
+    border-right: 4px solid #ffffff;
+    border-radius: 50%;
+    animation: spinCircleDots 0.8s linear infinite;
+    display: inline-block;
+}
+
+.simple-waiting-text {
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+}
+
 @keyframes spinCircleDots {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

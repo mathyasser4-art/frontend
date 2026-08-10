@@ -565,6 +565,17 @@
     "getReady": "استعد...",
     "set": "جاهز...",
     "go": "انطلق! 🚀"
+  },
+  "studentCompetition": {
+    "waitingForTeacher": "جاري الانتظار للمعلم للبدء...",
+    "getReadyToRace": "استعد لبدء السباق...",
+    "solve": "انطلق وحل!",
+    "waitingForConclude": "⏳ جاري انتظار انتهاء المسابقة...",
+    "loadingResults": "جاري تحميل النتائج النهائية... لقد قمت بحل جميع الأسئلة بنجاح!",
+    "timeRemaining": "الوقت المتبقي",
+    "question": "السؤال",
+    "finish": "إنهاء",
+    "submitAnswer": "إرسال الإجابة"
   }
 }
 

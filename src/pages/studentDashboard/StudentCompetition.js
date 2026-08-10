@@ -12,6 +12,7 @@ import './StudentCompetition.css';
 import CertificateModal from '../../components/certificate/CertificateModal';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { useTranslation } from 'react-i18next';
 
 // Helper to extract participant ID safely (handling populated student object, ObjectId string, and guestId)
 const getParticipantId = (p) => {
@@ -39,6 +40,7 @@ const formatElapsedMs = (finishedAt, startedAt) => {
 };
 
 function StudentCompetition() {
+    const { t } = useTranslation();
     const { competitionId } = useParams();
     const navigate = useNavigate();
     const [competition, setCompetition] = useState(null);
@@ -782,36 +784,14 @@ function StudentCompetition() {
             {/* 1. LOBBY WAITING STATE */}
             {status === 'lobby' && (
                 <div className="lobby-room-wrapper">
-                    <div className="lobby-main-card">
-                        <header className="lobby-head-box">
-                            <h2>{competition.title}</h2>
-                            <div className="status-label">
-                                <span className="circle-dots-loader"></span>
-                                <span>Waiting for Teacher to Start...</span>
-                            </div>
-                        </header>
+                    <div className="lobby-main-card simple-waiting-card">
+                        <h2 className="simple-competition-title">{competition.title}</h2>
 
-                        <div className="lobby-centered-layout">
-                            {/* Active Student List */}
-                            <div className="competitors-list-panel">
-                                <h3>⚔️ Connected Combatants ({participants.length})</h3>
-                                <div className="students-lobby-scroller">
-                                    {participants.map((p, idx) => {
-                                        const isMe = String(p.student?._id || p.student) === String(studentID);
-                                        return (
-                                            <div key={p.student?._id || idx} className={`lobby-racer-card ${isMe ? 'racer-me' : ''}`}>
-                                                <div className="racer-avatar">
-                                                    {p.student?.userName?.charAt(0).toUpperCase()}
-                                                </div>
-                                                <span className="racer-name">
-                                                    {p.student?.userName} {isMe && '(You)'}
-                                                </span>
-                                                <span className="racer-status">Ready</span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
+                        <div className="simple-waiting-box">
+                            <span className="circle-dots-loader-large"></span>
+                            <h3 className="simple-waiting-text">
+                                {t('studentCompetition.waitingForTeacher')}
+                            </h3>
                         </div>
                     </div>
                 </div>
@@ -822,12 +802,12 @@ function StudentCompetition() {
                 <div className="countdown-overlay-fullscreen">
                     <div className="countdown-giant-digits">
                         {lobbyCountdown === 0 ? (
-                            <h1 className="zoom-go">SOLVE!</h1>
+                            <h1 className="zoom-go">{t('studentCompetition.solve')}</h1>
                         ) : (
                             <h1 className="bounce-digit">{lobbyCountdown}</h1>
                         )}
                     </div>
-                    <p className="countdown-sub">Get ready to race...</p>
+                    <p className="countdown-sub">{t('studentCompetition.getReadyToRace')}</p>
                 </div>
             )}
 

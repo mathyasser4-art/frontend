@@ -551,6 +551,17 @@
     "getReady": "Get Ready...",
     "set": "Set...",
     "go": "Go! 🚀"
+  },
+  "studentCompetition": {
+    "waitingForTeacher": "Waiting for Teacher to Start...",
+    "getReadyToRace": "Get ready to race...",
+    "solve": "SOLVE!",
+    "waitingForConclude": "⏳ Waiting for Competition to Conclude...",
+    "loadingResults": "Loading final results... You have successfully completed all questions!",
+    "timeRemaining": "Time Remaining",
+    "question": "Question",
+    "finish": "Finish",
+    "submitAnswer": "Submit Answer"
   }
 }
 
