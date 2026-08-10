@@ -791,6 +791,24 @@ function StudentCompetition() {
                             </div>
                         </header>
 
+                        {/* Ultra-Short Friendly Waiting Hero Sign */}
+                        <div className="student-waiting-hero-card">
+                            <div className="pulse-icon-wrapper">
+                                <span className="glowing-hourglass">⏳</span>
+                            </div>
+                            <h2 className="waiting-hero-title">You're Ready! 🚀</h2>
+                            <p className="waiting-hero-subtitle">
+                                Wait for your teacher to press <strong>Start</strong>.
+                            </p>
+                            <div className="waiting-status-badge">
+                                <span className="live-dot"></span>
+                                <span>Connected</span>
+                            </div>
+                            <div className="waiting-tip-box">
+                                <span>💡 <strong>Tip:</strong> Accuracy wins trophies!</span>
+                            </div>
+                        </div>
+
                         <div className="lobby-centered-layout">
                             {/* Active Student List */}
                             <div className="competitors-list-panel">
