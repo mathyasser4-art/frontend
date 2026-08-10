@@ -619,14 +619,18 @@ function StudentCompetition() {
     };
 
     const handleFinishExam = async (isTimerExpired = false) => {
-        const now = lastAnswerClickTimeRef.current || new Date();
-        setLocalFinishedAt(now);
+        let now = lastAnswerClickTimeRef.current || new Date();
         if (isTimerExpired === true || (timerRemaining !== null && timerRemaining <= 0)) {
+            if (competition && competition.startedAt && competition.timer) {
+                const maxFinishMs = new Date(competition.startedAt).getTime() + (competition.timer * 1000);
+                now = new Date(Math.min(now.getTime(), maxFinishMs));
+            }
             setStatus('finished');
             setTriggerConfetti(true);
         } else {
             setStatus('waiting-for-end');
         }
+        setLocalFinishedAt(now);
         setIsCheckingAnswers(true);
 
         // Wait a moment for any pending background checks to complete
