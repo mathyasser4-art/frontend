@@ -8,6 +8,8 @@ import { safeSessionStorage } from '../../utils/safeStorage';
 import './MobileAppDownloadPopup.css';
 
 function MobileAppDownloadPopup() {
+  return null;
+
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
   const [showPopup, setShowPopup] = useState(false);
