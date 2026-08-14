@@ -1903,3 +1903,351 @@
   }
 }
 
+/* ============================================================
+   CENTERED GLASSMORPHISM LOBBY & RACERS GRID
+   ============================================================ */
+.racer-header-badge {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.racer-header-badge h2 {
+  color: #ffffff !important;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.racer-lobby-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.racer-lobby-panel {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  border: 2px solid #3b82f6;
+  border-radius: 24px;
+  padding: 1.5rem;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.lobby-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 0.75rem;
+}
+
+.lobby-card-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.lobby-live-badge {
+  background: #fee2e2;
+  color: #ef4444;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid #fca5a5;
+  animation: pulse 1.5s infinite;
+}
+
+/* Connected Racers Lineup */
+.lobby-racers-section h4 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.racers-lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.racer-player-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.racer-car-icon {
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.racer-player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.racer-player-info .player-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.host-role-badge {
+  font-size: 0.75rem;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.switch-role-btn {
+  background: #f97316;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+}
+
+/* Room Code Speedometer Banner */
+.room-code-speedometer-card {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border-radius: 16px;
+  padding: 1.25rem;
+  text-align: center;
+  color: #ffffff;
+  margin-top: 1rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);
+}
+
+.room-code-speedometer-card .code-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.code-digits-display {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.digit-box {
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 2.2rem;
+  font-weight: 900;
+  width: 50px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+}
+
+.or-divider {
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.copy-link-btn {
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.copy-link-btn:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+/* Question Selector Component */
+.question-selector-container {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.qs-title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.qs-dropdowns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.qs-select {
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  width: 100%;
+  background: #ffffff;
+  outline: none;
+}
+
+.qs-selected-badge {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #15803d;
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.qs-selected-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.qs-btn-preview {
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.qs-btn-change {
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.qs-count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.qs-count-label {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.qs-count-input {
+  width: 70px;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* Action Buttons */
+.lobby-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.cancel-lobby-btn {
+  padding: 0.75rem 1.25rem;
+  background: #ef4444;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-lobby-btn:hover {
+  background: #dc2626;
+}
+
+.lobby-guest-waiting {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #10b981;
+}
+
+.waiting-spinner {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: carSpin 1.5s infinite linear;
+}
+
+@keyframes carSpin {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(10deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+

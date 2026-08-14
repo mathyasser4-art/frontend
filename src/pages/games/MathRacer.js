@@ -846,16 +846,16 @@ function MathRacer() {
 
   const renderQuestionSelector = (isHostMode = false) => {
     return (
-      <div style={{ textAlign: 'left', marginTop: '5px' }}>
-        <h3 style={{ color: isHostMode ? 'black' : '#3b82f6', margin: '0 0 5px', fontSize: '18px', fontWeight: 'bold' }}>
-          question resource (worksheets)
+      <div className="question-selector-container">
+        <h3 className="qs-title">
+          📚 {t('mathRacer.question_resource', 'مصدر الأسئلة (أوراق العمل)')}
         </h3>
         
         {!customQuestions ? (
-          <div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
+          <div className="qs-dropdowns">
+            <div className="qs-group">
               {systemData.length === 0 ? (
-                <p style={{ color: '#94a3b8', fontSize: '14px' }}>{t('loading_worksheets', 'Loading worksheets...')}</p>
+                <p className="qs-loading">{t('loading_worksheets', 'جاري تحميل أوراق العمل...')}</p>
               ) : (
                 <>
                   <select
@@ -866,9 +866,9 @@ function MathRacer() {
                       setSelectedUnitId(null);
                       setUnitData([]);
                     }}
-                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                    className="qs-select"
                   >
-                    <option value="" disabled>{t('mathRacer.select_system', 'select...')}</option>
+                    <option value="" disabled>{t('mathRacer.select_system', 'اختر النظام التعليمي...')}</option>
                     {systemData.map(system => (
                       <option key={system._id} value={system._id}>{translateName(system.systemName)}</option>
                     ))}
@@ -882,9 +882,9 @@ function MathRacer() {
                         const subject = system?.subjects?.find(sub => sub._id === e.target.value);
                         if (subject) handleSelectSubject(subject);
                       }}
-                      style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                      className="qs-select"
                     >
-                      <option value="" disabled>{t('mathRacer.select_subject', 'select...')}</option>
+                      <option value="" disabled>{t('mathRacer.select_subject', 'اختر المادة الدراسية...')}</option>
                       {systemData.find(s => s._id === selectedSystemId)?.subjects?.map(subject => (
                         <option key={subject._id} value={subject._id}>{translateName(subject.subjectName)}</option>
                       ))}
@@ -895,15 +895,15 @@ function MathRacer() {
             </div>
             
             {selectedSubject && unitData.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div className="qs-group">
                 <select
                   value={selectedUnitId || ''}
                   onChange={(e) => {
                     toggleUnitExpand(e.target.value);
                   }}
-                  style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                  className="qs-select"
                 >
-                  <option value="" disabled>{t('mathRacer.select_unit', 'select...')}</option>
+                  <option value="" disabled>{t('mathRacer.select_unit', 'اختر الوحدة الدراسية...')}</option>
                   {unitData.map(unit => (
                     <option key={unit._id} value={unit._id}>{translateName(unit.unitName)}</option>
                   ))}
@@ -917,9 +917,9 @@ function MathRacer() {
                       const chapter = unit?.chapters?.find(c => c._id === e.target.value);
                       if (chapter) handleSelectChapter(chapter);
                     }}
-                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '15px', fontWeight: 'bold', width: '100%', outline: 'none' }}
+                    className="qs-select"
                   >
-                    <option value="" disabled>{t('select_chapter', 'Select Chapter...')}</option>
+                    <option value="" disabled>{t('select_chapter', 'اختر الدرس / الورقة...')}</option>
                     {unitData.find(u => u._id === selectedUnitId)?.chapters?.map(chapter => (
                       <option key={chapter._id} value={chapter._id}>📄 {translateName(chapter.chapterName)}</option>
                     ))}
@@ -929,34 +929,43 @@ function MathRacer() {
             )}
           </div>
         ) : (
-          <div style={{ background: '#10b981', color: 'white', padding: '10px', borderRadius: '8px', fontWeight: 'bold', marginBottom: '15px' }}>
-            ✓ Selected: {chapterName} ({customQuestions.length} Qs)
-            <button onClick={() => setCustomQuestions(null)} style={{ marginLeft: '10px', background: 'transparent', border: '1px solid white', color: 'white', borderRadius: '4px', cursor: 'pointer', padding: '4px 8px' }}>Change</button>
+          <div className="qs-selected-badge">
+            <span>✓ {t('selected', 'تم تحديد')}: <strong>{chapterName}</strong> ({customQuestions.length} {t('questions', 'أسئلة')})</span>
+            <div className="qs-selected-actions">
+              <button className="qs-btn-preview" onClick={() => setShowQuestionPreview(true)}>
+                👁️ {t('preview', 'معاينة')}
+              </button>
+              <button className="qs-btn-change" onClick={() => setCustomQuestions(null)}>
+                {t('change', 'تغيير')}
+              </button>
+            </div>
           </div>
         )}
 
-        <div style={{ marginTop: '5px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <h3 style={{ color: isHostMode ? '#38bdf8' : '#3b82f6', margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
-            {t('number_of_questions', 'number of questions')} ({isHostMode ? hostQuestionCount : activeQuestionCount || 10})
+        <div className="qs-count-row">
+          <h3 className="qs-count-label">
+            🎯 {t('number_of_questions', 'عدد الأسئلة')}
           </h3>
           <input
             type="number"
             min="1"
-            value={isHostMode ? hostQuestionCount : activeQuestionCount || 10} 
+            max="100"
+            value={isHostMode ? hostQuestionCount : activeQuestionCount || 10}
             onChange={(e) => {
-              const val = parseInt(e.target.value);
-              if (val > 0) {
-                if (isHostMode) setHostQuestionCount(val);
-                else setActiveQuestionCount(val);
+              const val = Math.max(1, parseInt(e.target.value) || 10);
+              if (isHostMode) {
+                setHostQuestionCount(val);
+              } else {
+                setActiveQuestionCount(val);
               }
             }}
-            style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px', width: '60px' }}
+            className="qs-count-input"
           />
         </div>
 
         {!isHostMode && customQuestions && (
-          <button onClick={() => startGame('easy')} style={{ width: '100%', marginTop: '10px', padding: '10px', background: '#3b82f6', color: 'white', borderRadius: '8px', fontWeight: 'bold', fontSize: '16px', border: 'none', cursor: 'pointer' }}>
-            {t('start_single_player', 'Start Single Player Race')}
+          <button className="qs-btn-start-single" onClick={() => startGame('easy')}>
+            🚀 {t('start_race', 'ابدأ السباق')}
           </button>
         )}
       </div>
@@ -1395,64 +1404,76 @@ function MathRacer() {
             {gameState === 'playing' && <FullscreenButton targetRef={containerRef} />}
             
             {gameState === 'lobby' && (
-              <Draggable handle=".lobby-drag-handle">
-                <div className="racer-lobby-panel" style={{ background: 'white', padding: '10px', borderRadius: '12px', border: '2px solid #ef4444' }}>
-                  <div className="lobby-drag-handle" style={{ background: '#ef4444', color: 'white', padding: '8px', textAlign: 'center', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', marginBottom: '10px', cursor: 'move' }}>
-                    {t('mathRacer.matchLobby', 'Racers Room')}
+              <div className="racer-lobby-modal-backdrop">
+                <div className="racer-lobby-panel">
+                  <div className="lobby-card-header">
+                    <h3>🏎️ {t('mathRacer.matchLobby', 'غرفة انتظار السباق')}</h3>
+                    <span className="lobby-live-badge">🔴 LIVE</span>
                   </div>
 
-                  {multiRole === 'host' && (
-                    <div style={{ marginBottom: '10px' }}>
-                      <h4 style={{ color: '#ef4444', fontSize: '16px', margin: '0 0 5px', fontWeight: 'bold' }}>{t('mathRacer.connectedRacers', 'Connected Racers')}</h4>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                        {players.map((player, idx) => (
-                          <div key={player.id || idx} style={{ color: '#eab308', fontSize: '15px', fontWeight: 'bold', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <span>• {player.name}</span>
+                  {/* Connected Racers Lineup */}
+                  <div className="lobby-racers-section">
+                    <h4>👥 {t('mathRacer.connectedRacers', 'المتسابقون المتصلون')} ({players.length})</h4>
+                    <div className="racers-lineup-grid">
+                      {players.map((player, idx) => (
+                        <div key={player.id || idx} className="racer-player-card">
+                          <div className="racer-car-icon">
+                            <F1CarSVG color={player.color || "#3b82f6"} name="" />
+                          </div>
+                          <div className="racer-player-info">
+                            <span className="player-name">{player.name}</span>
                             {player.id === myId && multiRole === 'host' && (
-                               <span style={{ color: '#f97316', fontSize: '13px' }}>
-                                 (Host - {player.isSpectator ? 'Watching' : 'Participating'})
-                                 <button className="switch-btn-glow" onClick={() => setHostIsRacing(!!player.isSpectator)} style={{ marginLeft: '10px', padding: '4px 12px', fontSize: '14px', background: '#f97316', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
-                                   Switch
-                                 </button>
-                               </span>
+                              <div className="host-role-badge">
+                                <span>(Host - {player.isSpectator ? t('watching', 'مشاهدة') : t('participating', 'مشاركة')})</span>
+                                <button className="switch-role-btn" onClick={() => setHostIsRacing(!!player.isSpectator)}>
+                                  {t('switch', 'تبديل')}
+                                </button>
+                              </div>
                             )}
                           </div>
-                        ))}
-                        {players.length === 0 && (
-                          <div style={{ color: '#eab308', fontSize: '14px' }}>Loading...</div>
-                        )}
-                      </div>
+                        </div>
+                      ))}
+                      {players.length === 0 && (
+                        <div className="loading-racers">{t('loading', 'جاري تحميل المتسابقين...')}</div>
+                      )}
                     </div>
-                  )}
+                  </div>
 
                   {multiRole === 'host' ? (
-                    <div style={{ marginBottom: '5px' }}>
+                    <div className="lobby-host-controls">
                       {renderQuestionSelector(true)}
 
-                      <div style={{ background: '#f0fdf4', border: '2px dashed #10b981', borderRadius: '8px', padding: '15px', textAlign: 'center', marginTop: '10px' }}>
-                        <p style={{ color: '#10b981', fontWeight: 'bold', margin: '0 0 5px', fontSize: '18px' }}>Use Code: <span style={{ fontSize: '24px', letterSpacing: '2px' }}>{roomId}</span></p>
-                        <p style={{ color: '#64748b', fontSize: '14px', margin: '8px 0', fontWeight: 'bold' }}>OR</p>
-                        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                          <button onClick={copyShareLink} style={{ background: '#10b981', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>{isLinkCopied ? t('mathRacer.linkCopied', 'Copied!') : t('mathRacer.copyLink', 'Copy Invite Link')}</button>
+                      {/* Room Code Speedometer Banner */}
+                      <div className="room-code-speedometer-card">
+                        <p className="code-label">{t('mathRacer.useCode', 'رمز الغرفة')}</p>
+                        <div className="code-digits-display">
+                          {roomId.split('').map((char, i) => (
+                            <span key={i} className="digit-box">{char}</span>
+                          ))}
                         </div>
+                        <p className="or-divider">{t('or', 'أو')}</p>
+                        <button className="copy-link-btn" onClick={copyShareLink}>
+                          🔗 {isLinkCopied ? t('mathRacer.linkCopied', 'تم النسخ!') : t('mathRacer.copyLink', 'نسخ رابط الدعوة')}
+                        </button>
                       </div>
 
-                      <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-                        <button className="start-race-btn-glow" onClick={() => { if(!customQuestions){ alert('Please select questions first'); return;} handleHostStartRace('easy'); }}>
-                          {t('start_race', 'Start Race')}
+                      <div className="lobby-action-buttons">
+                        <button className="start-race-btn-glow" onClick={() => { if(!customQuestions){ alert(t('select_questions_first', 'يرجى اختيار الأسئلة أولاً')); return;} handleHostStartRace('easy'); }}>
+                          🚀 {t('start_race', 'ابدأ السباق')}
                         </button>
-                        <button onClick={handleLeaveLobby} style={{ padding: '10px', background: '#ef4444', color: 'white', fontWeight: 'bold', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
-                          {t('cancel', 'Cancel')}
+                        <button className="cancel-lobby-btn" onClick={handleLeaveLobby}>
+                          ✕ {t('cancel', 'إلغاء')}
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div style={{ marginBottom: '10px', color: '#10b981', fontWeight: 'bold', textAlign: 'center', fontSize: '1.2rem', padding: '20px' }}>
-                      🏎️ {t('mathRacer.waitingHost', 'Waiting for Host to start...')}
+                    <div className="lobby-guest-waiting">
+                      <div className="waiting-spinner">🏎️</div>
+                      <h3>{t('mathRacer.waitingHost', 'في انتظار بدء السباق من قبل المضيف...')}</h3>
                     </div>
                   )}
                 </div>
-              </Draggable>
+              </div>
             )}
 
         {/* ============================================================
