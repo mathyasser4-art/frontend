@@ -9,17 +9,41 @@ import MobileAppDownloadPopup from './components/mobileAppPopup/MobileAppDownloa
 import { Analytics } from '@vercel/analytics/react';
 import { safeLocalStorage, safeSessionStorage } from './utils/safeStorage';
 
-// Safe lazy import with auto-retry on dynamic chunk loading failures (common on mobile networks)
+// Robust lazy import with exponential-backoff retry for chunk loading failures (common on mobile networks)
+// Retries the import() call itself up to 4 times before falling back to a cache-busting full page reload.
 const safeLazy = (importFn) => lazy(async () => {
-  try {
-    return await importFn();
-  } catch (error) {
-    const hasReloaded = safeSessionStorage.getItem('chunk_reload_attempted');
-    if (!hasReloaded) {
-      safeSessionStorage.setItem('chunk_reload_attempted', 'true');
-      window.location.reload();
+  const MAX_RETRIES = 4;
+  const isChunkError = (err) =>
+    /loading chunk|failed to fetch|load failed|dynamically imported module|unexpected token|loading css chunk/i.test(
+      String(err?.message || err)
+    );
+
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      const mod = await importFn();
+      // Import succeeded — clear any stale reload flags so future failures still auto-retry
+      safeSessionStorage.removeItem('chunk_reload_attempted');
+      return mod;
+    } catch (error) {
+      if (attempt < MAX_RETRIES - 1 && isChunkError(error)) {
+        // Exponential backoff: 500ms → 1s → 2s → 4s
+        await new Promise((r) => setTimeout(r, 500 * Math.pow(2, attempt)));
+        continue;
+      }
+
+      // All retries exhausted — last resort: cache-busting full page reload (once)
+      if (isChunkError(error)) {
+        const hasReloaded = safeSessionStorage.getItem('chunk_reload_attempted');
+        if (!hasReloaded) {
+          safeSessionStorage.setItem('chunk_reload_attempted', 'true');
+          window.location.href =
+            window.location.origin + window.location.pathname + '?cb=' + Date.now();
+          // Return a never-resolving promise so React doesn't render while redirecting
+          return new Promise(() => {});
+        }
+      }
+      throw error;
     }
-    throw error;
   }
 });
 
@@ -84,6 +108,11 @@ function App() {
 
   useEffect(() => {
     safeLocalStorage.removeItem('cartona');
+    // App mounted successfully — clear stale error-recovery flags so future
+    // chunk failures and ErrorBoundary reloads still get their auto-retry attempts.
+    safeSessionStorage.removeItem('chunk_reload_attempted');
+    safeSessionStorage.removeItem('eb_auto_reloaded');
+    safeSessionStorage.removeItem('eb_chunk_auto_reloaded');
   }, []);
 
   // Heartbeat mechanism for live dashboard tracking
