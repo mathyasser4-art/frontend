@@ -139,6 +139,7 @@ function MathRacer() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChapterId, setSelectedChapterId] = useState(location.state?.chapterId || '');
   const [wizardError, setWizardError] = useState(null);
+  const [showQuestionPreview, setShowQuestionPreview] = useState(false);
 
   const loadCustomWorksheets = () => {
       setLoadingWizard(true);
@@ -760,46 +761,65 @@ function MathRacer() {
     setFeedback(null);
     setCurrentQuestionIndex(0);
     setEssayAnswer('');
-    // Auto-fullscreen disabled
-    // triggerFullscreen();
 
-    setGameState('countdown');
-    setCountdownValue(3);
-    
-    const playBeep = (freq, duration) => {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + duration);
-      } catch(e) {}
-    };
-
-    playBeep(400, 0.5); // First red light
-
+    // Step 1: Set loading page first
+    setGameState('loading');
     generateProblem(selectedLevel, 0, specificQuestions || customQuestions);
 
-    let count = 3;
-    const interval = setInterval(() => {
-      count -= 1;
-      if (count > 0) {
-        setCountdownValue(count);
-        playBeep(400, 0.5); // Next red lights
-      } else if (count === 0) {
-        setCountdownValue('GO!');
-        playBeep(800, 0.8); // Green light!
-      } else {
-        clearInterval(interval);
-        setGameState('playing');
-      }
-    }, 1000);
+    // Engine rev audio effect
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(350, audioCtx.currentTime + 1.2);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 1.5);
+    } catch (e) {}
+
+    // Step 2: After 1.8 seconds loading screen, start traffic light countdown
+    setTimeout(() => {
+      setGameState('countdown');
+      setCountdownValue(3);
+      
+      const playBeep = (freq, duration) => {
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          oscillator.start();
+          oscillator.stop(audioCtx.currentTime + duration);
+        } catch(e) {}
+      };
+
+      playBeep(400, 0.5); // First red light
+
+      let count = 3;
+      const interval = setInterval(() => {
+        count -= 1;
+        if (count > 0) {
+          setCountdownValue(count);
+          playBeep(400, 0.5); // Next red lights
+        } else if (count === 0) {
+          setCountdownValue('GO!');
+          playBeep(800, 0.8); // Green light!
+        } else {
+          clearInterval(interval);
+          setGameState('playing');
+        }
+      }, 1000);
+    }, 1800);
   };
 
   const startGame = (selectedLevel) => {
@@ -1252,9 +1272,58 @@ function MathRacer() {
                 <p className="banner-title">
                   Playing with questions from <strong>Chapter {chapterName}</strong> ({customQuestions.length} questions)
                 </p>
-                <button className="clear-custom-btn" onClick={() => setCustomQuestions(null)}>
-                  Clear Custom Questions
-                </button>
+                <div className="banner-actions">
+                  <button className="preview-questions-btn" onClick={() => setShowQuestionPreview(true)}>
+                    👁️ Preview Questions ({customQuestions.length})
+                  </button>
+                  <button className="clear-custom-btn" onClick={() => setCustomQuestions(null)}>
+                    Clear
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Question Inspector Preview Modal */}
+            {showQuestionPreview && customQuestions && (
+              <div className="modal-backdrop" onClick={() => setShowQuestionPreview(false)}>
+                <div className="question-inspector-modal" onClick={(e) => e.stopPropagation()}>
+                  <div className="inspector-header">
+                    <div>
+                      <h3>📋 Question Inspector</h3>
+                      <p>Worksheet: <strong>{chapterName || 'Selected Chapter'}</strong> ({customQuestions.length} Questions)</p>
+                    </div>
+                    <button className="inspector-close-btn" onClick={() => setShowQuestionPreview(false)}>✕</button>
+                  </div>
+
+                  <div className="inspector-body">
+                    {customQuestions.map((q, idx) => (
+                      <div key={q._id || idx} className="inspector-question-card">
+                        <div className="card-top">
+                          <span className="q-number-badge">#{idx + 1}</span>
+                          <span className="q-type-badge">{q.typeOfAnswer || 'MCQ'}</span>
+                        </div>
+                        <div className="q-content">
+                          <p className="q-text-preview">{q.question || 'Visual Graph Question'}</p>
+                          {q.wrongAnswer && Array.isArray(q.wrongAnswer) && (
+                            <div className="options-preview-chips">
+                              {q.wrongAnswer.map((opt, optIdx) => (
+                                <span key={optIdx} className={`opt-chip ${opt === q.correctAnswer ? 'is-correct' : ''}`}>
+                                  {String.fromCharCode(65 + optIdx)}. {String(opt)}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="inspector-footer">
+                    <button className="btn-confirm-questions" onClick={() => setShowQuestionPreview(false)}>
+                      ✓ Confirm Selected Questions
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
             
@@ -1385,6 +1454,28 @@ function MathRacer() {
                 </div>
               </Draggable>
             )}
+
+        {/* ============================================================
+           INTERMEDIATE RACE LOADING SCREEN
+           ============================================================ */}
+        {gameState === 'loading' && (
+          <div className="race-loading-overlay">
+            <div className="race-loading-card">
+              <div className="loading-car-wrapper">
+                <F1CarSVG color={mySkinColor || "#3b82f6"} name="Your Racer" isBoosting={true} />
+              </div>
+              <h3 className="loading-title">🏎️ {t('mathRacer.preparing_race', 'Setting Up Race Track...')}</h3>
+              <p className="loading-subtitle">
+                {customQuestions 
+                  ? `${t('mathRacer.loading_questions', 'Loading')} ${customQuestions.length} ${t('questions', 'questions from')} ${chapterName}`
+                  : t('mathRacer.loading_random', 'Loading Math Racer Challenge')}
+              </p>
+              <div className="loading-progress-bar">
+                <div className="loading-progress-fill"></div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ============================================================
            COUNTDOWN OVERLAY (CRASH BANDICOOT STYLE)
