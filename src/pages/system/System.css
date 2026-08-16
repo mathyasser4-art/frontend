@@ -1,6 +1,13 @@
 .system-container{
     padding: 0rem 2.5rem;
     padding-bottom: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.system-container.rtl-mode {
+    direction: rtl;
+    text-align: right;
 }
 
 .dwon{
@@ -10,22 +17,25 @@
 .system{
     padding: 1rem 1.5rem;
     height: 50px;
-    background-color: #fff;
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1), 0 6px 15px 0 rgba(0, 0, 0, 0.19);
-    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 6px 18px rgba(93, 23, 235, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+    border-radius: 16px;
     overflow: hidden;
     cursor: pointer;
     position: relative;
     margin-top: 1rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 2px solid #e0e7ff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #312e81;
 }
 
 .system:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-color: #a855f7;
-    background-color: #faf5ff;
+    transform: translateY(-3px) scale(1.005);
+    box-shadow: 0 12px 24px rgba(93, 23, 235, 0.15);
+    border-color: #818cf8;
+    background-color: #f5f3ff;
 }
 
 .system::after {
@@ -39,6 +49,11 @@
     transition: transform 0.3s ease, color 0.3s ease;
 }
 
+.system-container.rtl-mode .system::after {
+    right: auto;
+    left: 20px;
+}
+
 .system.opened::after {
     transform: rotate(180deg);
     color: #ef4444;
@@ -48,14 +63,19 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
     border-left: 5px solid #8b5cf6;
-    padding: 15px 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    margin-top: 10px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    padding: 18px 24px;
+    border-radius: 18px;
+    margin-bottom: 24px;
+    margin-top: 15px;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.12);
     animation: bannerFadeIn 0.5s ease-out;
+}
+
+.system-container.rtl-mode .system-instruction-banner {
+    border-left: none;
+    border-right: 5px solid #8b5cf6;
 }
 
 .banner-icon {
@@ -89,22 +109,33 @@
 
 .system-subject{
     top: 50px;
-    display: block;
+    display: flex;
+    align-items: center;
     position: absolute;
-    height: 45px;
+    height: 46px;
     width: 97%;
-    padding-top: 10px;
-    padding-bottom: 15px;
-    padding-left: 0.8rem;
-    font-family: Georgia, serif;
-    font-size: 14px;
-    border-radius: 10px;
+    padding: 0 1.2rem;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 12px;
     cursor: pointer;
-    color: #fff;
-    background: #5d17eb;
-    font-size: 20px;
-    font-size: bold;
-    transition: .6s;
+    color: #ffffff;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-sizing: border-box;
+}
+
+.system-subject:hover {
+    transform: scale(1.01);
+    box-shadow: 0 6px 14px rgba(99, 102, 241, 0.35);
+    background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+}
+
+.system-container.rtl-mode .system-subject {
+    text-align: right;
+    justify-content: flex-start;
 }
 
 @media only screen and (max-width: 992px) {

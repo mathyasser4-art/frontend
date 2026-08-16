@@ -10,7 +10,7 @@ import '../../reusable.css'
 import './System.css'
 
 function System() {
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
     const [systemData, setSystemData] = useState()
     const [loading, setLoading] = useState(true)
     const { questionTypeID } = useParams()
@@ -18,13 +18,43 @@ function System() {
     const role = localStorage.getItem('auth_role')
     const navigate = useNavigate()
     const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+    const isArabic = i18n.language === 'ar';
     
-    // Helper function to translate system names
+    // Helper function to translate system names and subjects with fallback mapping
     const translateName = (name) => {
-        const translationKey = `systemNames.${name}`
-        const translated = t(translationKey)
-        // If translation exists and is different from the key, use it; otherwise use original
-        return translated !== translationKey ? translated : name
+        if (!name) return '';
+        const raw = String(name).trim();
+
+        // 1. Direct translation key
+        const key = `systemNames.${raw}`;
+        const translated = t(key);
+        if (translated && translated !== key) return translated;
+
+        // 2. Lowercase key
+        const lowerKey = `systemNames.${raw.toLowerCase()}`;
+        const lowerTranslated = t(lowerKey);
+        if (lowerTranslated && lowerTranslated !== lowerKey) return lowerTranslated;
+
+        // 3. Fallback dictionary for unhandled variations
+        const fallbacks = {
+            'basic level': isArabic ? 'المستوى الأساسي 🌟' : 'Basic Level 🌟',
+            'level 0': isArabic ? 'المستوى 0 🐣' : 'Level 0 🐣',
+            'level 1': isArabic ? 'المستوى 1 ⭐️' : 'Level 1 ⭐️',
+            'level 2': isArabic ? 'المستوى 2 ⚡️' : 'Level 2 ⚡️',
+            'level 3': isArabic ? 'المستوى 3 🚀' : 'Level 3 🚀',
+            'level 4': isArabic ? 'المستوى 4 🏆' : 'Level 4 🏆',
+            'level 5': isArabic ? 'المستوى 5 👑' : 'Level 5 👑',
+            '+- from 1 to 9': isArabic ? 'جمع وطرح من 1 إلى 9' : '+- from 1 to 9',
+            'exercises on (ones , tens , hundreds)': isArabic ? 'تمارين على (الآحاد والعشرات والمئات)' : 'Exercises on (Ones, Tens, Hundreds)',
+            'friends of 5 (ones and tens)': isArabic ? 'أصدقاء العدد 5 (الآحاد والعشرات)' : 'Friends of 5 (Ones and Tens)',
+            'level 3 (friends of 10) +9 +8 .. +1': isArabic ? 'المستوى 3 (أصدقاء العدد 10) +9 +8 .. +1' : 'Level 3 (friends of 10) +9 +8 .. +1',
+            'level 4 (friends of 10) -9 -8 .. -1': isArabic ? 'المستوى 4 (أصدقاء العدد 10) -9 -8 .. -1' : 'Level 4 (friends of 10) -9 -8 .. -1'
+        };
+
+        const match = fallbacks[raw.toLowerCase()];
+        if (match) return match;
+
+        return raw;
     }
 
     useEffect(() => {
@@ -80,20 +110,20 @@ function System() {
 
     return (
         <>
-
             <Navbar />
             <MobileNav role={role} />
-            {loading ? <SystemLoading /> : <div className="system-container">
+            {loading ? <SystemLoading /> : <div className={`system-container ${isArabic ? 'rtl-mode' : ''}`}>
                 <div className="system-instruction-banner">
                     <span className="banner-icon">💡</span>
                     <div className="banner-text">
-                        <h4>Click a Book to Start</h4>
-                        <p>Select any of the book cards below to expand its units and start practicing!</p>
+                        <h4>{t('system.clickBookToStart', 'Click a Level to Start 📖')}</h4>
+                        <p>{t('system.selectBookCard', 'Select any of the level cards below to expand its units and start practicing!')}</p>
                     </div>
                 </div>
                 {systemData?.map(item => {
                     return (
-                        <div key={item._id} className="system" onClick={dropdownToggle}>{translateName(item.systemName)}
+                        <div key={item._id} className="system" onClick={dropdownToggle}>
+                            <span className="system-title-text">{translateName(item.systemName)}</span>
                             {item.subjects?.map((subItem, index) => {
                                 const isFreeSystem = item.systemName?.toLowerCase().trim() === 'basic level' || item.systemName?.toLowerCase().trim() === 'level 0';
                                 const isFreeSheet = isFreeSystem && index === 0;
@@ -109,13 +139,15 @@ function System() {
                                                 setShowUpgradeModal(true);
                                             }}
                                         >
-                                            {translateName(subItem.subjectName)}
+                                            <span className="subject-title">{translateName(subItem.subjectName)}</span>
                                             <span className="subject-lock-badge">🔒</span>
                                         </span>
                                     )
                                 }
                                 return (
-                                    <Link key={subItem._id} to={`/unit/${questionTypeID}/${subItem._id}`} className='system-subject'>{translateName(subItem.subjectName)}</Link>
+                                    <Link key={subItem._id} to={`/unit/${questionTypeID}/${subItem._id}`} className='system-subject'>
+                                        <span className="subject-title">{translateName(subItem.subjectName)}</span>
+                                    </Link>
                                 )
                             })}
                         </div>
@@ -129,17 +161,17 @@ function System() {
                         <button className="upgrade-close-btn" onClick={() => setShowUpgradeModal(false)}>×</button>
                         <div className="upgrade-modal-header">
                             <span className="lock-large-icon">🔒</span>
-                            <h2>Upgrade to Use</h2>
+                            <h2>{t('system.upgradeToUse', 'Upgrade to Use')}</h2>
                         </div>
                         <p className="upgrade-modal-text">
-                            Guests can only access the first worksheet of Level 0. Subscribe to unlock all levels, worksheets, and educational games!
+                            {t('system.upgradeMessage', 'Guests can only access the first worksheet of Level 0. Subscribe to unlock all levels, worksheets, and educational games!')}
                         </p>
                         <div className="upgrade-modal-actions">
                             <button className="upgrade-btn-primary" onClick={() => { setShowUpgradeModal(false); navigate('/pricing'); }}>
-                                View Pricing Plans
+                                {t('system.viewPricing', 'View Pricing Plans 🚀')}
                             </button>
                             <button className="upgrade-btn-secondary" onClick={() => { setShowUpgradeModal(false); navigate('/auth/login'); }}>
-                                Log In
+                                {t('system.logIn', 'Log In 🔑')}
                             </button>
                         </div>
                     </div>
@@ -147,6 +179,4 @@ function System() {
             )}
         </>
     )
-}
-
 export default System
