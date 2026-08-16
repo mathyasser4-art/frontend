@@ -62,28 +62,38 @@ function System() {
 
     const getLevelBadgeInfo = (name) => {
         const raw = String(name || '').toLowerCase().trim();
-        if (raw.includes('basic') || raw.includes('أساسي')) {
-            return { icon: '🌟', bgGradient: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)', shadowColor: 'rgba(2, 132, 199, 0.35)', badgeLabel: isArabic ? 'مبتدئ' : 'Basic' };
+
+        // 1. Basic Level / Level 0 -> Baby Chick Egg 🐣
+        if (raw.includes('basic') || raw.includes('أساسي') || raw.includes('level 0')) {
+            return { icon: '🐣', bgGradient: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)', shadowColor: 'rgba(217, 119, 6, 0.35)', badgeLabel: isArabic ? 'مبتدئ' : 'Basic' };
         }
-        if (raw.includes('level 0') || raw.includes('0')) {
-            return { icon: '🐣', bgGradient: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)', shadowColor: 'rgba(217, 119, 6, 0.35)', badgeLabel: isArabic ? 'مرحلة 0' : 'Stage 0' };
-        }
-        if (raw.includes('level 1') || raw.includes('1')) {
+
+        // 2. Level 1 -> Star ⭐️
+        if (raw.includes('level 1') || raw.includes('مستوى 1') || raw.includes('المستوى 1')) {
             return { icon: '⭐️', bgGradient: 'linear-gradient(135deg, #34d399 0%, #059669 100%)', shadowColor: 'rgba(5, 150, 105, 0.35)', badgeLabel: isArabic ? 'مرحلة 1' : 'Stage 1' };
         }
-        if (raw.includes('level 2') || raw.includes('2')) {
-            return { icon: '⚡️', bgGradient: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)', shadowColor: 'rgba(124, 58, 237, 0.35)', badgeLabel: isArabic ? 'مرحلة 2' : 'Stage 2' };
+
+        // 3. Level 2 -> Glowing Star with sparkles 🌟
+        if (raw.includes('level 2') || raw.includes('مستوى 2') || raw.includes('المستوى 2')) {
+            return { icon: '🌟', bgGradient: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)', shadowColor: 'rgba(2, 132, 199, 0.35)', badgeLabel: isArabic ? 'مرحلة 2' : 'Stage 2' };
         }
-        if (raw.includes('level 3') || raw.includes('3')) {
-            return { icon: '🚀', bgGradient: 'linear-gradient(135deg, #f472b6 0%, #e11d48 100%)', shadowColor: 'rgba(225, 29, 72, 0.35)', badgeLabel: isArabic ? 'مرحلة 3' : 'Stage 3' };
+
+        // 4. Level 3 -> Lightning Z ⚡️
+        if (raw.includes('level 3') || raw.includes('مستوى 3') || raw.includes('المستوى 3')) {
+            return { icon: '⚡️', bgGradient: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)', shadowColor: 'rgba(124, 58, 237, 0.35)', badgeLabel: isArabic ? 'مرحلة 3' : 'Stage 3' };
         }
-        if (raw.includes('level 4') || raw.includes('4')) {
+
+        // 5. Level 4 -> Trophy 🏆
+        if (raw.includes('level 4') || raw.includes('مستوى 4') || raw.includes('المستوى 4')) {
             return { icon: '🏆', bgGradient: 'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)', shadowColor: 'rgba(180, 83, 9, 0.35)', badgeLabel: isArabic ? 'مرحلة 4' : 'Stage 4' };
         }
-        if (raw.includes('level 5') || raw.includes('5')) {
-            return { icon: '👑', bgGradient: 'linear-gradient(135deg, #10b981 0%, #047857 100%)', shadowColor: 'rgba(4, 120, 87, 0.35)', badgeLabel: isArabic ? 'مرحلة 5' : 'Stage 5' };
+
+        // 6. Level 5 -> Golden King 👑
+        if (raw.includes('level 5') || raw.includes('مستوى 5') || raw.includes('المستوى 5')) {
+            return { icon: '👑', bgGradient: 'linear-gradient(135deg, #10b981 0%, #047857 100%)', shadowColor: 'rgba(4, 120, 87, 0.35)', badgeLabel: isArabic ? 'الملك الذهبي' : 'Stage 5' };
         }
-        return { icon: '🎯', bgGradient: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)', shadowColor: 'rgba(67, 56, 202, 0.35)', badgeLabel: isArabic ? 'تحدي' : 'Challenge' };
+
+        return { icon: '🎯', bgGradient: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)', shadowColor: 'rgba(67, 56, 202, 0.35)', badgeLabel: isArabic ? 'تحدي' : 'Stage' };
     };
 
     useEffect(() => {
