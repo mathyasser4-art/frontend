@@ -1,104 +1,67 @@
-.unit-container{
-    padding: 0rem 2.5rem;
-    padding-bottom: 4rem;
+/* =========================================================
+   Abacus Heroes - Kids Game Unit Selection CSS
+   ========================================================= */
+
+.unit-game-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 5rem 2rem;
 }
 
-.dwon{
-    padding-bottom: 5px !important;
+.unit-game-container.rtl-mode {
+    direction: rtl;
+    text-align: right;
 }
 
-.unit{
-    padding: 1rem 1rem;
-    height: 50px;
-    background-color: #fff;
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1), 0 6px 15px 0 rgba(0, 0, 0, 0.19);
-    border-radius: 10px;
-    overflow: hidden;
+/* --- Back Button --- */
+.unit-back-btn {
+    background: #ffffff;
+    border: 2px solid #e0e7ff;
+    padding: 10px 20px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #4f46e5;
     cursor: pointer;
-    position: relative;
-    margin-top: 1rem;
-    transition: .6s;
-}
-
-.unit::after {
-    content: "";
-    font-weight: bold;
-    font-size: 30px;
-    right: 18px;
-    top: 0px;
-    position: absolute;
-}
-
-.unit-chapter{
-    top: 50px;
-    display: block;
-    position: absolute;
-    height: 45px;
-    width: 97%;
-    padding-top: 10px;
-    padding-bottom: 15px;
-    padding-left: 0.8rem;
-    font-family: Georgia, serif;
-    font-size: 14px;
-    border-radius: 10px;
-    cursor: pointer;
-    color: #fff;
-    background: #5d17eb;
-    font-size: 20px;
-    font-size: bold;
-    transition: .6s;
-}
-
-@media only screen and (max-width: 992px) {
-    .unit-chapter{
-        width: 95%;
-    }
-}
-
-@media only screen and (max-width: 768px) {
-    .unit-chapter{
-        width: 94.5%;
-    }
-    .unit-container{
-        padding: 0rem 1rem;
-        padding-bottom: 6.5rem;
-    }
-}
-
-@media only screen and (max-width: 600px) {
-    .unit-chapter{
-        width: 91%;
-    }
-}
-
-/* Locked Unit Style */
-.unit.locked {
-    background: #94a3b8 !important;
-    color: #f1f5f9 !important;
-    display: flex;
-    justify-content: space-between;
+    margin-bottom: 20px;
+    display: inline-flex;
     align-items: center;
-    padding-right: 1.5rem;
-    box-sizing: border-box;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.unit.locked:hover {
-    background: #64748b !important;
+.unit-back-btn:hover {
+    transform: translateX(-4px) scale(1.02);
+    border-color: #a855f7;
+    background: #faf5ff;
+    box-shadow: 0 8px 18px rgba(168, 85, 247, 0.2);
 }
 
-.unit-lock-badge {
-    font-size: 18px;
-    line-height: 1;
+.rtl-mode .unit-back-btn:hover {
+    transform: translateX(4px) scale(1.02);
 }
 
-/* Empty Unit Style */
-.unit.empty {
-    opacity: 0.45;
-    background: #f1f5f9 !important;
-    color: #94a3b8 !important;
-    box-shadow: none;
-    pointer-events: none;
-    cursor: not-allowed;
-    user-select: none;
+/* Locked Card Variation */
+.game-level-card.locked-card {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    opacity: 0.85;
 }
 
+.game-level-card.locked-card:hover {
+    border-color: #94a3b8;
+    background: #f1f5f9;
+}
+
+.game-open-btn.btn-locked {
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    box-shadow: 0 4px 12px rgba(71, 85, 105, 0.25);
+}
+
+/* Responsive */
+@media only screen and (max-width: 600px) {
+    .unit-game-container {
+        padding: 1rem 1rem 5rem 1rem;
+    }
+}

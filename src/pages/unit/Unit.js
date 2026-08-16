@@ -10,22 +10,70 @@ import '../../reusable.css'
 import './Unit.css'
 
 function Unit() {
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
     const [unitData, setUnitData] = useState()
     const [loading, setLoading] = useState(true)
     const { questionTypeID, subjectID } = useParams()
     const isAuth = localStorage.getItem('O_authWEB')
     const role = localStorage.getItem('auth_role')
     const navigate = useNavigate()
-    const [showUpgradeModal, setShowUpgradeModal] = useState(false)
     
-    // Helper function to translate unit/chapter names
+    // Active unit card modal
+    const [activeUnit, setActiveUnit] = useState(null)
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+    const isArabic = i18n.language === 'ar';
+
+    // Helper function to translate unit/chapter names with fallback mapping
     const translateName = (name) => {
-        const translationKey = `systemNames.${name}`
-        const translated = t(translationKey)
-        // If translation exists and is different from the key, use it; otherwise use original
-        return translated !== translationKey ? translated : name
+        if (!name) return '';
+        const raw = String(name).trim();
+
+        // 1. Direct translation key
+        const key = `systemNames.${raw}`;
+        const translated = t(key);
+        if (translated && translated !== key) return translated;
+
+        // 2. Lowercase key
+        const lowerKey = `systemNames.${raw.toLowerCase()}`;
+        const lowerTranslated = t(lowerKey);
+        if (lowerTranslated && lowerTranslated !== lowerKey) return lowerTranslated;
+
+        // 3. Fallback dictionary for unhandled variations
+        const fallbacks = {
+            '2 rows': isArabic ? 'سطران (2 أسطر)' : '2 Rows',
+            '3 rows': isArabic ? '٣ أسطر (3 أسطر)' : '3 Rows',
+            '4 rows': isArabic ? '٤ أسطر (4 أسطر)' : '4 Rows',
+            '5 rows': isArabic ? '٥ أسطر (5 أسطر)' : '5 Rows',
+            '6 rows': isArabic ? '٦ أسطر (6 أسطر)' : '6 Rows',
+            '20 questions': isArabic ? '٢٠ سؤالاً (20 سؤال)' : '20 questions',
+            '10 questions': isArabic ? '١٠ أسئلة (10 أسئلة)' : '10 questions',
+            '15 questions': isArabic ? '١٥ سؤالاً (15 سؤال)' : '15 questions',
+            '30 questions': isArabic ? '٣٠ سؤالاً (30 سؤال)' : '30 questions',
+            '50 questions': isArabic ? '٥٠ سؤالاً (50 سؤال)' : '50 questions'
+        };
+
+        const match = fallbacks[raw.toLowerCase()];
+        if (match) return match;
+
+        return raw;
     }
+
+    const getUnitBadgeInfo = (name) => {
+        const raw = String(name || '').toLowerCase().trim();
+        if (raw.includes('2') || raw.includes('سطران')) {
+            return { icon: '🔢', bgGradient: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)', shadowColor: 'rgba(2, 132, 199, 0.35)', badgeLabel: isArabic ? 'مستوى بسيط' : '2 Rows' };
+        }
+        if (raw.includes('3')) {
+            return { icon: '🎲', bgGradient: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)', shadowColor: 'rgba(124, 58, 237, 0.35)', badgeLabel: isArabic ? 'مستوى متوسط' : '3 Rows' };
+        }
+        if (raw.includes('4')) {
+            return { icon: '⚡️', bgGradient: 'linear-gradient(135deg, #f472b6 0%, #e11d48 100%)', shadowColor: 'rgba(225, 29, 72, 0.35)', badgeLabel: isArabic ? 'مستوى متقدم' : '4 Rows' };
+        }
+        if (raw.includes('5')) {
+            return { icon: '🏆', bgGradient: 'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)', shadowColor: 'rgba(180, 83, 9, 0.35)', badgeLabel: isArabic ? 'مستوى محترف' : '5 Rows' };
+        }
+        return { icon: '📝', bgGradient: 'linear-gradient(135deg, #34d399 0%, #059669 100%)', shadowColor: 'rgba(5, 150, 105, 0.35)', badgeLabel: isArabic ? 'تمرين' : 'Practice' };
+    };
 
     useEffect(() => {
         const getAllUnit = async () => {
@@ -34,120 +82,120 @@ function Unit() {
         getAllUnit()
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-    const dropdownToggle = (e) => {
-        let top = 55
-        if (e.target.classList.contains('opened')) {
-            const links = e.target.children
-            for (let i = 0; i < links.length; i++) {
-                links[i].style.top = '55px';
-                links[i].classList.remove('dwon')
-            }
-            e.target.style.height = '55px'
-            e.target.classList.remove('opened')
-        } else {
-            const allLinks = document.querySelectorAll(".unit-chapter");
-            const allParent = document.querySelectorAll(".unit");
-            for (let i = 0; i < allLinks.length; i++) {
-                allLinks[i].style.top = '55px';
-                allLinks[i].classList.remove('dwon')
-            }
-            for (let i = 0; i < allParent.length; i++) {
-                allParent[i].style.height = '55px';
-                allParent[i].classList.remove('opened')
-            }
-            const links = e.target.children
-            for (let i = 0; i < links.length; i++) {
-                if (i === 0) {
-                    links[i].style.top = `${top}px`;
-                    links[i].classList.add('dwon')
-                } else {
-                    top += 60
-                    links[i].style.top = `${top}px`;
-                    links[i].classList.add('dwon')
-                }
-            }
-            let hight = 0
-            if (e.target.children.length === 1) {
-                hight = 55 + 65
-            } else if (e.target.children.length <= 3) {
-                hight = 55 + (e.target.children.length * 65)
-            } else {
-                hight = 55 + (e.target.children.length * 58)
-            }
-            e.target.style.height = `${hight}px`
-            e.target.classList.add('opened')
-        }
-    }
-
     return (
         <>
-
             <Navbar />
             <MobileNav role={role} />
-            {loading ? <SystemLoading /> : <div className="unit-container">
-                {unitData?.map(item => {
-                    const isTwoRows = item.unitName?.toLowerCase().trim() === '2 rows';
-                    const isLocked = !isAuth && !isTwoRows;
+            {loading ? <SystemLoading /> : (
+                <div className={`unit-game-container ${isArabic ? 'rtl-mode' : ''}`}>
+                    {/* Back Button */}
+                    <button className="unit-back-btn" onClick={() => navigate(`/system/${questionTypeID}`)}>
+                        <span>{t('unit.backToLevels', '⬅️ العودة إلى المستويات')}</span>
+                    </button>
 
-                    if (isLocked) {
-                        return (
-                            <div 
-                                key={item._id} 
-                                className="unit locked" 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowUpgradeModal(true);
-                                }}
-                            >
-                                {translateName(item.unitName)}
-                                <span className="unit-lock-badge">🔒</span>
+                    {/* Cute Kid Banner */}
+                    <div className="game-instruction-banner">
+                        <div className="banner-mascot-icon">🎯</div>
+                        <div className="banner-text-content">
+                            <h4>{t('unit.selectUnit', 'اختر عدد الأسطر أو نوع التمرين 🎯')}</h4>
+                            <p>{t('unit.unitDescription', 'اضغط على أي كارت من الكروت التالية لعرض أوراق العمل والأسئلة!')}</p>
+                        </div>
+                    </div>
+
+                    {/* Game Cards Grid */}
+                    <div className="game-cards-grid">
+                        {unitData?.map(item => {
+                            const badgeInfo = getUnitBadgeInfo(item.unitName);
+                            const chapterCount = item.chapters?.length || 0;
+                            const isTwoRows = item.unitName?.toLowerCase().trim() === '2 rows';
+                            const isLocked = !isAuth && !isTwoRows;
+
+                            return (
+                                <div 
+                                    key={item._id} 
+                                    className={`game-level-card ${isLocked ? 'locked-card' : ''}`}
+                                    onClick={() => {
+                                        if (isLocked) {
+                                            setShowUpgradeModal(true);
+                                        } else {
+                                            setActiveUnit(item);
+                                        }
+                                    }}
+                                >
+                                    <div className="card-top-shine"></div>
+                                    <div className="card-icon-badge" style={{ background: badgeInfo.bgGradient, boxShadow: `0 6px 14px ${badgeInfo.shadowColor}` }}>
+                                        <span className="card-big-emoji">{isLocked ? '🔒' : badgeInfo.icon}</span>
+                                    </div>
+                                    <div className="card-body-content">
+                                        <span className="game-stage-tag">{badgeInfo.badgeLabel}</span>
+                                        <h3 className="game-card-title">{translateName(item.unitName)}</h3>
+                                        <div className="game-topics-pill">
+                                            <span>📝 {chapterCount} {isArabic ? (chapterCount === 1 ? 'ورقة عمل' : 'أوراق عمل') : (chapterCount === 1 ? 'Worksheet' : 'Worksheets')}</span>
+                                        </div>
+                                    </div>
+                                    <button className={`game-open-btn ${isLocked ? 'btn-locked' : ''}`}>
+                                        <span>{isLocked ? (isArabic ? 'مغلق (اشترك للفتح) 🔒' : 'Locked 🔒') : (isArabic ? 'افتح التمارين 🚀' : 'Open Unit 🚀')}</span>
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Chapters / Worksheets Modal Popup */}
+            {activeUnit && (
+                <div className="game-topics-modal-overlay" onClick={() => setActiveUnit(null)}>
+                    <div className="game-topics-modal-card" onClick={(e) => e.stopPropagation()}>
+                        <button className="topics-modal-close" onClick={() => setActiveUnit(null)}>×</button>
+                        
+                        <div className="topics-modal-header">
+                            <span className="modal-header-icon">{getUnitBadgeInfo(activeUnit.unitName).icon}</span>
+                            <div>
+                                <h2>{translateName(activeUnit.unitName)}</h2>
+                                <p>{t('unit.selectWorksheet', 'اختر الشيت للبدء في الحل:')}</p>
                             </div>
-                        )
-                    }
+                        </div>
 
-                    const totalQuestions = item.chapters?.reduce((acc, subItem) => acc + (subItem.questions?.length || 0), 0) || 0;
-                    const isEmpty = totalQuestions === 0;
-
-                    if (isEmpty) {
-                        return (
-                            <div 
-                                key={item._id} 
-                                className="unit empty"
-                            >
-                                {translateName(item.unitName)}
-                            </div>
-                        )
-                    }
-
-                    return (
-                        <div key={item._id} className="unit" onClick={dropdownToggle}>{translateName(item.unitName)}
-                            {item.chapters?.map(subItem => {
+                        <div className="topics-list-container">
+                            {activeUnit.chapters?.map(subItem => {
                                 return (
-                                    <Link key={subItem._id} to={`/question/${subItem._id}/${questionTypeID}/${subjectID}`} className='unit-chapter'>{translateName(subItem.chapterName)}</Link>
-                                )
+                                    <Link 
+                                        key={subItem._id} 
+                                        to={`/question/${subItem._id}/${questionTypeID}/${subjectID}`} 
+                                        className="game-topic-item playable"
+                                    >
+                                        <div className="topic-item-left">
+                                            <span className="topic-play-icon">🎮</span>
+                                            <span className="topic-item-name">{translateName(subItem.chapterName)}</span>
+                                        </div>
+                                        <span className="topic-start-btn">{isArabic ? 'ابدأ الحل ▶️' : 'Solve ▶️'}</span>
+                                    </Link>
+                                );
                             })}
                         </div>
-                    )
-                })}
-            </div>}
+                    </div>
+                </div>
+            )}
 
+            {/* Upgrade Modal */}
             {showUpgradeModal && (
                 <div className="upgrade-overlay" onClick={() => setShowUpgradeModal(false)}>
                     <div className="upgrade-modal-card" onClick={(e) => e.stopPropagation()}>
                         <button className="upgrade-close-btn" onClick={() => setShowUpgradeModal(false)}>×</button>
                         <div className="upgrade-modal-header">
                             <span className="lock-large-icon">🔒</span>
-                            <h2>Upgrade to Use</h2>
+                            <h2>{t('system.upgradeToUse', 'Upgrade to Use')}</h2>
                         </div>
                         <p className="upgrade-modal-text">
-                            Guests can only access 2 Rows worksheets under Level 0. Subscribe to unlock 3+ Rows, higher levels, and educational games!
+                            {t('system.upgradeMessage', 'Guests can only access 2 Rows worksheets under Level 0. Subscribe to unlock 3+ Rows, higher levels, and educational games!')}
                         </p>
                         <div className="upgrade-modal-actions">
                             <button className="upgrade-btn-primary" onClick={() => { setShowUpgradeModal(false); navigate('/pricing'); }}>
-                                View Pricing Plans
+                                {t('system.viewPricing', 'View Pricing Plans 🚀')}
                             </button>
                             <button className="upgrade-btn-secondary" onClick={() => { setShowUpgradeModal(false); navigate('/auth/login'); }}>
-                                Log In
+                                {t('system.logIn', 'Log In 🔑')}
                             </button>
                         </div>
                     </div>

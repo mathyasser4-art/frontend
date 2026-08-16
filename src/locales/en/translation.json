@@ -299,6 +299,13 @@
     "notAuthorized": "You are not authorized to access this page",
     "sessionExpired": "Your session has expired. Please login again"
   },
+  "unit": {
+    "selectUnit": "Select Unit & Practice Rows 🎯",
+    "unitDescription": "Select any card below to view worksheets and practice questions!",
+    "backToLevels": "⬅️ Back to Levels",
+    "openUnit": "Open Unit 🚀",
+    "selectWorksheet": "Select a worksheet to start:"
+  },
   "system": {
     "clickBookToStart": "Click a Level to Start 📖",
     "selectBookCard": "Select any of the level cards below to expand its units and start practicing!",
