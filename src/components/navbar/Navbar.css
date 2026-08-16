@@ -15,6 +15,21 @@ nav .nav-container img {
   height: 55px !important;
 }
 
+.nav-profile-avatar-img {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  min-height: 26px !important;
+  max-width: 26px !important;
+  max-height: 26px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+}
+
 .nav-btn {
   display: inline-flex !important;
   justify-content: center;

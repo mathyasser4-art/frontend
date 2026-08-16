@@ -358,7 +358,7 @@ const Navbar = () => {
                                 safeLocalStorage.getItem('user_profile_avatar').length <= 6 && !safeLocalStorage.getItem('user_profile_avatar').startsWith('data:') ? (
                                     <span style={{ fontSize: '1.2rem' }}>{safeLocalStorage.getItem('user_profile_avatar')}</span>
                                 ) : (
-                                    <img src={safeLocalStorage.getItem('user_profile_avatar')} alt="avatar" style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }} />
+                                    <img src={safeLocalStorage.getItem('user_profile_avatar')} alt="avatar" className="nav-profile-avatar-img" />
                                 )
                             ) : null}
                             <span>{t('navbar.profile', 'PROFILE')}</span>
