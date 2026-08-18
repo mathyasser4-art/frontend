@@ -691,66 +691,119 @@
 
 
 /* Problem Input Area */
+/* --- Side-by-Side Floating HUD Question Card Overlay --- */
 .problem-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  background: white;
-  padding: 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  transition: all 0.2s ease;
+  position: absolute !important;
+  top: 75px !important;
+  right: 25px !important;
+  z-index: 500 !important;
+  display: flex !important;
+  flex-direction: row !important; /* SIDE BY SIDE */
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1.5rem !important;
+  background: rgba(15, 23, 42, 0.92) !important;
+  backdrop-filter: blur(14px) !important;
+  border: 3px solid rgba(168, 85, 247, 0.6) !important;
+  padding: 1.25rem 1.75rem !important;
+  border-radius: 28px !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(168, 85, 247, 0.3) !important;
+  max-width: 620px !important;
+  color: #ffffff !important;
 }
 
-.problem-container.correct {
-  background: #f0fdf4;
-  border: 2px solid #4ade80;
+.arcade-game-arena-wrapper.rtl-mode .problem-container {
+  right: auto !important;
+  left: 25px !important;
 }
 
-.problem-container.wrong {
-  background: #fef2f2;
-  border: 2px solid #f87171;
-  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
-@keyframes shake {
-  10%, 90% { transform: translate3d(-1px, 0, 0); }
-  20%, 80% { transform: translate3d(2px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-  40%, 60% { transform: translate3d(4px, 0, 0); }
+.racer-question-section {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+  flex: 1 !important;
 }
 
 .problem-text {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: #1e293b;
-  letter-spacing: 2px;
+  font-size: 2.2rem !important;
+  font-weight: 900 !important;
+  color: #38bdf8 !important;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important;
+  margin: 0 !important;
 }
 
 .math-racer-options {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important; /* 2x2 side-by-side grid */
+  gap: 10px !important;
+  flex-shrink: 0 !important;
 }
 
 .racer-option-btn {
-  background: white;
-  border: 3px solid #cbd5e1;
-  padding: 8px 16px;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #1e293b;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.1s;
-  min-width: 60px;
+  background: rgba(30, 41, 59, 0.9) !important;
+  border: 2px solid #8b5cf6 !important;
+  padding: 10px 20px !important;
+  font-size: 1.3rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  border-radius: 16px !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 .racer-option-btn:hover {
-  background: #f1f5f9;
-  transform: translateY(-2px);
-  border-color: #94a3b8;
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
+  color: #ffffff !important;
+  transform: scale(1.08) !important;
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.5) !important;
+}
+
+.racer-option-btn:active {
+  transform: translateY(2px);
+  background: #e2e8f0;
+}
+
+/* Fullscreen Track Alignment */
+.track-container {
+  flex: 1 !important;
+  height: calc(100vh - 90px) !important;
+  min-height: 520px !important;
+  position: relative !important;
+  margin-top: 0 !important;
+}
+
+/* Step 1 Question Selector Modal */
+.host-select-modal {
+  max-width: 650px !important;
+  width: 95% !important;
+  border-radius: 28px !important;
+  background: #ffffff !important;
+  border: 3px solid #c084fc !important;
+}
+
+.lobby-selected-chapter-badge {
+  background: #f3e8ff;
+  border: 2px solid #c084fc;
+  padding: 10px 18px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  color: #581c87;
+  font-weight: 700;
+}
+
+.edit-qs-btn {
+  background: #a855f7;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
 }
 
 .racer-option-btn:active {

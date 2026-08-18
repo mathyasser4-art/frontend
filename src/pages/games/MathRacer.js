@@ -15,55 +15,71 @@ import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import Draggable from 'react-draggable';
 import './MathRacer.css';
 
-const F1CarSVG = ({ color, name, isBoosting }) => (
-  <div className="car-wrapper">
-    <div className="car-label">{name}</div>
-    <svg viewBox="0 0 130 40" width="110" height="34" xmlns="http://www.w3.org/2000/svg">
-      {/* Fiery Boost Effect */}
-      <path 
-        className={`boost-flame ${isBoosting ? 'active' : ''}`} 
-        d="M 15,25 Q -5,15 5,25 Q -10,35 15,25 Z" 
-        fill="#f97316" 
-        style={{ opacity: isBoosting ? 1 : 0, transition: 'opacity 0.2s', transformOrigin: '20px 25px' }}
-      />
-      <path 
-        className={`boost-flame-inner ${isBoosting ? 'active' : ''}`} 
-        d="M 15,25 Q 5,20 10,25 Q 0,30 15,25 Z" 
-        fill="#fbbf24" 
-        style={{ opacity: isBoosting ? 1 : 0, transition: 'opacity 0.2s', transformOrigin: '20px 25px' }}
-      />
-      
-      {/* Front Wing */}
-      <path d="M 105,28 L 125,28 L 125,24 L 105,24 Z" fill="#1e293b" />
-      <path d="M 115,24 L 115,20 L 100,20 L 100,24 Z" fill={color} />
-      
-      {/* Main Body */}
-      <path d="M 20,25 L 105,25 L 110,28 L 20,28 Z" fill="#334155" /> {/* Underfloor */}
-      <path d="M 25,25 L 45,14 L 75,14 L 95,25 Z" fill={color} /> {/* Engine Cover & Nose */}
-      <path d="M 95,25 L 115,25 Z" stroke={color} strokeWidth="4" />
-      
-      {/* Rear Wing */}
-      <path d="M 10,12 L 30,12 L 30,22 L 10,22 Z" fill={color} />
-      <path d="M 10,8 L 30,8 L 30,12 L 10,12 Z" fill="#1e293b" />
-      <path d="M 15,8 L 15,25" stroke="#1e293b" strokeWidth="2" />
-      <path d="M 25,8 L 25,25" stroke="#1e293b" strokeWidth="2" />
+const F1CarSVG = ({ color, name, isBoosting }) => {
+  const isCyber = color === '#a855f7';
+  const isMonster = color === '#f59e0b';
+  const isRocket = color === '#06b6d4';
+  const isGold = color === '#eab308';
+  const carColor = color || '#ef4444';
 
-      {/* Cockpit & Driver */}
-      <path d="M 50,14 C 50,8 70,8 70,14 Z" fill="#0f172a" />
-      <circle cx="62" cy="10" r="5" fill="#facc15" /> {/* Driver Helmet */}
+  return (
+    <div className="car-wrapper">
+      <div className="car-label">{name}</div>
+      <svg viewBox="0 0 130 44" width="115" height="38" xmlns="http://www.w3.org/2000/svg">
+        {/* Fiery Boost Effect */}
+        <path 
+          className={`boost-flame ${isBoosting ? 'active' : ''}`} 
+          d="M 15,25 Q -8,15 2,25 Q -12,35 15,25 Z" 
+          fill={isCyber ? "#c084fc" : (isRocket ? "#38bdf8" : "#f97316")} 
+          style={{ opacity: isBoosting ? 1 : 0, transition: 'opacity 0.2s', transformOrigin: '20px 25px' }}
+        />
 
-      {/* Wheels */}
-      {/* Front Wheel */}
-      <circle cx="95" cy="28" r="11" fill="#0f172a"/>
-      <circle cx="95" cy="28" r="5" fill="#94a3b8"/>
-      <circle cx="95" cy="28" r="2" fill="#ef4444"/>
-      {/* Rear Wheel */}
-      <circle cx="35" cy="28" r="13" fill="#0f172a"/>
-      <circle cx="35" cy="28" r="6" fill="#94a3b8"/>
-      <circle cx="35" cy="28" r="2" fill="#ef4444"/>
-    </svg>
-  </div>
-);
+        {/* Monster Truck Chassis */}
+        {isMonster ? (
+          <g>
+            <rect x="25" y="10" width="75" height="18" rx="6" fill={carColor} stroke="#78350f" strokeWidth="2" />
+            <rect x="45" y="4" width="35" height="12" rx="4" fill="#38bdf8" opacity="0.8" />
+            <circle cx="35" cy="32" r="13" fill="#1e293b" stroke="#f59e0b" strokeWidth="3" />
+            <circle cx="95" cy="32" r="13" fill="#1e293b" stroke="#f59e0b" strokeWidth="3" />
+            <circle cx="35" cy="32" r="4" fill="#ffffff" />
+            <circle cx="95" cy="32" r="4" fill="#ffffff" />
+          </g>
+        ) : isRocket ? (
+          /* Rocket Jet Speeder Body */
+          <g>
+            <path d="M 15,16 L 110,22 L 125,25 L 110,28 L 15,34 Z" fill={carColor} />
+            <path d="M 50,14 L 85,20 L 50,26 Z" fill="#0284c7" />
+            <circle cx="10" cy="25" r="7" fill="#ef4444" />
+            <circle cx="95" cy="30" r="9" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
+            <circle cx="35" cy="30" r="9" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
+          </g>
+        ) : isGold ? (
+          /* Golden Champion Kart */
+          <g>
+            <path d="M 20,25 L 105,25 L 110,28 L 20,28 Z" fill="#78350f" />
+            <path d="M 25,22 L 50,12 L 80,12 L 100,22 Z" fill="#f59e0b" stroke="#fef08a" strokeWidth="2" />
+            <text x="60" y="20" fontSize="10" textAnchor="middle">👑</text>
+            <circle cx="95" cy="28" r="11" fill="#1e293b" stroke="#eab308" strokeWidth="2" />
+            <circle cx="35" cy="28" r="13" fill="#1e293b" stroke="#eab308" strokeWidth="2" />
+          </g>
+        ) : (
+          /* Standard F1 / Cyber Body */
+          <g>
+            <path d="M 105,28 L 125,28 L 125,24 L 105,24 Z" fill="#1e293b" />
+            <path d="M 115,24 L 115,20 L 100,20 L 100,24 Z" fill={carColor} />
+            <path d="M 20,25 L 105,25 L 110,28 L 20,28 Z" fill="#334155" />
+            <path d="M 25,25 L 45,14 L 75,14 L 95,25 Z" fill={carColor} />
+            <path d="M 10,12 L 30,12 L 30,22 L 10,22 Z" fill={carColor} />
+            <path d="M 50,14 C 50,8 70,8 70,14 Z" fill={isCyber ? "#0284c7" : "#0f172a"} />
+            <circle cx="62" cy="10" r="5" fill={isCyber ? "#a855f7" : "#facc15"} />
+            <circle cx="95" cy="28" r="11" fill="#0f172a" stroke={carColor} strokeWidth="2"/>
+            <circle cx="35" cy="28" r="13" fill="#0f172a" stroke={carColor} strokeWidth="2"/>
+          </g>
+        )}
+      </svg>
+    </div>
+  );
+};
 
 
 const parseGridRows = (questionText) => {
@@ -1409,7 +1425,7 @@ function MathRacer() {
                 <div className="multiplayer-actions-panel compact-panel">
                   <div className="host-section-card compact-card">
                     <h4>{t('mathRacer.host_new_match', 'Host a New Match')}</h4>
-                    <button className="btn-multi-host" onClick={handleCreateRoom}>
+                    <button className="btn-multi-host" onClick={() => setShowHostQuestionModal(true)}>
                       🚀 {t('mathRacer.host_a_race', 'Host a Race')}
                     </button>
                   </div>
@@ -1440,8 +1456,39 @@ function MathRacer() {
           </div>
         )}
 
+        {/* Step 1: Separate Centered Host Question Selection Modal */}
+        {showHostQuestionModal && (
+          <div className="modal-backdrop" onClick={() => setShowHostQuestionModal(false)}>
+            <div className="question-inspector-modal host-select-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="inspector-header">
+                <div>
+                  <h3>🎯 {isArabic ? 'الخطوة ١: اختر أسئلة السباق والمستوى' : 'Step 1: Choose Race Questions & Level'}</h3>
+                  <p>{isArabic ? 'اختر ورقة العمل أو المادة قبل فتح غرفة الانتظار' : 'Select a worksheet or difficulty before opening the waiting lobby'}</p>
+                </div>
+                <button className="inspector-close-btn" onClick={() => setShowHostQuestionModal(false)}>✕</button>
+              </div>
+
+              <div className="inspector-body">
+                {renderQuestionSelector(true)}
+              </div>
+
+              <div className="inspector-footer">
+                <button 
+                  className="btn-confirm-questions" 
+                  onClick={() => {
+                    setShowHostQuestionModal(false);
+                    handleCreateRoom();
+                  }}
+                >
+                  🚀 {isArabic ? 'تأكيد ودخول غرفة الانتظار' : 'Confirm & Open Waiting Lobby'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ============================================================
-           MULTIPLAYER LOBBY SCREEN (LOBBY WAITING SCREEN)
+           MULTIPLAYER LOBBY SCREEN (LOBBY WAITING SCREEN STEP 2)
            ============================================================ */}
         {['lobby', 'countdown', 'playing'].includes(gameState) && (
           <div className="racer-gameplay" ref={containerRef}>
@@ -1454,6 +1501,18 @@ function MathRacer() {
                     <h3>🏎️ {t('mathRacer.matchLobby', 'غرفة انتظار السباق')}</h3>
                     <span className="lobby-live-badge">🔴 LIVE</span>
                   </div>
+
+                  {/* Selected Questions Badge */}
+                  {customQuestions && (
+                    <div className="lobby-selected-chapter-badge">
+                      <span>📄 {isArabic ? 'ورقة العمل المختارة:' : 'Selected Worksheet:'} <strong>{chapterName}</strong> ({customQuestions.length} {isArabic ? 'أسئلة' : 'questions'})</span>
+                      {multiRole === 'host' && (
+                        <button className="edit-qs-btn" onClick={() => setShowHostQuestionModal(true)}>
+                          ✏️ {isArabic ? 'تغيير' : 'Change'}
+                        </button>
+                      )}
+                    </div>
+                  )}
 
                   {/* Connected Racers Lineup */}
                   <div className="lobby-racers-section">
@@ -1485,8 +1544,6 @@ function MathRacer() {
 
                   {multiRole === 'host' ? (
                     <div className="lobby-host-controls">
-                      {renderQuestionSelector(true)}
-
                       {/* Room Code Speedometer Banner */}
                       <div className="room-code-speedometer-card">
                         <p className="code-label">{t('mathRacer.useCode', 'رمز الغرفة')}</p>
@@ -1503,7 +1560,7 @@ function MathRacer() {
 
                       <div className="lobby-action-buttons">
                         <button className="start-race-btn-glow" onClick={() => { if(!customQuestions){ alert(t('select_questions_first', 'يرجى اختيار الأسئلة أولاً')); return;} handleHostStartRace('easy'); }}>
-                          🚀 {t('start_race', 'ابدأ السباق')}
+                          🚀 {t('start_race', 'ابدأ السباق (START RACE)')}
                         </button>
                         <button className="cancel-lobby-btn" onClick={handleLeaveLobby}>
                           ✕ {t('cancel', 'إلغاء')}
