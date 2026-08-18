@@ -1,5 +1,298 @@
-.math-racer-container {
+/* =========================================================
+   Abacus Heroes - Fullscreen Arcade Game Arena CSS
+   ========================================================= */
+
+.arcade-game-arena-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+  overflow-y: auto;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+}
+
+.arcade-game-arena-wrapper.rtl-mode {
+  direction: rtl;
+  text-align: right;
+}
+
+/* --- Arcade HUD Top Navigation --- */
+.arcade-hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.arcade-exit-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arcade-exit-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+  background: linear-gradient(135deg, #f87171 0%, #b91c1c 100%);
+}
+
+.arcade-title-center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.arcade-game-logo-text {
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #f43f5e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+.arcade-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 2px solid rgba(168, 85, 247, 0.4);
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+.arcade-avatar-ring {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+}
+
+.arcade-avatar-emoji {
+  font-size: 1.4rem;
+}
+
+.arcade-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.arcade-user-info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.arcade-user-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.arcade-user-xp {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+/* --- Interactive Vehicle Garage --- */
+.arcade-vehicle-garage {
+  width: 100%;
+  max-width: 700px;
+  margin: 1rem auto 1.5rem auto;
+  background: rgba(30, 41, 59, 0.6);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 24px;
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.garage-header {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #cbd5e1;
+  margin: 0 0 14px 0;
+  letter-spacing: 1px;
+}
+
+.garage-vehicles-flex {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.garage-v-btn {
+  background: rgba(15, 23, 42, 0.8);
+  border: 3px solid #334155;
+  border-radius: 18px;
+  padding: 10px 16px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-width: 95px;
+}
+
+.garage-v-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+  background: rgba(30, 41, 59, 0.9);
+}
+
+.garage-v-btn.selected-car {
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.2) 0%, rgba(15, 23, 42, 0.9) 100%);
+  transform: scale(1.08);
+}
+
+.v-emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.v-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #e2e8f0;
+}
+
+/* --- Console Game Loading Screen --- */
+.arcade-game-loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, #1e1b4b 0%, #090d16 100%);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 2rem;
+}
+
+.loading-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 500px;
+}
+
+.spinning-tachometer {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 6px solid #38bdf8;
+  border-top-color: #a855f7;
+  border-right-color: #f43f5e;
+  animation: spinTachometer 1.2s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+}
+
+@keyframes spinTachometer {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.tachometer-icon {
+  font-size: 3rem;
+  animation: pulseScale 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes pulseScale {
+  0% { transform: scale(0.9); }
+  100% { transform: scale(1.15); }
+}
+
+.loading-game-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  letter-spacing: 1.5px;
+}
+
+.loading-sub-text {
+  font-size: 1rem;
+  color: #94a3b8;
+  margin: 0 0 2rem 0;
+  font-weight: 500;
+}
+
+.loading-progress-bar-container {
+  width: 100%;
+  height: 14px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 2px solid rgba(168, 85, 247, 0.5);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.loading-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #38bdf8 0%, #a855f7 50%, #f43f5e 100%);
+  border-radius: 20px;
+  animation: loadProgressFill 1.8s ease-out forwards;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.8);
+}
+
+@keyframes loadProgressFill {
+  0% { width: 0%; }
+  50% { width: 65%; }
+  100% { width: 100%; }
+}
+
+.loading-tip-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 2px dashed rgba(56, 189, 248, 0.4);
+  padding: 12px 20px;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+.math-racer-container {
+  padding: 1.5rem 2rem 5rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
   min-height: calc(100vh - 80px);

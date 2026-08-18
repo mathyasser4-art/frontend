@@ -1233,7 +1233,6 @@ function MathRacer() {
       setGameState('menu');
     }
   };
-
   // Get final placement list for podium
   const getPodiumList = () => {
     return [...players].filter(p => !p.isSpectator).sort((a, b) => {
@@ -1246,33 +1245,78 @@ function MathRacer() {
     });
   };
 
+  const isArabic = i18n.language === 'ar';
+  const playerAvatar = localStorage.getItem('user_profile_avatar') || '🦸‍♂️';
+  const playerName = localStorage.getItem('pp_name') || 'Racer Hero';
+  const isEmojiAvatar = typeof playerAvatar === 'string' && playerAvatar.length <= 6 && !playerAvatar.startsWith('data:') && !playerAvatar.startsWith('http');
+
   return (
-    <>
-      <MobileNav role="Student" />
-      <Navbar />
+    <div className={`arcade-game-arena-wrapper ${isArabic ? 'rtl-mode' : ''}`}>
       <ArithmeticMcqDebugPanel />
-      
-      <div className="math-racer-container">
-        <div className="racer-header">
-          <button onClick={() => { soundEffects.playClick(); navigate(-1); }} className="back-button">
-            <ChevronLeft size={20} />
-            <span>{t('back', 'Back')}</span>
-          </button>
-          <h2>{t('math_racer', 'Math Racer')} 🏎️💨</h2>
-          
 
+      {/* Arcade HUD Top Navigation */}
+      <div className="arcade-hud-header">
+        <button onClick={() => { soundEffects.playClick(); navigate(-1); }} className="arcade-exit-btn">
+          <span>⬅️ {isArabic ? 'خروج من اللعبة' : 'EXIT GAME'}</span>
+        </button>
 
-          {multiRole === 'host' && (gameState === 'playing' || gameState === 'lobby') && (
-            <button onClick={handleHostCloseRace} className="host-close-race-btn" title={t('close_race', 'Close Race for All Players')}>
-              ✕ {t('close_race', 'Close Race')}
-            </button>
-          )}
+        <div className="arcade-title-center">
+          <span className="arcade-game-logo-text">🏎️ MATH RACER ARENA 🏁</span>
         </div>
 
+        <div className="arcade-user-badge">
+          <div className="arcade-avatar-ring">
+            {isEmojiAvatar ? (
+              <span className="arcade-avatar-emoji">{playerAvatar}</span>
+            ) : (
+              <img src={playerAvatar} alt="Avatar" className="arcade-avatar-img" />
+            )}
+          </div>
+          <div className="arcade-user-info-text">
+            <span className="arcade-user-name">{playerName}</span>
+            <span className="arcade-user-xp">🏆 1,250 XP</span>
+          </div>
+        </div>
+
+        {multiRole === 'host' && (gameState === 'playing' || gameState === 'lobby') && (
+          <button onClick={handleHostCloseRace} className="host-close-race-btn" title={t('close_race', 'Close Race for All Players')}>
+            ✕ {t('close_race', 'Close Race')}
+          </button>
+        )}
+      </div>
+
+      <div className="math-racer-container">
         {gameState === 'menu' && (
           <div className="racer-menu">
             <div className="racer-logo">
               <F1CarSVG color={mySkinColor || "#3b82f6"} name="" />
+            </div>
+
+            {/* Interactive Car Garage Selector */}
+            <div className="arcade-vehicle-garage">
+              <h4 className="garage-header">🏎️ {isArabic ? 'اختر سيارتك في الكراج' : 'CHOOSE YOUR VEHICLE'}</h4>
+              <div className="garage-vehicles-flex">
+                {[
+                  { color: '#ef4444', emoji: '🏎️', label: 'Formula Red' },
+                  { color: '#a855f7', emoji: '🏎️⚡️', label: 'Cyber Nitro' },
+                  { color: '#f59e0b', emoji: '🚜', label: 'Monster Truck' },
+                  { color: '#06b6d4', emoji: '🚀', label: 'Rocket Speeder' },
+                  { color: '#eab308', emoji: '👑', label: 'Golden Kart' }
+                ].map(v => (
+                  <button 
+                    key={v.color} 
+                    className={`garage-v-btn ${mySkinColor === v.color ? 'selected-car' : ''}`}
+                    style={{ borderColor: v.color }}
+                    onClick={() => {
+                      setMySkinColor(v.color);
+                      soundEffects.playClick();
+                    }}
+                  >
+                    <span className="v-emoji">{v.emoji}</span>
+                    <span className="v-label">{v.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {customQuestions && (
@@ -1479,20 +1523,31 @@ function MathRacer() {
         {/* ============================================================
            INTERMEDIATE RACE LOADING SCREEN
            ============================================================ */}
+        {/* ============================================================
+           INTERMEDIATE RACE LOADING SCREEN (ARCADE GAME STYLE)
+           ============================================================ */}
         {gameState === 'loading' && (
-          <div className="race-loading-overlay">
-            <div className="race-loading-card">
-              <div className="loading-car-wrapper">
-                <F1CarSVG color={mySkinColor || "#3b82f6"} name="Your Racer" isBoosting={true} />
+          <div className="arcade-game-loading-screen">
+            <div className="loading-card-content">
+              <div className="spinning-tachometer">
+                <div className="tachometer-needle"></div>
+                <span className="tachometer-icon">🏎️💨</span>
               </div>
-              <h3 className="loading-title">🏎️ {t('mathRacer.preparing_race', 'Setting Up Race Track...')}</h3>
-              <p className="loading-subtitle">
+
+              <h2 className="loading-game-title">{isArabic ? 'جاري تجهيز مضمار السباق...' : 'PREPARING RACE TRACK...'}</h2>
+              <p className="loading-sub-text">
                 {customQuestions 
                   ? `${t('mathRacer.loading_questions', 'Loading')} ${customQuestions.length} ${t('questions', 'questions from')} ${chapterName}`
-                  : t('mathRacer.loading_random', 'Loading Math Racer Challenge')}
+                  : (isArabic ? 'جاري تحميل أسئلة الأباكس والحساب الذهني الخاطف...' : 'Loading Math Racer Speed Challenge...')}
               </p>
-              <div className="loading-progress-bar">
-                <div className="loading-progress-fill"></div>
+
+              {/* Animated Game Progress Bar */}
+              <div className="loading-progress-bar-container">
+                <div className="loading-progress-bar-fill"></div>
+              </div>
+
+              <div className="loading-tip-card">
+                <span>💡 {isArabic ? 'نصيحة الأبطال: الإجابة السريعة والدقيقة تمنح سيارتك دفعة النيترو الخارقة!' : 'Hero Tip: Fast and accurate answers ignite your Super Nitro Boost!'}</span>
               </div>
             </div>
           </div>
