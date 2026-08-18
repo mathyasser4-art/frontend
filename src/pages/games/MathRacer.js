@@ -156,6 +156,7 @@ function MathRacer() {
   const [selectedChapterId, setSelectedChapterId] = useState(location.state?.chapterId || '');
   const [wizardError, setWizardError] = useState(null);
   const [showQuestionPreview, setShowQuestionPreview] = useState(false);
+  const [showHostQuestionModal, setShowHostQuestionModal] = useState(false);
 
   const loadCustomWorksheets = () => {
       setLoadingWizard(true);
