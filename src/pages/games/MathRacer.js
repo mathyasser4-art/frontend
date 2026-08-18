@@ -1906,7 +1906,7 @@ function MathRacer() {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
