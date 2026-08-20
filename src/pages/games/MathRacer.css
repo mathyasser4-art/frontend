@@ -67,27 +67,30 @@
 /* --- Side-by-Side Floating HUD Question Card Overlay --- */
 .problem-container {
   position: absolute !important;
-  top: 65px !important;
-  right: 25px !important;
-  z-index: 500 !important;
+  top: 10px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 2000 !important;
   display: flex !important;
   flex-direction: row !important; /* SIDE BY SIDE */
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 1.5rem !important;
-  background: rgba(15, 23, 42, 0.92) !important;
+  gap: 1.25rem !important;
+  background: rgba(15, 23, 42, 0.95) !important;
   backdrop-filter: blur(14px) !important;
-  border: 3px solid rgba(168, 85, 247, 0.6) !important;
-  padding: 1rem 1.5rem !important;
-  border-radius: 24px !important;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(168, 85, 247, 0.3) !important;
-  max-width: 580px !important;
+  border: 3px solid rgba(168, 85, 247, 0.7) !important;
+  padding: 0.85rem 1.35rem !important;
+  border-radius: 22px !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(168, 85, 247, 0.4) !important;
+  width: 92% !important;
+  max-width: 560px !important;
   color: #ffffff !important;
 }
 
 .arcade-game-arena-wrapper.rtl-mode .problem-container {
+  left: 50% !important;
   right: auto !important;
-  left: 25px !important;
+  transform: translateX(-50%) !important;
 }
 
 .racer-question-section {
@@ -169,17 +172,17 @@
   }
 
   .problem-container {
-    top: 52px !important;
+    top: 6px !important;
     left: 50% !important;
     right: auto !important;
     transform: translateX(-50%) !important;
     width: 94% !important;
     max-width: 420px !important;
-    padding: 0.65rem 0.9rem !important;
+    padding: 0.6rem 0.85rem !important;
     flex-direction: column !important;
-    gap: 0.6rem !important;
-    border-radius: 18px !important;
-    background: rgba(15, 23, 42, 0.95) !important;
+    gap: 0.5rem !important;
+    border-radius: 16px !important;
+    background: rgba(15, 23, 42, 0.96) !important;
   }
 
   .arcade-game-arena-wrapper.rtl-mode .problem-container {
@@ -194,7 +197,7 @@
   }
 
   .problem-text {
-    font-size: 1.5rem !important;
+    font-size: 1.45rem !important;
     letter-spacing: 1px !important;
     text-align: center !important;
   }
@@ -213,6 +216,28 @@
   .track-container {
     height: calc(100vh - 48px) !important;
     min-height: 400px !important;
+  }
+
+  .racer-menu,
+  .single-player-setup,
+  .multi-player-setup,
+  .question-selector-container {
+    max-width: 460px !important;
+    width: 96% !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  .arcade-vehicle-garage {
+    padding: 0.6rem 0.75rem !important;
+    margin-bottom: 0.5rem !important;
+    max-width: 440px !important;
+  }
+
+  .racer-lobby-panel,
+  .host-select-modal {
+    padding: 1rem 1.1rem !important;
+    max-width: 440px !important;
+    width: 94% !important;
   }
 }
 
