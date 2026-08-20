@@ -1272,32 +1272,50 @@ function MathRacer() {
       <ArithmeticMcqDebugPanel />
 
       {/* Arcade HUD Top Navigation */}
-      <div className="arcade-hud-header">
+      <div className={`arcade-hud-header ${gameState === 'playing' ? 'compact-playing-hud' : ''}`}>
         <button onClick={() => { soundEffects.playClick(); navigate(-1); }} className="arcade-exit-btn">
-          <span>⬅️ {isArabic ? 'خروج من اللعبة' : 'EXIT GAME'}</span>
+          <span>❌ {isArabic ? 'خروج' : 'Exit'}</span>
         </button>
 
-        <div className="arcade-title-center">
-          <span className="arcade-game-logo-text">🏎️ MATH RACER ARENA 🏁</span>
-        </div>
+        {gameState === 'playing' ? (
+          <div className="arcade-hud-live-stats">
+            <div className="hud-stat-chip score-chip">
+              <Trophy size={16} color="#f59e0b" />
+              <span>{score}</span>
+            </div>
+            <div className="hud-stat-chip rank-chip">
+              <Medal size={16} color="#10b981" />
+              <span>{isArabic ? `المركز ${getPlacement()}` : `${getPlacement()}${getPlacement() === 1 ? 'st' : getPlacement() === 2 ? 'nd' : 'rd'}`}</span>
+            </div>
+            <div className="hud-stat-chip timer-chip">
+              <Timer size={16} color="#38bdf8" />
+              <span>{timeElapsed}s</span>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="arcade-title-center">
+              <span className="arcade-game-logo-text">{isArabic ? '🏎️ سباق الأباكس 🏁' : '🏎️ MATH RACER ARENA 🏁'}</span>
+            </div>
 
-        <div className="arcade-user-badge">
-          <div className="arcade-avatar-ring">
-            {isEmojiAvatar ? (
-              <span className="arcade-avatar-emoji">{playerAvatar}</span>
-            ) : (
-              <img src={playerAvatar} alt="Avatar" className="arcade-avatar-img" />
-            )}
-          </div>
-          <div className="arcade-user-info-text">
-            <span className="arcade-user-name">{playerName}</span>
-            <span className="arcade-user-xp">🏆 1,250 XP</span>
-          </div>
-        </div>
+            <div className="arcade-user-badge">
+              <div className="arcade-avatar-ring">
+                {isEmojiAvatar ? (
+                  <span className="arcade-avatar-emoji">{playerAvatar}</span>
+                ) : (
+                  <img src={playerAvatar} alt="Avatar" className="arcade-avatar-img" />
+                )}
+              </div>
+              <div className="arcade-user-info-text">
+                <span className="arcade-user-name">{playerName}</span>
+              </div>
+            </div>
+          </>
+        )}
 
         {multiRole === 'host' && (gameState === 'playing' || gameState === 'lobby') && (
-          <button onClick={handleHostCloseRace} className="host-close-race-btn" title={t('close_race', 'Close Race for All Players')}>
-            ✕ {t('close_race', 'Close Race')}
+          <button onClick={handleHostCloseRace} className="host-close-race-btn" title={isArabic ? 'إنهاء السباق للجميع' : 'Close Race for All Players'}>
+            ✕ {isArabic ? 'إنهاء السباق' : 'Close Race'}
           </button>
         )}
       </div>
@@ -1655,25 +1673,6 @@ function MathRacer() {
           </div>
         )}
 
-        {gameState === 'playing' && (
-          <>
-            <div className="game-stats">
-              <div className="stat-box timer-box">
-                <Timer size={24} color="#fff" />
-                <span style={{ color: '#fff' }}>{timeElapsed}s</span>
-              </div>
-              <div className="stat-box placement-box">
-                <Medal size={24} color="#10b981" />
-                <span>{getPlacement()}{getPlacement() === 1 ? 'st' : getPlacement() === 2 ? 'nd' : 'rd'}</span>
-              </div>
-              <div className="stat-box score-box">
-                <Trophy size={24} color="#f59e0b" />
-                <span>{score}</span>
-              </div>
-            </div>
-          </>
-        )}
-
         {/* The Infinite Journey Track (VISIBLE IN LOBBY, COUNTDOWN, AND PLAYING) */}
         {['lobby', 'countdown', 'playing'].includes(gameState) && (
           <div className={`track-container ${gameState === 'playing' ? 'is-moving' : ''}`}>
@@ -1687,7 +1686,7 @@ function MathRacer() {
                   <div className="finish-pole left-pole">
                     <div className="finish-flag">🏁</div>
                   </div>
-                  <div className="finish-banner">FINISH LINE</div>
+                  <div className="finish-banner">{isArabic ? 'خط النهاية' : 'FINISH LINE'}</div>
                   <div className="finish-pole right-pole">
                     <div className="finish-flag">🏁</div>
                   </div>
@@ -1700,20 +1699,20 @@ function MathRacer() {
                     <div className="lane">
                       <div className="lane-marker"></div>
                       <div className="racer-car bot-car" style={{ left: `${getVisualPosition(bot1Distance)}%` }}>
-                        <F1CarSVG color="#f43f5e" name="Bot 1" />
+                        <F1CarSVG color="#f43f5e" name={isArabic ? 'المتسابق ١' : 'Bot 1'} />
                       </div>
                     </div>
                     {/* Lane 2: Player */}
                     <div className="lane player-lane">
                       <div className="lane-marker"></div>
                       <div className={`racer-car player-car ${feedback === 'correct' ? 'accelerating' : ''} ${feedback === 'wrong' ? 'stalling' : ''}`} style={{ left: `${getVisualPosition(playerDistance)}%` }}>
-                        <F1CarSVG color={mySkinColor || "#3b82f6"} name="You" isBoosting={feedback === 'correct'} />
+                        <F1CarSVG color={mySkinColor || "#3b82f6"} name={isArabic ? 'أنت' : 'You'} isBoosting={feedback === 'correct'} />
                       </div>
                     </div>
                     {/* Lane 3: Bot 2 */}
                     <div className="lane">
                       <div className="racer-car bot-car" style={{ left: `${getVisualPosition(bot2Distance)}%` }}>
-                        <F1CarSVG color="#8b5cf6" name="Bot 2" />
+                        <F1CarSVG color="#8b5cf6" name={isArabic ? 'المتسابق ٢' : 'Bot 2'} />
                       </div>
                     </div>
                   </>
@@ -1735,7 +1734,7 @@ function MathRacer() {
                         >
                           <F1CarSVG 
                             color={player.color} 
-                            name={isMe ? `${player.name} (You)` : player.name} 
+                            name={isMe ? `${player.name} (${isArabic ? 'أنت' : 'You'})` : player.name} 
                             isBoosting={isMe ? feedback === 'correct' : !!player.isBoosting} 
                           />
                         </div>
@@ -1761,19 +1760,19 @@ function MathRacer() {
                     gap: '15px'
                   }}>
                     <h3 style={{ color: '#38bdf8', fontSize: '20px', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span>🏎️</span> Live Race Spectator Dashboard
+                      <span>🏎️</span> {isArabic ? 'لوحة تحكم المشاهد المباشر' : 'Live Race Spectator Dashboard'}
                     </h3>
                     <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0, textAlign: 'center' }}>
-                      You are hosting this race in spectator mode. Watch your students compete live on the track above!
+                      {isArabic ? 'أنت تستضيف هذا السباق بوضع المشاهدة. شاهد طلابك يتنافسون مباشرة!' : 'You are hosting this race in spectator mode. Watch your students compete live on the track above!'}
                     </p>
                     <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
                       <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                        <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>Active Racers</span>
+                        <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>{isArabic ? 'المتسابقون النشطون' : 'Active Racers'}</span>
                         <strong style={{ color: '#10b981', fontSize: '18px' }}>{players.filter(p => !p.isSpectator).length}</strong>
                       </div>
                       <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                        <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>Target Questions</span>
-                        <strong style={{ color: '#a78bfa', fontSize: '18px' }}>{activeQuestionCount || 'Unlimited'}</strong>
+                        <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'block', marginBottom: '4px' }}>{isArabic ? 'عدد الأسئلة' : 'Target Questions'}</span>
+                        <strong style={{ color: '#a78bfa', fontSize: '18px' }}>{activeQuestionCount || (isArabic ? 'غير محدود' : 'Unlimited')}</strong>
                       </div>
                     </div>
                     <button
@@ -1790,7 +1789,7 @@ function MathRacer() {
                         boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)'
                       }}
                     >
-                      🏁 End Race & Show Podium
+                      🏁 {isArabic ? 'إنهاء السباق وعرض المنصة' : 'End Race & Show Podium'}
                     </button>
                   </div>
                 ) : (
@@ -1807,7 +1806,7 @@ function MathRacer() {
                     {/* Problem Content */}
                     {currentProblem.text === 'ABACUS_GRID' && currentProblem.gridRows ? (
                       <div className="racer-abacus-grid-view">
-                        <table className="racer-abacus-display-table">
+                        <table className="racer-abacus-display-table" dir="ltr" style={{ direction: 'ltr', unicodeBidi: 'isolate' }}>
                           <tbody>
                             {currentProblem.gridRows.map((row, i) => (
                               <tr key={i}>
@@ -1819,7 +1818,7 @@ function MathRacer() {
                         </table>
                       </div>
                     ) : (
-                      <div className="problem-text" style={{ whiteSpace: 'pre-wrap' }}>{currentProblem.text}</div>
+                      <div className="problem-text" dir="ltr" style={{ direction: 'ltr', unicodeBidi: 'isolate', whiteSpace: 'pre-wrap' }}>{currentProblem.text}</div>
                     )}
                   </div>
 
@@ -1906,18 +1905,18 @@ function MathRacer() {
 
         {gameState === 'gameover' && (
           <div className="racer-gameover">
-            <h2>Race Finished! 🏁</h2>
+            <h2>{isArabic ? 'انتهى السباق! 🏁' : 'Race Finished! 🏁'}</h2>
             
             {gameMode === 'single' ? (
               <div className="results-podium">
                 <div className="final-placement">
                   <Medal size={40} color="#10b981" />
-                  <h3>{getPlacement()}{getPlacement() === 1 ? 'st' : getPlacement() === 2 ? 'nd' : 'rd'} Place</h3>
+                  <h3>{isArabic ? `المركز ${getPlacement()}` : `${getPlacement()}${getPlacement() === 1 ? 'st' : getPlacement() === 2 ? 'nd' : 'rd'} Place`}</h3>
                 </div>
                 <div className="final-score">
                   <Trophy size={40} color="#f59e0b" />
                   <h3>{score}</h3>
-                  <p>Points</p>
+                  <p>{isArabic ? 'نقاط' : 'Points'}</p>
                 </div>
               </div>
             ) : (
@@ -1925,7 +1924,7 @@ function MathRacer() {
                  MULTIPLAYER REAL-TIME PODIUM LEADERBOARD
                  ============================================================ */
               <div className="multiplayer-leaderboard-card">
-                <h3>🏆 Final Roster Leaderboard</h3>
+                <h3>🏆 {isArabic ? 'جدول ترتيب المتسابقين النهائي' : 'Final Roster Leaderboard'}</h3>
                 <div className="leaderboard-list">
                   {getPodiumList().map((player, idx) => {
                     const rank = idx + 1;
@@ -1934,11 +1933,11 @@ function MathRacer() {
                       <div key={player.id || idx} className={`leaderboard-item rank-${rank} ${isMe ? 'highlight-me' : ''}`}>
                         <div className="rank-number">{rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank}</div>
                         <div className="player-info">
-                          <span className="player-name">{player.name} {isMe && '(You)'}</span>
-                          <span className="player-score">Score: {player.score} pts</span>
+                          <span className="player-name">{player.name} {isMe && (isArabic ? '(أنت)' : '(You)')}</span>
+                          <span className="player-score">{isArabic ? `النقاط: ${player.score}` : `Score: ${player.score} pts`}</span>
                         </div>
                         <div className="finish-time-badge">
-                          {player.finished ? `🏁 ${player.time}` : '🚗 Racing...'}
+                          {player.finished ? `🏁 ${player.time}` : (isArabic ? '🚗 يتسابق...' : '🚗 Racing...')}
                         </div>
                       </div>
                     );
@@ -1950,15 +1949,15 @@ function MathRacer() {
             <div className="gameover-actions">
               {gameMode === 'single' ? (
                 <button className="play-again-btn" onClick={() => startGame(difficulty)}>
-                  <RefreshCcw size={20} /> Race Again
+                  <RefreshCcw size={20} /> {isArabic ? 'إعادة السباق' : 'Race Again'}
                 </button>
               ) : (
                 <button className="play-again-btn" onClick={() => { soundEffects.playClick(); setGameState('lobby'); }}>
-                  <Users size={20} /> Back to Lobby
+                  <Users size={20} /> {isArabic ? 'العودة لغرفة الانتظار' : 'Back to Lobby'}
                 </button>
               )}
               <button className="menu-btn" onClick={() => { soundEffects.playClick(); disconnectPusher(); setGameState('menu'); }}>
-                Main Menu
+                {isArabic ? 'القائمة الرئيسية' : 'Main Menu'}
               </button>
             </div>
           </div>
