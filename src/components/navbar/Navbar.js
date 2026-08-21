@@ -361,7 +361,7 @@ const Navbar = () => {
                                     <img src={safeLocalStorage.getItem('user_profile_avatar')} alt="avatar" className="nav-profile-avatar-img" />
                                 )
                             ) : null}
-                            <span>{t('navbar.profile', 'PROFILE')}</span>
+                            <span>{safeLocalStorage.getItem('pp_name') || t('navbar.profile', 'PROFILE')}</span>
                           </div>
                         </Link>
                     ) : (

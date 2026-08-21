@@ -1230,5 +1230,22 @@ nav .nav-container img {
   }
 }
 
+/* Enforce crisp 1:1 circular avatar masking for profile button across all navbar states */
+.nav-profile-avatar-img,
+nav .nav-container img.nav-profile-avatar-img {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  max-width: 28px !important;
+  max-height: 28px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+  aspect-ratio: 1 / 1 !important;
+  display: inline-block !important;
+}
+
 
 
