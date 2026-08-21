@@ -1072,7 +1072,14 @@ function MathRacer() {
     }
   }, [playerDistance, gameState, gameMode, roomId, multiRole, hostIsRacing, players]);
 
-  const handleOptionClick = (selectedOpt) => {
+  const handleOptionClick = (selectedOpt, e) => {
+    if (e && e.currentTarget && typeof e.currentTarget.blur === 'function') {
+      e.currentTarget.blur();
+    }
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+      document.activeElement.blur();
+    }
+
     const normalize = (val) => String(val !== undefined && val !== null ? val : "").trim();
     if (normalize(selectedOpt) === normalize(currentProblem.answer)) {
       handleCorrectAnswer();
@@ -1878,7 +1885,7 @@ function MathRacer() {
                           <button 
                             key={i} 
                             className="racer-graph-option-btn"
-                            onClick={() => handleOptionClick(opt)}
+                            onClick={(e) => handleOptionClick(opt, e)}
                           >
                             <img src={opt} alt={`Graph choice ${i + 1}`} />
                           </button>
@@ -1890,7 +1897,7 @@ function MathRacer() {
                           <button 
                             key={i} 
                             className="racer-option-btn"
-                            onClick={() => handleOptionClick(opt)}
+                            onClick={(e) => handleOptionClick(opt, e)}
                           >
                             {opt}
                           </button>

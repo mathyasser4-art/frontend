@@ -124,6 +124,9 @@
 }
 
 .racer-option-btn {
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
   background: rgba(30, 41, 59, 0.9) !important;
   border: 2px solid #8b5cf6 !important;
   padding: 10px 20px !important;
@@ -132,19 +135,33 @@
   color: #ffffff !important;
   border-radius: 16px !important;
   cursor: pointer !important;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  transition: transform 0.1s ease, background 0.15s ease !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
 }
 
-.racer-option-btn:hover {
-  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
-  color: #ffffff !important;
-  transform: scale(1.08) !important;
-  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.5) !important;
+/* Prevent persistent focus/selection lighting on web & mobile */
+.racer-option-btn:focus,
+.racer-option-btn:focus-visible {
+  outline: none !important;
+  background: rgba(30, 41, 59, 0.9) !important;
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+  transform: none !important;
+}
+
+@media (hover: hover) {
+  .racer-option-btn:hover {
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
+    color: #ffffff !important;
+    transform: scale(1.06) !important;
+    box-shadow: 0 6px 16px rgba(168, 85, 247, 0.5) !important;
+  }
 }
 
 .racer-option-btn:active {
-  transform: translateY(2px);
-  background: #e2e8f0;
+  transform: scale(0.96) !important;
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
+  color: #ffffff !important;
 }
 
 /* --- Mobile Responsive Rule --- */
