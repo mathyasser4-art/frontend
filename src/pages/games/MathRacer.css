@@ -2543,31 +2543,37 @@
 }
 
 .racers-lineup-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
 }
 
 .racer-player-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 0.75rem;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  width: 100%;
 }
 
 .racer-car-icon {
-  width: 50px;
+  width: 65px;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .racer-player-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  align-items: flex-start;
 }
 
 .racer-player-info .player-name {
@@ -2580,20 +2586,23 @@
   font-size: 0.75rem;
   color: #64748b;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 0.25rem;
 }
 
 .switch-role-btn {
-  background: #f97316;
+  margin-left: auto;
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
   color: #ffffff;
   border: none;
-  border-radius: 6px;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 700;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 800;
   cursor: pointer;
-  width: fit-content;
+  box-shadow: 0 3px 10px rgba(234, 88, 12, 0.35);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* Room Code Speedometer Banner */

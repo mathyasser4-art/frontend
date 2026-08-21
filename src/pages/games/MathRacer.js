@@ -319,7 +319,7 @@ function MathRacer() {
   const [isLinkCopied, setIsLinkCopied] = useState(false);
   const [hostQuestionCount, setHostQuestionCount] = useState(10);
   const [activeQuestionCount, setActiveQuestionCount] = useState(10);
-  const [hostIsRacing, setHostIsRacing] = useState(false); // Default host to spectator mode
+  const [hostIsRacing, setHostIsRacing] = useState(true); // Default host to participating mode
 
   // User Credentials
   const [myName] = useState(() => {
@@ -1546,13 +1546,15 @@ function MathRacer() {
                             <span className="player-name">{player.name}</span>
                             {player.id === myId && multiRole === 'host' && (
                               <div className="host-role-badge">
-                                <span>(Host - {player.isSpectator ? t('watching', 'مشاهدة') : t('participating', 'مشاركة')})</span>
-                                <button className="switch-role-btn" onClick={() => setHostIsRacing(!!player.isSpectator)}>
-                                  {t('switch', 'تبديل')}
-                                </button>
+                                <span>({isArabic ? 'المضيف' : 'Host'} - {player.isSpectator ? (isArabic ? 'مشاهدة' : 'Spectating') : (isArabic ? 'مشاركة' : 'Racing')})</span>
                               </div>
                             )}
                           </div>
+                          {player.id === myId && multiRole === 'host' && (
+                            <button className="switch-role-btn" onClick={() => setHostIsRacing(!!player.isSpectator)}>
+                              🔄 {isArabic ? 'تبديل' : 'Switch'}
+                            </button>
+                          )}
                         </div>
                       ))}
                       {players.length === 0 && (
