@@ -478,12 +478,16 @@ const BunnyRun = () => {
           {isWaitingForAnswer && (
             <div className="math-overlay-modern" style={{ zIndex: 10 }}>
               <div className="math-card">
-                <div className="math-title">Quick Solve!</div>
-                <div className="math-q">{question.text}</div>
-                <div className="math-opts">
-                  {options.map((opt, i) => (
-                    <button key={i} onClick={() => handleAnswer(opt)}>{opt}</button>
-                  ))}
+                <div className="math-question-section">
+                  <div className="math-title">Quick Solve!</div>
+                  <div className="math-q">{question.text}</div>
+                </div>
+                <div className="math-answer-section">
+                  <div className="math-opts">
+                    {options.map((opt, i) => (
+                      <button key={i} onClick={() => handleAnswer(opt)}>{opt}</button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

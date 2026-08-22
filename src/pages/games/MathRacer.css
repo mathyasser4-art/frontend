@@ -74,6 +74,7 @@
   z-index: 500 !important;
   display: flex !important;
   flex-direction: row !important; /* ALWAYS SIDE BY SIDE: quest | choices */
+  direction: ltr !important; /* PREVENT RTL MODE FROM SWAPPING SIDES */
   align-items: center !important;
   justify-content: space-between !important;
   gap: 0.65rem !important;
@@ -93,6 +94,7 @@
   left: 10px !important;
   right: auto !important;
   transform: none !important;
+  direction: ltr !important;
 }
 
 .racer-question-section {
@@ -102,7 +104,7 @@
   justify-content: center !important;
   gap: 4px !important;
   flex: 1 !important;
-  border-right: 2px solid rgba(168, 85, 247, 0.5) !important; /* VERTICAL DIVIDER LINE */
+  border-right: 2px solid rgba(168, 85, 247, 0.5) !important; /* VERTICAL DIVIDER LINE ALWAYS ON RIGHT */
   padding-right: 0.6rem !important;
   margin-right: 0.2rem !important;
   box-sizing: border-box !important;
@@ -110,12 +112,12 @@
 }
 
 .arcade-game-arena-wrapper.rtl-mode .racer-question-section {
-  border-right: none !important;
-  border-left: 2px solid rgba(168, 85, 247, 0.5) !important;
-  padding-right: 0 !important;
-  padding-left: 0.6rem !important;
-  margin-right: 0 !important;
-  margin-left: 0.2rem !important;
+  border-right: 2px solid rgba(168, 85, 247, 0.5) !important;
+  border-left: none !important;
+  padding-right: 0.6rem !important;
+  padding-left: 0 !important;
+  margin-right: 0.2rem !important;
+  margin-left: 0 !important;
 }
 
 .racer-answer-section {
@@ -166,7 +168,7 @@
   color: #ffffff !important;
   border-radius: 12px !important;
   cursor: pointer !important;
-  transition: transform 0.1s ease, background 0.15s ease !important;
+  transition: transform 0.05s ease !important;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
   white-space: nowrap !important;
   word-break: normal !important;
@@ -180,29 +182,24 @@
   box-sizing: border-box !important;
 }
 
-/* Prevent persistent focus/selection lighting on web & mobile */
+/* Light up ONLY when physically pressed (:active), not on hover/focus */
 .racer-option-btn:focus,
-.racer-option-btn:focus-visible {
+.racer-option-btn:focus-visible,
+.racer-option-btn:hover {
   outline: none !important;
   background: rgba(30, 41, 59, 0.9) !important;
   border-color: #8b5cf6 !important;
+  color: #ffffff !important;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
   transform: none !important;
 }
 
-@media (hover: hover) {
-  .racer-option-btn:hover {
-    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
-    color: #ffffff !important;
-    transform: scale(1.06) !important;
-    box-shadow: 0 6px 16px rgba(168, 85, 247, 0.5) !important;
-  }
-}
-
 .racer-option-btn:active {
-  transform: scale(0.96) !important;
+  transform: scale(0.95) !important;
   background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
+  border-color: #a855f7 !important;
   color: #ffffff !important;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.9) !important;
 }
 
 /* --- Mobile Responsive Rule --- */
@@ -238,6 +235,7 @@
     max-width: 420px !important;
     padding: 0.4rem 0.55rem !important;
     flex-direction: row !important; /* SIDE BY SIDE: quest | choices */
+    direction: ltr !important; /* PREVENT RTL MODE FROM SWAPPING SIDES */
     gap: 0.35rem !important;
     border-radius: 14px !important;
     background: rgba(15, 23, 42, 0.96) !important;
@@ -249,6 +247,7 @@
     left: 6px !important;
     right: auto !important;
     transform: none !important;
+    direction: ltr !important;
   }
 
   .racer-question-section {
@@ -264,12 +263,12 @@
   }
 
   .arcade-game-arena-wrapper.rtl-mode .racer-question-section {
-    border-right: none !important;
-    border-left: 2px solid rgba(168, 85, 247, 0.5) !important;
-    padding-right: 0 !important;
-    padding-left: 0.35rem !important;
-    margin-right: 0 !important;
-    margin-left: 0.1rem !important;
+    border-right: 2px solid rgba(168, 85, 247, 0.5) !important;
+    border-left: none !important;
+    padding-right: 0.35rem !important;
+    padding-left: 0 !important;
+    margin-right: 0.1rem !important;
+    margin-left: 0 !important;
   }
 
   .racer-answer-section {
@@ -1035,25 +1034,32 @@
 .racer-option-btn {
   background: rgba(30, 41, 59, 0.9) !important;
   border: 2px solid #8b5cf6 !important;
-  padding: 10px 20px !important;
-  font-size: 1.3rem !important;
+  padding: 6px 10px !important;
+  font-size: 1.02rem !important;
   font-weight: 800 !important;
   color: #ffffff !important;
-  border-radius: 16px !important;
+  border-radius: 12px !important;
   cursor: pointer !important;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  transition: transform 0.05s ease !important;
 }
 
+.racer-option-btn:focus,
+.racer-option-btn:focus-visible,
 .racer-option-btn:hover {
-  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
+  outline: none !important;
+  background: rgba(30, 41, 59, 0.9) !important;
+  border-color: #8b5cf6 !important;
   color: #ffffff !important;
-  transform: scale(1.08) !important;
-  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.5) !important;
+  transform: none !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
 }
 
 .racer-option-btn:active {
-  transform: translateY(2px);
-  background: #e2e8f0;
+  transform: scale(0.95) !important;
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
+  border-color: #a855f7 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.9) !important;
 }
 
 /* Fullscreen Track Alignment */
