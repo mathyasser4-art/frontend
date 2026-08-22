@@ -680,6 +680,11 @@ function MazeGame() {
                 </div>
               </div>
 
+              {/* Mobile Touch & Controls Hint */}
+              <div className="mobile-touch-hint">
+                👉 Swipe anywhere on maze or use D-Pad below to move!
+              </div>
+
               <div 
                 className="maze-viewport"
                 onTouchStart={handleTouchStart}
