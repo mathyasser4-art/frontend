@@ -377,6 +377,11 @@ function MathRacer() {
   const pusherRef = useRef(null);
   const channelRef = useRef(null);
   const lastCorrectIndexRef = useRef(-1);
+  const playersRef = useRef(players);
+
+  useEffect(() => {
+    playersRef.current = players;
+  }, [players]);
 
   // Clean up socket subscriptions on unmount
   useEffect(() => {
@@ -419,8 +424,8 @@ function MathRacer() {
     disconnectPusher();
     setLobbyStatus('Connecting to server...');
 
-    const pusher = new Pusher('app_e4ed3fcd3045501a594c2640c4d2dd75832ff677', {
-      cluster: 'us',
+    const pusher = new Pusher('06df370fb33f1263ec1f', {
+      cluster: 'eu',
     });
     pusherRef.current = pusher;
 
@@ -450,17 +455,29 @@ function MathRacer() {
       };
       setPlayers([hostPlayer]);
 
+      // Host listens for guest requesting lobby sync
+      channel.bind('request-lobby-sync', () => {
+        broadcastPusherEvent(roomCode, 'sync-lobby', {
+          players: playersRef.current,
+          hasCustomQuestions: !!customQuestionsRef.current,
+          chapterName: selectedChapterId || chapterName,
+          questionCount: hostQuestionCount
+        });
+      });
+
       // Host listens for new players joining
       channel.bind('student-joined', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (!data || !data.id) return;
         soundEffects.playClick();
+        
         setPlayers(prev => {
           if (prev.some(p => p.id === data.id)) return prev;
 
           const nextColor = F1_COLORS[prev.length % F1_COLORS.length];
           const newPlayer = {
             id: data.id,
-            name: data.name,
+            name: data.name || 'Racer',
             color: data.skinColor || nextColor,
             distance: 0,
             score: 0,
@@ -469,14 +486,23 @@ function MathRacer() {
             isBoosting: false,
             isSpectator: false
           };
+          const updated = [...prev, newPlayer];
           
-          return [...prev, newPlayer];
+          broadcastPusherEvent(roomCode, 'sync-lobby', {
+            players: updated,
+            hasCustomQuestions: !!customQuestionsRef.current,
+            chapterName: selectedChapterId || chapterName,
+            questionCount: hostQuestionCount
+          });
+
+          return updated;
         });
       });
 
       // Host listens to score/distance updates from active guest players
       channel.bind('player-progress', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (!data || !data.id) return;
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, distance: data.distance, score: data.score, isBoosting: !!data.isBoosting } : p
         ));
@@ -484,7 +510,8 @@ function MathRacer() {
 
       // Host listens to finished signal from active guest players
       channel.bind('player-finished', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (!data || !data.id) return;
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, finished: true, time: data.time } : p
         ));
@@ -493,15 +520,17 @@ function MathRacer() {
     } else {
       // Guest player listens to full lobby syncing from the host
       channel.bind('sync-lobby', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (!data) return;
         console.log('[LOBBY] Synced roster from host:', data);
-        setPlayers(data.players);
+        if (Array.isArray(data.players) && data.players.length > 0) {
+          setPlayers(data.players);
+        }
         if (data.questionCount) {
           setActiveQuestionCount(data.questionCount);
         }
         if (data.hasCustomQuestions && data.chapterName) {
           setChapterName(data.chapterName || '');
-          // Fetch custom questions from database to avoid large Pusher payloads
           const Token = localStorage.getItem('O_authWEB');
           fetch(`${API_BASE_URL}/chapter/getChapterQuestion/${data.chapterName}`, {
             method: 'GET',
@@ -524,8 +553,10 @@ function MathRacer() {
 
       // Guest listens to host's race start trigger
       channel.bind('start-game', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
-        setDifficulty(data.difficulty);
+        if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (!data) return;
+        console.log('[MULTIPLAYER] Start race signal received from host:', data);
+        setDifficulty(data.difficulty || 'easy');
         if (data.questionCount) {
           setActiveQuestionCount(data.questionCount);
         }
@@ -533,7 +564,7 @@ function MathRacer() {
           setCustomQuestions(data.customQuestions);
           customQuestionsRef.current = data.customQuestions;
         }
-        startCountdownThenPlay(data.difficulty, data.customQuestions || customQuestionsRef.current);
+        startCountdownThenPlay(data.difficulty || 'easy', data.customQuestions || customQuestionsRef.current);
       });
 
       // Guest listens to host early exit
@@ -545,7 +576,8 @@ function MathRacer() {
 
       // Guest listens to score/distance updates from host/other guests
       channel.bind('player-progress', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (!data || !data.id) return;
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, distance: data.distance, score: data.score, isBoosting: !!data.isBoosting } : p
         ));
@@ -553,7 +585,8 @@ function MathRacer() {
 
       // Guest listens to finished signals from host/other guests
       channel.bind('player-finished', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        if (!data || !data.id) return;
         setPlayers(prev => prev.map(p => 
           p.id === data.id ? { ...p, finished: true, time: data.time } : p
         ));
@@ -566,42 +599,49 @@ function MathRacer() {
         setGameState('menu');
       });
 
-      // Notify host that we entered the room only after successful subscription
-      channel.bind('pusher:subscription_succeeded', () => {
+      const sendJoinAnnouncement = () => {
         broadcastPusherEvent(roomCode, 'student-joined', {
           id: myId,
           name: myName,
           skinColor: mySkinColor
         });
+        broadcastPusherEvent(roomCode, 'request-lobby-sync', {});
+      };
+
+      channel.bind('pusher:subscription_succeeded', () => {
+        sendJoinAnnouncement();
       });
       
-      // Fallback: public channels sometimes don't reliably fire subscription_succeeded
-      setTimeout(() => {
-        broadcastPusherEvent(roomCode, 'student-joined', {
-          id: myId,
-          name: myName,
-          skinColor: mySkinColor
-        });
-      }, 1000);
+      setTimeout(sendJoinAnnouncement, 500);
+      setTimeout(sendJoinAnnouncement, 1200);
     }
   };
+
+  // Host Periodic Lobby Roster Heartbeat Sync
+  useEffect(() => {
+    let lobbyInterval;
+    if (gameState === 'lobby' && multiRole === 'host' && roomId) {
+      lobbyInterval = setInterval(() => {
+        if (playersRef.current.length > 0) {
+          broadcastPusherEvent(roomId, 'sync-lobby', {
+            players: playersRef.current,
+            hasCustomQuestions: !!customQuestionsRef.current,
+            chapterName: selectedChapterId || chapterName,
+            questionCount: hostQuestionCount
+          });
+        }
+      }, 1500);
+    }
+    return () => {
+      if (lobbyInterval) clearInterval(lobbyInterval);
+    };
+  }, [gameState, multiRole, roomId, customQuestions, selectedChapterId, chapterName, hostQuestionCount]);
 
   useEffect(() => {
     if (gameState === 'lobby' && multiRole === 'host' && roomId) {
       setPlayers(prev => prev.map(p => p.id === myId ? { ...p, isSpectator: !hostIsRacing } : p));
     }
   }, [hostIsRacing, gameState, multiRole, roomId, myId]);
-
-  useEffect(() => {
-    if (gameState === 'lobby' && multiRole === 'host' && roomId) {
-      broadcastPusherEvent(roomId, 'sync-lobby', {
-        players: players,
-        hasCustomQuestions: !!customQuestions,
-        chapterName: selectedChapterId || chapterName,
-        questionCount: hostQuestionCount
-      });
-    }
-  }, [players, hostQuestionCount, hostIsRacing, gameState, multiRole, roomId, customQuestions, selectedChapterId, chapterName]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -845,16 +885,30 @@ function MathRacer() {
 
   // Host Action: Trigger race start for all players
   const handleHostStartRace = (selectedLevel) => {
-    if (players.length < 1) return; // Allow practice alone, or multiple
+    if (players.length < 1) return;
     soundEffects.playClick();
     setDifficulty(selectedLevel);
     setActiveQuestionCount(hostQuestionCount);
     
+    let lightweightQuestions = null;
+    if (customQuestions && customQuestions.length > 0) {
+      lightweightQuestions = customQuestions.slice(0, 30).map(q => ({
+        _id: q._id,
+        question: q.question,
+        typeOfAnswer: q.typeOfAnswer,
+        wrongAnswer: q.wrongAnswer,
+        correctAnswer: q.correctAnswer,
+        answer: q.answer,
+        questionPic: q.questionPic
+      }));
+    }
+
     // Broadcast start race config to all guests
     broadcastPusherEvent(roomId, 'start-game', { 
       difficulty: selectedLevel,
       questionCount: hostQuestionCount,
-      customQuestions: customQuestions ? customQuestions.slice(0, 30) : null
+      chapterName: selectedChapterId || chapterName,
+      customQuestions: lightweightQuestions
     });
     
     // Initialize host gameplay
