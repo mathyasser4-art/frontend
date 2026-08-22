@@ -254,14 +254,45 @@
 }
 
 .bunny-node.jumping {
-  animation: premiumJump 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: premiumJump 0.65s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes premiumJump {
   0% { bottom: 120px; transform: rotate(0deg); }
-  40% { bottom: 420px; transform: rotate(10deg); }
-  60% { bottom: 420px; transform: rotate(5deg); }
+  45% { bottom: 235px; transform: rotate(8deg); }
+  55% { bottom: 235px; transform: rotate(4deg); }
   100% { bottom: 120px; transform: rotate(0deg); }
+}
+
+/* Abacus Grid Table in Cave Runner */
+.racer-abacus-display-table {
+  border-collapse: collapse;
+  border: 2px solid #cbd5e1;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+.racer-abacus-display-table td {
+  padding: 3px 8px;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #1e293b;
+  text-align: center;
+}
+.racer-abacus-display-table tr {
+  border-bottom: 1px solid #e2e8f0;
+}
+.racer-abacus-display-table tr:last-child {
+  border-bottom: none;
+  border-top: 2px solid #1e293b;
+}
+.racer-abacus-display-table .op-cell {
+  color: #64748b;
+  width: 24px;
+}
+.racer-abacus-display-table .val-cell {
+  min-width: 36px;
 }
 
 .bunny-node.falling {

@@ -13,6 +13,60 @@ import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import './CaveRunner.css';
 
+const parseGridRows = (questionText) => {
+  if (!questionText) return null;
+  const trimmed = String(questionText).trim();
+  if (!trimmed.startsWith('[')) return null;
+  try {
+    const rows = JSON.parse(trimmed);
+    if (!Array.isArray(rows) || rows.length === 0) return null;
+    const first = rows[0];
+    if (
+      first.op !== undefined || first.OP !== undefined ||
+      first.val !== undefined || first.VAL !== undefined
+    ) return rows;
+  } catch (e) {}
+  return null;
+};
+
+const getRowOp = (row) => {
+  const op = (row.op !== undefined ? row.op : (row.OP !== undefined ? row.OP : ''));
+  return (!op || op.trim() === '') ? '+' : op;
+};
+const getRowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
+
+const formatQuestionText = (text) => {
+  if (!text) return '';
+  const trimmed = String(text).trim();
+  if (trimmed.startsWith('[')) return text;
+  
+  if (trimmed.includes('\n')) {
+    return trimmed.split('\n').map(line => line.trim()).join('\n');
+  }
+
+  // Format horizontal math expression "22 + 7 + 11 - 3" into vertical stacked lines (+22 \n +7 \n +11 \n -3)
+  const tokens = trimmed.replace(/=\s*\?$/, '').trim().split(/\s+/);
+  if (tokens.length >= 3 && tokens.some(t => t === '+' || t === '-')) {
+    let resultLines = [];
+    let currentOp = '+';
+    for (let i = 0; i < tokens.length; i++) {
+      const tok = tokens[i];
+      if (tok === '+' || tok === '-') {
+        currentOp = tok;
+      } else if (!isNaN(tok) || /^[\d٠-٩]+$/.test(tok)) {
+        resultLines.push((currentOp === '+' && resultLines.length > 0 ? '+' : (currentOp === '-' ? '-' : '')) + tok);
+      } else {
+        resultLines.push(tok);
+      }
+    }
+    if (resultLines.length > 1) {
+      return resultLines.join('\n');
+    }
+  }
+
+  return text;
+};
+
 const BunnyRun = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -132,26 +186,28 @@ const BunnyRun = () => {
       const qIndex = currentQuestionIndex % customQuestions.length;
       const q = customQuestions[qIndex];
 
-      // Build question text
-      let text = q.question || '';
+      let text = '';
+      const gridRows = parseGridRows(q.question);
+      if (gridRows) {
+        text = 'ABACUS_GRID';
+      } else {
+        text = formatQuestionText(q.question || '');
+      }
 
-      // Build options from wrongAnswer array (MCQ)
       let opts = [];
       if (q.typeOfAnswer === 'MCQ' && Array.isArray(q.wrongAnswer)) {
         opts = [...q.wrongAnswer];
       }
 
-      // Get correct answer
       const answer = q.correctAnswer || (q.answer && q.answer[0]) || '';
 
-      // Shuffle options
       const shuffled = [...opts];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
 
-      setQuestion({ text });
+      setQuestion({ text, gridRows });
       setCorrectAnswer(answer);
       setOptions(shuffled);
       return;
@@ -159,7 +215,7 @@ const BunnyRun = () => {
 
     // Fallback: generate arithmetic question locally
     const q = generateArithmeticMcq(level, 4);
-    setQuestion({ text: q.text });
+    setQuestion({ text: formatQuestionText(q.text) });
     setCorrectAnswer(q.answer);
     setOptions(q.options);
   };
@@ -190,6 +246,7 @@ const BunnyRun = () => {
   };
 
   const startRunning = () => {
+    if (gameState !== 'ready') return;
     soundEffects.playClick();
     setGameState('playing');
   };
@@ -212,19 +269,23 @@ const BunnyRun = () => {
     setTimeout(() => {
       setIsJumping(false);
       isJumpingRef.current = false;
-    }, 700);
+    }, 650);
   }, [gameState]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.code === 'Space') {
         e.preventDefault();
-        jump();
+        if (gameState === 'ready') {
+          startRunning();
+        } else if (gameState === 'playing') {
+          jump();
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [jump]);
+  }, [gameState, jump]);
 
   const handleAnswer = (selectedAns) => {
     if (gameState !== 'playing') return;
@@ -255,7 +316,6 @@ const BunnyRun = () => {
     if (customQuestions && customQuestions.length > 0) {
       setCurrentQuestionIndex(prev => {
         const nextIdx = prev + 1;
-        // Generate question with the next index
         setTimeout(() => generateQuestion(difficulty), 0);
         return nextIdx;
       });
@@ -279,7 +339,7 @@ const BunnyRun = () => {
         let newPos = pos - (speed * (deltaTime / 16));
         
         let hitObstacle = false;
-        const elapsed = isJumpingRef.current ? (Date.now() - jumpStartTimeRef.current) / 700 : 1;
+        const elapsed = isJumpingRef.current ? (Date.now() - jumpStartTimeRef.current) / 650 : 1;
         const isJumpingUp = isJumpingRef.current && elapsed >= 0 && elapsed <= 1;
         
         if (newPos <= 25 && newPos >= 18 && !isJumpingUp) {
@@ -300,9 +360,10 @@ const BunnyRun = () => {
               } else {
                 setIsFalling(false);
                 isFallingRef.current = false;
-                setObstaclePos(120);
+                setObstaclePos(150);
                 setObstacleType(OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)]);
                 spawnCoins();
+                setGameState('ready'); // PAUSE IN READY STATE AFTER FALL: USER MUST TOUCH/CLICK TO START RUNNING AGAIN!
               }
               return newLives;
             });
@@ -480,7 +541,24 @@ const BunnyRun = () => {
               <div className="math-card">
                 <div className="math-question-section">
                   <div className="math-title">Quick Solve!</div>
-                  <div className="math-q">{question.text}</div>
+                  {question.text === 'ABACUS_GRID' && question.gridRows ? (
+                    <div className="racer-abacus-grid-view">
+                      <table className="racer-abacus-display-table" dir="ltr" style={{ direction: 'ltr', unicodeBidi: 'isolate' }}>
+                        <tbody>
+                          {question.gridRows.map((row, i) => (
+                            <tr key={i}>
+                              <td className="op-cell">{getRowOp(row)}</td>
+                              <td className="val-cell">{getRowVal(row)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="math-q" dir="ltr" style={{ direction: 'ltr', unicodeBidi: 'isolate', whiteSpace: 'pre-wrap' }}>
+                      {question.text}
+                    </div>
+                  )}
                 </div>
                 <div className="math-answer-section">
                   <div className="math-opts">
@@ -494,15 +572,20 @@ const BunnyRun = () => {
           )}
 
           {gameState === 'ready' && (
-            <div className="game-overlay-screen" style={{ zIndex: 10, background: 'rgba(255,255,255,0.85)' }}>
+            <div 
+              className="game-overlay-screen" 
+              style={{ zIndex: 10, background: 'rgba(255,255,255,0.88)', cursor: 'pointer' }}
+              onClick={startRunning}
+              onTouchStart={(e) => { e.preventDefault(); startRunning(); }}
+            >
               <div className="menu-inner">
-                <div className="game-logo" style={{ fontSize: '3.5rem', marginBottom: '2rem' }}>READY TO RUN?</div>
-                <p style={{ fontSize: '1.4rem', color: '#334155', marginBottom: '2.5rem' }}>
-                  Press the button below to start the rabbit running!
+                <div className="game-logo" style={{ fontSize: '3rem', marginBottom: '1.2rem' }}>READY TO RUN?</div>
+                <p style={{ fontSize: '1.25rem', color: '#334155', marginBottom: '2rem', fontWeight: 600 }}>
+                  👉 {t('bunnyRun.tapToStart', 'انقر أو المس أي مكان في الشاشة للبدء!')}
                 </p>
                 <button 
                   className="retry-btn" 
-                  style={{ margin: '0 auto', background: 'linear-gradient(135deg, #10b981, #059669)', padding: '1.5rem 4rem', fontSize: '1.8rem' }}
+                  style={{ margin: '0 auto', background: 'linear-gradient(135deg, #10b981, #059669)', padding: '1.2rem 3.5rem', fontSize: '1.6rem', borderRadius: '20px' }}
                   onClick={startRunning}
                 >
                   🚀 START RUNNING
