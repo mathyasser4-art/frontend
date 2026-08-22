@@ -65,11 +65,28 @@ const GamesMenu = () => {
             <h3 className="game-card-title">{t('gamesMenu.bunnyRun', 'Bunny Run')}</h3>
           </div>
 
+          {/* Super Mario */}
+          <div className="game-item-container" onClick={() => navigate('/student/games/super-mario')}>
+            <div className="game-card-premium">
+              <div className="card-image-wrapper">
+                <img src="/img/games/mario_cover.png" alt="Super Mario" className="card-bg-img" />
+                <div className="card-overlay">
+                  <div className="overlay-content">
+                    <h3>{t('gamesMenu.infiniteMario', 'Super Mario')}</h3>
+                    <p>{t('gamesMenu.infiniteMarioDesc', 'Classic platforming & math blocks')}</p>
+                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 className="game-card-title">{t('gamesMenu.infiniteMario', 'Super Mario')}</h3>
+          </div>
+
           {/* Maze Game */}
           <div className="game-item-container" onClick={() => navigate('/student/games/maze')}>
             <div className="game-card-premium">
               <div className="card-image-wrapper">
-                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧩</div>
+                <img src="/img/games/maze_cover.png" alt="Maze Game" className="card-bg-img" />
                 <div className="card-overlay">
                   <div className="overlay-content">
                     <h3>{t('gamesMenu.mazeGame', 'Maze Game')}</h3>
@@ -80,40 +97,6 @@ const GamesMenu = () => {
               </div>
             </div>
             <h3 className="game-card-title">{t('gamesMenu.mazeGame', 'Maze Game')}</h3>
-          </div>
-
-          {/* Cartoon Airplanes */}
-          <div className="game-item-container" onClick={() => navigate('/student/games/airplanes')}>
-            <div className="game-card-premium">
-              <div className="card-image-wrapper">
-                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>✈️</div>
-                <div className="card-overlay">
-                  <div className="overlay-content">
-                    <h3>{t('gamesMenu.cartoonAirplanes', 'Cartoon Airplanes')}</h3>
-                    <p>{t('gamesMenu.cartoonAirplanesDesc', 'Take to the skies')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <h3 className="game-card-title">{t('gamesMenu.cartoonAirplanes', 'Cartoon Airplanes')}</h3>
-          </div>
-
-          {/* Infinite Mario */}
-          <div className="game-item-container" onClick={() => navigate('/student/games/super-mario')}>
-            <div className="game-card-premium">
-              <div className="card-image-wrapper">
-                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #ef4444 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🍄</div>
-                <div className="card-overlay">
-                  <div className="overlay-content">
-                    <h3>{t('gamesMenu.infiniteMario', 'Infinite Mario')}</h3>
-                    <p>{t('gamesMenu.infiniteMarioDesc', 'Classic platforming')}</p>
-                    <button className="play-hover-btn">{t('gamesMenu.playNow', 'PLAY NOW')}</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <h3 className="game-card-title">{t('gamesMenu.infiniteMario', 'Infinite Mario')}</h3>
           </div>
 
           {/* Sudoku Master */}
@@ -171,7 +154,7 @@ const GamesMenu = () => {
           <div className="game-item-container" onClick={() => navigate('/student/games/minigolf')}>
             <div className="game-card-premium">
               <div className="card-image-wrapper">
-                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #a3e635 0%, #65a30d 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>⛳</div>
+                <img src="/img/games/minigolf_cover.png" alt="Minigolf" className="card-bg-img" />
                 <div className="card-overlay">
                   <div className="overlay-content">
                     <h3>{t('gamesMenu.minigolf', 'Minigolf')}</h3>
