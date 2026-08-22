@@ -1,16 +1,23 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, RotateCcw, Heart, ShieldAlert, Award, Sun } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import FullscreenButton from '../../components/fullscreenButton/FullscreenButton';
 import soundEffects from '../../utils/soundEffects';
 import { generateArithmeticMcq } from '../../utils/arithmeticMcq';
+import { useTranslation } from 'react-i18next';
+import getSystem from '../../api/system/getSystem.api';
+import getUnit from '../../api/unit/getUnit.api';
+import API_BASE_URL from '../../config/api.config';
+import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import './CaveRunner.css';
 
 const BunnyRun = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const containerRef = useRef(null);
+  const { t } = useTranslation();
 
   const [gameState, setGameState] = useState('menu'); // menu, ready, playing, gameover
   const [score, setScore] = useState(0);
@@ -41,6 +48,71 @@ const BunnyRun = () => {
   const nextCoinId = useRef(0);
   const gameLoopRef = useRef(null);
 
+  // === Website Question Bank States (like Math Racer) ===
+  const [customQuestions, setCustomQuestions] = useState(location.state?.customQuestions || null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [chapterName, setChapterName] = useState(location.state?.chapterName || '');
+  const questionTypeID = '65a4963482dbaac16d820fc6'; // MCQ type
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [selectedSystemId, setSelectedSystemId] = useState(null);
+  const [selectedUnitId, setSelectedUnitId] = useState(null);
+  const [systemData, setSystemData] = useState([]);
+  const [unitData, setUnitData] = useState([]);
+  const [loadingWizard, setLoadingWizard] = useState(false);
+  const [wizardError, setWizardError] = useState(null);
+
+  // Load systems on mount
+  useEffect(() => {
+    if (questionTypeID) {
+      getSystem(setLoadingWizard, setSystemData, questionTypeID);
+    }
+  }, [questionTypeID]);
+
+  // Load units when subject selected
+  useEffect(() => {
+    if (selectedSubject) {
+      getUnit(setLoadingWizard, setUnitData, questionTypeID, selectedSubject._id);
+    }
+  }, [selectedSubject]);
+
+  const translateName = (name) => {
+    if (!name) return '';
+    const key = `systemNames.${name}`;
+    const translated = t(key);
+    return translated !== key ? translated : name;
+  };
+
+  const handleSelectChapter = (chapter) => {
+    soundEffects.playClick();
+    setLoadingWizard(true);
+    setWizardError(null);
+    setChapterName(chapter.chapterName);
+
+    const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${chapter._id}`;
+    const Token = localStorage.getItem('O_authWEB');
+    fetch(URL, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+      },
+    })
+      .then(r => r.json())
+      .then(responseJson => {
+        if (responseJson.message === 'success' && Array.isArray(responseJson.chapter?.questions)) {
+          const shuffled = adjustQuestionOrderAndShuffleMCQ(responseJson.chapter.questions);
+          setCustomQuestions(shuffled);
+        } else {
+          setWizardError(responseJson.message);
+        }
+        setLoadingWizard(false);
+      })
+      .catch(err => {
+        setWizardError(err.message);
+        setLoadingWizard(false);
+      });
+  };
+
   const spawnCoins = useCallback(() => {
     const newCoins = [];
     const basePos = 100 + Math.random() * 20;
@@ -55,6 +127,37 @@ const BunnyRun = () => {
   }, []);
 
   const generateQuestion = (level = difficulty) => {
+    // Use website questions if available
+    if (customQuestions && customQuestions.length > 0) {
+      const qIndex = currentQuestionIndex % customQuestions.length;
+      const q = customQuestions[qIndex];
+
+      // Build question text
+      let text = q.question || '';
+
+      // Build options from wrongAnswer array (MCQ)
+      let opts = [];
+      if (q.typeOfAnswer === 'MCQ' && Array.isArray(q.wrongAnswer)) {
+        opts = [...q.wrongAnswer];
+      }
+
+      // Get correct answer
+      const answer = q.correctAnswer || (q.answer && q.answer[0]) || '';
+
+      // Shuffle options
+      const shuffled = [...opts];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      setQuestion({ text });
+      setCorrectAnswer(answer);
+      setOptions(shuffled);
+      return;
+    }
+
+    // Fallback: generate arithmetic question locally
     const q = generateArithmeticMcq(level, 4);
     setQuestion({ text: q.text });
     setCorrectAnswer(q.answer);
@@ -81,6 +184,7 @@ const BunnyRun = () => {
     setFallStartTime(0);
     obstaclesPassedRef.current = 0;
     targetObstaclesRef.current = Math.floor(Math.random() * 3) + 3;
+    setCurrentQuestionIndex(0);
     spawnCoins();
     generateQuestion(selectedLevel);
   };
@@ -125,7 +229,10 @@ const BunnyRun = () => {
   const handleAnswer = (selectedAns) => {
     if (gameState !== 'playing') return;
 
-    if (selectedAns === correctAnswer) {
+    // Use string comparison for website questions
+    const isCorrect = String(selectedAns).trim() === String(correctAnswer).trim();
+
+    if (isCorrect) {
       soundEffects.playCorrect();
       setScore(s => s + 50);
       setSpeed(s => Math.min(s + 0.1, 3.2));
@@ -143,7 +250,18 @@ const BunnyRun = () => {
     isWaitingRef.current = false;
     obstaclesPassedRef.current = 0;
     targetObstaclesRef.current = Math.floor(Math.random() * 3) + 3;
-    generateQuestion(difficulty);
+
+    // Advance to next question
+    if (customQuestions && customQuestions.length > 0) {
+      setCurrentQuestionIndex(prev => {
+        const nextIdx = prev + 1;
+        // Generate question with the next index
+        setTimeout(() => generateQuestion(difficulty), 0);
+        return nextIdx;
+      });
+    } else {
+      generateQuestion(difficulty);
+    }
   };
 
   useEffect(() => {
@@ -391,15 +509,118 @@ const BunnyRun = () => {
 
           {gameState === 'menu' && (
             <div className="game-overlay-screen" style={{ zIndex: 10 }}>
-              <div className="menu-inner">
+              <div className="menu-inner" style={{ maxWidth: '500px', width: '90%' }}>
                 <div className="game-logo">BUNNY RUN</div>
-                <p>Jump over obstacles and collect the carrots in colorful 2D!</p>
-                <div className="diff-select">
-                  <button className="lvl-btn l0" onClick={() => startGame('0')}>Level 0</button>
-                  <button className="lvl-btn l1" onClick={() => startGame('1')}>Level 1</button>
-                  <button className="lvl-btn l2" onClick={() => startGame('2')}>Level 2</button>
-                  <button className="lvl-btn l3" onClick={() => startGame('3')}>Level 3</button>
-                </div>
+                <p>{t('bunnyRun.selectChapter', 'اختر ورقة العمل للعب')}</p>
+                
+                {wizardError && (
+                  <p style={{ color: '#ef4444', fontSize: '0.9rem', margin: '0.5rem 0' }}>{wizardError}</p>
+                )}
+
+                {!customQuestions ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', width: '100%', marginBottom: '1rem' }}>
+                    {loadingWizard ? (
+                      <p style={{ textAlign: 'center', color: '#64748b' }}>{t('loading_worksheets', 'جاري تحميل أوراق العمل...')}</p>
+                    ) : systemData.length === 0 ? (
+                      <p style={{ textAlign: 'center', color: '#64748b' }}>{t('loading_worksheets', 'جاري تحميل أوراق العمل...')}</p>
+                    ) : (
+                      <>
+                        <select
+                          value={selectedSystemId || ''}
+                          onChange={(e) => {
+                            setSelectedSystemId(e.target.value);
+                            setSelectedSubject(null);
+                            setSelectedUnitId(null);
+                            setUnitData([]);
+                          }}
+                          style={{ padding: '0.7rem', borderRadius: '10px', border: '2px solid #8b5cf6', fontSize: '1rem', background: '#f8fafc' }}
+                        >
+                          <option value="" disabled>{t('mathRacer.select_system', 'اختر النظام التعليمي...')}</option>
+                          {systemData.map(system => (
+                            <option key={system._id} value={system._id}>{translateName(system.systemName)}</option>
+                          ))}
+                        </select>
+
+                        {selectedSystemId && (
+                          <select
+                            value={selectedSubject?._id || ''}
+                            onChange={(e) => {
+                              const system = systemData.find(s => s._id === selectedSystemId);
+                              const subject = system?.subjects?.find(sub => sub._id === e.target.value);
+                              if (subject) {
+                                soundEffects.playClick();
+                                setSelectedSubject(subject);
+                                setSelectedUnitId(null);
+                              }
+                            }}
+                            style={{ padding: '0.7rem', borderRadius: '10px', border: '2px solid #8b5cf6', fontSize: '1rem', background: '#f8fafc' }}
+                          >
+                            <option value="" disabled>{t('mathRacer.select_subject', 'اختر المادة الدراسية...')}</option>
+                            {systemData.find(s => s._id === selectedSystemId)?.subjects?.map(subject => (
+                              <option key={subject._id} value={subject._id}>{translateName(subject.subjectName)}</option>
+                            ))}
+                          </select>
+                        )}
+
+                        {selectedSubject && unitData.length > 0 && (
+                          <>
+                            <select
+                              value={selectedUnitId || ''}
+                              onChange={(e) => {
+                                soundEffects.playClick();
+                                setSelectedUnitId(e.target.value);
+                              }}
+                              style={{ padding: '0.7rem', borderRadius: '10px', border: '2px solid #8b5cf6', fontSize: '1rem', background: '#f8fafc' }}
+                            >
+                              <option value="" disabled>{t('mathRacer.select_unit', 'اختر الوحدة الدراسية...')}</option>
+                              {unitData.map(unit => (
+                                <option key={unit._id} value={unit._id}>{translateName(unit.unitName)}</option>
+                              ))}
+                            </select>
+
+                            {selectedUnitId && (
+                              <select
+                                value=""
+                                onChange={(e) => {
+                                  const unit = unitData.find(u => u._id === selectedUnitId);
+                                  const chapter = unit?.chapters?.find(c => c._id === e.target.value);
+                                  if (chapter) handleSelectChapter(chapter);
+                                }}
+                                style={{ padding: '0.7rem', borderRadius: '10px', border: '2px solid #8b5cf6', fontSize: '1rem', background: '#f8fafc' }}
+                              >
+                                <option value="" disabled>{t('select_chapter', 'اختر الدرس / الورقة...')}</option>
+                                {unitData.find(u => u._id === selectedUnitId)?.chapters?.map(chapter => (
+                                  <option key={chapter._id} value={chapter._id}>📄 {translateName(chapter.chapterName)}</option>
+                                ))}
+                              </select>
+                            )}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div style={{ margin: '1rem 0', padding: '0.8rem 1.2rem', background: 'rgba(16, 185, 129, 0.1)', border: '2px solid #10b981', borderRadius: '12px', textAlign: 'center' }}>
+                    <span style={{ color: '#059669', fontWeight: 700 }}>✓ {t('selected', 'تم تحديد')}: <strong>{chapterName}</strong> ({customQuestions.length} {t('questions', 'أسئلة')})</span>
+                    <br />
+                    <button 
+                      onClick={() => { setCustomQuestions(null); setChapterName(''); }}
+                      style={{ marginTop: '0.5rem', padding: '0.3rem 1rem', borderRadius: '8px', border: '1px solid #8b5cf6', background: 'white', color: '#8b5cf6', cursor: 'pointer', fontSize: '0.9rem' }}
+                    >
+                      {t('change', 'تغيير')}
+                    </button>
+                  </div>
+                )}
+
+                {customQuestions && customQuestions.length > 0 && (
+                  <button 
+                    className="retry-btn"
+                    style={{ margin: '0 auto', background: 'linear-gradient(135deg, #10b981, #059669)', padding: '1rem 3rem', fontSize: '1.5rem', borderRadius: '16px' }}
+                    onClick={() => startGame('0')}
+                  >
+                    🚀 {t('start_game', 'ابدأ اللعب')}
+                  </button>
+                )}
               </div>
             </div>
           )}
