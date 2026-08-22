@@ -659,7 +659,7 @@ function MathRacer() {
   // Host Action: Create lobby
   const handleCreateRoom = () => {
     soundEffects.playClick();
-    const code = Math.floor(10 + Math.random() * 90).toString();
+    const code = Math.floor(1 + Math.random() * 9).toString();
     setRoomId(code);
     setMultiRole('host');
     setGameState('lobby');
@@ -1520,7 +1520,7 @@ function MathRacer() {
                       <input 
                         type="text" 
                         placeholder={t('mathRacer.enter_code', 'ENTER CODE')}
-                        maxLength="2"
+                        maxLength="1"
                         value={inputRoomId}
                         onChange={(e) => setInputRoomId(e.target.value)}
                         className="multi-join-input"
