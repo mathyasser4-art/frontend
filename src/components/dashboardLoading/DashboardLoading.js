@@ -1,16 +1,39 @@
-import React from 'react'
-import '../../reusable.css'
-import './DashboardLoading.css'
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import '../../reusable.css';
+import './DashboardLoading.css';
 
 function DashboardLoading() {
-    return (
-        <div>
-            <div className="dashboard-loading-item skeleton"></div>
-            <div className="dashboard-loading-item skeleton"></div>
-            <div className="dashboard-loading-item skeleton"></div>
-            <div className="dashboard-loading-item skeleton"></div>
+  const { t } = useTranslation();
+
+  return (
+    <div className="global-colorful-loader">
+      <div className="loader-card-content">
+        <div className="hero-avatar-ring">
+          <span className="hero-emoji">🧮</span>
         </div>
-    )
+
+        <div className="bouncing-beads-row">
+          <span className="bead bead-purple"></span>
+          <span className="bead bead-blue"></span>
+          <span className="bead bead-green"></span>
+          <span className="bead bead-pink"></span>
+          <span className="bead bead-yellow"></span>
+        </div>
+
+        <p className="loading-text-label">
+          {t('loading', 'جاري التحميل...')}
+        </p>
+
+        {/* Clean colorful skeleton rows */}
+        <div className="skeleton-rows-container">
+          <div className="skeleton-row-item glow-purple"></div>
+          <div className="skeleton-row-item glow-blue"></div>
+          <div className="skeleton-row-item glow-green"></div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default DashboardLoading
+export default DashboardLoading;
