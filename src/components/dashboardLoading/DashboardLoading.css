@@ -86,36 +86,11 @@
 
 /* Loading Text */
 .loading-text-label {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 800;
   background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.5rem;
   letter-spacing: 0.5px;
-}
-
-/* Skeleton Rows */
-.skeleton-rows-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.skeleton-row-item {
-  height: 10px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
-  background-size: 200% 100%;
-  animation: skeletonShimmer 1.8s infinite ease-in-out;
-}
-
-.glow-purple { width: 100%; }
-.glow-blue   { width: 80%; margin: 0 auto; }
-.glow-green  { width: 60%; margin: 0 auto; }
-
-@keyframes skeletonShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
 }

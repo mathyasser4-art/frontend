@@ -1,15 +1,8 @@
-import React from 'react'
-import '../../reusable.css'
-import './AssignmentLoading.css'
+import React from 'react';
+import DashboardLoading from '../dashboardLoading/DashboardLoading';
 
 function AssignmentLoading() {
-    return (
-        <div>
-            <div className="assignment-loading-item skeleton"></div>
-            <div className="assignment-loading-item skeleton"></div>
-            <div className="assignment-loading-item skeleton"></div>
-        </div>
-    )
+  return <DashboardLoading />;
 }
 
-export default AssignmentLoading
+export default AssignmentLoading;

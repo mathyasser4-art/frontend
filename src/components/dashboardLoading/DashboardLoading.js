@@ -24,13 +24,6 @@ function DashboardLoading() {
         <p className="loading-text-label">
           {t('loading', 'جاري التحميل...')}
         </p>
-
-        {/* Clean colorful skeleton rows */}
-        <div className="skeleton-rows-container">
-          <div className="skeleton-row-item glow-purple"></div>
-          <div className="skeleton-row-item glow-blue"></div>
-          <div className="skeleton-row-item glow-green"></div>
-        </div>
       </div>
     </div>
   );

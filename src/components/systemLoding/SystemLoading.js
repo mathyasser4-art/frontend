@@ -1,14 +1,8 @@
-import React from 'react'
-import '../../reusable.css'
-import './SystemLoading.css'
+import React from 'react';
+import DashboardLoading from '../dashboardLoading/DashboardLoading';
 
 function SystemLoading() {
-    return (
-        <div className='system-loading'>
-            <div className="system-loading-item skeleton"></div>
-            <div className="system-loading-item skeleton"></div>
-        </div>
-    )
+  return <DashboardLoading />;
 }
 
 export default SystemLoading;
