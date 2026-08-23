@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Eye, EyeOff, CheckCircle2, RotateCcw, Sliders, Layers, Search, Sparkles, BookOpen } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, CheckCircle2, RotateCcw, Sliders, Layers, Search, Sparkles, BookOpen, Globe, Power } from 'lucide-react';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import soundEffects from '../../utils/soundEffects';
 import getSystem from '../../api/system/getSystem.api';
 import getUnit from '../../api/unit/getUnit.api';
-import { isUnitVisible, setUnitVisibility, resetAllUnitsVisible, getHiddenUnitIds } from '../../utils/visibilityManager';
+import { isUnitVisible, setUnitVisibility, resetAllUnitsVisible, getHiddenUnitIds, isSystemVisible, setSystemVisibility, getHiddenSystemIds, resetAllSystemsVisible } from '../../utils/visibilityManager';
 import './LevelVisibilityManager.css';
 
 const LevelVisibilityManager = () => {
@@ -23,12 +23,16 @@ const LevelVisibilityManager = () => {
   const [unitData, setUnitData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [hiddenIds, setHiddenIds] = useState([]);
+  const [hiddenSystemIds, setHiddenSystemIds] = useState([]);
+  const [viewMode, setViewMode] = useState('systems'); // 'systems' | 'levels'
   const questionTypeID = '65a4963482dbaac16d820fc6'; // MCQ / Standard Type
 
   useEffect(() => {
     setHiddenIds(getHiddenUnitIds());
+    setHiddenSystemIds(getHiddenSystemIds());
     if (questionTypeID) {
-      getSystem(setLoading, setSystemData, questionTypeID);
+      // Load all systems including hidden for admin view
+      getSystem(setLoading, setSystemData, questionTypeID, true);
     }
   }, [questionTypeID]);
 
@@ -56,6 +60,29 @@ const LevelVisibilityManager = () => {
     return translated !== key ? translated : name;
   };
 
+  // ========== SYSTEM TOGGLES ==========
+  const handleSystemToggle = (systemId) => {
+    soundEffects.playClick();
+    const currentlyVisible = isSystemVisible(systemId);
+    setSystemVisibility(systemId, !currentlyVisible);
+    setHiddenSystemIds(getHiddenSystemIds());
+  };
+
+  const handleEnableAllSystems = () => {
+    soundEffects.playClick();
+    resetAllSystemsVisible();
+    setHiddenSystemIds([]);
+  };
+
+  const handleHideAllSystems = () => {
+    soundEffects.playClick();
+    systemData.forEach(sys => {
+      setSystemVisibility(sys._id, false);
+    });
+    setHiddenSystemIds(getHiddenSystemIds());
+  };
+
+  // ========== UNIT TOGGLES ==========
   const handleToggle = (unitId) => {
     soundEffects.playClick();
     const currentlyVisible = isUnitVisible(unitId);
@@ -94,6 +121,19 @@ const LevelVisibilityManager = () => {
     return { label: isArabic ? 'مستوى تدريبي' : 'Practice Level', color: '#059669', bg: '#d1fae5' };
   };
 
+  const getSystemIcon = (name) => {
+    const raw = String(name || '').toLowerCase();
+    if (raw.includes('soroban') || raw.includes('سوروبان')) return '🧮';
+    if (raw.includes('mental') || raw.includes('ذهني')) return '🧠';
+    if (raw.includes('vedic') || raw.includes('فيدي')) return '📐';
+    if (raw.includes('flash') || raw.includes('فلاش')) return '⚡';
+    if (raw.includes('speed') || raw.includes('سريع')) return '🚀';
+    return '📚';
+  };
+
+  const visibleSystemsCount = systemData.length - hiddenSystemIds.filter(id => systemData.some(s => s._id === id)).length;
+  const hiddenSystemsCount = hiddenSystemIds.filter(id => systemData.some(s => s._id === id)).length;
+
   return (
     <div className="visibility-manager-page">
       <MobileNav role={role} />
@@ -109,159 +149,273 @@ const LevelVisibilityManager = () => {
           <div className="header-titles">
             <h1>
               <Sliders size={28} color="#8b5cf6" />
-              <span>{isArabic ? 'إدارة ظهور المستويات والوحدات' : 'Curriculum & Level Visibility'}</span>
+              <span>{isArabic ? 'إدارة ظهور الأنظمة والمستويات' : 'System & Level Visibility'}</span>
             </h1>
             <p>
               {isArabic 
-                ? 'جميع المستويات مفعلة وظاهرة افتراضياً (ON). يمكنك إخفاء أو إظهار أي مستوى بالضغط على زر التبديل.' 
-                : 'All curriculum levels are visible (ON) by default. Toggle any level OFF to hide it from student worksheets and game dropdowns.'}
+                ? 'تحكم بإخفاء أو إظهار الأنظمة التعليمية بالكامل أو المستويات الفردية. الكل ظاهر افتراضياً (ON).' 
+                : 'Control visibility of entire educational systems or individual levels. Everything is visible (ON) by default.'}
             </p>
           </div>
         </div>
 
-        {/* Filter & Subject Selection Bar */}
-        <div className="visibility-controls-card">
-          <div className="selectors-row">
-            {/* System Selector */}
-            <div className="control-group">
-              <label><Layers size={16} /> {isArabic ? 'النظام التعليمي' : 'System'}</label>
-              <select
-                value={selectedSystemId || ''}
-                onChange={(e) => {
-                  soundEffects.playClick();
-                  const sysId = e.target.value;
-                  setSelectedSystemId(sysId);
-                  const sys = systemData.find(s => s._id === sysId);
-                  if (sys && sys.subjects && sys.subjects.length > 0) {
-                    setSelectedSubject(sys.subjects[0]);
-                  } else {
-                    setSelectedSubject(null);
-                    setUnitData([]);
-                  }
-                }}
-              >
-                {systemData.map(s => (
-                  <option key={s._id} value={s._id}>{translateName(s.systemName)}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Subject Selector */}
-            <div className="control-group">
-              <label><BookOpen size={16} /> {isArabic ? 'المادة الدراسية' : 'Subject'}</label>
-              <select
-                value={selectedSubject?._id || ''}
-                onChange={(e) => {
-                  soundEffects.playClick();
-                  const subId = e.target.value;
-                  const currentSys = systemData.find(s => s._id === selectedSystemId);
-                  const sub = currentSys?.subjects?.find(sb => sb._id === subId);
-                  if (sub) setSelectedSubject(sub);
-                }}
-              >
-                {systemData.find(s => s._id === selectedSystemId)?.subjects?.map(sub => (
-                  <option key={sub._id} value={sub._id}>{translateName(sub.subjectName)}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Search Input */}
-            <div className="control-group search-group">
-              <label><Search size={16} /> {isArabic ? 'بحث بالاسم' : 'Search Level'}</label>
-              <input
-                type="text"
-                placeholder={isArabic ? 'ابحث عن مستوى...' : 'Search level...'}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Quick Actions Bar */}
-          <div className="bulk-actions-row">
-            <div className="stats-indicator">
-              <span>{isArabic ? 'إجمالي المستويات:' : 'Total Levels:'} <strong>{unitData.length}</strong></span>
-              <span> • </span>
-              <span style={{ color: '#10b981' }}>
-                {isArabic ? 'الظاهرة (ON):' : 'Visible (ON):'} <strong>{unitData.length - hiddenIds.filter(id => unitData.some(u => u._id === id)).length}</strong>
-              </span>
-              <span> • </span>
-              <span style={{ color: '#ef4444' }}>
-                {isArabic ? 'المخفية (OFF):' : 'Hidden (OFF):'} <strong>{hiddenIds.filter(id => unitData.some(u => u._id === id)).length}</strong>
-              </span>
-            </div>
-
-            <div className="action-buttons">
-              <button className="bulk-btn enable-all" onClick={handleEnableAll}>
-                <CheckCircle2 size={16} />
-                <span>{isArabic ? 'تفعيل الكل (ON)' : 'Enable All (ON)'}</span>
-              </button>
-              <button className="bulk-btn hide-all" onClick={handleHideAll}>
-                <EyeOff size={16} />
-                <span>{isArabic ? 'إخفاء الكل (OFF)' : 'Hide All (OFF)'}</span>
-              </button>
-            </div>
-          </div>
+        {/* View Mode Tabs */}
+        <div className="view-mode-tabs">
+          <button 
+            className={`tab-btn ${viewMode === 'systems' ? 'active' : ''}`} 
+            onClick={() => { soundEffects.playClick(); setViewMode('systems'); }}
+          >
+            <Globe size={18} />
+            <span>{isArabic ? 'الأنظمة التعليمية' : 'Educational Systems'}</span>
+          </button>
+          <button 
+            className={`tab-btn ${viewMode === 'levels' ? 'active' : ''}`} 
+            onClick={() => { soundEffects.playClick(); setViewMode('levels'); }}
+          >
+            <Layers size={18} />
+            <span>{isArabic ? 'المستويات والوحدات' : 'Levels & Units'}</span>
+          </button>
         </div>
 
-        {/* Units / Levels List */}
-        {loading ? (
-          <div className="visibility-loading">
-            <div className="spinner"></div>
-            <p>{isArabic ? 'جاري تحميل المستويات...' : 'Loading curriculum levels...'}</p>
-          </div>
-        ) : filteredUnits.length === 0 ? (
-          <div className="empty-units-card">
-            <p>{isArabic ? 'لم يتم العثور على مستويات تطابق البحث.' : 'No curriculum levels found.'}</p>
-          </div>
-        ) : (
-          <div className="units-visibility-grid">
-            {filteredUnits.map((unit) => {
-              const isVisible = isUnitVisible(unit._id);
-              const badge = getUnitLevelBadge(unit.unitName);
-              const chaptersCount = unit.chapters ? unit.chapters.length : 0;
-
-              return (
-                <div key={unit._id} className={`unit-visibility-card ${isVisible ? 'is-visible' : 'is-hidden'}`}>
-                  <div className="card-top-row">
-                    <span className="unit-badge" style={{ color: badge.color, backgroundColor: badge.bg }}>
-                      {badge.label}
-                    </span>
-                    <div className="status-pill">
-                      {isVisible ? (
-                        <span className="pill visible"><Eye size={14} /> {isArabic ? 'ظاهر' : 'Visible'}</span>
-                      ) : (
-                        <span className="pill hidden"><EyeOff size={14} /> {isArabic ? 'مخفي' : 'Hidden'}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <h3 className="unit-title">{translateName(unit.unitName)}</h3>
-                  <p className="unit-subtitle">
-                    {chaptersCount} {isArabic ? 'ورقة عمل / تمرين' : 'Exercises / Worksheets'}
-                  </p>
-
-                  <div className="card-bottom-row">
-                    <span className="visibility-hint">
-                      {isVisible 
-                        ? (isArabic ? 'متاح للطلاب وفي الألعاب' : 'Visible in worksheets & games') 
-                        : (isArabic ? 'مخفي عن الطلاب والألعاب' : 'Hidden from students & games')}
-                    </span>
-
-                    {/* Interactive Switch */}
-                    <label className="toggle-switch">
-                      <input
-                        type="checkbox"
-                        checked={isVisible}
-                        onChange={() => handleToggle(unit._id)}
-                      />
-                      <span className="slider"></span>
-                    </label>
-                  </div>
+        {/* ============ SYSTEMS VIEW ============ */}
+        {viewMode === 'systems' && (
+          <>
+            {/* Bulk Actions for Systems */}
+            <div className="visibility-controls-card">
+              <div className="bulk-actions-row" style={{ borderTop: 'none', paddingTop: 0 }}>
+                <div className="stats-indicator">
+                  <span>{isArabic ? 'إجمالي الأنظمة:' : 'Total Systems:'} <strong>{systemData.length}</strong></span>
+                  <span> • </span>
+                  <span style={{ color: '#10b981' }}>
+                    {isArabic ? 'الظاهرة (ON):' : 'Visible (ON):'} <strong>{visibleSystemsCount}</strong>
+                  </span>
+                  <span> • </span>
+                  <span style={{ color: '#ef4444' }}>
+                    {isArabic ? 'المخفية (OFF):' : 'Hidden (OFF):'} <strong>{hiddenSystemsCount}</strong>
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+
+                <div className="action-buttons">
+                  <button className="bulk-btn enable-all" onClick={handleEnableAllSystems}>
+                    <CheckCircle2 size={16} />
+                    <span>{isArabic ? 'تفعيل الكل (ON)' : 'Enable All (ON)'}</span>
+                  </button>
+                  <button className="bulk-btn hide-all" onClick={handleHideAllSystems}>
+                    <EyeOff size={16} />
+                    <span>{isArabic ? 'إخفاء الكل (OFF)' : 'Hide All (OFF)'}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* System Cards Grid */}
+            {loading ? (
+              <div className="visibility-loading">
+                <div className="spinner"></div>
+                <p>{isArabic ? 'جاري تحميل الأنظمة...' : 'Loading educational systems...'}</p>
+              </div>
+            ) : systemData.length === 0 ? (
+              <div className="empty-units-card">
+                <p>{isArabic ? 'لا توجد أنظمة تعليمية.' : 'No educational systems found.'}</p>
+              </div>
+            ) : (
+              <div className="units-visibility-grid">
+                {systemData.map((sys) => {
+                  const sysVisible = isSystemVisible(sys._id);
+                  const subjectsCount = sys.subjects ? sys.subjects.length : 0;
+                  const sysIcon = getSystemIcon(sys.systemName);
+
+                  return (
+                    <div key={sys._id} className={`unit-visibility-card system-card ${sysVisible ? 'is-visible' : 'is-hidden'}`}>
+                      <div className="card-top-row">
+                        <span className="system-icon-badge">{sysIcon}</span>
+                        <div className="status-pill">
+                          {sysVisible ? (
+                            <span className="pill visible"><Eye size={14} /> {isArabic ? 'ظاهر' : 'Visible'}</span>
+                          ) : (
+                            <span className="pill hidden"><EyeOff size={14} /> {isArabic ? 'مخفي' : 'Hidden'}</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <h3 className="unit-title">{translateName(sys.systemName)}</h3>
+                      <p className="unit-subtitle">
+                        {subjectsCount} {isArabic ? 'مادة دراسية' : 'Subjects'}
+                      </p>
+
+                      <div className="card-bottom-row">
+                        <span className="visibility-hint">
+                          {sysVisible 
+                            ? (isArabic ? 'النظام كامل ظاهر للطلاب والألعاب' : 'Entire system visible to students & games') 
+                            : (isArabic ? 'النظام كامل مخفي عن الطلاب والألعاب' : 'Entire system hidden from students & games')}
+                        </span>
+
+                        {/* Interactive Switch */}
+                        <label className="toggle-switch">
+                          <input
+                            type="checkbox"
+                            checked={sysVisible}
+                            onChange={() => handleSystemToggle(sys._id)}
+                          />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ============ LEVELS VIEW ============ */}
+        {viewMode === 'levels' && (
+          <>
+            {/* Filter & Subject Selection Bar */}
+            <div className="visibility-controls-card">
+              <div className="selectors-row">
+                {/* System Selector */}
+                <div className="control-group">
+                  <label><Layers size={16} /> {isArabic ? 'النظام التعليمي' : 'System'}</label>
+                  <select
+                    value={selectedSystemId || ''}
+                    onChange={(e) => {
+                      soundEffects.playClick();
+                      const sysId = e.target.value;
+                      setSelectedSystemId(sysId);
+                      const sys = systemData.find(s => s._id === sysId);
+                      if (sys && sys.subjects && sys.subjects.length > 0) {
+                        setSelectedSubject(sys.subjects[0]);
+                      } else {
+                        setSelectedSubject(null);
+                        setUnitData([]);
+                      }
+                    }}
+                  >
+                    {systemData.map(s => (
+                      <option key={s._id} value={s._id}>{translateName(s.systemName)}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Subject Selector */}
+                <div className="control-group">
+                  <label><BookOpen size={16} /> {isArabic ? 'المادة الدراسية' : 'Subject'}</label>
+                  <select
+                    value={selectedSubject?._id || ''}
+                    onChange={(e) => {
+                      soundEffects.playClick();
+                      const subId = e.target.value;
+                      const currentSys = systemData.find(s => s._id === selectedSystemId);
+                      const sub = currentSys?.subjects?.find(sb => sb._id === subId);
+                      if (sub) setSelectedSubject(sub);
+                    }}
+                  >
+                    {systemData.find(s => s._id === selectedSystemId)?.subjects?.map(sub => (
+                      <option key={sub._id} value={sub._id}>{translateName(sub.subjectName)}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Search Input */}
+                <div className="control-group search-group">
+                  <label><Search size={16} /> {isArabic ? 'بحث بالاسم' : 'Search Level'}</label>
+                  <input
+                    type="text"
+                    placeholder={isArabic ? 'ابحث عن مستوى...' : 'Search level...'}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Quick Actions Bar */}
+              <div className="bulk-actions-row">
+                <div className="stats-indicator">
+                  <span>{isArabic ? 'إجمالي المستويات:' : 'Total Levels:'} <strong>{unitData.length}</strong></span>
+                  <span> • </span>
+                  <span style={{ color: '#10b981' }}>
+                    {isArabic ? 'الظاهرة (ON):' : 'Visible (ON):'} <strong>{unitData.length - hiddenIds.filter(id => unitData.some(u => u._id === id)).length}</strong>
+                  </span>
+                  <span> • </span>
+                  <span style={{ color: '#ef4444' }}>
+                    {isArabic ? 'المخفية (OFF):' : 'Hidden (OFF):'} <strong>{hiddenIds.filter(id => unitData.some(u => u._id === id)).length}</strong>
+                  </span>
+                </div>
+
+                <div className="action-buttons">
+                  <button className="bulk-btn enable-all" onClick={handleEnableAll}>
+                    <CheckCircle2 size={16} />
+                    <span>{isArabic ? 'تفعيل الكل (ON)' : 'Enable All (ON)'}</span>
+                  </button>
+                  <button className="bulk-btn hide-all" onClick={handleHideAll}>
+                    <EyeOff size={16} />
+                    <span>{isArabic ? 'إخفاء الكل (OFF)' : 'Hide All (OFF)'}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Units / Levels List */}
+            {loading ? (
+              <div className="visibility-loading">
+                <div className="spinner"></div>
+                <p>{isArabic ? 'جاري تحميل المستويات...' : 'Loading curriculum levels...'}</p>
+              </div>
+            ) : filteredUnits.length === 0 ? (
+              <div className="empty-units-card">
+                <p>{isArabic ? 'لم يتم العثور على مستويات تطابق البحث.' : 'No curriculum levels found.'}</p>
+              </div>
+            ) : (
+              <div className="units-visibility-grid">
+                {filteredUnits.map((unit) => {
+                  const isVisible = isUnitVisible(unit._id);
+                  const badge = getUnitLevelBadge(unit.unitName);
+                  const chaptersCount = unit.chapters ? unit.chapters.length : 0;
+
+                  return (
+                    <div key={unit._id} className={`unit-visibility-card ${isVisible ? 'is-visible' : 'is-hidden'}`}>
+                      <div className="card-top-row">
+                        <span className="unit-badge" style={{ color: badge.color, backgroundColor: badge.bg }}>
+                          {badge.label}
+                        </span>
+                        <div className="status-pill">
+                          {isVisible ? (
+                            <span className="pill visible"><Eye size={14} /> {isArabic ? 'ظاهر' : 'Visible'}</span>
+                          ) : (
+                            <span className="pill hidden"><EyeOff size={14} /> {isArabic ? 'مخفي' : 'Hidden'}</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <h3 className="unit-title">{translateName(unit.unitName)}</h3>
+                      <p className="unit-subtitle">
+                        {chaptersCount} {isArabic ? 'ورقة عمل / تمرين' : 'Exercises / Worksheets'}
+                      </p>
+
+                      <div className="card-bottom-row">
+                        <span className="visibility-hint">
+                          {isVisible 
+                            ? (isArabic ? 'متاح للطلاب وفي الألعاب' : 'Visible in worksheets & games') 
+                            : (isArabic ? 'مخفي عن الطلاب والألعاب' : 'Hidden from students & games')}
+                        </span>
+
+                        {/* Interactive Switch */}
+                        <label className="toggle-switch">
+                          <input
+                            type="checkbox"
+                            checked={isVisible}
+                            onChange={() => handleToggle(unit._id)}
+                          />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

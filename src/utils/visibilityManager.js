@@ -1,11 +1,12 @@
 /**
- * Visibility Manager for Abacus Heroes Curriculum Levels & Units.
+ * Visibility Manager for Abacus Heroes Curriculum Systems, Levels & Units.
  * 
  * Rules:
- * - ALL levels and units are VISIBLE (ON) by default for all school accounts.
- * - When a school admin toggles a unit OFF, its ID is saved to the hidden units set for that school.
- * - Any level/unit marked as OFF is automatically filtered out from:
- *   1. Student/Teacher Worksheets view (/unit)
+ * - ALL systems, levels, and units are VISIBLE (ON) by default for all school accounts.
+ * - When a school admin toggles a system OFF, its ID is saved to hidden systems for that school.
+ * - When a school admin toggles a unit OFF, its ID is saved to hidden units for that school.
+ * - Hidden systems/units are automatically filtered out from:
+ *   1. Student/Teacher System & Worksheets views
  *   2. All 8 Games question bank dropdown selectors
  *   3. Homework & Competition creation wizards
  */
@@ -14,6 +15,13 @@ const getSchoolKey = (schoolId) => {
   const effectiveId = schoolId || localStorage.getItem('pp_id') || localStorage.getItem('user_id') || 'default_school';
   return `school_hidden_units_${effectiveId}`;
 };
+
+const getSchoolSystemKey = (schoolId) => {
+  const effectiveId = schoolId || localStorage.getItem('pp_id') || localStorage.getItem('user_id') || 'default_school';
+  return `school_hidden_systems_${effectiveId}`;
+};
+
+// ========== UNIT-LEVEL VISIBILITY ==========
 
 /**
  * Get the list of hidden unit IDs for a school.
@@ -40,9 +48,6 @@ export const isUnitVisible = (unitId, schoolId) => {
 
 /**
  * Set visibility for a unit.
- * @param {string} unitId 
- * @param {boolean} isVisible 
- * @param {string} schoolId 
  */
 export const setUnitVisibility = (unitId, isVisible, schoolId) => {
   if (!unitId) return;
@@ -50,17 +55,14 @@ export const setUnitVisibility = (unitId, isVisible, schoolId) => {
   let hiddenIds = getHiddenUnitIds(schoolId);
 
   if (isVisible) {
-    // Remove from hidden
     hiddenIds = hiddenIds.filter(id => id !== strId);
   } else {
-    // Add to hidden
     if (!hiddenIds.includes(strId)) {
       hiddenIds.push(strId);
     }
   }
 
   localStorage.setItem(getSchoolKey(schoolId), JSON.stringify(hiddenIds));
-  // Dispatch custom event for real-time reactivity across open components
   window.dispatchEvent(new CustomEvent('unitVisibilityUpdated', { detail: { unitId: strId, isVisible } }));
 };
 
@@ -74,15 +76,75 @@ export const resetAllUnitsVisible = (schoolId) => {
 
 /**
  * Filter an array of units so only VISIBLE (ON) units are returned.
- * @param {Array} units 
- * @param {string} schoolId 
- * @returns {Array} filtered units
  */
 export const filterVisibleUnits = (units, schoolId) => {
   if (!Array.isArray(units)) return [];
   const hiddenIds = getHiddenUnitIds(schoolId);
-  if (hiddenIds.length === 0) return units; // Fast path: all ON
+  if (hiddenIds.length === 0) return units;
   return units.filter(unit => unit && !hiddenIds.includes(String(unit._id)));
+};
+
+// ========== SYSTEM-LEVEL VISIBILITY ==========
+
+/**
+ * Get the list of hidden system IDs for a school.
+ */
+export const getHiddenSystemIds = (schoolId) => {
+  try {
+    const raw = localStorage.getItem(getSchoolSystemKey(schoolId));
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+/**
+ * Check if a specific system is visible (Defaults to true).
+ */
+export const isSystemVisible = (systemId, schoolId) => {
+  if (!systemId) return true;
+  const hiddenIds = getHiddenSystemIds(schoolId);
+  return !hiddenIds.includes(String(systemId));
+};
+
+/**
+ * Set visibility for a system.
+ */
+export const setSystemVisibility = (systemId, isVisible, schoolId) => {
+  if (!systemId) return;
+  const strId = String(systemId);
+  let hiddenIds = getHiddenSystemIds(schoolId);
+
+  if (isVisible) {
+    hiddenIds = hiddenIds.filter(id => id !== strId);
+  } else {
+    if (!hiddenIds.includes(strId)) {
+      hiddenIds.push(strId);
+    }
+  }
+
+  localStorage.setItem(getSchoolSystemKey(schoolId), JSON.stringify(hiddenIds));
+  window.dispatchEvent(new CustomEvent('systemVisibilityUpdated', { detail: { systemId: strId, isVisible } }));
+};
+
+/**
+ * Reset all systems to Visible (ON) for a school.
+ */
+export const resetAllSystemsVisible = (schoolId) => {
+  localStorage.removeItem(getSchoolSystemKey(schoolId));
+  window.dispatchEvent(new CustomEvent('systemVisibilityUpdated', { detail: { resetAll: true } }));
+};
+
+/**
+ * Filter an array of systems so only VISIBLE (ON) systems are returned.
+ */
+export const filterVisibleSystems = (systems, schoolId) => {
+  if (!Array.isArray(systems)) return [];
+  const hiddenIds = getHiddenSystemIds(schoolId);
+  if (hiddenIds.length === 0) return systems;
+  return systems.filter(sys => sys && !hiddenIds.includes(String(sys._id)));
 };
 
 export default {
@@ -90,5 +152,10 @@ export default {
   setUnitVisibility,
   resetAllUnitsVisible,
   filterVisibleUnits,
-  getHiddenUnitIds
+  getHiddenUnitIds,
+  isSystemVisible,
+  setSystemVisibility,
+  resetAllSystemsVisible,
+  filterVisibleSystems,
+  getHiddenSystemIds
 };

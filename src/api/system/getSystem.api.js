@@ -1,6 +1,7 @@
 import API_BASE_URL from '../../config/api.config';
+import { filterVisibleSystems } from '../../utils/visibilityManager';
 
-const getSystem = (setLoading, setSystemData, questionTypeID) => {
+const getSystem = (setLoading, setSystemData, questionTypeID, includeHidden = false) => {
     setLoading(true)
     // Load all systems without filtering by questionTypeID
     const URL = `${API_BASE_URL}/system/getAllSystem`;
@@ -13,7 +14,9 @@ const getSystem = (setLoading, setSystemData, questionTypeID) => {
         .then((responseJson) => {
             if (responseJson.message === 'success') {
                 setLoading(false)
-                setSystemData(responseJson.allSystem)
+                const allSystems = responseJson.allSystem || [];
+                const finalSystems = includeHidden ? allSystems : filterVisibleSystems(allSystems);
+                setSystemData(finalSystems)
             } else {
                 console.log(responseJson.message)
                 setLoading(false)

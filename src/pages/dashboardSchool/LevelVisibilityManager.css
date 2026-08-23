@@ -16,6 +16,63 @@
   margin-bottom: 1.5rem;
 }
 
+/* View Mode Tabs */
+.view-mode-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  background: white;
+  border-radius: 16px;
+  padding: 0.4rem;
+  border: 1px solid #e2e8f0;
+  width: fit-content;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: #64748b;
+  transition: all 0.25s ease;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  color: white;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+}
+
+.tab-btn:not(.active):hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+/* System Card extras */
+.system-icon-badge {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.unit-visibility-card.system-card.is-visible {
+  border-color: #10b981;
+  border-width: 2px;
+}
+
+.unit-visibility-card.system-card .unit-title {
+  font-size: 1.5rem;
+}
+
+.unit-visibility-card.system-card .unit-subtitle {
+  font-size: 0.95rem;
+}
+
 .visibility-header .back-btn {
   display: inline-flex;
   align-items: center;
