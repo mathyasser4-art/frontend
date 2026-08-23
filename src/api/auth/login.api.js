@@ -45,6 +45,20 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 } else if (responseJson.createdBy) {
                     localStorage.setItem('teacher_id', responseJson.createdBy);
                 }
+                // Persist school_id so all users in a school share visibility settings
+                if (responseJson.role === 'School' || responseJson.role === 'IT') {
+                    // School admin: their own ID is the school ID
+                    localStorage.setItem('school_id', responseJson.userID);
+                } else if (responseJson.school?._id) {
+                    localStorage.setItem('school_id', responseJson.school._id);
+                } else if (responseJson.schoolId) {
+                    localStorage.setItem('school_id', responseJson.schoolId);
+                } else if (responseJson.createdBy?._id) {
+                    // For teachers: createdBy is the school
+                    localStorage.setItem('school_id', responseJson.createdBy._id);
+                } else if (responseJson.createdBy && typeof responseJson.createdBy === 'string') {
+                    localStorage.setItem('school_id', responseJson.createdBy);
+                }
                 if (responseJson.remainingDays !== undefined && responseJson.remainingDays !== null) {
                     localStorage.setItem('trial_remaining_days', responseJson.remainingDays);
                 } else {

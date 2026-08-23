@@ -3,21 +3,43 @@
  * 
  * Rules:
  * - ALL systems, levels, and units are VISIBLE (ON) by default for all school accounts.
- * - When a school admin toggles a system OFF, its ID is saved to hidden systems for that school.
- * - When a school admin toggles a unit OFF, its ID is saved to hidden units for that school.
+ * - Settings are stored per-school so ALL users in a school (admin, teachers, students) share the same visibility.
+ * - The school ID is resolved from localStorage in this priority:
+ *     1. 'school_id' (explicit school identifier set at login)
+ *     2. 'pp_id' (for School role, pp_id IS the school ID)
+ *     3. 'created_by' (fallback)
  * - Hidden systems/units are automatically filtered out from:
  *   1. Student/Teacher System & Worksheets views
  *   2. All 8 Games question bank dropdown selectors
  *   3. Homework & Competition creation wizards
  */
 
+/**
+ * Resolve the effective school ID for the current user.
+ * School admins: pp_id is the school ID.
+ * Teachers/Students: school_id is set at login from createdBy chain.
+ */
+const resolveSchoolId = (explicitSchoolId) => {
+  if (explicitSchoolId) return explicitSchoolId;
+  
+  const role = localStorage.getItem('auth_role');
+  
+  // For School/IT role, pp_id IS the school
+  if (role === 'School' || role === 'IT') {
+    return localStorage.getItem('pp_id') || 'default_school';
+  }
+  
+  // For Teachers/Students, use school_id set at login
+  return localStorage.getItem('school_id') || localStorage.getItem('created_by') || localStorage.getItem('teacher_id') || 'default_school';
+};
+
 const getSchoolKey = (schoolId) => {
-  const effectiveId = schoolId || localStorage.getItem('pp_id') || localStorage.getItem('user_id') || 'default_school';
+  const effectiveId = resolveSchoolId(schoolId);
   return `school_hidden_units_${effectiveId}`;
 };
 
 const getSchoolSystemKey = (schoolId) => {
-  const effectiveId = schoolId || localStorage.getItem('pp_id') || localStorage.getItem('user_id') || 'default_school';
+  const effectiveId = resolveSchoolId(schoolId);
   return `school_hidden_systems_${effectiveId}`;
 };
 
@@ -147,7 +169,9 @@ export const filterVisibleSystems = (systems, schoolId) => {
   return systems.filter(sys => sys && !hiddenIds.includes(String(sys._id)));
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
+  resolveSchoolId,
   isUnitVisible,
   setUnitVisibility,
   resetAllUnitsVisible,
