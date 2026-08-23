@@ -247,6 +247,7 @@
   },
   "school": {
     "schoolDashboard": "School Dashboard",
+    "levelVisibility": "Level Visibility",
     "totalStudents": "Total Students",
     "totalTeachers": "Total Teachers",
     "totalClasses": "Total Classes",

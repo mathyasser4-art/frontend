@@ -4,7 +4,7 @@ import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import TeachersList from '../../components/teachersList/TeachersList';
 import { Link } from 'react-router-dom';
-import { MessageCircle, AlertTriangle, Users, Trophy, Plus, FileText, Download, Calendar, Trash2 } from 'lucide-react';
+import { MessageCircle, AlertTriangle, Users, Trophy, Plus, FileText, Download, Calendar, Trash2, Sliders } from 'lucide-react';
 import student from '../../img/student-bannar.png';
 import teacher from '../../img/teacher-bannar.png';
 import subject from '../../img/subject-bannar.PNG';
@@ -324,6 +324,18 @@ function DashboardSchool() {
                             }}>
                                 <Users size={40} />
                                 <h3 style={{ margin: '10px 0 0 0', fontFamily: 'sans-serif' }}>Live Dashboard</h3>
+                            </div>
+                        </Link>
+                        <Link to={'/dashboard-school/visibility'} style={{ textDecoration: 'none' }}>
+                            <div style={{
+                                width: '250px', height: '120px', margin: '10px', 
+                                background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)', 
+                                borderRadius: '15px', display: 'flex', flexDirection: 'column', 
+                                alignItems: 'center', justifyContent: 'center', color: 'white',
+                                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                            }}>
+                                <Sliders size={40} />
+                                <h3 style={{ margin: '10px 0 0 0', fontFamily: 'sans-serif' }}>{t('school.levelVisibility', 'Level Visibility')}</h3>
                             </div>
                         </Link>
                         <Link to={'/dashboard-school/reported-questions'} style={{ textDecoration: 'none' }}>

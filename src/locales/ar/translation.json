@@ -250,6 +250,7 @@
   },
   "school": {
     "schoolDashboard": "لوحة تحكم المدرسة",
+    "levelVisibility": "إدارة ظهور المستويات",
     "totalStudents": "إجمالي الطلاب",
     "totalTeachers": "إجمالي المعلمين",
     "totalClasses": "إجمالي الفصول",

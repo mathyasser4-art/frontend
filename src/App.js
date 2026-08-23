@@ -98,6 +98,7 @@ const TeacherCompetitionLobby = safeLazy(() => import('./pages/teacherDashboard/
 const UpcomingCompetitionsHub = safeLazy(() => import('./pages/teacherDashboard/UpcomingCompetitionsHub'));
 const StudentCompetition = safeLazy(() => import('./pages/studentDashboard/StudentCompetition'));
 const TeacherQuestionBank = safeLazy(() => import('./pages/teacherDashboard/TeacherQuestionBank'));
+const LevelVisibilityManager = safeLazy(() => import('./pages/dashboardSchool/LevelVisibilityManager'));
 const Shop = safeLazy(() => import('./pages/shop/Shop'));
 const LiveAdminDashboard = safeLazy(() => import('./pages/dashboardSchool/LiveAdminDashboard'));
 
@@ -175,6 +176,7 @@ function App() {
           <Route path='/dashboard-school/chats' element={isAuth && (role === 'School' || role === 'IT') ? <ChatManagement /> : <Navigate to='/' />} />
           <Route path='/dashboard-school/reported-questions' element={isAuth && (role === 'School' || role === 'IT') ? <ReportedQuestions /> : <Navigate to='/' />} />
           <Route path='/dashboard-school/live' element={isAuth && (role === 'School' || role === 'IT') ? <LiveAdminDashboard /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/visibility' element={isAuth && (role === 'School' || role === 'IT') ? <LevelVisibilityManager /> : <Navigate to='/' />} />
 
           <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/' />} />
           <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/' />} />
