@@ -254,14 +254,16 @@
 }
 
 .bunny-node.jumping {
-  animation: premiumJump 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: premiumJump 0.65s cubic-bezier(0.35, 0, 0.25, 1);
 }
 
 @keyframes premiumJump {
-  0% { bottom: 120px; transform: rotate(0deg); }
-  45% { bottom: 235px; transform: rotate(8deg); }
-  55% { bottom: 235px; transform: rotate(4deg); }
-  100% { bottom: 120px; transform: rotate(0deg); }
+  0% { bottom: 120px; transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(12deg) scale(1.05); }
+  45% { bottom: 345px; transform: rotate(6deg) scale(1.08); }
+  55% { bottom: 345px; transform: rotate(0deg) scale(1.08); }
+  75% { transform: rotate(-4deg) scale(1.02); }
+  100% { bottom: 120px; transform: rotate(0deg) scale(1); }
 }
 
 /* Abacus Grid Table in Cave Runner */
@@ -619,6 +621,19 @@
     height: 50px;
     bottom: 60px;
     left: 15%;
+  }
+
+  .bunny-node.jumping {
+    animation: premiumJumpMobile 0.65s cubic-bezier(0.35, 0, 0.25, 1);
+  }
+
+  @keyframes premiumJumpMobile {
+    0% { bottom: 60px; transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(12deg) scale(1.05); }
+    45% { bottom: 195px; transform: rotate(6deg) scale(1.08); }
+    55% { bottom: 195px; transform: rotate(0deg) scale(1.08); }
+    75% { transform: rotate(-4deg) scale(1.02); }
+    100% { bottom: 60px; transform: rotate(0deg) scale(1); }
   }
   
   .ground-world {

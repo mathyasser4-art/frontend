@@ -143,6 +143,7 @@ const SuperMarioGame = () => {
           const shuffledQuestions = adjustQuestionOrderAndShuffleMCQ(questionsList);
           setCustomQuestions(shuffledQuestions);
           setCurrentQuestionIndex(0);
+          currentQuestionIndexRef.current = 0;
         } else {
           setWizardError(data.message || t('no_questions_found', 'لم يتم العثور على أسئلة في هذا الدرس'));
         }
@@ -153,10 +154,13 @@ const SuperMarioGame = () => {
       });
   };
 
-  const fetchQuestion = useCallback(async () => {
+  const currentQuestionIndexRef = useRef(0);
+
+  const loadNextQuestion = useCallback(() => {
     if (customQuestions && customQuestions.length > 0) {
-      const q = customQuestions[currentQuestionIndex % customQuestions.length];
-      setCurrentQuestionIndex(prev => prev + 1);
+      const idx = currentQuestionIndexRef.current % customQuestions.length;
+      currentQuestionIndexRef.current += 1;
+      const q = customQuestions[idx];
 
       let opts = [];
       if (q.wrongAnswer && Array.isArray(q.wrongAnswer)) {
@@ -189,7 +193,7 @@ const SuperMarioGame = () => {
         options: q.options.map(String)
       });
     }
-  }, [customQuestions, currentQuestionIndex, difficulty]);
+  }, [customQuestions, difficulty]);
 
   const startGame = async (level) => {
     soundEffects.playClick();
@@ -201,9 +205,9 @@ const SuperMarioGame = () => {
 
   useEffect(() => {
     if (gameState === 'revive_locked' || gameState === 'in_game_lock') {
-      fetchQuestion();
+      loadNextQuestion();
     }
-  }, [gameState, fetchQuestion]);
+  }, [gameState, loadNextQuestion]);
 
   useEffect(() => {
     const handleMessage = (event) => {
@@ -230,7 +234,7 @@ const SuperMarioGame = () => {
         setQuestionsNeeded(1);
         setSolvedCount(0);
         setGameState('in_game_lock');
-      }, 25000);
+      }, 30000);
     }
     return () => {
       if (interval) clearInterval(interval);
@@ -238,6 +242,7 @@ const SuperMarioGame = () => {
   }, [gameState]);
 
   const handleAnswer = (selectedAns) => {
+    if (!question || !question.answer) return;
     if (String(selectedAns).trim() === String(question.answer).trim()) {
       soundEffects.playCorrect();
       setFeedback('correct');
@@ -260,7 +265,7 @@ const SuperMarioGame = () => {
           setSolvedCount(0);
         } else {
           setSolvedCount(newCount);
-          fetchQuestion();
+          loadNextQuestion();
         }
         setFeedback(null);
       }, 800);
@@ -278,7 +283,7 @@ const SuperMarioGame = () => {
             }
             setGameState('playing'); 
         } else {
-            fetchQuestion();
+            loadNextQuestion();
         }
         setFeedback(null);
       }, 1000);

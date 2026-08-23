@@ -690,28 +690,102 @@
   color: #1e293b;
 }
 
-/* Responsive Media Queries */
+/* Responsive Media Queries - Perfect for Mobile, Tablet, Laptop & Desktop */
 @media (max-width: 900px) {
   .maze-game-layout {
     grid-template-columns: 1fr;
-    padding: 1rem;
+    padding: 0.8rem;
+    gap: 1rem;
+    border-radius: 24px;
   }
   .maze-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem;
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+    border: none;
+  }
+  .keyboard-controls-hint, .sidebar-character, .sidebar-header {
     display: none;
+  }
+  .sidebar-controls {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .dpad-modern {
+    gap: 0.4rem;
+  }
+  .dpad-modern button {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+  }
+  .dpad-modern svg {
+    width: 26px;
+    height: 26px;
   }
   .mobile-touch-hint {
     display: block;
   }
   .maze-viewport {
-    padding: 1rem;
-    min-height: 360px;
+    padding: 0.6rem;
+    min-height: auto;
+  }
+  .maze-grid-wrapper {
+    padding: 8px;
+    max-width: 100%;
   }
 }
 
 @media (max-width: 600px) {
   .maze-main-container {
+    padding: 0.25rem;
+  }
+  .maze-game-layout {
     padding: 0.5rem;
   }
+  .maze-viewport {
+    padding: 0.3rem;
+  }
+  .maze-grid-wrapper {
+    padding: 4px;
+    border-width: 1.5px;
+    border-radius: 14px;
+  }
+
+  /* Scaled walls on phone screens so cells remain spacious & crystal clear */
+  .grid-size-8 .m-cell.w-t { border-top-width: 3.5px; }
+  .grid-size-8 .m-cell.w-r { border-right-width: 3.5px; }
+  .grid-size-8 .m-cell.w-b { border-bottom-width: 3.5px; }
+  .grid-size-8 .m-cell.w-l { border-left-width: 3.5px; }
+
+  .grid-size-10 .m-cell.w-t { border-top-width: 2.8px; }
+  .grid-size-10 .m-cell.w-r { border-right-width: 2.8px; }
+  .grid-size-10 .m-cell.w-b { border-bottom-width: 2.8px; }
+  .grid-size-10 .m-cell.w-l { border-left-width: 2.8px; }
+
+  .grid-size-12 .m-cell.w-t { border-top-width: 2.2px; }
+  .grid-size-12 .m-cell.w-r { border-right-width: 2.2px; }
+  .grid-size-12 .m-cell.w-b { border-bottom-width: 2.2px; }
+  .grid-size-12 .m-cell.w-l { border-left-width: 2.2px; }
+
+  .grid-size-14 .m-cell.w-t { border-top-width: 1.8px; }
+  .grid-size-14 .m-cell.w-r { border-right-width: 1.8px; }
+  .grid-size-14 .m-cell.w-b { border-bottom-width: 1.8px; }
+  .grid-size-14 .m-cell.w-l { border-left-width: 1.8px; }
+
+  .hero-avatar {
+    font-size: clamp(12px, 3.5vw, 20px);
+  }
+  .m-gem, .m-door, .m-goal {
+    font-size: clamp(10px, 3vw, 18px);
+  }
+
   .maze-modal-content {
     flex-direction: column;
     gap: 1rem;
