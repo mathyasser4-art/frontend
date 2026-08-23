@@ -195,12 +195,12 @@ const SuperMarioGame = () => {
     soundEffects.playClick();
     setDifficulty(level);
     setSolvedCount(0);
-    setQuestionsNeeded(QUESTIONS_TO_UNLOCK);
-    setGameState('locked');
+    setQuestionsNeeded(1);
+    setGameState('playing');
   };
 
   useEffect(() => {
-    if (gameState === 'locked' || gameState === 'revive_locked' || gameState === 'in_game_lock') {
+    if (gameState === 'revive_locked' || gameState === 'in_game_lock') {
       fetchQuestion();
     }
   }, [gameState, fetchQuestion]);
