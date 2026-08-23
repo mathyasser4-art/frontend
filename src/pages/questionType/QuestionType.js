@@ -6,6 +6,7 @@ import soundEffects from '../../utils/soundEffects'
 import CreateCompetitionModal from '../../components/navbar/CreateCompetitionModal';
 import { ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
 import { safeLocalStorage } from '../../utils/safeStorage'
+import logo from '../../logo.png'
 import '../../reusable.css'
 import './QuestionType.css'
 
@@ -30,9 +31,14 @@ function QuestionType() {
   
   const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
                       (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
+  
+  const isMasterminds = (schoolName.toLowerCase() === 'masterminds') || 
+                        (userRole === 'School' && userName.toLowerCase() === 'masterminds');
+
+  const themeClass = isTopsoroban ? 'topsoroban-theme' : isMasterminds ? 'masterminds-theme' : 'default-theme';
 
   return (
-    <div id="academy-section" className={`questionType ${isTopsoroban ? 'topsoroban-theme' : ''}`}>
+    <div id="academy-section" className={`questionType ${themeClass}`}>
       {/* Academy Main Header */}
       <div className="academy-section-header">
         <h2 className="academy-main-title">{t('academy.mainTitle', '🚀 Start Solving Questions & Playing Games Now!')}</h2>
@@ -47,11 +53,18 @@ function QuestionType() {
               alt="TOPSOROBAN" 
               className="masterminds-logo-title" 
             />
-          ) : (
+          ) : isMasterminds ? (
             <img 
               src="/img/masterminds_logo.png" 
               alt="MASTERMINDS" 
               className="masterminds-logo-title" 
+            />
+          ) : (
+            <img 
+              src={logo} 
+              alt="Abacus Heroes" 
+              className="masterminds-logo-title abacus-logo-title" 
+              style={{ maxHeight: '95px', objectFit: 'contain' }}
             />
           )}
           <div className="line" style={{ marginTop: '0.2rem' }}></div>

@@ -36,17 +36,26 @@
 .questionType-container {
     position: relative;
     z-index: 2;
+    background: #ffffff;
+    background-image: none;
+    border-radius: 30px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 50px rgba(99, 102, 241, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 2px solid #ede9fe;
+    backdrop-filter: blur(10px);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* MasterMinds School Theme - Only for MasterMinds accounts */
+.questionType.masterminds-theme .questionType-container {
     background: rgba(0, 0, 0, 0.9);
     background-image: url('../../img/masterminds-bg.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 30px;
-    padding: 2.5rem;
+    border: none;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(5px);
-    max-width: 1200px;
-    margin: 0 auto;
 }
 
 .questionType-title {
@@ -55,13 +64,21 @@
     font-weight: 900;
     font-family: 'Inter', sans-serif;
     letter-spacing: -1.5px;
+    background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 4px 10px rgba(124, 58, 237, 0.15);
+    margin-bottom: 1rem;
+    animation: bounceIn 1s ease-out;
+}
+
+.questionType.masterminds-theme .questionType-title {
     background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-shadow: 0 4px 10px rgba(184, 134, 11, 0.3);
-    margin-bottom: 1rem;
-    animation: bounceIn 1s ease-out;
 }
 
 .masterminds-logo-title {
@@ -86,11 +103,16 @@
 }
 
 .line {
-    background: goldenrod;
+    background: linear-gradient(90deg, #8b5cf6, #3b82f6);
     width: 350px;
     height: 6px;
     margin: 1rem auto 3rem auto;
     border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+}
+
+.questionType.masterminds-theme .line {
+    background: goldenrod;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
@@ -466,12 +488,16 @@
 .cards-selection-title {
     font-size: 20px;
     font-weight: 700;
-    color: #92400e;
+    color: #475569;
     margin: 1.5rem 0 0.5rem 0;
     font-family: 'Inter', sans-serif;
     text-transform: none;
     letter-spacing: 0;
     text-shadow: none;
+}
+
+.questionType.masterminds-theme .cards-selection-title {
+    color: #ffd700;
 }
 
 .questionType.topsoroban-theme .cards-selection-title {

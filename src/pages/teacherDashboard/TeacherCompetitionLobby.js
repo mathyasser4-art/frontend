@@ -1351,7 +1351,7 @@ function TeacherCompetitionLobby() {
                 totalQuestions={totalQuestions}
                 competitionTitle={competition?.title}
                 teacherName={localStorage.getItem('pp_name') || 'Instructor'}
-                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() !== 'topsoroban'}
+                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() === 'masterminds'}
             />
 
             <CertificateModal
@@ -1359,7 +1359,7 @@ function TeacherCompetitionLobby() {
                 onClose={() => setIsBulkCertOpen(false)}
                 competitionTitle={competition?.title}
                 teacherName={localStorage.getItem('pp_name') || 'Instructor'}
-                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() !== 'topsoroban'}
+                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() === 'masterminds'}
                 bulkStudents={sortedParticipants.slice(0, 10)}
             />
         </div>

@@ -6,6 +6,7 @@ import MobileNav from '../../components/mobileNav/MobileNav';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import SystemLoading from '../../components/systemLoding/SystemLoading';
 import getSystem from '../../api/system/getSystem.api';
+import soundEffects from '../../utils/soundEffects';
 import '../../reusable.css'
 import './System.css'
 
@@ -128,7 +129,11 @@ function System() {
                                 <div 
                                     key={item._id} 
                                     className="game-level-card"
-                                    onClick={() => setActiveLevel(item)}
+                                    onMouseEnter={() => soundEffects.playCardHover()}
+                                    onClick={() => {
+                                        soundEffects.playClick();
+                                        setActiveLevel(item);
+                                    }}
                                 >
                                     <div className="card-top-shine"></div>
                                     <div className="card-icon-badge" style={{ background: badgeInfo.bgGradient, boxShadow: `0 6px 14px ${badgeInfo.shadowColor}` }}>
@@ -174,9 +179,11 @@ function System() {
                                 if (isLocked) {
                                     return (
                                         <div 
-                                            key={subItem._id} 
+                                             key={subItem._id} 
                                             className="game-topic-item locked"
+                                            onMouseEnter={() => soundEffects.playCardHover()}
                                             onClick={() => {
+                                                soundEffects.playClick();
                                                 setActiveLevel(null);
                                                 setShowUpgradeModal(true);
                                             }}
@@ -195,6 +202,8 @@ function System() {
                                         key={subItem._id} 
                                         to={`/unit/${questionTypeID}/${subItem._id}`} 
                                         className="game-topic-item playable"
+                                        onMouseEnter={() => soundEffects.playCardHover()}
+                                        onClick={() => soundEffects.playClick()}
                                     >
                                         <div className="topic-item-left">
                                             <span className="topic-play-icon">🎯</span>

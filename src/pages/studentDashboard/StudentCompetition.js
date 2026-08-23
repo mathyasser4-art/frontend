@@ -1240,7 +1240,7 @@ function StudentCompetition() {
                 totalQuestions={totalQuestions}
                 competitionTitle={competition?.title}
                 teacherName={competition?.createdBy?.userName || 'Arena Director'}
-                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() !== 'topsoroban'}
+                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() === 'masterminds'}
             />
         </div>
     );

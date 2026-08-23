@@ -6,6 +6,7 @@ import MobileNav from '../../components/mobileNav/MobileNav';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import SystemLoading from '../../components/systemLoding/SystemLoading';
 import getUnit from '../../api/unit/getUnit.api';
+import soundEffects from '../../utils/soundEffects';
 import '../../reusable.css'
 import './Unit.css'
 
@@ -114,10 +115,13 @@ function Unit() {
                                 <div 
                                     key={item._id} 
                                     className={`game-level-card ${isLocked ? 'locked-card' : ''}`}
+                                    onMouseEnter={() => soundEffects.playCardHover()}
                                     onClick={() => {
                                         if (isLocked) {
+                                            soundEffects.playClick();
                                             setShowUpgradeModal(true);
                                         } else {
+                                            soundEffects.playClick();
                                             setActiveUnit(item);
                                         }
                                     }}
@@ -164,6 +168,8 @@ function Unit() {
                                         key={subItem._id} 
                                         to={`/question/${subItem._id}/${questionTypeID}/${subjectID}`} 
                                         className="game-topic-item playable"
+                                        onMouseEnter={() => soundEffects.playCardHover()}
+                                        onClick={() => soundEffects.playClick()}
                                     >
                                         <div className="topic-item-left">
                                             <span className="topic-play-icon">🎮</span>

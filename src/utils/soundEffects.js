@@ -98,6 +98,38 @@ class SoundEffects {
     this.playSound('wrong');
   }
 
+  // Soft, satisfying game hover pop / chime for system and level cards
+  playCardHover() {
+    try {
+      this.ensureInitialized();
+      if (!this.audioContext) return;
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+
+      const now = this.audioContext.currentTime;
+      const osc = this.audioContext.createOscillator();
+      const gain = this.audioContext.createGain();
+
+      osc.type = 'sine';
+      // Crisp upward melodic pitch bend (580Hz -> 820Hz)
+      osc.frequency.setValueAtTime(580, now);
+      osc.frequency.exponentialRampToValueAtTime(820, now + 0.07);
+
+      // Smooth subtle volume envelope
+      gain.gain.setValueAtTime(0.045, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+
+      osc.connect(gain);
+      gain.connect(this.audioContext.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.08);
+    } catch (e) {
+      // Audio context might fail silently if not allowed
+    }
+  }
+
   // Special softer, lower-pitched sound for number/button clicks
   playNumberClick() {
     this.playSoundWithOptions('click', { 
@@ -209,10 +241,13 @@ export const useSoundEffect = () => {
   const playEndSound = () => soundEffects.playEndSound();
   const playWinSound = () => soundEffects.playWinSound();
 
+  const playCardHoverSound = () => soundEffects.playCardHover();
+
   return {
     playClickSound,
     playCorrectSound,
     playWrongSound,
+    playCardHoverSound,
     playNumberClickSound,
     playEndSound,
     playWinSound
