@@ -268,21 +268,27 @@ function MazeGame() {
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
-        ...(Token ? { 'authrization': `pracYas09${Token}` } : {})
+        ...(Token ? { 'authrization': `pracYas09${Token}`, 'Authorization': `Bearer ${Token}` } : {})
       },
     })
       .then(r => r.json())
       .then(responseJson => {
-        if (responseJson.message === 'success' && Array.isArray(responseJson.chapter?.questions)) {
-          const shuffled = adjustQuestionOrderAndShuffleMCQ(responseJson.chapter.questions);
+        const questionsList = (responseJson.message === 'success' && Array.isArray(responseJson.chapter?.questions))
+          ? responseJson.chapter.questions
+          : (responseJson.data && Array.isArray(responseJson.data.questions))
+          ? responseJson.data.questions
+          : (Array.isArray(responseJson.questions) ? responseJson.questions : null);
+
+        if (questionsList && questionsList.length > 0) {
+          const shuffled = adjustQuestionOrderAndShuffleMCQ(questionsList);
           setCustomQuestions(shuffled);
         } else {
-          setWizardError(responseJson.message);
+          setWizardError(responseJson.message || t('no_questions_found', 'لم يتم العثور على أسئلة في هذا الدرس'));
         }
         setLoadingWizard(false);
       })
       .catch(err => {
-        setWizardError(err.message);
+        setWizardError(err.message || t('failed_loading_questions', 'فشل في تحميل الأسئلة'));
         setLoadingWizard(false);
       });
   };
@@ -691,8 +697,8 @@ function MazeGame() {
                 onTouchEnd={handleTouchEnd}
               >
                 <div className="maze-grid-wrapper">
-                  <div className="start-arrow">⬇</div>
-                  <div className="maze-render-grid" 
+                  <div className="start-arrow">⬇ START</div>
+                  <div className={`maze-render-grid grid-size-${grid?.length || 8}`} 
                     style={{ 
                       gridTemplateColumns: `repeat(${grid[0]?.length || 0}, 1fr)`,
                       gridTemplateRows: `repeat(${grid?.length || 0}, 1fr)`
@@ -710,8 +716,9 @@ function MazeGame() {
                         return (
                           <div key={`${x}-${y}`} className={`m-cell ${classes.join(' ')}`}>
                             {isPlayer && (
-                              <div className="player-indicator">
-                                <div className="dot"></div>
+                              <div className="player-hero-token">
+                                <div className="hero-glow-ring"></div>
+                                <div className="hero-avatar">🤖</div>
                               </div>
                             )}
                             {cell.hasGem && !isPlayer && (
@@ -734,21 +741,38 @@ function MazeGame() {
             <div className="maze-sidebar">
               <div className="sidebar-header">
                 <span className="m-title-part m-1">MAZE</span>
-                <span className="m-title-part m-2">GAME</span>
+                <span className="m-title-part m-2">HERO</span>
               </div>
 
               <div className="sidebar-character">
                 <img src={CHARACTER_URL} alt="Character" />
+                <span className="mascot-tag">Solve & Escape!</span>
+              </div>
+
+              {/* Keyboard Keys Hint for Laptop/Desktop */}
+              <div className="keyboard-controls-hint">
+                <div className="hint-label">⌨️ Keyboard Controls</div>
+                <div className="keys-row">
+                  <span className="key-cap">W</span>
+                  <span className="key-cap">A</span>
+                  <span className="key-cap">S</span>
+                  <span className="key-cap">D</span>
+                  <span className="keys-sep">or</span>
+                  <span className="key-cap">↑</span>
+                  <span className="key-cap">←</span>
+                  <span className="key-cap">↓</span>
+                  <span className="key-cap">→</span>
+                </div>
               </div>
 
               <div className="sidebar-controls">
                 <div className="dpad-modern">
-                  <button className="d-up" onClick={() => handleMove(0, -1)}><ArrowUp /></button>
+                  <button className="d-up" onClick={() => handleMove(0, -1)} aria-label="Up"><ArrowUp /></button>
                   <div className="d-mid">
-                    <button className="d-left" onClick={() => handleMove(-1, 0)}><ArrowLeft /></button>
-                    <button className="d-right" onClick={() => handleMove(1, 0)}><ArrowRight /></button>
+                    <button className="d-left" onClick={() => handleMove(-1, 0)} aria-label="Left"><ArrowLeft /></button>
+                    <button className="d-right" onClick={() => handleMove(1, 0)} aria-label="Right"><ArrowRight /></button>
                   </div>
-                  <button className="d-down" onClick={() => handleMove(0, 1)}><ArrowDown /></button>
+                  <button className="d-down" onClick={() => handleMove(0, 1)} aria-label="Down"><ArrowDown /></button>
                 </div>
               </div>
             </div>

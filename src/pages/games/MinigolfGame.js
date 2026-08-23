@@ -241,23 +241,29 @@ const MinigolfGame = () => {
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Token}`
+        ...(Token ? { 'authrization': `pracYas09${Token}`, 'Authorization': `Bearer ${Token}` } : {})
       }
     })
       .then(res => res.json())
       .then(data => {
         setLoadingWizard(false);
-        if (data && data.data && data.data.questions && data.data.questions.length > 0) {
-          const shuffledQuestions = adjustQuestionOrderAndShuffleMCQ(data.data.questions);
+        const questionsList = (data.message === 'success' && Array.isArray(data.chapter?.questions))
+          ? data.chapter.questions
+          : (data.data && Array.isArray(data.data.questions))
+          ? data.data.questions
+          : (Array.isArray(data.questions) ? data.questions : null);
+
+        if (questionsList && questionsList.length > 0) {
+          const shuffledQuestions = adjustQuestionOrderAndShuffleMCQ(questionsList);
           setCustomQuestions(shuffledQuestions);
           setCurrentQuestionIndex(0);
         } else {
-          setWizardError(t('no_questions_found', 'لم يتم العثور على أسئلة في هذا الدرس'));
+          setWizardError(data.message || t('no_questions_found', 'لم يتم العثور على أسئلة في هذا الدرس'));
         }
       })
       .catch(err => {
         setLoadingWizard(false);
-        setWizardError(t('failed_loading_questions', 'فشل في تحميل الأسئلة'));
+        setWizardError(err.message || t('failed_loading_questions', 'فشل في تحميل الأسئلة'));
       });
   };
 
@@ -269,12 +275,14 @@ const MinigolfGame = () => {
       let opts = [];
       if (q.wrongAnswer && Array.isArray(q.wrongAnswer)) {
         opts = [...q.wrongAnswer];
-        if (!opts.includes(q.correctAnswer)) {
-          opts.push(q.correctAnswer);
-        }
       } else {
         const gen = generateArithmeticMcq('1', 4);
         opts = gen.options;
+      }
+
+      const correct = q.correctAnswer || (q.answer && q.answer[0]) || q.answer;
+      if (correct !== undefined && !opts.includes(correct)) {
+        opts.push(correct);
       }
       
       const shuffledOptions = [...opts].sort(() => Math.random() - 0.5);
@@ -283,7 +291,7 @@ const MinigolfGame = () => {
       setQuestion({
         text: grid ? 'ABACUS_GRID' : formatQuestionText(q.question),
         gridRows: grid,
-        answer: String(q.correctAnswer || q.answer),
+        answer: String(correct),
         options: shuffledOptions.map(String),
         questionPic: q.questionPic
       });

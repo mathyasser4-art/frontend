@@ -103,7 +103,7 @@ const GamesMenu = () => {
           <div className="game-item-container" onClick={() => navigate('/student/games/sudoku')}>
             <div className="game-card-premium">
               <div className="card-image-wrapper">
-                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🧩</div>
+                <img src="/img/games/sudoku_cover.png" alt="Sudoku Master" className="card-bg-img" />
                 <div className="card-overlay">
                   <div className="overlay-content">
                     <h3>{t('gamesMenu.sudokuMaster', 'Sudoku Master')}</h3>
@@ -137,7 +137,7 @@ const GamesMenu = () => {
           <div className="game-item-container" onClick={() => navigate('/student/games/tanks')}>
             <div className="game-card-premium">
               <div className="card-image-wrapper">
-                <div className="card-bg-img" style={{background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7rem'}}>🚀</div>
+                <img src="/img/games/tanks_cover.png" alt="Math Tanks" className="card-bg-img" />
                 <div className="card-overlay">
                   <div className="overlay-content">
                     <h3>{t('gamesMenu.mathTanks', 'Math Tanks')}</h3>
