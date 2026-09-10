@@ -162,10 +162,16 @@ function TeacherCompetitionLobby() {
                     setStatus(res.competition.status || 'lobby');
                     if (res.competition.status === 'finished') {
                         setTriggerConfetti(true);
-                    } else if (res.competition.status === 'active' && res.competition.startedAt) {
-                        const elapsed = Math.floor((Date.now() - new Date(res.competition.startedAt).getTime()) / 1000);
-                        const remaining = res.competition.timer - elapsed;
-                        setTimerRemaining(remaining > 0 ? remaining : 0);
+                    } else if (res.competition.status === 'active') {
+                        if (res.competition.remainingSeconds !== undefined) {
+                            setTimerRemaining(Math.max(0, res.competition.remainingSeconds));
+                        } else if (res.competition.startedAt && res.competition.serverNow) {
+                            const elapsed = Math.max(0, Math.floor((res.competition.serverNow - new Date(res.competition.startedAt).getTime()) / 1000));
+                            const remaining = Math.max(0, (res.competition.timer || 300) - elapsed);
+                            setTimerRemaining(remaining);
+                        } else {
+                            setTimerRemaining(res.competition.timer || 300);
+                        }
                     }
                 } else {
                     setError(res.message);
@@ -233,10 +239,16 @@ function TeacherCompetitionLobby() {
                         setStatus(res.competition.status);
                         if (res.competition.status === 'finished') {
                             setTriggerConfetti(true);
-                        } else if (res.competition.status === 'active' && res.competition.startedAt) {
-                            const elapsed = Math.floor((Date.now() - new Date(res.competition.startedAt).getTime()) / 1000);
-                            const remaining = res.competition.timer - elapsed;
-                            setTimerRemaining(remaining > 0 ? remaining : 0);
+                        } else if (res.competition.status === 'active') {
+                            if (res.competition.remainingSeconds !== undefined) {
+                                setTimerRemaining(Math.max(0, res.competition.remainingSeconds));
+                            } else if (res.competition.startedAt && res.competition.serverNow) {
+                                const elapsed = Math.max(0, Math.floor((res.competition.serverNow - new Date(res.competition.startedAt).getTime()) / 1000));
+                                const remaining = Math.max(0, (res.competition.timer || 300) - elapsed);
+                                setTimerRemaining(remaining);
+                            } else {
+                                setTimerRemaining(res.competition.timer || 300);
+                            }
                         }
                     }
                 }
@@ -297,9 +309,14 @@ function TeacherCompetitionLobby() {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setStatus('countdown');
             setLobbyCountdown(3);
-            if (data && data.timer) {
-                setTimerRemaining(data.timer);
-            }
+            const initialTimer = data?.remainingSeconds || data?.timer || 300;
+            setTimerRemaining(initialTimer);
+            setCompetition(prev => ({
+                ...prev,
+                status: 'active',
+                startedAt: data?.startedAt,
+                timer: data?.timer || 300
+            }));
         });
 
         // Listen for student kicked/removed event
@@ -339,10 +356,8 @@ function TeacherCompetitionLobby() {
                 setStatus('countdown');
                 setLobbyCountdown(3);
                 setCompetition(res.competition);
-                const startedTime = res.competition.startedAt ? new Date(res.competition.startedAt).getTime() : Date.now();
-                const elapsed = Math.max(0, Math.floor((Date.now() - startedTime) / 1000));
-                const remaining = Math.max(0, (res.competition.timer || 300) - elapsed);
-                setTimerRemaining(remaining);
+                const initialTimer = res.competition.remainingSeconds || res.competition.timer || 300;
+                setTimerRemaining(initialTimer);
             } else {
                 setError(res.message);
             }
@@ -363,9 +378,10 @@ function TeacherCompetitionLobby() {
             } else {
                 setStatus('active');
                 setLobbyCountdown(null);
+                setTimerRemaining(prev => (prev && prev > 0 ? prev : (competition?.timer || 300)));
             }
         }
-    }, [status, lobbyCountdown]);
+    }, [status, lobbyCountdown, competition]);
 
     const handleFinish = async () => {
         soundEffects.playClick();

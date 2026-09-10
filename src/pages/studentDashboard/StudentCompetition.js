@@ -249,10 +249,15 @@ function StudentCompetition() {
                     }
 
                     if (compStatus === 'active') {
-                        // If already active, sync the timer based on startedAt
-                        const elapsed = Math.floor((Date.now() - new Date(detailsRes.competition.startedAt).getTime()) / 1000);
-                        const remaining = detailsRes.competition.timer - elapsed;
-                        setTimerRemaining(remaining > 0 ? remaining : 0);
+                        if (detailsRes.competition.remainingSeconds !== undefined) {
+                            setTimerRemaining(Math.max(0, detailsRes.competition.remainingSeconds));
+                        } else if (detailsRes.competition.startedAt && detailsRes.competition.serverNow) {
+                            const elapsed = Math.max(0, Math.floor((detailsRes.competition.serverNow - new Date(detailsRes.competition.startedAt).getTime()) / 1000));
+                            const remaining = Math.max(0, (detailsRes.competition.timer || 300) - elapsed);
+                            setTimerRemaining(remaining);
+                        } else {
+                            setTimerRemaining(detailsRes.competition.timer || 300);
+                        }
                     } else if (compStatus === 'finished') {
                         setTriggerConfetti(true);
                         calculateBadges(detailsRes.competition.participants || [], detailsRes.competition.questions?.length || 0);
@@ -316,12 +321,9 @@ function StudentCompetition() {
             soundEffects.playClick();
             setStatus('countdown');
             setLobbyCountdown(3);
-            
-            const startedTime = data && data.startedAt ? new Date(data.startedAt).getTime() : Date.now();
-            const elapsed = Math.max(0, Math.floor((Date.now() - startedTime) / 1000));
-            const remaining = Math.max(0, (data?.timer || 300) - elapsed);
-            setTimerRemaining(remaining);
-            setCompetition(prev => ({ ...prev, startedAt: data?.startedAt || new Date().toISOString() }));
+            const initialTimer = data?.remainingSeconds || data?.timer || 300;
+            setTimerRemaining(initialTimer);
+            setCompetition(prev => ({ ...prev, startedAt: data?.startedAt || new Date().toISOString(), timer: data?.timer || 300 }));
         });
 
         // Listen for student kicked event
@@ -370,16 +372,18 @@ function StudentCompetition() {
                 return () => clearTimeout(timer);
             } else {
                 setStatus('active');
+                setLobbyCountdown(null);
+                setTimerRemaining(prev => (prev && prev > 0 ? prev : (competition?.timer || 300)));
             }
         }
-    }, [status, lobbyCountdown]);
+    }, [status, lobbyCountdown, competition]);
 
     // Live Game Timer countdown trigger
     useEffect(() => {
         if ((status === 'active' || status === 'waiting-for-end') && timerRemaining !== null) {
             if (timerRemaining > 0) {
                 const timer = setTimeout(() => {
-                    setTimerRemaining(prev => prev - 1);
+                    setTimerRemaining(prev => Math.max(0, prev - 1));
                 }, 1000);
                 return () => clearTimeout(timer);
             } else {

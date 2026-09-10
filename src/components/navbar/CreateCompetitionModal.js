@@ -226,7 +226,7 @@ function CreateCompetitionModal({ onClose }) {
         try {
             const res = await createCompetition({
                 title: battleTitle,
-                timer: Number(battleTimer),
+                timer: (Number(battleTimer) > 0 && Number(battleTimer) <= 15) ? Number(battleTimer) * 60 : Math.max(60, Number(battleTimer) || 300),
                 questions: chapterQuestions.map(q => q._id)
             });
             if (res.message === 'success') {
