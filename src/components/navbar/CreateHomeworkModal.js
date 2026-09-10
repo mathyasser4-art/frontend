@@ -8,6 +8,7 @@ import getClass from '../../api/teacher/getClass.api';
 import API_BASE_URL, { ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config';
 import soundEffects from '../../utils/soundEffects';
 import './CreateHomeworkModal.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function CreateHomeworkModal({ onClose }) {
     const { t } = useTranslation();
@@ -60,7 +61,7 @@ function CreateHomeworkModal({ onClose }) {
     useEffect(() => {
         if (questionTypeID === 'custom') {
             setLoadingCustom(true);
-            const Token = localStorage.getItem('O_authWEB');
+            const Token = safeLocalStorage.getItem('O_authWEB');
             fetch(`${API_BASE_URL}/chapter/custom`, {
                 method: 'GET',
                 headers: {
@@ -86,8 +87,8 @@ function CreateHomeworkModal({ onClose }) {
 
     // Load classes when the modal mounts
     useEffect(() => {
-        const isAuth = localStorage.getItem('O_authWEB');
-        const role = localStorage.getItem('auth_role');
+        const isAuth = safeLocalStorage.getItem('O_authWEB');
+        const role = safeLocalStorage.getItem('auth_role');
         if (isAuth && (role === 'Teacher' || role === 'School')) {
             getClass(() => {}, setClassesList);
         }
@@ -99,7 +100,7 @@ function CreateHomeworkModal({ onClose }) {
             setLoading(true);
             setErrorMsg(null);
             const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${selectedChapter._id}`;
-            const Token = localStorage.getItem('O_authWEB');
+            const Token = safeLocalStorage.getItem('O_authWEB');
             fetch(URL, {
                 method: 'get',
                 headers: { 
@@ -261,7 +262,7 @@ function CreateHomeworkModal({ onClose }) {
             flashSpeed: forceFlashMode ? assignmentFlashSpeed : undefined
         };
 
-        const Token = localStorage.getItem('O_authWEB');
+        const Token = safeLocalStorage.getItem('O_authWEB');
         const URL = `${API_BASE_URL}/assignment/createAssignment`;
 
         fetch(URL, {

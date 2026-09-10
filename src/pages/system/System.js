@@ -7,6 +7,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import SystemLoading from '../../components/systemLoding/SystemLoading';
 import getSystem from '../../api/system/getSystem.api';
 import soundEffects from '../../utils/soundEffects';
+import { safeLocalStorage } from '../../utils/safeStorage';
 import '../../reusable.css'
 import './System.css'
 
@@ -15,8 +16,8 @@ function System() {
     const [systemData, setSystemData] = useState()
     const [loading, setLoading] = useState(true)
     const { questionTypeID } = useParams()
-    const isAuth = localStorage.getItem('O_authWEB')
-    const role = localStorage.getItem('auth_role')
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const role = safeLocalStorage.getItem('auth_role')
     const navigate = useNavigate()
     
     // Active level card modal

@@ -1,10 +1,11 @@
 import React from 'react';
 import { getArithmeticMcqDebugHistory } from '../../utils/arithmeticMcq';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 export default function ArithmeticMcqDebugPanel() {
   let enabled = false;
   try {
-    enabled = localStorage.getItem('gameDebug') === '1';
+    enabled = safeLocalStorage.getItem('gameDebug') === '1';
   } catch (_) {}
   if (!enabled) return null;
 
@@ -12,7 +13,7 @@ export default function ArithmeticMcqDebugPanel() {
   const latest = items[0] || null;
 
   try {
-    if (latest) localStorage.setItem('gameDebugLatest', JSON.stringify(latest));
+    if (latest) safeLocalStorage.setItem('gameDebugLatest', JSON.stringify(latest));
   } catch (_) {}
 
   const copyLatest = async () => {

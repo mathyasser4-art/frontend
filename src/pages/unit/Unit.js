@@ -7,6 +7,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import SystemLoading from '../../components/systemLoding/SystemLoading';
 import getUnit from '../../api/unit/getUnit.api';
 import soundEffects from '../../utils/soundEffects';
+import { safeLocalStorage } from '../../utils/safeStorage';
 import '../../reusable.css'
 import './Unit.css'
 
@@ -15,8 +16,8 @@ function Unit() {
     const [unitData, setUnitData] = useState()
     const [loading, setLoading] = useState(true)
     const { questionTypeID, subjectID } = useParams()
-    const isAuth = localStorage.getItem('O_authWEB')
-    const role = localStorage.getItem('auth_role')
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const role = safeLocalStorage.getItem('auth_role')
     const navigate = useNavigate()
     
     // Active unit card modal

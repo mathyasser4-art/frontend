@@ -1,10 +1,11 @@
 import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/chapter/getChapterQuestion`;
 
 const getQuestion = (setLoading, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, chapterID) => {
-    const Token = localStorage.getItem('O_authWEB');
+    const Token = safeLocalStorage.getItem('O_authWEB');
 
     setLoading(true)
         fetch(`${URL}/${chapterID}`, {

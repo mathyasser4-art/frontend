@@ -21,6 +21,7 @@ import '../../reusable.css'
 import './Assignment.css'
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 // Homework elapsed active time tracking engine
 function Assignment() {
@@ -82,7 +83,7 @@ function Assignment() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'authrization': `pracYas09${localStorage.getItem('O_authWEB')}`
+          'authrization': `pracYas09${safeLocalStorage.getItem('O_authWEB')}`
         },
         body: JSON.stringify({
           questionID: thisQuestion._id,
@@ -124,9 +125,9 @@ function Assignment() {
   const [savedProgressData, setSavedProgressData] = useState(null)
 
 
-  const isAuth = localStorage.getItem('O_authWEB');
-  const role = localStorage.getItem('auth_role');
-  const userID = localStorage.getItem('pp_id') || 'unknown';
+  const isAuth = safeLocalStorage.getItem('O_authWEB');
+  const role = safeLocalStorage.getItem('auth_role');
+  const userID = safeLocalStorage.getItem('pp_id') || 'unknown';
   const progressKey = `assignment_progress_${assignmentID}_${userID}`;
   const isNavigatingRef = useRef(false);
   const initialized = useRef(false);
@@ -233,7 +234,7 @@ function Assignment() {
     };
 
     try {
-      localStorage.setItem(progressKey, JSON.stringify(progress));
+      safeLocalStorage.setItem(progressKey, JSON.stringify(progress));
     } catch (e) {
       console.warn('Failed to save assignment progress:', e);
     }
@@ -278,7 +279,7 @@ function Assignment() {
             remainingAttempts
           };
           try {
-            localStorage.setItem(progressKey, JSON.stringify(progress));
+            safeLocalStorage.setItem(progressKey, JSON.stringify(progress));
           } catch (e) {
             console.warn('Failed to save progress on visibility change:', e);
           }
@@ -751,7 +752,7 @@ function Assignment() {
     clearSavedProgress();
 
     try {
-      const Token = localStorage.getItem('O_authWEB');
+      const Token = safeLocalStorage.getItem('O_authWEB');
       await fetch(`${API_BASE_URL}/answer/resetGlitchAttempt/${assignmentID}`, {
         method: 'POST',
         headers: {
@@ -879,7 +880,7 @@ function Assignment() {
   // ============================================================
   const checkForSavedProgress = () => {
     try {
-      const saved = localStorage.getItem(progressKey);
+      const saved = safeLocalStorage.getItem(progressKey);
       if (saved) {
         const progress = JSON.parse(saved);
         const isRecent = Date.now() - progress.timestamp < 24 * 60 * 60 * 1000;
@@ -889,7 +890,7 @@ function Assignment() {
           return true;
         } else {
           // Stale progress, clear it
-          localStorage.removeItem(progressKey);
+          safeLocalStorage.removeItem(progressKey);
         }
       }
     } catch (e) {
@@ -969,7 +970,7 @@ function Assignment() {
 
   const discardProgress = () => {
     soundEffects.playClick();
-    localStorage.removeItem(progressKey);
+    safeLocalStorage.removeItem(progressKey);
     setShowResumeDialog(false);
     setSavedProgressData(null);
     handleGetQuestion();
@@ -977,8 +978,8 @@ function Assignment() {
 
   const clearSavedProgress = () => {
     try {
-      localStorage.removeItem(progressKey);
-      localStorage.removeItem(`timer_remaining_${assignmentID}`);
+      safeLocalStorage.removeItem(progressKey);
+      safeLocalStorage.removeItem(`timer_remaining_${assignmentID}`);
     } catch (e) {
       console.warn('Failed to clear saved progress:', e);
     }
@@ -1169,7 +1170,7 @@ function Assignment() {
     try {
       const data = new FormData();
       data.append('questionAnswer', questionAnswer);
-      const Token = localStorage.getItem('O_authWEB');
+      const Token = safeLocalStorage.getItem('O_authWEB');
       const response = await fetch(
         `${API_BASE_URL}/answer/checkAnswer/${questionId}/${assignmentID}`,
         {
@@ -1337,7 +1338,7 @@ function Assignment() {
       try {
         const data = new FormData();
         data.append('questionAnswer', q.questionAnswer);
-        const Token = localStorage.getItem('O_authWEB');
+        const Token = safeLocalStorage.getItem('O_authWEB');
         const apiUrl = `${API_BASE_URL}/answer/checkAnswer/${q._id}/${assignmentID}`;
         const response = await fetch(apiUrl, {
           method: 'POST',

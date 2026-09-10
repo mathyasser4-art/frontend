@@ -9,11 +9,12 @@ import getSystem from '../../api/system/getSystem.api';
 import getUnit from '../../api/unit/getUnit.api';
 import { isUnitVisible, setUnitVisibility, resetAllUnitsVisible, getHiddenUnitIds, isSystemVisible, setSystemVisibility, getHiddenSystemIds, resetAllSystemsVisible } from '../../utils/visibilityManager';
 import './LevelVisibilityManager.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const LevelVisibilityManager = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const role = localStorage.getItem('auth_role');
+  const role = safeLocalStorage.getItem('auth_role');
   const isArabic = i18n.language === 'ar';
 
   const [loading, setLoading] = useState(false);

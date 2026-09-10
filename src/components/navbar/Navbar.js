@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Pusher from 'pusher-js';
 import logo from '../../logo.png'
 import profileImg from '../../img/avatar-profile.png'
 import school from '../../img/school-avatar.png'
@@ -63,76 +62,92 @@ const Navbar = () => {
     // Cleanup and heartbeat listeners for live battle creations (exclusive to logged-in students)
     useEffect(() => {
         if (isAuth && role && role.toLowerCase() === 'student') {
-            const pusher = new Pusher('06df370fb33f1263ec1f', {
-                cluster: 'eu',
-            });
-
-            const channel = pusher.subscribe('global-battle-arena');
+            let isCancelled = false;
+            let pusher = null;
+            let channel = null;
             let dismissTimer = null;
-            
-            const handleBattleCreated = (data) => {
-                if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
-                console.log('[NOTIFICATION] Global live battle event received:', data);
-                
-                const myTeacherId = safeLocalStorage.getItem('teacher_id') || safeLocalStorage.getItem('school_id') || safeLocalStorage.getItem('created_by') || safeLocalStorage.getItem('teacher');
-                if (myTeacherId && (data.teacherId || data.schoolId)) {
-                    const matchesTeacher = data.teacherId && String(myTeacherId) === String(data.teacherId);
-                    const matchesSchool = data.schoolId && String(myTeacherId) === String(data.schoolId);
-                    
-                    if (!matchesTeacher && !matchesSchool) {
-                        console.log('[NOTIFICATION] Ignoring battle created by a different teacher:', data.teacherId);
-                        return;
-                    }
-                }
+            let handleVisibilityChange = null;
 
-                // Set the notification details in state
-                setActiveBattleNotification({
-                    competitionId: data.competitionId,
-                    title: data.title,
-                    teacherName: data.teacherName || "Your Teacher"
+            import('pusher-js').then(({ default: Pusher }) => {
+                if (isCancelled) return;
+
+                pusher = new Pusher('06df370fb33f1263ec1f', {
+                    cluster: 'eu',
                 });
 
-                // Play a click sound to notify student
-                try {
-                    soundEffects.playClick();
-                } catch (e) {}
-
-                // Auto-dismiss after 60 seconds
-                if (dismissTimer) clearTimeout(dismissTimer);
-                dismissTimer = setTimeout(() => {
-                    setActiveBattleNotification(null);
-                }, 60000);
-            };
-
-            channel.bind('battle-created', handleBattleCreated);
-
-            channel.bind('force-join-student', (data) => {
-                if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
-                console.log('[NOTIFICATION] Force join event received:', data);
-                const myStudentId = safeLocalStorage.getItem('pp_id') || safeLocalStorage.getItem('user_id') || safeLocalStorage.getItem('guest_id');
-                if (data && data.studentId && myStudentId && String(data.studentId) === String(myStudentId)) {
-                    navigate(`/student/competition/${data.competitionId}`);
-                }
-            });
-
-            // Reconnect Pusher on mobile when tab becomes visible after backgrounding
-            const handleVisibilityChange = () => {
-                if (document.visibilityState === 'visible') {
-                    try {
-                        if (pusher.connection.state === 'disconnected' || pusher.connection.state === 'unavailable') {
-                            pusher.connect();
+                channel = pusher.subscribe('global-battle-arena');
+                
+                const handleBattleCreated = (data) => {
+                    if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+                    console.log('[NOTIFICATION] Global live battle event received:', data);
+                    
+                    const myTeacherId = safeLocalStorage.getItem('teacher_id') || safeLocalStorage.getItem('school_id') || safeLocalStorage.getItem('created_by') || safeLocalStorage.getItem('teacher');
+                    if (myTeacherId && (data.teacherId || data.schoolId)) {
+                        const matchesTeacher = data.teacherId && String(myTeacherId) === String(data.teacherId);
+                        const matchesSchool = data.schoolId && String(myTeacherId) === String(data.schoolId);
+                        
+                        if (!matchesTeacher && !matchesSchool) {
+                            console.log('[NOTIFICATION] Ignoring battle created by a different teacher:', data.teacherId);
+                            return;
                         }
+                    }
+
+                    // Set the notification details in state
+                    setActiveBattleNotification({
+                        competitionId: data.competitionId,
+                        title: data.title,
+                        teacherName: data.teacherName || "Your Teacher"
+                    });
+
+                    // Play a click sound to notify student
+                    try {
+                        soundEffects.playClick();
                     } catch (e) {}
-                }
-            };
-            document.addEventListener('visibilitychange', handleVisibilityChange);
+
+                    // Auto-dismiss after 60 seconds
+                    if (dismissTimer) clearTimeout(dismissTimer);
+                    dismissTimer = setTimeout(() => {
+                        setActiveBattleNotification(null);
+                    }, 60000);
+                };
+
+                channel.bind('battle-created', handleBattleCreated);
+
+                channel.bind('force-join-student', (data) => {
+                    if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+                    console.log('[NOTIFICATION] Force join event received:', data);
+                    const myStudentId = safeLocalStorage.getItem('pp_id') || safeLocalStorage.getItem('user_id') || safeLocalStorage.getItem('guest_id');
+                    if (data && data.studentId && myStudentId && String(data.studentId) === String(myStudentId)) {
+                        navigate(`/student/competition/${data.competitionId}`);
+                    }
+                });
+
+                // Reconnect Pusher on mobile when tab becomes visible after backgrounding
+                handleVisibilityChange = () => {
+                    if (document.visibilityState === 'visible') {
+                        try {
+                            if (pusher && (pusher.connection.state === 'disconnected' || pusher.connection.state === 'unavailable')) {
+                                pusher.connect();
+                            }
+                        } catch (e) {}
+                    }
+                };
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+            }).catch(err => console.error("Error loading Pusher in navbar", err));
 
             return () => {
-                document.removeEventListener('visibilitychange', handleVisibilityChange);
+                isCancelled = true;
+                if (handleVisibilityChange) {
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                }
                 if (dismissTimer) clearTimeout(dismissTimer);
-                channel.unbind_all();
-                channel.unsubscribe();
-                pusher.disconnect();
+                if (channel) {
+                    channel.unbind_all();
+                    channel.unsubscribe();
+                }
+                if (pusher) {
+                    pusher.disconnect();
+                }
             };
         }
     }, [isAuth, role, navigate]);

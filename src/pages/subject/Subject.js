@@ -9,6 +9,7 @@ import removeSubject from '../../api/subject/removeSubject.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import '../../reusable.css'
 import './Subject.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function Subject() {
     const [subjectName, setSubjectName] = useState('')
@@ -17,8 +18,8 @@ function Subject() {
     const [loadingOperation, setLoadingOperation] = useState(false)
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
-    const isAuth = localStorage.getItem('O_authWEB')
-    const role = localStorage.getItem('auth_role')
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const role = safeLocalStorage.getItem('auth_role')
 
     useEffect(() => {
         const getAllSubject = async () => {

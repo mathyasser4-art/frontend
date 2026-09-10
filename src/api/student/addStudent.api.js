@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/student/addStudent`;
 
 const addStudent = (data, setError, setLoadingOperation, closeAddPopup, pageNumber, setAllStudent, setStudentNumber, setTotalPage) => {
-    const Token = localStorage.getItem('O_authWEB');
+    const Token = safeLocalStorage.getItem('O_authWEB');
 
     setLoadingOperation(true)
     fetch(`${URL}/${pageNumber}`, {

@@ -1,8 +1,9 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const tipStudent = async (studentId, amount) => {
     try {
-        const token = localStorage.getItem('O_authWEB');
+        const token = safeLocalStorage.getItem('O_authWEB');
         const response = await fetch(`${API_BASE_URL}/user/tipStudent`, {
             method: 'POST',
             headers: {

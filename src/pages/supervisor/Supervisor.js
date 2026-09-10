@@ -11,6 +11,7 @@ import removeSupervisor from '../../api/supervisor/removeSupervisor.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import '../../reusable.css'
 import './Supervisor.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function Supervisor() {
     const [supervisorName, setSupervisorName] = useState('')
@@ -26,8 +27,8 @@ function Supervisor() {
     const [loading, setLoading] = useState(true)
     const [teachersBox, setTeachersBox] = useState([])
     let number = 1
-    const isAuth = localStorage.getItem('O_authWEB')
-    const role = localStorage.getItem('auth_role')
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const role = safeLocalStorage.getItem('auth_role')
 
     useEffect(() => {
         const getAllSupervisor = () => {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Trash2, ChevronDown, ChevronUp, Clock, CheckCircle2 } from 'lucide-react';
 import soundEffects from '../../utils/soundEffects';
 import './TeachersList.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function TeachersList() {
     const [teachers, setTeachers] = useState([]);
@@ -14,7 +15,7 @@ function TeachersList() {
     }, []);
 
     const loadTeachers = () => {
-        const savedTeachers = JSON.parse(localStorage.getItem('school_teachers') || '[]');
+        const savedTeachers = JSON.parse(safeLocalStorage.getItem('school_teachers') || '[]');
         setTeachers(savedTeachers);
     };
 
@@ -34,7 +35,7 @@ function TeachersList() {
             status: newStatus
         };
         setTeachers(updatedTeachers);
-        localStorage.setItem('school_teachers', JSON.stringify(updatedTeachers));
+        safeLocalStorage.setItem('school_teachers', JSON.stringify(updatedTeachers));
         soundEffects.playClick();
         window.dispatchEvent(new CustomEvent('teachersUpdated'));
         window.dispatchEvent(new CustomEvent('teacherDataUpdated'));
@@ -47,7 +48,7 @@ function TeachersList() {
             credentials: value
         };
         setTeachers(updatedTeachers);
-        localStorage.setItem('school_teachers', JSON.stringify(updatedTeachers));
+        safeLocalStorage.setItem('school_teachers', JSON.stringify(updatedTeachers));
         window.dispatchEvent(new CustomEvent('teachersUpdated'));
         window.dispatchEvent(new CustomEvent('teacherDataUpdated'));
     };
@@ -56,7 +57,7 @@ function TeachersList() {
         if (window.confirm('Are you sure you want to delete this teacher record?')) {
             const updatedTeachers = teachers.filter((_, i) => i !== index);
             setTeachers(updatedTeachers);
-            localStorage.setItem('school_teachers', JSON.stringify(updatedTeachers));
+            safeLocalStorage.setItem('school_teachers', JSON.stringify(updatedTeachers));
             soundEffects.playClick();
             window.dispatchEvent(new CustomEvent('teachersUpdated'));
             window.dispatchEvent(new CustomEvent('teacherDataUpdated'));

@@ -4,6 +4,7 @@ import logo from '../../logo.png'
 import register from '../../api/auth/register.api'
 import '../../reusable.css'
 import './Register.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function Register() {
     const [userName, setUserName] = useState('')
@@ -15,7 +16,7 @@ function Register() {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
-    const schoolName = localStorage.getItem('school_name') || '';
+    const schoolName = safeLocalStorage.getItem('school_name') || '';
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
                         email.toLowerCase().includes('topsoroban') || 
                         userName.toLowerCase().includes('topsoroban');

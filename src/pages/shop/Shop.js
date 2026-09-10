@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../config/api.config';
 import { ArrowLeft } from 'lucide-react';
 import './Shop.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const Shop = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ text: '', type: '' });
 
-  const token = localStorage.getItem('O_authWEB');
+  const token = safeLocalStorage.getItem('O_authWEB');
 
   useEffect(() => {
     fetchUserData();

@@ -9,6 +9,7 @@ import AssignmentLoading from '../../components/assignmentLoading/AssignmentLoad
 import getAssignment from '../../api/supervisor/getAssignment.api'
 import '../../reusable.css'
 import './SupervisorDashboard.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function SupervisorDashboard() {
     const [teacherList, setTeacherList] = useState([])
@@ -17,7 +18,7 @@ function SupervisorDashboard() {
     const [loading, setLoading] = useState(true)
     const [loadingOperation, setLoadingOperation] = useState(false)
     const [error, setError] = useState(null)
-    const isAuth = localStorage.getItem('O_authWEB')
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
 
     useEffect(() => {
         const getSupervisorDeatails = () => {

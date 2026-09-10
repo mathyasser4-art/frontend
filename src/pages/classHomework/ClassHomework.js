@@ -6,13 +6,14 @@ import DashboardLoading from '../../components/dashboardLoading/DashboardLoading
 import getAssignmentByClass from '../../api/assignment/getAssignmentByClass.api';
 import { ArrowLeft, Clock, Calendar, CheckCircle2, HelpCircle } from 'lucide-react';
 import './ClassHomework.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function ClassHomework() {
     const { classID } = useParams();
     const [allAssignment, setAllAssignment] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const role = localStorage.getItem('auth_role');
+    const role = safeLocalStorage.getItem('auth_role');
 
     useEffect(() => {
         getAssignmentByClass(setLoading, setAllAssignment, setError, classID);

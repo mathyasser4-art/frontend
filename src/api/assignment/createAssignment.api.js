@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/assignment/createAssignment`;
 
 const createAssignment = (data, setError, setLoadingOperation, setPocketNumber, setQuestionList, closeQuestionList, setTimer, setTitle, setClassesBox, setForceFlashMode, setAssignmentFlashSpeed) => {
-    const Token = localStorage.getItem('O_authWEB');
+    const Token = safeLocalStorage.getItem('O_authWEB');
 
     setLoadingOperation(true)
     fetch(`${URL}`, {
@@ -26,7 +27,7 @@ const createAssignment = (data, setError, setLoadingOperation, setPocketNumber, 
                 if (setForceFlashMode) setForceFlashMode(false)
                 if (setAssignmentFlashSpeed) setAssignmentFlashSpeed(1.0)
                 closeQuestionList()
-                localStorage.removeItem('cartona')
+                safeLocalStorage.removeItem('cartona')
             } else {
                 setError(responseJson.message)
                 setLoadingOperation(false)

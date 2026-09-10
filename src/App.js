@@ -114,6 +114,7 @@ function App() {
     safeSessionStorage.removeItem('chunk_reload_attempted');
     safeSessionStorage.removeItem('eb_auto_reloaded');
     safeSessionStorage.removeItem('eb_chunk_auto_reloaded');
+    safeSessionStorage.removeItem('eb_chunk_retries');
   }, []);
 
   // Heartbeat mechanism for live dashboard tracking
@@ -141,9 +142,10 @@ function App() {
       }).catch(err => console.error("Heartbeat error", err));
     };
 
-    pingHeartbeat();
+    // Delay first heartbeat by 5s to let chunk downloads complete on slow connections
+    const startupDelay = setTimeout(pingHeartbeat, 5000);
     const interval = setInterval(pingHeartbeat, 30000);
-    return () => clearInterval(interval);
+    return () => { clearTimeout(startupDelay); clearInterval(interval); };
   }, []);
 
   return (

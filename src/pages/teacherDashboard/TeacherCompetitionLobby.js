@@ -11,6 +11,7 @@ import Confetti from 'react-confetti';
 import { jsPDF } from 'jspdf';
 import './TeacherCompetitionLobby.css';
 import CertificateModal from '../../components/certificate/CertificateModal';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 // Helper to extract participant ID safely (handling populated student object, ObjectId string, and guestId)
 const getParticipantId = (p) => {
@@ -182,7 +183,7 @@ function TeacherCompetitionLobby() {
         const fetchStudents = async () => {
             setLoadingStudents(true);
             try {
-                const Token = localStorage.getItem('O_authWEB');
+                const Token = safeLocalStorage.getItem('O_authWEB');
                 const res = await fetch(`${API_BASE_URL}/student/getStudent/1`, {
                     method: 'GET',
                     headers: {
@@ -1350,16 +1351,16 @@ function TeacherCompetitionLobby() {
                 score={selectedCertStudent?.score}
                 totalQuestions={totalQuestions}
                 competitionTitle={competition?.title}
-                teacherName={localStorage.getItem('pp_name') || 'Instructor'}
-                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() === 'masterminds'}
+                teacherName={safeLocalStorage.getItem('pp_name') || 'Instructor'}
+                isMasterminds={(safeLocalStorage.getItem('school_name') || '').toLowerCase() === 'masterminds'}
             />
 
             <CertificateModal
                 isOpen={isBulkCertOpen}
                 onClose={() => setIsBulkCertOpen(false)}
                 competitionTitle={competition?.title}
-                teacherName={localStorage.getItem('pp_name') || 'Instructor'}
-                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() === 'masterminds'}
+                teacherName={safeLocalStorage.getItem('pp_name') || 'Instructor'}
+                isMasterminds={(safeLocalStorage.getItem('school_name') || '').toLowerCase() === 'masterminds'}
                 bulkStudents={sortedParticipants.slice(0, 10)}
             />
         </div>

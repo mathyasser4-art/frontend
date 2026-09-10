@@ -12,6 +12,7 @@ import API_BASE_URL from '../../config/api.config'
 import soundEffects from '../../utils/soundEffects'
 import '../../reusable.css'
 import './StudentDashboard.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function StudentDashboard() {
     const { t } = useTranslation()
@@ -29,8 +30,8 @@ function StudentDashboard() {
     const [countdownActive, setCountdownActive] = useState(false)
     const [countdownNum, setCountdownNum] = useState(null)
     const [resultsCache, setResultsCache] = useState({}) // {assignmentId: {score, total}}
-    const isAuth = localStorage.getItem('O_authWEB')
-    const userID = localStorage.getItem('pp_id') || 'unknown'
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const userID = safeLocalStorage.getItem('pp_id') || 'unknown'
 
     // Competition join states
     const [compIdInput, setCompIdInput] = useState('')
@@ -41,7 +42,7 @@ function StudentDashboard() {
     const hasInProgress = (assignmentId) => {
         try {
             const key = `assignment_progress_${assignmentId}_${userID}`
-            const saved = localStorage.getItem(key)
+            const saved = safeLocalStorage.getItem(key)
             if (!saved) return false
             const progress = JSON.parse(saved)
             const isRecent = Date.now() - progress.timestamp < 24 * 60 * 60 * 1000
@@ -116,7 +117,7 @@ function StudentDashboard() {
                 let totalCount = 0
                 let unsolvedCount = 0
 
-                const Token = localStorage.getItem('O_authWEB')
+                const Token = safeLocalStorage.getItem('O_authWEB')
                 const promises = teacherList.map(async (teacher) => {
                     try {
                         const response = await fetch(`${API_BASE_URL}/student/getAssignment/${teacher._id}`, {
@@ -169,9 +170,9 @@ function StudentDashboard() {
         fetchAllAssignments()
     }, [teacherList])
 
-    const schoolName = localStorage.getItem('school_name') || '';
-    const userName = localStorage.getItem('pp_name') || '';
-    const userRole = localStorage.getItem('auth_role') || '';
+    const schoolName = safeLocalStorage.getItem('school_name') || '';
+    const userName = safeLocalStorage.getItem('pp_name') || '';
+    const userRole = safeLocalStorage.getItem('auth_role') || '';
     
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
                         (userRole === 'School' && userName.toLowerCase() === 'topsoroban');

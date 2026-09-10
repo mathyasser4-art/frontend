@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import { useTimer } from 'react-timer-hook';
 import './Timer.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function MyTimer({ expiryTimestamp, handleGetResult, totalTime, stopTimer }) {
   const {
@@ -78,7 +79,7 @@ function MyTimer({ expiryTimestamp, handleGetResult, totalTime, stopTimer }) {
       try {
         // Store remaining time for potential recovery
         // Use a generic key that the parent can read
-        localStorage.setItem('timer_remaining_seconds', remainingSeconds.toString());
+        safeLocalStorage.setItem('timer_remaining_seconds', remainingSeconds.toString());
       } catch (e) {
         // Ignore localStorage errors
       }

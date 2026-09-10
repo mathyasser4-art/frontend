@@ -12,6 +12,7 @@ import getUnit from '../../api/unit/getUnit.api';
 import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import './SuperMarioGame.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const parseGridRows = (questionText) => {
   if (!questionText) return null;
@@ -122,7 +123,7 @@ const SuperMarioGame = () => {
     setChapterName(chapter.chapterName);
 
     const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${chapter._id}`;
-    const Token = localStorage.getItem('O_authWEB');
+    const Token = safeLocalStorage.getItem('O_authWEB');
     fetch(URL, {
       method: 'get',
       headers: {

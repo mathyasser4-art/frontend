@@ -7,6 +7,7 @@ import confetti from 'canvas-confetti';
 import '../../reusable.css';
 import '../../pages/question/Question.css';
 import './DemoQuizModal.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const DEMO_QUESTIONS = [
     {
@@ -52,7 +53,7 @@ function DemoQuizModal({ onClose }) {
     const currentQuestion = DEMO_QUESTIONS[currentIdx];
 
     const handleClose = () => {
-        localStorage.setItem('hasSeenDemoQuiz', 'true');
+        safeLocalStorage.setItem('hasSeenDemoQuiz', 'true');
         onClose();
     };
 

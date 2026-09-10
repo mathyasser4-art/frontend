@@ -68,16 +68,16 @@ function StudentCompetition() {
     const [badges, setBadges] = useState([]);
     const [isCertOpen, setIsCertOpen] = useState(false);
 
-    let studentID = localStorage.getItem('pp_id') || localStorage.getItem('user_id') || localStorage.getItem('userId');
-    let studentName = localStorage.getItem('pp_name') || localStorage.getItem('user_name') || localStorage.getItem('userName');
+    let studentID = safeLocalStorage.getItem('pp_id') || safeLocalStorage.getItem('user_id') || safeLocalStorage.getItem('userId');
+    let studentName = safeLocalStorage.getItem('pp_name') || safeLocalStorage.getItem('user_name') || safeLocalStorage.getItem('userName');
     if (!studentID || studentID === 'undefined' || studentID === 'null') {
-        studentID = localStorage.getItem('guest_id');
+        studentID = safeLocalStorage.getItem('guest_id');
         if (!studentID || studentID === 'undefined' || studentID === 'null') {
             studentID = 'guest_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('guest_id', studentID);
+            safeLocalStorage.setItem('guest_id', studentID);
         }
-        studentName = localStorage.getItem('guest_name') || 'Guest ' + Math.floor(100 + Math.random() * 900);
-        localStorage.setItem('guest_name', studentName);
+        studentName = safeLocalStorage.getItem('guest_name') || 'Guest ' + Math.floor(100 + Math.random() * 900);
+        safeLocalStorage.setItem('guest_name', studentName);
     }
 
     // Refs to always have latest counts for background score sync
@@ -1240,7 +1240,7 @@ function StudentCompetition() {
                 totalQuestions={totalQuestions}
                 competitionTitle={competition?.title}
                 teacherName={competition?.createdBy?.userName || 'Arena Director'}
-                isMasterminds={(localStorage.getItem('school_name') || '').toLowerCase() === 'masterminds'}
+                isMasterminds={(safeLocalStorage.getItem('school_name') || '').toLowerCase() === 'masterminds'}
             />
         </div>
     );

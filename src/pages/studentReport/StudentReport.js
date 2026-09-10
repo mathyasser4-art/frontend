@@ -8,6 +8,7 @@ import API_BASE_URL from '../../config/api.config';
 import '../../reusable.css'
 import '../assignmentReport/AssignmentReport.css'
 import AIAssignmentInsights from '../../components/aiInsights/AIAssignmentInsights'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function StudentReport() {
   const [allAnswers, setAllAnswers] = useState([])
@@ -17,14 +18,14 @@ function StudentReport() {
   const [error, setError] = useState(null)
   const [result, setResult] = useState(0)
   const { assignmentID } = useParams()
-  const isAuth = localStorage.getItem('O_authWEB')
+  const isAuth = safeLocalStorage.getItem('O_authWEB')
   let number = 1
 
   useEffect(() => {
     const fetchMyReport = async () => {
       setLoading(true)
       setError(null)
-      const Token = localStorage.getItem('O_authWEB')
+      const Token = safeLocalStorage.getItem('O_authWEB')
       
       if (!Token) {
         setError('Please log in to view your report')

@@ -16,6 +16,7 @@ import removeTeacherFromClass from '../../api/teacher/removeTeacherFromClass.api
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import '../../reusable.css'
 import './Class.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function Class() {
     const [className, setClassName] = useState('')
@@ -34,8 +35,8 @@ function Class() {
     const [noStudent, setNoStudent] = useState(false)
     const [noTeacher, setNoTeacher] = useState(false)
     const [teacher, setTeacher] = useState('')
-    const isAuth = localStorage.getItem('O_authWEB')
-    const role = localStorage.getItem('auth_role')
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const role = safeLocalStorage.getItem('auth_role')
 
     useEffect(() => {
         const getAllClass = () => {

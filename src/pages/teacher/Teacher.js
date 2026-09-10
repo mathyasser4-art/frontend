@@ -17,6 +17,7 @@ import logo from '../../logo.png'
 import schoolLogo from '../../img/school-avatar.png'
 import '../../reusable.css'
 import './Teacher.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function Teacher() {
     const [teacherName, setTeacherName] = useState('')
@@ -37,8 +38,8 @@ function Teacher() {
     const [loading, setLoading] = useState(true)
     const [subjectLoading, setSubjectLoading] = useState(true)
     let number = 1
-    const isAuth = localStorage.getItem('O_authWEB')
-    const role = localStorage.getItem('auth_role')
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const role = safeLocalStorage.getItem('auth_role')
 
     useEffect(() => {
         const getAllTeacher = () => {
@@ -204,7 +205,7 @@ function Teacher() {
     const exportToCSV = async () => {
         setLoadingOperation(true);
         try {
-            const token = localStorage.getItem('O_authWEB');
+            const token = safeLocalStorage.getItem('O_authWEB');
             let allExtracted = [];
             for (let p = 1; p <= totalPage; p++) {
                 const res = await fetch(`${API_BASE_URL}/teacher/getTeachers/${p}`, {
@@ -237,7 +238,7 @@ function Teacher() {
     const exportAllTeachersPDF = async () => {
         setLoadingOperation(true);
         try {
-            const token = localStorage.getItem('O_authWEB');
+            const token = safeLocalStorage.getItem('O_authWEB');
             let allExtracted = [];
             for (let p = 1; p <= totalPage; p++) {
                 const res = await fetch(`${API_BASE_URL}/teacher/getTeachers/${p}`, {
@@ -249,7 +250,7 @@ function Teacher() {
                 }
             }
 
-            const schoolName = localStorage.getItem('pp_name') || 'School';
+            const schoolName = safeLocalStorage.getItem('pp_name') || 'School';
 
             const container = document.createElement('div');
             container.style.padding = '40px';
@@ -354,7 +355,7 @@ function Teacher() {
     const exportAllTeachersWord = async () => {
         setLoadingOperation(true);
         try {
-            const token = localStorage.getItem('O_authWEB');
+            const token = safeLocalStorage.getItem('O_authWEB');
             let allExtracted = [];
             for (let p = 1; p <= totalPage; p++) {
                 const res = await fetch(`${API_BASE_URL}/teacher/getTeachers/${p}`, {
@@ -366,7 +367,7 @@ function Teacher() {
                 }
             }
 
-            const schoolName = localStorage.getItem('pp_name') || 'School';
+            const schoolName = safeLocalStorage.getItem('pp_name') || 'School';
 
             let teachersRows = '';
             allExtracted.forEach((teacher, index) => {
@@ -449,8 +450,8 @@ function Teacher() {
     const exportTeacherPDF = async (teacher) => {
         setLoadingOperation(true);
         try {
-            const schoolName = localStorage.getItem('pp_name') || 'School';
-            const token = localStorage.getItem('O_authWEB');
+            const schoolName = safeLocalStorage.getItem('pp_name') || 'School';
+            const token = safeLocalStorage.getItem('O_authWEB');
             let accountCounter = 1;
 
             const container = document.createElement('div');
@@ -644,8 +645,8 @@ function Teacher() {
     const exportTeacherWord = async (teacher) => {
         setLoadingOperation(true);
         try {
-            const schoolName = localStorage.getItem('pp_name') || 'School';
-            const token = localStorage.getItem('O_authWEB');
+            const schoolName = safeLocalStorage.getItem('pp_name') || 'School';
+            const token = safeLocalStorage.getItem('O_authWEB');
             let accountCounter = 1;
 
             let classesHtml = '';

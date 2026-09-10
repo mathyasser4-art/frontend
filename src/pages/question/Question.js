@@ -18,6 +18,7 @@ import { ArrowRight, Maximize2, Minimize2, Printer, FileText } from 'lucide-reac
 import '../../reusable.css';
 import './Question.css';
 import jsPDF from 'jspdf';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 // ── Abacus grid helpers ───────────────────────────────────────────────────────
 
@@ -174,7 +175,7 @@ function Question() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'authrization': `pracYas09${localStorage.getItem('O_authWEB')}`
+                    'authrization': `pracYas09${safeLocalStorage.getItem('O_authWEB')}`
                 },
                 body: JSON.stringify({
                     questionID: thisQuestion._id,
@@ -269,8 +270,8 @@ function Question() {
     const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
     const { chapterID, questionTypeID, subjectID } = useParams();
-    const isAuth = localStorage.getItem('O_authWEB');
-    const role = localStorage.getItem('auth_role');
+    const isAuth = safeLocalStorage.getItem('O_authWEB');
+    const role = safeLocalStorage.getItem('auth_role');
 
     // PDF download function for worksheet
     const downloadWorksheetPDF = () => {
@@ -284,9 +285,9 @@ function Question() {
         const marginX = 14;
         const maxWidth = pageWidth - (marginX * 2);
 
-        const schoolName = localStorage.getItem('school_name') || '';
-        const userName = localStorage.getItem('pp_name') || '';
-        const userRole = localStorage.getItem('auth_role') || '';
+        const schoolName = safeLocalStorage.getItem('school_name') || '';
+        const userName = safeLocalStorage.getItem('pp_name') || '';
+        const userRole = safeLocalStorage.getItem('auth_role') || '';
         const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
                             (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
 
@@ -387,7 +388,7 @@ function Question() {
     }, [chapterID, isAuth]);
 
     useEffect(() => {
-        let cartonaList = localStorage.getItem('cartona');
+        let cartonaList = safeLocalStorage.getItem('cartona');
         if (cartonaList) {
             cartonaList = JSON.parse(cartonaList);
             setQuestionList(cartonaList);
@@ -828,7 +829,7 @@ function Question() {
     };
 
     const storeAtCarton = (questions) => {
-        localStorage.setItem('cartona', JSON.stringify(questions));
+        safeLocalStorage.setItem('cartona', JSON.stringify(questions));
     };
 
     const addToPocket = () => {
@@ -932,7 +933,7 @@ function Question() {
         setForceFlashMode(false);
         setAssignmentFlashSpeed(1.0);
         closeQuestionList();
-        localStorage.removeItem('cartona');
+        safeLocalStorage.removeItem('cartona');
     };
 
     return (

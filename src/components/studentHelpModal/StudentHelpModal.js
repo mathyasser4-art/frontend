@@ -4,12 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { X, GraduationCap, Gamepad2, BookOpen } from 'lucide-react';
 import soundEffects from '../../utils/soundEffects';
 import './StudentHelpModal.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const StudentHelpModal = ({ onClose }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const isAuth = !!localStorage.getItem('token');
-    const role = localStorage.getItem('auth_role');
+    const isAuth = !!safeLocalStorage.getItem('token');
+    const role = safeLocalStorage.getItem('auth_role');
 
     const handleHomeworkClick = () => {
         soundEffects.playClick();

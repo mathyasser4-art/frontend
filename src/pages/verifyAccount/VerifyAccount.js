@@ -5,6 +5,7 @@ import verifyAccount from '../../api/loginSystem/verifyAccount.api'
 import resendCode from '../../api/loginSystem/resendCode.api'
 import '../../reusable.css'
 import './VerifyAccount.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function VerifyAccount() {
   const [firstDigit, setFirstDigit] = useState('')
@@ -30,7 +31,7 @@ function VerifyAccount() {
     resendCode(data, showAlert)
   }
 
-  const schoolName = localStorage.getItem('school_name') || '';
+  const schoolName = safeLocalStorage.getItem('school_name') || '';
   const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || (email && email.toLowerCase().includes('topsoroban'));
 
   const handleVerify = () => {

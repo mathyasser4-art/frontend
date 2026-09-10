@@ -14,6 +14,7 @@ import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import Draggable from 'react-draggable';
 import './MathRacer.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const F1CarSVG = ({ color, name, isBoosting }) => {
   const isCyber = color === '#a855f7';
@@ -161,7 +162,7 @@ function MathRacer() {
   const loadCustomWorksheets = () => {
       setLoadingWizard(true);
       setWizardError(null);
-      const Token = localStorage.getItem('O_authWEB');
+      const Token = safeLocalStorage.getItem('O_authWEB');
       fetch(`${API_BASE_URL}/chapter/custom`, {
           method: 'GET',
           headers: {
@@ -189,7 +190,7 @@ function MathRacer() {
   const loadMyAssignments = () => {
       setLoadingWizard(true);
       setWizardError(null);
-      const Token = localStorage.getItem('O_authWEB');
+      const Token = safeLocalStorage.getItem('O_authWEB');
       fetch(`${API_BASE_URL}/teacher/getAssignment`, {
           method: 'GET',
           headers: {
@@ -246,7 +247,7 @@ function MathRacer() {
       setChapterName(chapter.chapterName);
       
       const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${chapter._id}`;
-      const Token = localStorage.getItem('O_authWEB');
+      const Token = safeLocalStorage.getItem('O_authWEB');
       fetch(URL, {
           method: 'get',
           headers: { 
@@ -306,7 +307,7 @@ function MathRacer() {
   };
 
   // Matchmaking & Multiplayer States
-  const userRole = localStorage.getItem('auth_role') || '';
+  const userRole = safeLocalStorage.getItem('auth_role') || '';
   const isTeacher = userRole === 'Teacher' || userRole === 'School';
 
   const [gameMode, setGameMode] = useState(isTeacher ? 'multi' : 'single'); // 'single' or 'multi'
@@ -323,19 +324,19 @@ function MathRacer() {
 
   // User Credentials
   const [myName] = useState(() => {
-    let name = localStorage.getItem('pp_name') || localStorage.getItem('guest_name');
+    let name = safeLocalStorage.getItem('pp_name') || safeLocalStorage.getItem('guest_name');
     if (!name) {
       name = 'Racer ' + Math.floor(100 + Math.random() * 900);
-      localStorage.setItem('guest_name', name);
+      safeLocalStorage.setItem('guest_name', name);
     }
     return name;
   });
 
   const [myId] = useState(() => {
-    let id = localStorage.getItem('pp_id') || localStorage.getItem('guest_id');
+    let id = safeLocalStorage.getItem('pp_id') || safeLocalStorage.getItem('guest_id');
     if (!id) {
       id = 'usr_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('guest_id', id);
+      safeLocalStorage.setItem('guest_id', id);
     }
     return id;
   });
@@ -345,7 +346,7 @@ function MathRacer() {
   const [mySkinColor, setMySkinColor] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('O_authWEB');
+    const token = safeLocalStorage.getItem('O_authWEB');
     if (token) {
       fetch(`${API_BASE_URL}/user/userAuthorize/${token}`)
         .then(res => res.json())
@@ -531,7 +532,7 @@ function MathRacer() {
         }
         if (data.hasCustomQuestions && data.chapterName) {
           setChapterName(data.chapterName || '');
-          const Token = localStorage.getItem('O_authWEB');
+          const Token = safeLocalStorage.getItem('O_authWEB');
           fetch(`${API_BASE_URL}/chapter/getChapterQuestion/${data.chapterName}`, {
             method: 'GET',
             headers: {
@@ -1324,8 +1325,8 @@ function MathRacer() {
   };
 
   const isArabic = i18n.language === 'ar';
-  const playerAvatar = localStorage.getItem('user_profile_avatar') || '🦸‍♂️';
-  const playerName = localStorage.getItem('pp_name') || 'Racer Hero';
+  const playerAvatar = safeLocalStorage.getItem('user_profile_avatar') || '🦸‍♂️';
+  const playerName = safeLocalStorage.getItem('pp_name') || 'Racer Hero';
   const isEmojiAvatar = typeof playerAvatar === 'string' && playerAvatar.length <= 6 && !playerAvatar.startsWith('data:') && !playerAvatar.startsWith('http');
 
   return (

@@ -4,6 +4,7 @@ import logo from '../../img/logo-login.png'
 import resetPassEmail from '../../api/loginSystem/resetPassEmail.api'
 import '../../reusable.css'
 import './ResPasEmail.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function ResPasEmail() {
     const [email, setEmail] = useState('')
@@ -11,7 +12,7 @@ function ResPasEmail() {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
-    const schoolName = localStorage.getItem('school_name') || '';
+    const schoolName = safeLocalStorage.getItem('school_name') || '';
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || email.toLowerCase().includes('topsoroban');
 
     const handleResetPassEmail = () => {

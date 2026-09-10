@@ -4,6 +4,7 @@ import logo from '../../img/logo-login.png'
 import resetPassword from '../../api/loginSystem/resetPassword.api'
 import '../../reusable.css'
 import './ResetPassword.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function ResetPassword() {
     const [password, setPassword] = useState('')
@@ -13,7 +14,7 @@ function ResetPassword() {
     const { email } = useParams()
     const navigate = useNavigate()
 
-    const schoolName = localStorage.getItem('school_name') || '';
+    const schoolName = safeLocalStorage.getItem('school_name') || '';
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || (email && email.toLowerCase().includes('topsoroban'));
 
     const handleResetPassword = () => {

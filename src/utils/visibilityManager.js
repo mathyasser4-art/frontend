@@ -1,3 +1,4 @@
+import { safeLocalStorage } from './safeStorage';
 /**
  * Visibility Manager for Abacus Heroes Curriculum Systems, Levels & Units.
  * 
@@ -22,15 +23,15 @@
 const resolveSchoolId = (explicitSchoolId) => {
   if (explicitSchoolId) return explicitSchoolId;
   
-  const role = localStorage.getItem('auth_role');
+  const role = safeLocalStorage.getItem('auth_role');
   
   // For School/IT role, pp_id IS the school
   if (role === 'School' || role === 'IT') {
-    return localStorage.getItem('pp_id') || 'default_school';
+    return safeLocalStorage.getItem('pp_id') || 'default_school';
   }
   
   // For Teachers/Students, use school_id set at login
-  return localStorage.getItem('school_id') || localStorage.getItem('created_by') || localStorage.getItem('teacher_id') || 'default_school';
+  return safeLocalStorage.getItem('school_id') || safeLocalStorage.getItem('created_by') || safeLocalStorage.getItem('teacher_id') || 'default_school';
 };
 
 const getSchoolKey = (schoolId) => {
@@ -50,7 +51,7 @@ const getSchoolSystemKey = (schoolId) => {
  */
 export const getHiddenUnitIds = (schoolId) => {
   try {
-    const raw = localStorage.getItem(getSchoolKey(schoolId));
+    const raw = safeLocalStorage.getItem(getSchoolKey(schoolId));
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -84,7 +85,7 @@ export const setUnitVisibility = (unitId, isVisible, schoolId) => {
     }
   }
 
-  localStorage.setItem(getSchoolKey(schoolId), JSON.stringify(hiddenIds));
+  safeLocalStorage.setItem(getSchoolKey(schoolId), JSON.stringify(hiddenIds));
   window.dispatchEvent(new CustomEvent('unitVisibilityUpdated', { detail: { unitId: strId, isVisible } }));
 };
 
@@ -92,7 +93,7 @@ export const setUnitVisibility = (unitId, isVisible, schoolId) => {
  * Reset all units to Visible (ON) for a school.
  */
 export const resetAllUnitsVisible = (schoolId) => {
-  localStorage.removeItem(getSchoolKey(schoolId));
+  safeLocalStorage.removeItem(getSchoolKey(schoolId));
   window.dispatchEvent(new CustomEvent('unitVisibilityUpdated', { detail: { resetAll: true } }));
 };
 
@@ -113,7 +114,7 @@ export const filterVisibleUnits = (units, schoolId) => {
  */
 export const getHiddenSystemIds = (schoolId) => {
   try {
-    const raw = localStorage.getItem(getSchoolSystemKey(schoolId));
+    const raw = safeLocalStorage.getItem(getSchoolSystemKey(schoolId));
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -147,7 +148,7 @@ export const setSystemVisibility = (systemId, isVisible, schoolId) => {
     }
   }
 
-  localStorage.setItem(getSchoolSystemKey(schoolId), JSON.stringify(hiddenIds));
+  safeLocalStorage.setItem(getSchoolSystemKey(schoolId), JSON.stringify(hiddenIds));
   window.dispatchEvent(new CustomEvent('systemVisibilityUpdated', { detail: { systemId: strId, isVisible } }));
 };
 
@@ -155,7 +156,7 @@ export const setSystemVisibility = (systemId, isVisible, schoolId) => {
  * Reset all systems to Visible (ON) for a school.
  */
 export const resetAllSystemsVisible = (schoolId) => {
-  localStorage.removeItem(getSchoolSystemKey(schoolId));
+  safeLocalStorage.removeItem(getSchoolSystemKey(schoolId));
   window.dispatchEvent(new CustomEvent('systemVisibilityUpdated', { detail: { resetAll: true } }));
 };
 

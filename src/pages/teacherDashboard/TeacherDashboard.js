@@ -18,6 +18,7 @@ import CreateCompetitionModal from '../../components/navbar/CreateCompetitionMod
 import tipStudent from '../../api/user/tipStudent.api';
 import '../../reusable.css'
 import './TeacherDashboard.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function TeacherDashboard() {
     const navigate = useNavigate();
@@ -39,8 +40,8 @@ function TeacherDashboard() {
     const [error, setError] = useState(null)
     const [forceFlashMode, setForceFlashMode] = useState(false)
     const [assignmentFlashSpeed, setAssignmentFlashSpeed] = useState(1.0)
-    const isAuth = localStorage.getItem('O_authWEB')
-    const isTrialMode = localStorage.getItem('isTrialMode') === 'true'
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const isTrialMode = safeLocalStorage.getItem('isTrialMode') === 'true'
 
     // Competition states
     const [myCompetitions, setMyCompetitions] = useState([])
@@ -239,9 +240,9 @@ function TeacherDashboard() {
     }
     // remove assignment func end
 
-    const schoolName = localStorage.getItem('school_name') || '';
-    const userName = localStorage.getItem('pp_name') || '';
-    const userRole = localStorage.getItem('auth_role') || '';
+    const schoolName = safeLocalStorage.getItem('school_name') || '';
+    const userName = safeLocalStorage.getItem('pp_name') || '';
+    const userRole = safeLocalStorage.getItem('auth_role') || '';
     
     const handleTipStudent = async (studentId, studentName) => {
         const amount = window.prompt(`How many coins do you want to gift to ${studentName}?`);

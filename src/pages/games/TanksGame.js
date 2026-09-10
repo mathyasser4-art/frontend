@@ -13,6 +13,7 @@ import getUnit from '../../api/unit/getUnit.api';
 import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import './TanksGame.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 // Tank Color Schemes
 const TANK_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#fbbf24', '#a855f7'];
@@ -113,8 +114,8 @@ const TanksGame = () => {
   const [leaderboard, setLeaderboard] = useState([]); // [{ name, score, place }]
 
   // Local Credentials
-  const myName = localStorage.getItem('pp_name') || 'Tanker ' + Math.floor(100 + Math.random() * 900);
-  const myId = localStorage.getItem('pp_id') || 'tank_' + Math.random().toString(36).substr(2, 9);
+  const myName = safeLocalStorage.getItem('pp_name') || 'Tanker ' + Math.floor(100 + Math.random() * 900);
+  const myId = safeLocalStorage.getItem('pp_id') || 'tank_' + Math.random().toString(36).substr(2, 9);
   const [myColor, setMyColor] = useState(TANK_COLORS[0]);
 
   // Sockets references
@@ -180,7 +181,7 @@ const TanksGame = () => {
     setChapterName(chapter.chapterName);
 
     const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${chapter._id}`;
-    const Token = localStorage.getItem('O_authWEB');
+    const Token = safeLocalStorage.getItem('O_authWEB');
     fetch(URL, {
       method: 'get',
       headers: {

@@ -4,6 +4,7 @@ import resetPassCode from '../../api/loginSystem/resetPassCode.api'
 import logo from '../../img/logo-login.png'
 import '../../reusable.css'
 import './ResPasCode.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function ResPasCode() {
     const [firstDigit, setFirstDigit] = useState('')
@@ -17,7 +18,7 @@ function ResPasCode() {
     const { email } = useParams()
     const navigate = useNavigate()
 
-    const schoolName = localStorage.getItem('school_name') || '';
+    const schoolName = safeLocalStorage.getItem('school_name') || '';
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || (email && email.toLowerCase().includes('topsoroban'));
 
     const handleResetPassCode = () => {

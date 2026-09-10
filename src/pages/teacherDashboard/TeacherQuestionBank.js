@@ -9,6 +9,7 @@ import getUnit from '../../api/unit/getUnit.api';
 import API_BASE_URL from '../../config/api.config';
 import soundEffects from '../../utils/soundEffects';
 import './TeacherQuestionBank.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function TeacherQuestionBank() {
     const { t } = useTranslation();
@@ -62,7 +63,7 @@ function TeacherQuestionBank() {
     const loadChapterQuestions = useCallback(() => {
         setLoading(true);
         setErrorMsg(null);
-        const Token = localStorage.getItem('O_authWEB');
+        const Token = safeLocalStorage.getItem('O_authWEB');
         const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${selectedChapter._id}`;
         
         fetch(URL, {
@@ -118,7 +119,7 @@ function TeacherQuestionBank() {
 
     const loadCustomChapters = useCallback(() => {
         setLoadingCustomChapters(true);
-        const Token = localStorage.getItem('O_authWEB');
+        const Token = safeLocalStorage.getItem('O_authWEB');
         fetch(`${API_BASE_URL}/chapter/custom`, {
             method: 'GET',
             headers: {
@@ -156,7 +157,7 @@ function TeacherQuestionBank() {
         soundEffects.playClick();
         setOperationLoading(true);
         setErrorMsg(null);
-        const Token = localStorage.getItem('O_authWEB');
+        const Token = safeLocalStorage.getItem('O_authWEB');
         fetch(`${API_BASE_URL}/chapter/custom`, {
             method: 'POST',
             headers: {
@@ -193,7 +194,7 @@ function TeacherQuestionBank() {
         soundEffects.playClick();
         setOperationLoading(true);
         setErrorMsg(null);
-        const Token = localStorage.getItem('O_authWEB');
+        const Token = safeLocalStorage.getItem('O_authWEB');
         fetch(`${API_BASE_URL}/chapter/custom/${chapterID}`, {
             method: 'DELETE',
             headers: {
@@ -331,7 +332,7 @@ function TeacherQuestionBank() {
         setErrorMsg(null);
         setOperationLoading(true);
 
-        const Token = localStorage.getItem('O_authWEB');
+        const Token = safeLocalStorage.getItem('O_authWEB');
         const formData = new FormData();
 
         formData.append('question', questionText.trim());
@@ -391,7 +392,7 @@ function TeacherQuestionBank() {
         setOperationLoading(true);
         setErrorMsg(null);
 
-        const Token = localStorage.getItem('O_authWEB');
+        const Token = safeLocalStorage.getItem('O_authWEB');
         const URL = `${API_BASE_URL}/question/deleteQuestion/${questionID}/${selectedChapter._id}`;
 
         fetch(URL, {
@@ -418,7 +419,7 @@ function TeacherQuestionBank() {
             });
     };
 
-    const userTeacherId = localStorage.getItem('pp_id');
+    const userTeacherId = safeLocalStorage.getItem('pp_id');
 
     return (
         <div className="question-bank-layout">

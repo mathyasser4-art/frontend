@@ -1,4 +1,5 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/auth/login`;
 
@@ -21,48 +22,48 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
         .then((responseJson) => {
             if (responseJson.message === 'success') {
                 // Clear any trial data when logging in with a real account
-                localStorage.removeItem('isTrialMode')
-                localStorage.removeItem('teacher_trial')
+                safeLocalStorage.removeItem('isTrialMode')
+                safeLocalStorage.removeItem('teacher_trial')
 
-                localStorage.setItem('O_authWEB', responseJson.userToken);
-                localStorage.setItem('auth_role', responseJson.role);
-                localStorage.setItem('pp_name', responseJson.userName);
+                safeLocalStorage.setItem('O_authWEB', responseJson.userToken);
+                safeLocalStorage.setItem('auth_role', responseJson.role);
+                safeLocalStorage.setItem('pp_name', responseJson.userName);
                 if (responseJson.role === 'School') {
-                    localStorage.setItem('school_name', responseJson.userName);
+                    safeLocalStorage.setItem('school_name', responseJson.userName);
                 } else if (responseJson.schoolName) {
-                    localStorage.setItem('school_name', responseJson.schoolName);
+                    safeLocalStorage.setItem('school_name', responseJson.schoolName);
                 } else if (responseJson.school?.userName) {
-                    localStorage.setItem('school_name', responseJson.school.userName);
+                    safeLocalStorage.setItem('school_name', responseJson.school.userName);
                 } else if (responseJson.createdBy?.userName) {
-                    localStorage.setItem('school_name', responseJson.createdBy.userName);
+                    safeLocalStorage.setItem('school_name', responseJson.createdBy.userName);
                 }
                 
                 if (responseJson.userID) {
-                    localStorage.setItem('pp_id', responseJson.userID);
+                    safeLocalStorage.setItem('pp_id', responseJson.userID);
                 }
                 if (responseJson.createdBy?._id) {
-                    localStorage.setItem('teacher_id', responseJson.createdBy._id);
+                    safeLocalStorage.setItem('teacher_id', responseJson.createdBy._id);
                 } else if (responseJson.createdBy) {
-                    localStorage.setItem('teacher_id', responseJson.createdBy);
+                    safeLocalStorage.setItem('teacher_id', responseJson.createdBy);
                 }
                 // Persist school_id so all users in a school share visibility settings
                 if (responseJson.role === 'School' || responseJson.role === 'IT') {
                     // School admin: their own ID is the school ID
-                    localStorage.setItem('school_id', responseJson.userID);
+                    safeLocalStorage.setItem('school_id', responseJson.userID);
                 } else if (responseJson.school?._id) {
-                    localStorage.setItem('school_id', responseJson.school._id);
+                    safeLocalStorage.setItem('school_id', responseJson.school._id);
                 } else if (responseJson.schoolId) {
-                    localStorage.setItem('school_id', responseJson.schoolId);
+                    safeLocalStorage.setItem('school_id', responseJson.schoolId);
                 } else if (responseJson.createdBy?._id) {
                     // For teachers: createdBy is the school
-                    localStorage.setItem('school_id', responseJson.createdBy._id);
+                    safeLocalStorage.setItem('school_id', responseJson.createdBy._id);
                 } else if (responseJson.createdBy && typeof responseJson.createdBy === 'string') {
-                    localStorage.setItem('school_id', responseJson.createdBy);
+                    safeLocalStorage.setItem('school_id', responseJson.createdBy);
                 }
                 if (responseJson.remainingDays !== undefined && responseJson.remainingDays !== null) {
-                    localStorage.setItem('trial_remaining_days', responseJson.remainingDays);
+                    safeLocalStorage.setItem('trial_remaining_days', responseJson.remainingDays);
                 } else {
-                    localStorage.removeItem('trial_remaining_days');
+                    safeLocalStorage.removeItem('trial_remaining_days');
                 }
                 const route = ROLE_ROUTES[responseJson.role] || '/';
                 window.location.href = route;

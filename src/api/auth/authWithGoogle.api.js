@@ -1,4 +1,5 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/auth/google`;
 
@@ -12,10 +13,10 @@ const authWithGoogle = (data) => {
         .then((responseJson) => {
             if (responseJson.message === 'success') {
                 // Clear any trial data when logging in with Google
-                localStorage.removeItem('isTrialMode')
-                localStorage.removeItem('teacher_trial')
+                safeLocalStorage.removeItem('isTrialMode')
+                safeLocalStorage.removeItem('teacher_trial')
                 
-                localStorage.setItem('O_authWEB', responseJson.userToken)
+                safeLocalStorage.setItem('O_authWEB', responseJson.userToken)
                 window.location.reload();
             } else {
                 console.log(responseJson.message)

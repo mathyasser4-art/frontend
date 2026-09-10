@@ -10,6 +10,7 @@ import removeIT from '../../api/IT/removeIT.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import '../../reusable.css'
 import './IT.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function IT() {
     const [itName, setItName] = useState('')
@@ -22,8 +23,8 @@ function IT() {
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
     let number = 1
-    const isAuth = localStorage.getItem('O_authWEB')
-    const role = localStorage.getItem('auth_role')
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const role = safeLocalStorage.getItem('auth_role')
 
     useEffect(() => {
         const getAllIt = () => {

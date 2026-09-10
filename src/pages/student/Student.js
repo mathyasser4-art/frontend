@@ -12,6 +12,7 @@ import searchStudent from '../../api/student/searchStudent.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
 import '../../reusable.css'
 import './Student.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function Student() {
     const [studentName, setStudentName] = useState('')
@@ -30,8 +31,8 @@ function Student() {
     const [loading, setLoading] = useState(true)
     const [classLoading, setClassLoading] = useState(true)
     let number = 1
-    const isAuth = localStorage.getItem('O_authWEB')
-    const role = localStorage.getItem('auth_role')
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const role = safeLocalStorage.getItem('auth_role')
 
     useEffect(() => {
         const getAllStudent = () => {

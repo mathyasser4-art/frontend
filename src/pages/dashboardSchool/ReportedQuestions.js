@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/navbar/Navbar';
 import API_BASE_URL from '../../config/api.config';
 import './ReportedQuestions.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const parseGridRows = (questionText) => {
     if (!questionText) return null;
@@ -77,7 +78,7 @@ const ReportedQuestions = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/question/reports`, {
         headers: {
-          'authrization': `pracYas09${localStorage.getItem('O_authWEB')}`
+          'authrization': `pracYas09${safeLocalStorage.getItem('O_authWEB')}`
         }
       });
       const data = await response.json();
@@ -102,7 +103,7 @@ const ReportedQuestions = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'authrization': `pracYas09${localStorage.getItem('O_authWEB')}`
+          'authrization': `pracYas09${safeLocalStorage.getItem('O_authWEB')}`
         },
         body: JSON.stringify({ action })
       });

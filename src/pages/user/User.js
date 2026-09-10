@@ -7,6 +7,7 @@ import NotLogin from '../../components/notLogin/NotLogin'
 import avatarDefault from '../../img/avatar.png'
 import userInfo from '../../api/authorize/userInfo.api'
 import updateProfile from '../../api/user/updateProfile.api'
+import { safeLocalStorage } from '../../utils/safeStorage'
 import '../../reusable.css'
 import './User.css'
 
@@ -33,12 +34,12 @@ function User() {
     
     // Avatar state (Custom photo URL/base64 or emoji string)
     const [currentAvatar, setCurrentAvatar] = useState(
-        localStorage.getItem('user_profile_avatar') || avatarDefault
+        safeLocalStorage.getItem('user_profile_avatar') || avatarDefault
     )
 
     const fileInputRef = useRef(null)
-    const isAuth = localStorage.getItem('O_authWEB')
-    const role = localStorage.getItem('auth_role')
+    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const role = safeLocalStorage.getItem('auth_role')
     const isArabic = i18n.language === 'ar'
 
     const openEditPopup = () => {
@@ -84,7 +85,7 @@ function User() {
             reader.onloadend = () => {
                 const base64Img = reader.result
                 setCurrentAvatar(base64Img)
-                localStorage.setItem('user_profile_avatar', base64Img)
+                safeLocalStorage.setItem('user_profile_avatar', base64Img)
             }
             reader.readAsDataURL(file)
         }
@@ -93,7 +94,7 @@ function User() {
     // Handle selecting preset hero avatar emoji
     const handleSelectHeroPreset = (emoji) => {
         setCurrentAvatar(emoji)
-        localStorage.setItem('user_profile_avatar', emoji)
+        safeLocalStorage.setItem('user_profile_avatar', emoji)
     }
 
     const handleUpdateProfile = () => {
@@ -110,13 +111,13 @@ function User() {
     }
 
     useEffect(() => {
-        const userToken = localStorage.getItem('O_authWEB')
+        const userToken = safeLocalStorage.getItem('O_authWEB')
         const getUserInfo = async () => {
             await userInfo(userToken, setLoading, (data) => {
                 setUserData(data)
                 if (data?.avatar) {
                     setCurrentAvatar(data.avatar)
-                    localStorage.setItem('user_profile_avatar', data.avatar)
+                    safeLocalStorage.setItem('user_profile_avatar', data.avatar)
                 }
             })
         }
@@ -126,10 +127,10 @@ function User() {
     }, [])
 
     const logOut = () => {
-        localStorage.removeItem('O_authWEB')
-        localStorage.removeItem('auth_role')
-        localStorage.removeItem('pp_name')
-        localStorage.removeItem('user_profile_avatar')
+        safeLocalStorage.removeItem('O_authWEB')
+        safeLocalStorage.removeItem('auth_role')
+        safeLocalStorage.removeItem('pp_name')
+        safeLocalStorage.removeItem('user_profile_avatar')
         window.location.reload();
     }
 

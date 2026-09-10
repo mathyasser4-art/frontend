@@ -6,12 +6,13 @@ import googlePlay from '../../img/google-play.png'
 import appStore from '../../img/app-store.png'
 import appIcon from '../../img/icon-app.png'
 import isoIcon from '../../img/ios-icon.png'
+import { safeLocalStorage } from '../../utils/safeStorage'
 import '../../reusable.css'
 import './ContactMobile.css'
 
 function ContactMobile() {
     const [message, setMessage] = useState('');
-    const role = localStorage.getItem('auth_role')
+    const role = safeLocalStorage.getItem('auth_role')
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
         deferredPrompt = e;

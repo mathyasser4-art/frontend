@@ -4,6 +4,7 @@ import logo from '../../logo.png'
 import login from '../../api/auth/login.api'
 import '../../reusable.css'
 import './Login.css'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function Login() {
     const [email, setEmail] = useState('')
@@ -22,7 +23,7 @@ function Login() {
         }
     }
 
-    const schoolName = localStorage.getItem('school_name') || '';
+    const schoolName = safeLocalStorage.getItem('school_name') || '';
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || email.toLowerCase().includes('topsoroban');
 
     const handleLogin = () => {

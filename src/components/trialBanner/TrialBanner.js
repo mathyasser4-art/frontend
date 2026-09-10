@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import soundEffects from '../../utils/soundEffects';
 import './TrialBanner.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function TrialBanner() {
   const [daysLeft, setDaysLeft] = useState(7);
 
   useEffect(() => {
-    const trialData = localStorage.getItem('teacher_trial');
+    const trialData = safeLocalStorage.getItem('teacher_trial');
     if (trialData) {
       const trial = JSON.parse(trialData);
       const expiryDate = new Date(trial.expiryDate);

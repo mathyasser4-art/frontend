@@ -1,18 +1,19 @@
 import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/student/assignmentDetails`;
 
 
 const assignmentDetails = (setLoading, setOperationError, setQuestionData, setThisQuestion, setNumberOfQuestion, setThisQuestionNumber, setTotalSummation, assignmentID, timerCount, setTime, setTotalTime, setAnswer, handleGetResult, navigate, setForceFlashMode, setCurrentAttempt, setTotalAttempts, setRemainingAttempts, setFlashSpeed, setAllowGlitchRetry) => {
-    const Token = localStorage.getItem('O_authWEB');
+    const Token = safeLocalStorage.getItem('O_authWEB');
 
     setLoading(true)
     // Only remove legacy time key if no saved progress exists for this assignment
     // (preserves backward compatibility while supporting phone-shutdown recovery)
-    const hasSavedProgress = localStorage.getItem(`assignment_progress_${assignmentID}`);
+    const hasSavedProgress = safeLocalStorage.getItem(`assignment_progress_${assignmentID}`);
     if (!hasSavedProgress) {
-        localStorage.removeItem("time");
+        safeLocalStorage.removeItem("time");
     }
     
     console.log('Fetching assignment details for:', assignmentID)
@@ -111,9 +112,9 @@ const assignmentDetails = (setLoading, setOperationError, setQuestionData, setTh
 
                     // APPROACH A: Check if previous attempt was a glitch/interrupted attempt
                     if (setAllowGlitchRetry) {
-                        const userID = localStorage.getItem('pp_id') || 'unknown';
+                        const userID = safeLocalStorage.getItem('pp_id') || 'unknown';
                         const progressKey = `assignment_progress_${assignmentID}_${userID}`;
-                        const hadSavedProgress = !!localStorage.getItem(progressKey) || !!localStorage.getItem(`assignment_progress_${assignmentID}`);
+                        const hadSavedProgress = !!safeLocalStorage.getItem(progressKey) || !!safeLocalStorage.getItem(`assignment_progress_${assignmentID}`);
 
                         fetch(`${API_BASE_URL}/answer/getResult/${assignmentID}`, {
                             method: 'GET',

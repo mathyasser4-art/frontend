@@ -6,6 +6,7 @@ import API_BASE_URL from '../../config/api.config';
 import soundEffects from '../../utils/soundEffects';
 import '../../reusable.css';
 import './TeacherReports.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function TeacherAssignmentReports() {
   const [students, setStudents] = useState([]);
@@ -40,7 +41,7 @@ function TeacherAssignmentReports() {
       try {
         console.log('📊 Fetching student results for assignment:', assignmentID);
 
-        const token = localStorage.getItem('O_authWEB');
+        const token = safeLocalStorage.getItem('O_authWEB');
         if (!token) {
           setError({
             type: 'auth',
@@ -104,7 +105,7 @@ function TeacherAssignmentReports() {
 
   // Handle logout and clear authentication
   const handleLogout = () => {
-    localStorage.clear();
+    safeLocalStorage.clear();
     navigate('/login');
   };
 

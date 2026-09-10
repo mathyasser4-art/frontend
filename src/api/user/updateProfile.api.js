@@ -1,10 +1,11 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/user/updateProfile`;
 
 const updateProfile = (data, setError, setLoadingOperation, closePopup, setUserData) => {
     setLoadingOperation(true);
-    const currentToken = localStorage.getItem('O_authWEB');
+    const currentToken = safeLocalStorage.getItem('O_authWEB');
     fetch(URL, {
         method: 'put',
         headers: {
@@ -17,7 +18,7 @@ const updateProfile = (data, setError, setLoadingOperation, closePopup, setUserD
     .then((responseJson) => {
         if (responseJson.message === 'success') {
             setUserData(prev => ({ ...prev, userName: responseJson.userName }));
-            localStorage.setItem('pp_name', responseJson.userName);
+            safeLocalStorage.setItem('pp_name', responseJson.userName);
             closePopup();
             setLoadingOperation(false);
             setError(null);

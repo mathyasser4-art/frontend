@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/class/updateClass`;
 
 const updateClass = (data, classID, setError, setLoadingOperation, closeUpdatePopup, setAllClass) => {
-    const token = localStorage.getItem('O_authWEB')
+    const token = safeLocalStorage.getItem('O_authWEB')
     setLoadingOperation(true)
     fetch(`${URL}/${classID}`, {
         method: 'put',

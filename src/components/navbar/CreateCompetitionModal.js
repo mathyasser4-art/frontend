@@ -8,6 +8,7 @@ import API_BASE_URL from '../../config/api.config';
 import soundEffects from '../../utils/soundEffects';
 import { createCompetition } from '../../api/competition/competition.api';
 import './CreateCompetitionModal.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function CreateCompetitionModal({ onClose }) {
     const { t } = useTranslation();
@@ -39,7 +40,7 @@ function CreateCompetitionModal({ onClose }) {
     const loadCustomWorksheets = () => {
         setLoading(true);
         setErrorMsg(null);
-        const Token = localStorage.getItem('O_authWEB');
+        const Token = safeLocalStorage.getItem('O_authWEB');
         fetch(`${API_BASE_URL}/chapter/custom`, {
             method: 'GET',
             headers: {
@@ -67,7 +68,7 @@ function CreateCompetitionModal({ onClose }) {
     const loadMyAssignments = () => {
         setLoading(true);
         setErrorMsg(null);
-        const Token = localStorage.getItem('O_authWEB');
+        const Token = safeLocalStorage.getItem('O_authWEB');
         fetch(`${API_BASE_URL}/teacher/getAssignment`, {
             method: 'GET',
             headers: {
@@ -112,7 +113,7 @@ function CreateCompetitionModal({ onClose }) {
             setLoading(true);
             setErrorMsg(null);
             const URL = `${API_BASE_URL}/chapter/getChapterQuestion/${selectedChapter._id}`;
-            const Token = localStorage.getItem('O_authWEB');
+            const Token = safeLocalStorage.getItem('O_authWEB');
             fetch(URL, {
                 method: 'get',
                 headers: { 

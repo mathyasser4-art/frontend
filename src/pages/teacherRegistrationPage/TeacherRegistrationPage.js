@@ -10,10 +10,11 @@ import removeStudent from '../../api/student/removeStudent.api';
 import searchStudent from '../../api/student/searchStudent.api';
 import getTeacherClass from '../../api/teacher/getClass.api';
 import './TeacherRegistrationPage.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function TeacherRegistrationPage() {
     // Shared States
-    const role = localStorage.getItem('auth_role');
+    const role = safeLocalStorage.getItem('auth_role');
 
     // Tab 2: Direct Student Accounts States
     const [directStudents, setDirectStudents] = useState([]);

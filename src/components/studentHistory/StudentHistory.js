@@ -5,6 +5,7 @@ import getStudentHistory from '../../api/teacher/getStudentHistory.api';
 import API_BASE_URL from '../../config/api.config';
 import '../../reusable.css';
 import './StudentHistory.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function StudentHistory() {
   const [studentData, setStudentData] = useState(null);
@@ -20,7 +21,7 @@ function StudentHistory() {
         setLoading(true);
         console.log('📊 Fetching history for student:', studentID);
 
-        const token = localStorage.getItem('O_authWEB');
+        const token = safeLocalStorage.getItem('O_authWEB');
         if (!token) {
           setError({
             type: 'auth',
@@ -75,7 +76,7 @@ function StudentHistory() {
   }, [studentID]);
 
   const handleLogout = () => {
-    localStorage.clear();
+    safeLocalStorage.clear();
     navigate('/login');
   };
 

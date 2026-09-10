@@ -9,6 +9,7 @@ import MathInput from "react-math-keyboard";
 import '../../reusable.css'
 import './AssignmentReport.css'
 import AIAssignmentInsights from '../../components/aiInsights/AIAssignmentInsights'
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function AssignmentReport() {
   const [allAnswers, setAllAnswers] = useState([])
@@ -24,7 +25,7 @@ function AssignmentReport() {
   const [grade, setGrade] = useState(0)
   const { studentID, assignmentID } = useParams()
   let number = 1
-  const isAuth = localStorage.getItem('O_authWEB')
+  const isAuth = safeLocalStorage.getItem('O_authWEB')
 
   useEffect(() => {
     const handleGetAnswer = () => {
@@ -45,7 +46,7 @@ function AssignmentReport() {
   // Fallback: if API didn't return time, try localStorage (written by MyTimer)
   useEffect(() => {
     if (!time) {
-      const stored = localStorage.getItem(`time:${assignmentID}`) || localStorage.getItem('time')
+      const stored = safeLocalStorage.getItem(`time:${assignmentID}`) || safeLocalStorage.getItem('time')
       if (stored) setTime(stored)
     }
   }, [time, assignmentID])

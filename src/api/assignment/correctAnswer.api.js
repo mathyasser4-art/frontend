@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/answer/correctAnswer`;
 
 const correctAnswer = (grade, setLoadingProcess, closeUpdatePopup, setAllAnswers, setErrorOperation, studentID, assignmentID, questionID, showAlertSuccess, showeEndAlert, setResult) => {
-    const Token = localStorage.getItem('O_authWEB');
+    const Token = safeLocalStorage.getItem('O_authWEB');
 
     setLoadingProcess(true)
     fetch(`${URL}/${studentID}/${assignmentID}/${questionID}`, {

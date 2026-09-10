@@ -7,6 +7,7 @@ import API_BASE_URL from '../../config/api.config';
 import { Trophy, Calendar, Users, CheckCircle, Search, X } from 'lucide-react';
 import soundEffects from '../../utils/soundEffects';
 import './UpcomingCompetitionsHub.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function UpcomingCompetitionsHub() {
     const { t } = useTranslation();
@@ -19,7 +20,7 @@ function UpcomingCompetitionsHub() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toastMessage, setToastMessage] = useState(null);
 
-    const teacherID = localStorage.getItem('pp_id');
+    const teacherID = safeLocalStorage.getItem('pp_id');
 
     useEffect(() => {
         fetchData();
@@ -28,7 +29,7 @@ function UpcomingCompetitionsHub() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('O_authWEB');
+            const token = safeLocalStorage.getItem('O_authWEB');
             const [eventsRes, studentsRes] = await Promise.all([
                 getSchoolCompetitionEvents(),
                 fetch(`${API_BASE_URL}/student/getStudent/1`, {

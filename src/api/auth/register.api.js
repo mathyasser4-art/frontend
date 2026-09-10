@@ -1,4 +1,5 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/auth/register`;
 
@@ -15,12 +16,12 @@ const register = (userData, setError, setLoading, navigate) => {
                 // If backend returns token directly, log the user in
                 if (responseJson.userToken) {
                     // Clear any trial data when registering a real account
-                    localStorage.removeItem('isTrialMode')
-                    localStorage.removeItem('teacher_trial')
+                    safeLocalStorage.removeItem('isTrialMode')
+                    safeLocalStorage.removeItem('teacher_trial')
                     
-                    localStorage.setItem('O_authWEB', responseJson.userToken)
-                    localStorage.setItem('auth_role', responseJson.role)
-                    localStorage.setItem('pp_name', responseJson.userName)
+                    safeLocalStorage.setItem('O_authWEB', responseJson.userToken)
+                    safeLocalStorage.setItem('auth_role', responseJson.role)
+                    safeLocalStorage.setItem('pp_name', responseJson.userName)
                     setTimeout(() => {
                         window.location.href = '/';
                     }, 100);

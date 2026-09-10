@@ -17,11 +17,12 @@ import { jsPDF } from 'jspdf';
 import { Edit2 } from 'lucide-react';
 import '../../reusable.css';
 import './DashboardSchool.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 function DashboardSchool() {
     const { t } = useTranslation();
-    const role = localStorage.getItem('auth_role');
-    const userName = localStorage.getItem('pp_name');
+    const role = safeLocalStorage.getItem('auth_role');
+    const userName = safeLocalStorage.getItem('pp_name');
     const [reportCount, setReportCount] = useState(0);
 
     // Competition Event Cards state
@@ -45,7 +46,7 @@ function DashboardSchool() {
             try {
                 const response = await fetch(`${API_BASE_URL}/question/reports`, {
                     headers: {
-                        'authrization': `pracYas09${localStorage.getItem('O_authWEB')}`
+                        'authrization': `pracYas09${safeLocalStorage.getItem('O_authWEB')}`
                     }
                 });
                 const data = await response.json();
@@ -76,7 +77,7 @@ function DashboardSchool() {
         if (!newTitle.trim()) return;
         setIsCreating(true);
         try {
-            const schoolId = localStorage.getItem('pp_id');
+            const schoolId = safeLocalStorage.getItem('pp_id');
             const res = await createCompetitionEvent({
                 title: newTitle,
                 description: newDesc,

@@ -1,10 +1,11 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/teacher/getClass`;
 
 
 const getClass = (setLoading, setClassesList) => {
-    const Token = localStorage.getItem('O_authWEB');
+    const Token = safeLocalStorage.getItem('O_authWEB');
 
     setLoading(true)
     fetch(`${URL}`, {
@@ -22,9 +23,9 @@ const getClass = (setLoading, setClassesList) => {
                 }, 2000);
                 setClassesList(responseJson.teacherClasess?.classList)
                 if (responseJson.teacherClasess?.school?.userName) {
-                    localStorage.setItem('school_name', responseJson.teacherClasess.school.userName)
+                    safeLocalStorage.setItem('school_name', responseJson.teacherClasess.school.userName)
                 } else if (responseJson.teacherClasess?.createdBy?.userName) {
-                    localStorage.setItem('school_name', responseJson.teacherClasess.createdBy.userName)
+                    safeLocalStorage.setItem('school_name', responseJson.teacherClasess.createdBy.userName)
                 }
             } else {
                 console.log(responseJson.message)

@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const URL = `${API_BASE_URL}/supervisor/supervisorDeatails`;
 
 const supervisorDeatails = (setLoading, setSupervisorName, setTeacherList) => {
-    const Token = localStorage.getItem('O_authWEB');
+    const Token = safeLocalStorage.getItem('O_authWEB');
 
     setLoading(true)
     fetch(URL, {

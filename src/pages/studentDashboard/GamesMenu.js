@@ -5,11 +5,12 @@ import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import './GamesMenu.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const GamesMenu = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const isAuth = localStorage.getItem('O_authWEB');
+  const isAuth = safeLocalStorage.getItem('O_authWEB');
 
   return (
     <div className="dashboard-layout">

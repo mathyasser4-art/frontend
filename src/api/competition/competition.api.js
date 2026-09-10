@@ -1,9 +1,10 @@
 import API_BASE_URL from '../../config/api.config';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const getHeaders = () => {
-    let Token = localStorage.getItem('O_authWEB');
+    let Token = safeLocalStorage.getItem('O_authWEB');
     if (!Token || Token === 'null' || Token === 'undefined') {
-        Token = localStorage.getItem('token') || localStorage.getItem('userToken') || localStorage.getItem('auth_token') || '';
+        Token = safeLocalStorage.getItem('token') || safeLocalStorage.getItem('userToken') || safeLocalStorage.getItem('auth_token') || '';
     }
 
     return {

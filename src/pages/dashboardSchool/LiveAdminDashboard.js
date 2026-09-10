@@ -7,6 +7,7 @@ import { Users, User, UserCheck, Settings } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 import '../../reusable.css';
 import './DashboardSchool.css';
+import { safeLocalStorage } from '../../utils/safeStorage';
 
 const LiveAdminDashboard = () => {
     const [stats, setStats] = useState({ totalVisitors: 0, users: [] });
@@ -14,12 +15,12 @@ const LiveAdminDashboard = () => {
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [historyStats, setHistoryStats] = useState({ users: [] });
     const navigate = useNavigate();
-    const role = localStorage.getItem('auth_role');
+    const role = safeLocalStorage.getItem('auth_role');
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const token = localStorage.getItem('O_authWEB');
+                const token = safeLocalStorage.getItem('O_authWEB');
                 const res = await fetch(`${API_BASE_URL}/live-stats`, {
                     headers: token ? { 'authrization': 'pracYas09' + token } : {}
                 });
@@ -41,7 +42,7 @@ const LiveAdminDashboard = () => {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const token = localStorage.getItem('O_authWEB');
+                const token = safeLocalStorage.getItem('O_authWEB');
                 const res = await fetch(`${API_BASE_URL}/historical-stats?startDate=${startDate}&endDate=${endDate}`, {
                     headers: token ? { 'authrization': 'pracYas09' + token } : {}
                 });
