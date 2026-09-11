@@ -21,13 +21,16 @@ function Register() {
                         email.toLowerCase().includes('topsoroban') || 
                         userName.toLowerCase().includes('topsoroban');
 
-    const handleRegister = () => {
-        if(userName === '' || email === '' || password === '' || cPassword === ''){
-            setError('All field is required!!')
+    const handleRegister = (e) => {
+        if (e) e.preventDefault();
+        if(userName.trim() === '' || email.trim() === '' || password === '' || cPassword === ''){
+            setError('All fields are required!')
+        }else if(password !== cPassword){
+            setError('Passwords do not match!')
         }else if(academy === ''){
             setError('Please select an Academy')
         }else{
-            const userData = {userName, email, password, cPassword, academy}
+            const userData = {userName: userName.trim(), email: email.trim(), password, cPassword, academy}
             register(userData, setError, setLoading, navigate)
         }
     }
@@ -41,7 +44,7 @@ function Register() {
                 <p>Create an Account</p>
             </div>
             {error ? <div className="error">{error}</div> : null}
-            <div className="register-form">
+            <form onSubmit={handleRegister} className="register-form">
                 <input type="text" value={userName} onChange={e => setUserName(e.target.value)} placeholder='Enter your name' />
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder='Email' />
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder='Password' />
@@ -52,12 +55,13 @@ function Register() {
                     <option value="MasterMinds">MasterMinds</option>
                     <option value="Other">Other</option>
                 </select>
-            </div>
-            <div className="register-btn-container">
-                <div onClick={handleRegister} className="register-btn">{loading ? <span className="loader"></span> : "Sign Up"}
-                    <div className="register-btn2"></div>
+                <div className="register-btn-container" style={{ marginTop: '1.5rem' }}>
+                    <button type="submit" className="register-btn" style={{ border: 'none', font: 'inherit', width: '100%' }}>
+                        {loading ? <span className="loader"></span> : "Sign Up"}
+                        <div className="register-btn2"></div>
+                    </button>
                 </div>
-            </div>
+            </form>
             <div className="register-footer">
                 <p>Already have an account? <Link to={'/auth/login'}><span className='text-purple'>Login</span></Link></p>
             </div>

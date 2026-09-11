@@ -26,7 +26,6 @@ function Supervisor() {
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
     const [teachersBox, setTeachersBox] = useState([])
-    let number = 1
     const isAuth = safeLocalStorage.getItem('O_authWEB')
     const role = safeLocalStorage.getItem('auth_role')
 
@@ -121,6 +120,18 @@ function Supervisor() {
     }
     // update supervisor func start
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                closeAddPopup();
+                closeUpdatePopup();
+                closeRemovePopup();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     // remove supervisor func start
     const openRemovePopup = (studentID) => {
         setSupervisorID(studentID)
@@ -204,12 +215,12 @@ function Supervisor() {
                                 <td>Action ⌄</td>
                             </tr>
                         </tbody>
-                        {allSupervisor?.map(item => {
+                        {allSupervisor?.map((item, index) => {
                             return (
                                 <React.Fragment key={item._id}>
                                     <tbody className='student-row'>
                                         <tr>
-                                            <td>{number++}</td>
+                                            <td>{index + 1}</td>
                                             <td className='d-flex student-name align-items-center'>
                                                 <img src={student} alt="" />
                                                 <p>{item.userName}</p>
@@ -220,7 +231,7 @@ function Supervisor() {
                                                 <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true"></i>
                                             </td>
                                         </tr>
-                                    </tbody><br />
+                                    </tbody>
                                 </React.Fragment>
                             )
                         })}

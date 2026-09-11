@@ -15,13 +15,19 @@
     font-display: swap;
 }
 
-.home {
-    min-height: 100vh;
+.home-page-root {
     background-image: url('../../img/webbackground10.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    position: relative;
+    overflow: hidden;
+}
+
+.home {
+    min-height: calc(100vh - 95px);
+    background: transparent;
     position: relative;
     overflow: hidden;
     padding-bottom: 2rem;
@@ -600,15 +606,15 @@
 }
 
 @media only screen and (max-width: 992px) {
+    .home-page-root {
+        background-attachment: scroll;
+    }
     .home {
         display: none;
     }
     .home-mobile {
         display: block;
-        background-image: url('../../img/webbackground10.jpg');
-        background-size: cover;
-        background-position: center;
-        background-attachment: scroll;
+        background: transparent;
         padding-bottom: 1rem;
     }
     .mobile-hero-showcase {

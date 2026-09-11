@@ -262,6 +262,22 @@ function Class() {
     const handleRemoveTeacher = (teacherID) => {
         removeTeacherFromClass(setLoadingOperation, setError, setTeacherList, classID, teacherID, setAllClass)
     }
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                closeAddPopup();
+                closeBulkAddPopup();
+                closeUpdatePopup();
+                closeRemovePopup();
+                closeAddToPopup();
+                closeStudentListPopup();
+                closeTeacherListPopup();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     // teacher list func end
 
 
@@ -362,7 +378,7 @@ function Class() {
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="add-popup-body">
                         <label>Class Name</label>
-                        <input type="text" value={className} onChange={(e) => setClassName(e.target.value)} placeholder='Class C35' />
+                        <input type="text" value={className} onChange={(e) => setClassName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') newClass(); }} placeholder='Class C35' />
                     </div>
                     <div className="update-popup-footer">
                         <button className='button popup-btn' onClick={closeAddPopup}>Cancel</button>

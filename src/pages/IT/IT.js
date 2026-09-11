@@ -22,7 +22,6 @@ function IT() {
     const [loadingOperation, setLoadingOperation] = useState(false)
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
-    let number = 1
     const isAuth = safeLocalStorage.getItem('O_authWEB')
     const role = safeLocalStorage.getItem('auth_role')
 
@@ -98,6 +97,18 @@ function IT() {
     }
     // update IT func start
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                closeAddPopup();
+                closeUpdatePopup();
+                closeRemovePopup();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     // remove IT func start
     const openRemovePopup = (itID) => {
         setItID(itID)
@@ -157,12 +168,12 @@ function IT() {
                                 <td>Action ⌄</td>
                             </tr>
                         </tbody>
-                        {allIt?.map(item => {
+                        {allIt?.map((item, index) => {
                             return (
                                 <React.Fragment key={item._id}>
                                     <tbody className='student-row'>
                                         <tr>
-                                            <td>{number++}</td>
+                                            <td>{index + 1}</td>
                                             <td className='d-flex student-name align-items-center'>
                                                 <img src={student} alt="" />
                                                 <p>{item.userName}</p>
@@ -173,7 +184,7 @@ function IT() {
                                                 <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true"></i>
                                             </td>
                                         </tr>
-                                    </tbody><br />
+                                    </tbody>
                                 </React.Fragment>
                             )
                         })}

@@ -102,4 +102,23 @@ export const safeSessionStorage = {
   }
 };
 
+export const clearUserSession = () => {
+  const sessionKeys = [
+    'O_authWEB',
+    'auth_role',
+    'pp_name',
+    'pp_id',
+    'school_name',
+    'school_id',
+    'teacher_id',
+    'user_profile_avatar',
+    'trial_remaining_days',
+    'teacher_last_competitions_view',
+    'isTrialMode',
+    'teacher_trial',
+    'cartona'
+  ];
+  sessionKeys.forEach(k => safeLocalStorage.removeItem(k));
+};
+
 export default safeLocalStorage;

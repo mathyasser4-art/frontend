@@ -210,39 +210,7 @@ const SuperMarioGame = () => {
     }
   }, [gameState, loadNextQuestion]);
 
-  useEffect(() => {
-    const handleMessage = (event) => {
-      if (event.data && event.data.type === 'mario_died') {
-        setQuestionsNeeded(1); 
-        setSolvedCount(0);
-        setGameState('revive_locked');
-      } else if (event.data && event.data.type === 'mario_answer') {
-        if (question && question.options) {
-          const selectedAns = question.options[event.data.index];
-          handleAnswer(selectedAns);
-        }
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [question, gameState]);
-
-  useEffect(() => {
-    let interval;
-    if (gameState === 'playing') {
-      interval = setInterval(() => {
-        setQuestionsNeeded(1);
-        setSolvedCount(0);
-        setGameState('in_game_lock');
-      }, 30000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [gameState]);
-
-  const handleAnswer = (selectedAns) => {
+  const handleAnswer = useCallback((selectedAns) => {
     if (!question || !question.answer) return;
     if (String(selectedAns).trim() === String(question.answer).trim()) {
       soundEffects.playCorrect();
@@ -289,7 +257,39 @@ const SuperMarioGame = () => {
         setFeedback(null);
       }, 1000);
     }
-  };
+  }, [question, solvedCount, questionsNeeded, gameState, loadNextQuestion]);
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data && event.data.type === 'mario_died') {
+        setQuestionsNeeded(1); 
+        setSolvedCount(0);
+        setGameState('revive_locked');
+      } else if (event.data && event.data.type === 'mario_answer') {
+        if (question && question.options) {
+          const selectedAns = question.options[event.data.index];
+          handleAnswer(selectedAns);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [question, gameState, handleAnswer]);
+
+  useEffect(() => {
+    let interval;
+    if (gameState === 'playing') {
+      interval = setInterval(() => {
+        setQuestionsNeeded(1);
+        setSolvedCount(0);
+        setGameState('in_game_lock');
+      }, 30000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [gameState]);
 
   return (
     <div className="super-mario-page">

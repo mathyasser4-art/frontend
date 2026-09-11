@@ -187,7 +187,7 @@ function App() {
           <Route path='/teacher/competition/:competitionId' element={isAuth && role === 'Teacher' ? <TeacherCompetitionLobby /> : <Navigate to='/' />} />
           <Route path='/teacher/competitions-hub' element={isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? <UpcomingCompetitionsHub /> : <Navigate to='/' />} />
           <Route path='/teacher/question-bank' element={isAuth && role === 'Teacher' && ENABLE_CUSTOM_QUESTION_BANK ? <TeacherQuestionBank /> : <Navigate to='/' />} />
-          <Route path='/teacher/registration' element={<TeacherRegistrationPage />} />
+          <Route path='/teacher/registration' element={isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? <TeacherRegistrationPage /> : <Navigate to='/' />} />
           <Route path='/dashboard/supervisor' element={isAuth && role === 'Supervisor' ? <SupervisorDashboard /> : <Navigate to='/' />} />
           <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth && role === 'Teacher' ? <AssignmentReport /> : <Navigate to='/' />} />
           <Route path='/student/myReport/:assignmentID' element={isAuth && role === 'Student' ? <StudentReport /> : <Navigate to='/' />} />

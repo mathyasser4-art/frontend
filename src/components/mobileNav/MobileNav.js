@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, LayoutDashboard, BookOpen, User, LogOut } from 'lucide-react';
 import soundEffects from '../../utils/soundEffects';
-import { safeLocalStorage } from '../../utils/safeStorage';
+import { safeLocalStorage, clearUserSession } from '../../utils/safeStorage';
 import './MobileNav.css';
 
 const MobileNav = () => {
@@ -21,12 +21,8 @@ const MobileNav = () => {
 
   const handleLogout = () => {
     try { soundEffects.playClick(); } catch(e) {}
-    safeLocalStorage.removeItem('O_authWEB');
-    safeLocalStorage.removeItem('auth_role');
-    safeLocalStorage.removeItem('pp_name');
-    safeLocalStorage.removeItem('pp_id');
-    safeLocalStorage.removeItem('school_name');
-    navigate('/auth/login');
+    clearUserSession();
+    window.location.href = '/auth/login';
   };
 
   if (!isAuth) return null;

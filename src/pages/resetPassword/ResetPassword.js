@@ -17,9 +17,12 @@ function ResetPassword() {
     const schoolName = safeLocalStorage.getItem('school_name') || '';
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || (email && email.toLowerCase().includes('topsoroban'));
 
-    const handleResetPassword = () => {
+    const handleResetPassword = (e) => {
+        if (e) e.preventDefault();
         if (password === '' || cPassword === '') {
-            setError('All field is required!!')
+            setError('All fields are required!')
+        } else if (password !== cPassword) {
+            setError('Passwords do not match!')
         } else {
             const data = { email, password, cPassword }
             resetPassword(data, setError, setLoading, navigate)
@@ -35,14 +38,22 @@ function ResetPassword() {
                 <p>Enter your new password</p>
             </div>
             {error ? <div className="error">{error}</div> : null}
-            <div className="reset-password-input d-flex flex-direction-column justify-content-center align-items-center">
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder='New Password' />
-                <input type="password" value={cPassword} onChange={e => setCpassword(e.target.value)} placeholder='Confirm Password' />
-            </div>
-            <div className="reset-password-btn-cont">
-                <div onClick={handleResetPassword} className="reset-password-btn">{loading ? <span className="loader"></span> : "Reset Your Password"}
-                    <div className="reset-password-btn2"></div>
+            <form onSubmit={handleResetPassword} className="reset-password-form d-flex flex-direction-column align-items-center">
+                <div className="reset-password-input d-flex flex-direction-column justify-content-center align-items-center">
+                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder='New Password' />
+                    <input type="password" value={cPassword} onChange={e => setCpassword(e.target.value)} placeholder='Confirm Password' />
                 </div>
+                <div className="reset-password-btn-cont">
+                    <button type="submit" className="reset-password-btn" style={{ border: 'none', font: 'inherit' }}>
+                        {loading ? <span className="loader"></span> : "Reset Your Password"}
+                        <div className="reset-password-btn2"></div>
+                    </button>
+                </div>
+            </form>
+            <div style={{ marginTop: '1.5rem' }}>
+                <Link to="/auth/login" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: '600', fontSize: '0.9rem' }}>
+                    ← Back to Login
+                </Link>
             </div>
         </div>
     )

@@ -37,7 +37,6 @@ function Teacher() {
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
     const [subjectLoading, setSubjectLoading] = useState(true)
-    let number = 1
     const isAuth = safeLocalStorage.getItem('O_authWEB')
     const role = safeLocalStorage.getItem('auth_role')
 
@@ -155,6 +154,18 @@ function Teacher() {
         removeTeacher(teacherID, setError, setLoadingOperation, closeRemovePopup, pageNumber, setAllTeacher, setTeacherNumber, setTotalPage)
     }
     // remove student func start
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                closeAddPopup();
+                closeUpdatePopup();
+                closeRemovePopup();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     const search = (searchKey) => {
         setSearchValue(searchKey)
@@ -844,7 +855,7 @@ function Teacher() {
                                                 </td>
                                             </tr>
                                         )}
-                                    </tbody><br />
+                                    </tbody>
                                 </React.Fragment>
                             )
                         })}

@@ -521,6 +521,7 @@ function StudentCompetition() {
         requestWakeLock();
 
         const currentQuestion = questions[currentIndex];
+        const wasAlreadyAnswered = !!answersMapRef.current[currentQuestion._id];
         
         // Save answer locally
         setAnswersMap(prev => {
@@ -532,9 +533,11 @@ function StudentCompetition() {
             return updated;
         });
 
-        // Increment total answered
-        totalAnsweredRef.current += 1;
-        setTotalAnswered(totalAnsweredRef.current);
+        // Increment total answered only if newly answered
+        if (!wasAlreadyAnswered) {
+            totalAnsweredRef.current += 1;
+            setTotalAnswered(totalAnsweredRef.current);
+        }
 
         // Fire background check (don't await — student moves on immediately)
         syncAnswerWithBackend(currentQuestion._id, answer);
@@ -598,7 +601,8 @@ function StudentCompetition() {
         // Save current answer before switching
         if (answer.trim() && questions[currentIndex]) {
             const currentQuestion = questions[currentIndex];
-            if (!answersMap[currentQuestion._id]) {
+            const prevAns = answersMapRef.current[currentQuestion._id]?.answer;
+            if (prevAns !== answer.trim()) {
                 setAnswersMap(prev => {
                     const updated = {
                         ...prev,
@@ -607,9 +611,11 @@ function StudentCompetition() {
                     answersMapRef.current = updated;
                     return updated;
                 });
-                totalAnsweredRef.current += 1;
-                setTotalAnswered(totalAnsweredRef.current);
-                syncAnswerWithBackend(currentQuestion._id, answer);
+                if (!prevAns) {
+                    totalAnsweredRef.current += 1;
+                    setTotalAnswered(totalAnsweredRef.current);
+                }
+                syncAnswerWithBackend(currentQuestion._id, answer.trim());
             }
         }
         setCurrentIndex(index);

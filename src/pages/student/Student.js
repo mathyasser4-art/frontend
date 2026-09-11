@@ -30,7 +30,6 @@ function Student() {
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
     const [classLoading, setClassLoading] = useState(true)
-    let number = 1
     const isAuth = safeLocalStorage.getItem('O_authWEB')
     const role = safeLocalStorage.getItem('auth_role')
 
@@ -226,7 +225,7 @@ function Student() {
                                                 <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true"></i>
                                             </td>
                                         </tr>
-                                    </tbody><br />
+                                    </tbody>
                                 </React.Fragment>
                             )
                         })}

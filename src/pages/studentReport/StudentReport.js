@@ -10,6 +10,45 @@ import '../assignmentReport/AssignmentReport.css'
 import AIAssignmentInsights from '../../components/aiInsights/AIAssignmentInsights'
 import { safeLocalStorage } from '../../utils/safeStorage';
 
+const parseGridRows = (questionText) => {
+  if (!questionText) return null;
+  const trimmed = String(questionText).trim();
+  if (!trimmed.startsWith('[')) return null;
+  try {
+    const rows = JSON.parse(trimmed);
+    if (!Array.isArray(rows) || rows.length === 0) return null;
+    const first = rows[0];
+    if (
+      first.op !== undefined || first.OP !== undefined ||
+      first.val !== undefined || first.VAL !== undefined
+    ) return rows;
+  } catch (e) {}
+  return null;
+};
+
+const getRowOp = (row) => {
+  const op = (row.op !== undefined ? row.op : (row.OP !== undefined ? row.OP : ''));
+  return (!op || op.trim() === '') ? '+' : op;
+};
+const getRowVal = (row) => (row.val !== undefined ? row.val : (row.VAL !== undefined ? row.VAL : ''));
+
+const renderReportQuestion = (questionText) => {
+  const gridRows = parseGridRows(questionText);
+  if (gridRows) {
+    return (
+      <div className="abacus-report-mini" style={{ display: 'inline-block', textAlign: 'right', fontFamily: 'monospace', fontSize: '16px' }}>
+        {gridRows.map((row, i) => (
+          <div key={i} style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+            <span style={{ color: getRowOp(row) === '+' ? '#aaa' : '#e63946' }}>{getRowOp(row)}</span>
+            <span>{getRowVal(row)}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return <span className='question-assignment-title' style={{ whiteSpace: 'pre-line' }}>{questionText}</span>;
+};
+
 function StudentReport() {
   const [allAnswers, setAllAnswers] = useState([])
   const [time, setTime] = useState('')
@@ -19,7 +58,6 @@ function StudentReport() {
   const [result, setResult] = useState(0)
   const { assignmentID } = useParams()
   const isAuth = safeLocalStorage.getItem('O_authWEB')
-  let number = 1
 
   useEffect(() => {
     const fetchMyReport = async () => {
@@ -147,13 +185,13 @@ function StudentReport() {
               </thead>
 
               <tbody>
-                {allAnswers?.map(item => {
+                {allAnswers?.map((item, index) => {
                   return (
                     <tr key={item._id}>
-                      <td>{number++}</td>
+                      <td>{index + 1}</td>
                       <td>
                         <div className='d-flex justify-content-center'>
-                          <p className='question-assignment-title'>{item.question}</p>
+                          {renderReportQuestion(item.question)}
                         </div>
                       </td>
                       <td>

@@ -58,6 +58,17 @@ function TeacherQuestionBank() {
     // Completion/Essay Form States
     const [essayAnswers, setEssayAnswers] = useState('');
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setShowModal(false);
+                setShowWorksheetModal(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     const fileInputRef = useRef(null);
 
     const loadChapterQuestions = useCallback(() => {

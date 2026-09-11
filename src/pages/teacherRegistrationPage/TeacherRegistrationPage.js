@@ -35,6 +35,17 @@ function TeacherRegistrationPage() {
     const [directSaving, setDirectSaving] = useState(false);
     const [searchValue, setSearchValue] = useState('');
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setShowDirectAdd(false);
+                setShowDirectUpdate(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     // Load direct students when page changes
     useEffect(() => {
         loadDirectStudents();

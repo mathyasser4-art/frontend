@@ -54,115 +54,112 @@ function Home() {
 
   // Auto-advance slides every 2 seconds with a smooth fade
   React.useEffect(() => {
+    let fadeTimer = null;
     const timer = setInterval(() => {
-      setFading(true)
-      setTimeout(() => {
-        setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length)
-        setFading(false)
-      }, 400) // fade-out duration
-    }, 2000)
-    return () => clearInterval(timer)
-  }, [])
+      setFading(true);
+      fadeTimer = setTimeout(() => {
+        setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length);
+        setFading(false);
+      }, 400); // fade-out duration
+    }, 2000);
+    return () => {
+      clearInterval(timer);
+      if (fadeTimer) clearTimeout(fadeTimer);
+    };
+  }, []);
 
   // Auto open demo quiz removed based on user request
   return (
     <>
       <MobileNav role={role} />
 
-
-
-      <div className='home'>
+      <div className='home-page-root'>
         <Navbar />
-        <div className="home-container">
-          
-          <div className="hero-hybrid">
-            {/* ── LEFT: Text and Buttons ── */}
-            <div className="hero-left">
-              <div className="hero-text-box">
-                <div className="home-title">
-                  <h1 className="text-dark">{t('home.smartGames', 'Smart Games.')}</h1>
-                  <h1 className="text-dark">{t('home.smarterTeaching', 'Smarter Teaching.')}</h1>
-                  <h1 className="text-red">{t('home.betterResults', 'Better Results.')}</h1>
-                </div>
-                <div className="home-paragraph">
-                  <p>{t('home.heroDesc1', 'The all-in-one platform for abacus learning,')}</p>
-                  <p>{t('home.heroDesc2', 'homework management & automatic correction.')}</p>
-                </div>
-                <div className="hero-buttons">
-                  <div className="hero-btn-wrapper">
-                    <button 
-                      className="home-btn pink-btn"
-                      onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}
-                    >
-                      <span className="btn-text">👤 {t('home.explainingTeachers', 'EXPLAINING FOR TEACHERS')}</span>
-                    </button>
-                    <div className="btn-subtitle">{t('home.teacherSubtitle', 'Manage my class & homework')}</div>
-                  </div>
-                  <div className="hero-btn-wrapper">
-                    <button 
-                      className="home-btn blue-btn"
-                      onClick={() => { 
-                        soundEffects.playClick(); 
-                        setShowStudentHelp(true);
-                      }}
-                    >
-                      <span className="btn-text">🎓 {t('home.explainingStudents', 'EXPLAINING FOR STUDENTS')}</span>
-                    </button>
-                    <div className="btn-subtitle">{t('home.studentSubtitle', 'Play, practice & solve homework')}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* ── RIGHT: Showcase & Illustration ── */}
-            <div className="hero-right">
-              <div className="showcase-title">
-                <h2>{t('home.seeHowItWorks', 'See How It Works')}</h2>
-              </div>
-              <div className="hero-showcase small-showcase">
-                <div className="magical-screen-wrapper">
-                  <div className="magical-screen">
-                    <div className="screen-content">
-                      <img
-                        src={SHOWCASE_IMAGES[currentSlide]}
-                        alt="Gameplay Preview"
-                        className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
-                        onError={() => {
-                          setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length);
+        <div className='home'>
+          <div className="home-container">
+            
+            <div className="hero-hybrid">
+              {/* ── LEFT: Text and Buttons ── */}
+              <div className="hero-left">
+                <div className="hero-text-box">
+                  <div className="home-title">
+                    <h1 className="text-dark">{t('home.smartGames', 'Smart Games.')}</h1>
+                    <h1 className="text-dark">{t('home.smarterTeaching', 'Smarter Teaching.')}</h1>
+                    <h1 className="text-red">{t('home.betterResults', 'Better Results.')}</h1>
+                  </div>
+                  <div className="home-paragraph">
+                    <p>{t('home.heroDesc1', 'The all-in-one platform for abacus learning,')}</p>
+                    <p>{t('home.heroDesc2', 'homework management & automatic correction.')}</p>
+                  </div>
+                  <div className="hero-buttons">
+                    <div className="hero-btn-wrapper">
+                      <button 
+                        className="home-btn pink-btn"
+                        onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }}
+                      >
+                        <span className="btn-text">👤 {t('home.explainingTeachers', 'EXPLAINING FOR TEACHERS')}</span>
+                      </button>
+                      <div className="btn-subtitle">{t('home.teacherSubtitle', 'Manage my class & homework')}</div>
+                    </div>
+                    <div className="hero-btn-wrapper">
+                      <button 
+                        className="home-btn blue-btn"
+                        onClick={() => { 
+                          soundEffects.playClick(); 
+                          setShowStudentHelp(true);
                         }}
-                      />
+                      >
+                        <span className="btn-text">🎓 {t('home.explainingStudents', 'EXPLAINING FOR STUDENTS')}</span>
+                      </button>
+                      <div className="btn-subtitle">{t('home.studentSubtitle', 'Play, practice & solve homework')}</div>
                     </div>
                   </div>
                 </div>
               </div>
-              
-              {/* Scroll Down Arrow (Request 6) */}
-              <div className="scroll-down-arrow desktop-only-arrow" onClick={() => {
-                const el = document.getElementById('academy-section');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}>
-                <span className="scroll-arrow-text">Practice Section</span>
-                <div className="scroll-arrow-chevron">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
+
+              {/* ── RIGHT: Showcase & Illustration ── */}
+              <div className="hero-right">
+                <div className="showcase-title">
+                  <h2>{t('home.seeHowItWorks', 'See How It Works')}</h2>
+                </div>
+                <div className="hero-showcase small-showcase">
+                  <div className="magical-screen-wrapper">
+                    <div className="magical-screen">
+                      <div className="screen-content">
+                        <img
+                          src={SHOWCASE_IMAGES[currentSlide]}
+                          alt="Gameplay Preview"
+                          className={`preview-slide-img ${fading ? 'slide-fade-out' : 'slide-fade-in'}`}
+                          onError={() => {
+                            setCurrentSlide(prev => (prev + 1) % SHOWCASE_IMAGES.length);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Scroll Down Arrow (Request 6) */}
+                <div className="scroll-down-arrow desktop-only-arrow" onClick={() => {
+                  const el = document.getElementById('academy-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}>
+                  <span className="scroll-arrow-text">Practice Section</span>
+                  <div className="scroll-arrow-chevron">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-
-       <TutorialVideoModal isOpen={showTutorialModal} onClose={() => setShowTutorialModal(false)} />
-      {showTeacherTrialModal && <TeacherTrialModal onClose={() => setShowTeacherTrialModal(false)} />}
-      {showTeacherHelp && <TeacherHelpModal onClose={() => setShowTeacherHelp(false)} />}
-      {showStudentHelp && <StudentHelpModal onClose={() => setShowStudentHelp(false)} />}
-
-      <div className='home-mobile'>
-        <Navbar />
-        {/* Mobile version remains similar but uses the new text/buttons below the showcase */}
-        <div className="mobile-hero-container">
+        <div className='home-mobile'>
+          {/* Mobile version remains similar but uses the new text/buttons below the showcase */}
+          <div className="mobile-hero-container">
            <div className="hero-text-box mobile-hero-box">
              <div className="home-title mobile-title text-center">
                 <h1 className="text-dark">{t('home.smartGames', 'Smart Games.')}</h1>
@@ -214,6 +211,12 @@ function Home() {
           </div>
         </div>
       </div>
+      </div>
+
+      <TutorialVideoModal isOpen={showTutorialModal} onClose={() => setShowTutorialModal(false)} />
+      {showTeacherTrialModal && <TeacherTrialModal onClose={() => setShowTeacherTrialModal(false)} />}
+      {showTeacherHelp && <TeacherHelpModal onClose={() => setShowTeacherHelp(false)} />}
+      {showStudentHelp && <StudentHelpModal onClose={() => setShowStudentHelp(false)} />}
 
       <QuestionType />
       <FeaturesSection />

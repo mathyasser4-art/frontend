@@ -1105,15 +1105,21 @@ function Assignment() {
   }
 
   const showAlert = () => {
-    audioRefWrong.current.play().catch(e => console.log(e));
-    document.querySelector('.alert-question').classList.add('alert-active')
-    setTimeout(() => { document.querySelector('.alert-question').classList.remove('alert-active') }, 3500);
+    audioRefWrong.current?.play?.().catch(e => console.log(e));
+    const el = document.querySelector('.alert-question');
+    if (el) {
+      el.classList.add('alert-active');
+      setTimeout(() => { el.classList.remove('alert-active') }, 3500);
+    }
   }
 
   const showAlertSuccess = () => {
-    audioRefCorrect.current.play().catch(e => console.log(e));
-    document.querySelector('.alert').classList.add('alert-active')
-    setTimeout(() => { document.querySelector('.alert').classList.remove('alert-active') }, 3500);
+    audioRefCorrect.current?.play?.().catch(e => console.log(e));
+    const el = document.querySelector('.alert');
+    if (el) {
+      el.classList.add('alert-active');
+      setTimeout(() => { el.classList.remove('alert-active') }, 3500);
+    }
   }
 
   const openModelAnswer = () => {
@@ -1447,7 +1453,6 @@ function Assignment() {
   return (
     <>
       {/* --- Start Sound Additions --- */}
-      <audio ref={audioRef} src="/audio/birds sound no.mp3" loop preload="auto" />
       <audio ref={audioRefCorrect} src="/audio/correct.mp3" preload="auto" />
       <audio ref={audioRefWrong} src="/audio/wrong.mp3" preload="auto" />
       {/* --- End Sound Additions --- */}

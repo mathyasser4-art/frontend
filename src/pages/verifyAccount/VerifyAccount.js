@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import logo from '../../img/logo-login.png'
 import verifyAccount from '../../api/loginSystem/verifyAccount.api'
@@ -8,12 +8,8 @@ import './VerifyAccount.css'
 import { safeLocalStorage } from '../../utils/safeStorage';
 
 function VerifyAccount() {
-  const [firstDigit, setFirstDigit] = useState('')
-  const [secondDigit, setSecondDigit] = useState('')
-  const [thirdDigit, setThirdDigit] = useState('')
-  const [fourthDigit, setFourthDigit] = useState('')
-  const [fifthDigit, setFifthDigit] = useState('')
-  const [sixthDigit, setSixthDigit] = useState('')
+  const [digits, setDigits] = useState(['', '', '', '', '', '']);
+  const inputRefs = useRef([]);
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const { email } = useParams()
@@ -34,11 +30,49 @@ function VerifyAccount() {
   const schoolName = safeLocalStorage.getItem('school_name') || '';
   const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || (email && email.toLowerCase().includes('topsoroban'));
 
-  const handleVerify = () => {
-    if (firstDigit === '' || secondDigit === '' || thirdDigit === '' || fourthDigit === '' || fifthDigit === '' || sixthDigit === '') {
+  const handleDigitChange = (index, value) => {
+    const char = value.slice(-1);
+    const newDigits = [...digits];
+    newDigits[index] = char;
+    setDigits(newDigits);
+
+    if (char && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === 'Backspace') {
+      if (!digits[index] && index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      }
+    } else if (e.key === 'Enter') {
+      handleVerify(e);
+    }
+  };
+
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').trim();
+    if (!pastedData) return;
+
+    const chars = pastedData.slice(0, 6).split('');
+    const newDigits = [...digits];
+    chars.forEach((c, i) => {
+      if (i < 6) newDigits[i] = c;
+    });
+    setDigits(newDigits);
+
+    const focusIdx = Math.min(chars.length, 5);
+    inputRefs.current[focusIdx]?.focus();
+  };
+
+  const handleVerify = (e) => {
+    if (e) e.preventDefault();
+    const verificationCode = digits.join('');
+    if (verificationCode.length < 6) {
       setError('Enter the 6-digit verification code')
     } else {
-      const verificationCode = firstDigit + secondDigit + thirdDigit + fourthDigit + fifthDigit + sixthDigit
       const data = { email, verificationCode }
       verifyAccount(data, setError, setLoading, navigate)
     }
@@ -53,22 +87,30 @@ function VerifyAccount() {
         <p>Enter Verification Code</p>
       </div>
       {error ? <div className="error">{error}</div> : null}
-      <div className="verify-input">
-        <input type="text" maxLength="1" value={firstDigit} onChange={e => setFirstDigit(e.target.value)} />
-        <input type="text" maxLength="1" value={secondDigit} onChange={e => setSecondDigit(e.target.value)} />
-        <input type="text" maxLength="1" value={thirdDigit} onChange={e => setThirdDigit(e.target.value)} />
-        <input type="text" maxLength="1" value={fourthDigit} onChange={e => setFourthDigit(e.target.value)} />
-        <input type="text" maxLength="1" value={fifthDigit} onChange={e => setFifthDigit(e.target.value)} />
-        <input type="text" maxLength="1" value={sixthDigit} onChange={e => setSixthDigit(e.target.value)} />
-      </div>
-      <div className='verify-btn d-flex justify-content-center'>
-        <button onClick={handleVerify}>{loading ? <span className="loader"></span> : "Verify"}</button>
-      </div>
+      <form onSubmit={handleVerify} className="verify-form d-flex flex-direction-column align-items-center">
+        <div className="verify-input" onPaste={handlePaste}>
+          {digits.map((digit, i) => (
+            <input 
+              key={i}
+              ref={el => inputRefs.current[i] = el}
+              type="text" 
+              inputMode="numeric"
+              maxLength={1} 
+              value={digit} 
+              onChange={e => handleDigitChange(i, e.target.value)} 
+              onKeyDown={e => handleKeyDown(i, e)}
+            />
+          ))}
+        </div>
+        <div className='verify-btn d-flex justify-content-center'>
+          <button type="submit">{loading ? <span className="loader"></span> : "Verify"}</button>
+        </div>
+      </form>
       <div className='verify-footer'>
         <p>Didn't receive code?</p>
-        <p onClick={handleResendCode}>Send verification code again</p>
+        <p onClick={handleResendCode} style={{ cursor: 'pointer' }}>Send verification code again</p>
       </div>
-      <div className="alert">Success! Check your email We have sent you a new verification code.</div>
+      <div className="alert">Success! Check your email. We have sent you a new verification code.</div>
     </div>
   )
 }

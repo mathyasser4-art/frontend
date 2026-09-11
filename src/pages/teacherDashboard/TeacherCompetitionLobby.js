@@ -64,6 +64,18 @@ function TeacherCompetitionLobby() {
     const [timerRemaining, setTimerRemaining] = useState(null);
     const [lobbyCountdown, setLobbyCountdown] = useState(null);
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setSelectedStudentReport(null);
+                setSelectedCertStudent(null);
+                setIsBulkCertOpen(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     const wakeLockRef = useRef(null);
 
     // Robust, gesture-authorized Screen Wake Lock request helper for teacher

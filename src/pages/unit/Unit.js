@@ -82,7 +82,19 @@ function Unit() {
             await getUnit(setLoading, setUnitData, questionTypeID, subjectID)
         }
         getAllUnit()
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [questionTypeID, subjectID]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Close modals on Escape key
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setActiveUnit(null);
+                setShowUpgradeModal(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     return (
         <>

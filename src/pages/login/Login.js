@@ -11,27 +11,19 @@ function Login() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
     const navigate = useNavigate()
-
-    const showAlert = () => {
-        const alertEl = document.querySelector('.alert')
-        if (alertEl) {
-            alertEl.classList.add('alert-active')
-            setTimeout(() => {
-                alertEl.classList.remove('alert-active')
-            }, 3500);
-        }
-    }
 
     const schoolName = safeLocalStorage.getItem('school_name') || '';
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || email.toLowerCase().includes('topsoroban');
 
-    const handleLogin = () => {
-        if (email === '' || password === '') {
+    const handleLogin = (e) => {
+        if (e) e.preventDefault();
+        if (email.trim() === '' || password.trim() === '') {
             setError('All fields are required!!')
         } else {
-            const userData = { email, password }
-            login(userData, setError, setLoading, navigate, showAlert)
+            const userData = { email: email.trim(), password }
+            login(userData, setError, setLoading, navigate)
         }
     }
 
@@ -44,24 +36,56 @@ function Login() {
                 <p>Sign in to your account</p>
             </div>
             {error ? <div className="error">{error}</div> : null}
-            <div className="login-form">
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder='Enter your email or username' />
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder='Password' />
-            </div>
-            
-
-
-            <div className="login-btn-container" style={{ marginTop: '1.5rem' }}>
-                <div onClick={handleLogin} className="login-btn">{loading ? <span className="loader"></span> : "Login"}
-                    <div className="login-btn2"></div>
+            <form onSubmit={handleLogin} className="login-form">
+                <input 
+                    type="text" 
+                    value={email} 
+                    onChange={e => setEmail(e.target.value)} 
+                    placeholder='Enter your email or username'
+                    autoComplete="username" 
+                />
+                <div style={{ position: 'relative', width: '100%' }}>
+                    <input 
+                        type={showPassword ? "text" : "password"} 
+                        value={password} 
+                        onChange={e => setPassword(e.target.value)} 
+                        placeholder='Password'
+                        autoComplete="current-password"
+                        style={{ paddingRight: '45px' }}
+                    />
+                    <button 
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{
+                            position: 'absolute',
+                            right: '12px',
+                            top: '40%',
+                            transform: 'translateY(-50%)',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            padding: 0
+                        }}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                        {showPassword ? "👁️" : "🙈"}
+                    </button>
                 </div>
-            </div>
-            
-            {false && (
-                <div className="login-footer" style={{ marginTop: '2rem', textAlign: 'center', color: '#64748b', fontSize: '0.9rem', fontWeight: '600' }}>
-                    <p>Don't have a teacher account? <Link to={'/auth/register'} style={{ textDecoration: 'none' }}><span className='text-purple' style={{ color: '#2563eb', fontWeight: '800' }}>Sign Up</span></Link></p>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-0.5rem', marginBottom: '1rem' }}>
+                    <Link to="/resetPassword/email" style={{ color: '#6366f1', fontSize: '0.88rem', textDecoration: 'none', fontWeight: '600' }}>
+                        Forgot Password?
+                    </Link>
                 </div>
-            )}
+
+                <div className="login-btn-container">
+                    <button type="submit" className="login-btn" style={{ border: 'none', font: 'inherit' }}>
+                        {loading ? <span className="loader"></span> : "Login"}
+                        <div className="login-btn2"></div>
+                    </button>
+                </div>
+            </form>
         </div>
     )
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import resetPassCode from '../../api/loginSystem/resetPassCode.api'
 import logo from '../../img/logo-login.png'
@@ -7,12 +7,8 @@ import './ResPasCode.css'
 import { safeLocalStorage } from '../../utils/safeStorage';
 
 function ResPasCode() {
-    const [firstDigit, setFirstDigit] = useState('')
-    const [secondDigit, setSecondDigit] = useState('')
-    const [thirdDigit, setThirdDigit] = useState('')
-    const [fourthDigit, setFourthDigit] = useState('')
-    const [fifthDigit, setFifthDigit] = useState('')
-    const [sixthDigit, setSixthDigit] = useState('')
+    const [digits, setDigits] = useState(['', '', '', '', '', '']);
+    const inputRefs = useRef([]);
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
     const { email } = useParams()
@@ -21,15 +17,53 @@ function ResPasCode() {
     const schoolName = safeLocalStorage.getItem('school_name') || '';
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || (email && email.toLowerCase().includes('topsoroban'));
 
-    const handleResetPassCode = () => {
-        if (firstDigit === '' || secondDigit === '' || thirdDigit === '' || fourthDigit === '' || fifthDigit === '' || sixthDigit === '') {
-          setError('Enter the 6-digit verification code')
-        } else {
-          const resetPasswordCode = firstDigit + secondDigit + thirdDigit + fourthDigit + fifthDigit + sixthDigit
-          const data = { email, resetPasswordCode }
-          resetPassCode(data, setError, setLoading, navigate)
+    const handleDigitChange = (index, value) => {
+        const char = value.slice(-1);
+        const newDigits = [...digits];
+        newDigits[index] = char;
+        setDigits(newDigits);
+
+        if (char && index < 5) {
+            inputRefs.current[index + 1]?.focus();
         }
-      }
+    };
+
+    const handleKeyDown = (index, e) => {
+        if (e.key === 'Backspace') {
+            if (!digits[index] && index > 0) {
+                inputRefs.current[index - 1]?.focus();
+            }
+        } else if (e.key === 'Enter') {
+            handleResetPassCode(e);
+        }
+    };
+
+    const handlePaste = (e) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').trim();
+        if (!pastedData) return;
+
+        const chars = pastedData.slice(0, 6).split('');
+        const newDigits = [...digits];
+        chars.forEach((c, i) => {
+            if (i < 6) newDigits[i] = c;
+        });
+        setDigits(newDigits);
+
+        const focusIdx = Math.min(chars.length, 5);
+        inputRefs.current[focusIdx]?.focus();
+    };
+
+    const handleResetPassCode = (e) => {
+        if (e) e.preventDefault();
+        const resetPasswordCode = digits.join('');
+        if (resetPasswordCode.length < 6) {
+            setError('Enter the 6-digit verification code')
+        } else {
+            const data = { email, resetPasswordCode }
+            resetPassCode(data, setError, setLoading, navigate)
+        }
+    }
 
     return (
         <div className='res-pas-code d-flex flex-direction-column justify-content-center align-items-center'>
@@ -40,17 +74,25 @@ function ResPasCode() {
                 <p>Enter Verification Code</p>
             </div>
             {error ? <div className="error">{error}</div> : null}
-            <div className="res-pas-code-input">
-                <input type="text" maxLength="1" value={firstDigit} onChange={e => setFirstDigit(e.target.value)} />
-                <input type="text" maxLength="1" value={secondDigit} onChange={e => setSecondDigit(e.target.value)} />
-                <input type="text" maxLength="1" value={thirdDigit} onChange={e => setThirdDigit(e.target.value)} />
-                <input type="text" maxLength="1" value={fourthDigit} onChange={e => setFourthDigit(e.target.value)} />
-                <input type="text" maxLength="1" value={fifthDigit} onChange={e => setFifthDigit(e.target.value)} />
-                <input type="text" maxLength="1" value={sixthDigit} onChange={e => setSixthDigit(e.target.value)} />
-            </div>
-            <div className='res-pas-code-btn d-flex justify-content-center'>
-                <button onClick={handleResetPassCode}>{loading ? <span className="loader"></span> : "Subment"}</button>
-            </div>
+            <form onSubmit={handleResetPassCode} className="res-pas-code-form d-flex flex-direction-column align-items-center">
+                <div className="res-pas-code-input" onPaste={handlePaste}>
+                    {digits.map((digit, i) => (
+                        <input 
+                            key={i}
+                            ref={el => inputRefs.current[i] = el}
+                            type="text" 
+                            inputMode="numeric"
+                            maxLength={1} 
+                            value={digit} 
+                            onChange={e => handleDigitChange(i, e.target.value)} 
+                            onKeyDown={e => handleKeyDown(i, e)}
+                        />
+                    ))}
+                </div>
+                <div className='res-pas-code-btn d-flex justify-content-center'>
+                    <button type="submit">{loading ? <span className="loader"></span> : "Submit"}</button>
+                </div>
+            </form>
         </div>
     )
 }

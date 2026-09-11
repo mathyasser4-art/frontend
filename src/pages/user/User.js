@@ -7,7 +7,7 @@ import NotLogin from '../../components/notLogin/NotLogin'
 import avatarDefault from '../../img/avatar.png'
 import userInfo from '../../api/authorize/userInfo.api'
 import updateProfile from '../../api/user/updateProfile.api'
-import { safeLocalStorage } from '../../utils/safeStorage'
+import { safeLocalStorage, clearUserSession } from '../../utils/safeStorage'
 import '../../reusable.css'
 import './User.css'
 
@@ -42,35 +42,19 @@ function User() {
     const role = safeLocalStorage.getItem('auth_role')
     const isArabic = i18n.language === 'ar'
 
+    const [isEditOpen, setIsEditOpen] = useState(false)
+    const [showPass, setShowPass] = useState(false)
+
     const openEditPopup = () => {
         setEditUserName(userData?.userName || '')
         setEditPassword('')
         setError(null)
-        const popup = document.querySelector('.edit-profile-popup')
-        const container = document.querySelector('.edit-profile-container')
-        popup?.classList.replace('d-none', 'd-flex')
-        setTimeout(() => {
-            popup?.classList.remove('profile-popup-hide')
-            container?.classList.remove('update-top')
-        }, 50);
+        setShowPass(false)
+        setIsEditOpen(true)
     }
 
     const closeEditPopup = () => {
-        const popup = document.querySelector('.edit-profile-popup')
-        const container = document.querySelector('.edit-profile-container')
-        popup?.classList.add('profile-popup-hide')
-        container?.classList.add('update-top')
-        setTimeout(() => {
-            popup?.classList.replace('d-flex', 'd-none')
-        }, 300);
-    }
-
-    const showPassword = () => {
-        const inputPassword = document.querySelector('.input-password')
-        if (inputPassword && inputPassword.type === 'password')
-            inputPassword.type = 'text'
-        else if (inputPassword)
-            inputPassword.type = 'password'
+        setIsEditOpen(false)
     }
 
     // Handle selecting local photo file
@@ -127,11 +111,8 @@ function User() {
     }, [])
 
     const logOut = () => {
-        safeLocalStorage.removeItem('O_authWEB')
-        safeLocalStorage.removeItem('auth_role')
-        safeLocalStorage.removeItem('pp_name')
-        safeLocalStorage.removeItem('user_profile_avatar')
-        window.location.reload();
+        clearUserSession();
+        window.location.href = '/auth/login';
     }
 
     if (!isAuth) return (<>
@@ -243,28 +224,30 @@ function User() {
             )}
 
             {/* Edit Profile Popup */}
-            <div className="edit-profile-popup profile-popup-hide d-none justify-content-center align-items-center">
-                <div className='edit-profile-container update-top'>
-                    <div className="update-popup-head">
-                        <p>{isArabic ? 'تعديل الحساب' : 'Edit Profile'}</p>
-                    </div>
-                    {error ? <div className="error error-dengare">{error}</div> : null}
-                    <div className="update-popup-body">
-                        <label>{isArabic ? 'اسم المستخدم الجديد' : 'New Username'}</label>
-                        <input value={editUserName} onChange={(e) => setEditUserName(e.target.value)} type="text" placeholder='Your Name' />
-                        <label>{isArabic ? 'كلمة المرور الجديدة (اختياري)' : 'New Password (Optional)'}</label>
-                        <input value={editPassword} onChange={(e) => setEditPassword(e.target.value)} className='input-password' type="password" placeholder='Leave blank to keep current' />
-                        <div className="show-password d-flex align-items-center">
-                            <input type="checkbox" onClick={showPassword} />
-                            <p>{isArabic ? 'إظهار كلمة المرور' : 'Show Password'}</p>
+            {isEditOpen && (
+                <div className="edit-profile-popup d-flex justify-content-center align-items-center">
+                    <div className='edit-profile-container' style={{ top: '100px' }}>
+                        <div className="update-popup-head">
+                            <p>{isArabic ? 'تعديل الحساب' : 'Edit Profile'}</p>
+                        </div>
+                        {error ? <div className="error error-dengare">{error}</div> : null}
+                        <div className="update-popup-body">
+                            <label>{isArabic ? 'اسم المستخدم الجديد' : 'New Username'}</label>
+                            <input value={editUserName} onChange={(e) => setEditUserName(e.target.value)} type="text" placeholder='Your Name' />
+                            <label>{isArabic ? 'كلمة المرور الجديدة (اختياري)' : 'New Password (Optional)'}</label>
+                            <input value={editPassword} onChange={(e) => setEditPassword(e.target.value)} className='input-password' type={showPass ? "text" : "password"} placeholder='Leave blank to keep current' />
+                            <div className="show-password d-flex align-items-center">
+                                <input type="checkbox" checked={showPass} onChange={(e) => setShowPass(e.target.checked)} />
+                                <p>{isArabic ? 'إظهار كلمة المرور' : 'Show Password'}</p>
+                            </div>
+                        </div>
+                        <div className="update-popup-footer">
+                            <button className='button popup-btn' onClick={closeEditPopup}>{isArabic ? 'إلغاء' : 'Cancel'}</button>
+                            <button className='button popup-btn2' onClick={handleUpdateProfile}>{loadingOperation ? <span className="loader"></span> : (isArabic ? 'حفظ' : 'Save')}</button>
                         </div>
                     </div>
-                    <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeEditPopup}>{isArabic ? 'إلغاء' : 'Cancel'}</button>
-                        <button className='button popup-btn2' onClick={handleUpdateProfile}>{loadingOperation ? <span className="loader"></span> : (isArabic ? 'حفظ' : 'Save')}</button>
-                    </div>
                 </div>
-            </div>
+            )}
         </>
     )
 }

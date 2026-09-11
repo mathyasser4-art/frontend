@@ -15,11 +15,12 @@ function ResPasEmail() {
     const schoolName = safeLocalStorage.getItem('school_name') || '';
     const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || email.toLowerCase().includes('topsoroban');
 
-    const handleResetPassEmail = () => {
-        if (email === '') {
-            setError('Email is required!!')
+    const handleResetPassEmail = (e) => {
+        if (e) e.preventDefault();
+        if (email.trim() === '') {
+            setError('Email is required!')
         } else {
-            const data = { email }
+            const data = { email: email.trim() }
             resetPassEmail(data, setError, setLoading, navigate)
         }
     }
@@ -33,13 +34,21 @@ function ResPasEmail() {
                 <p>Reset your password</p>
             </div>
             {error ? <div className="error">{error}</div> : null}
-            <div className="res-pas-email-input">
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder='Enter your email' />
-            </div>
-            <div className="res-pas-email-btn">
-                <div onClick={handleResetPassEmail} className="res-email-btn">{loading ? <span className="loader"></span> : "Reset Your Password"}
-                    <div className="res-email-btn2"></div>
+            <form onSubmit={handleResetPassEmail} className="res-pas-email-form d-flex flex-direction-column align-items-center">
+                <div className="res-pas-email-input">
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder='Enter your email' />
                 </div>
+                <div className="res-pas-email-btn">
+                    <button type="submit" className="res-email-btn" style={{ border: 'none', font: 'inherit' }}>
+                        {loading ? <span className="loader"></span> : "Reset Your Password"}
+                        <div className="res-email-btn2"></div>
+                    </button>
+                </div>
+            </form>
+            <div style={{ marginTop: '1.5rem' }}>
+                <Link to="/auth/login" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: '600', fontSize: '0.9rem' }}>
+                    ← Back to Login
+                </Link>
             </div>
         </div>
     )

@@ -60,6 +60,8 @@ const formatQuestionText = (text) => {
     }).join('\n');
 };
 
+const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+
 const translateNumbers = (text, toArabic) => {
     if (!toArabic || text == null) return text;
     return String(text).replace(/[0-9]/g, d => ARABIC_DIGITS[parseInt(d, 10)]);
@@ -137,7 +139,6 @@ const buildWorksheetLines = (question, index, pdf, maxWidth) => {
 };
 
 // ── Arabic digit normaliser ───────────────────────────────────────────────────
-const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
 const normalizeToWesternDigits = (str) => {
     if (!str) return str;
     return String(str)
@@ -659,23 +660,29 @@ function Question() {
     };
 
     const showAlert = () => {
-        audioRefWrong.current.play();
+        audioRefWrong.current?.play?.().catch(e => console.log(e));
         const alertEl = document.querySelector('.alert-question');
-        alertEl.classList.add('alert-active');
-        setTimeout(() => alertEl.classList.remove('alert-active'), 3500);
+        if (alertEl) {
+            alertEl.classList.add('alert-active');
+            setTimeout(() => alertEl.classList.remove('alert-active'), 3500);
+        }
     };
 
     const showeEndAlert = () => {
         const alertEl = document.querySelector('.alert-question-end');
-        alertEl.classList.add('alert-active');
-        setTimeout(() => alertEl.classList.remove('alert-active'), 3500);
+        if (alertEl) {
+            alertEl.classList.add('alert-active');
+            setTimeout(() => alertEl.classList.remove('alert-active'), 3500);
+        }
     };
 
     const showAlertSuccess = () => {
-        audioRefCorrect.current.play();
+        audioRefCorrect.current?.play?.().catch(e => console.log(e));
         const alertEl = document.querySelector('.alert');
-        alertEl.classList.add('alert-active');
-        setTimeout(() => alertEl.classList.remove('alert-active'), 3500);
+        if (alertEl) {
+            alertEl.classList.add('alert-active');
+            setTimeout(() => alertEl.classList.remove('alert-active'), 3500);
+        }
     };
 
     const openModelAnswer = () => {
@@ -939,7 +946,6 @@ function Question() {
     return (
         <>
 
-            <audio ref={audioRef} src="/audio/birds sound no.mp3" loop preload="auto" />
             <audio ref={audioRefCorrect} src="/audio/correct.mp3" preload="auto" />
             <audio ref={audioRefWrong} src="/audio/wrong.mp3" preload="auto" />
 

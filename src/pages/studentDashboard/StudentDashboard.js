@@ -33,10 +33,17 @@ function StudentDashboard() {
     const isAuth = safeLocalStorage.getItem('O_authWEB')
     const userID = safeLocalStorage.getItem('pp_id') || 'unknown'
 
-    // Competition join states
-    const [compIdInput, setCompIdInput] = useState('')
-    const [joiningComp, setJoiningComp] = useState(false)
-    const [joinCompError, setJoinCompError] = useState(null)
+    // Close modals on Escape key
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setShowTutorialModal(false);
+                setShowAttemptHistory(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     // Check if an assignment has saved progress in localStorage
     const hasInProgress = (assignmentId) => {

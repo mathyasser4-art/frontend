@@ -105,6 +105,18 @@ function System() {
         getAllSystem()
     }, [questionTypeID]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Close modals on Escape key
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setActiveLevel(null);
+                setShowUpgradeModal(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     return (
         <>
             <Navbar />
