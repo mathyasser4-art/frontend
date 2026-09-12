@@ -126,8 +126,9 @@ export const getHiddenSystemIds = (schoolId) => {
 /**
  * Check if a specific system is visible (Defaults to true).
  */
-export const isSystemVisible = (systemId, schoolId) => {
+export const isSystemVisible = (systemId, schoolId, systemObj) => {
   if (!systemId) return true;
+  if (systemObj && systemObj.isVisible === false) return false;
   const hiddenIds = getHiddenSystemIds(schoolId);
   return !hiddenIds.includes(String(systemId));
 };
@@ -162,12 +163,28 @@ export const resetAllSystemsVisible = (schoolId) => {
 
 /**
  * Filter an array of systems so only VISIBLE (ON) systems are returned.
+ * Filters both global DB visibility (configured from admin dashboard) and school-level overrides,
+ * as well as filtering out any individual subjects/levels marked as hidden.
  */
 export const filterVisibleSystems = (systems, schoolId) => {
   if (!Array.isArray(systems)) return [];
   const hiddenIds = getHiddenSystemIds(schoolId);
-  if (hiddenIds.length === 0) return systems;
-  return systems.filter(sys => sys && !hiddenIds.includes(String(sys._id)));
+  return systems
+    .filter(sys => {
+      if (!sys) return false;
+      // 1. Global DB visibility from admin dashboard
+      if (sys.isVisible === false) return false;
+      // 2. School-level visibility override
+      if (hiddenIds.includes(String(sys._id))) return false;
+      return true;
+    })
+    .map(sys => {
+      if (!Array.isArray(sys.subjects)) return sys;
+      return {
+        ...sys,
+        subjects: sys.subjects.filter(sub => sub && sub.isVisible !== false)
+      };
+    });
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export
