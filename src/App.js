@@ -182,7 +182,7 @@ function App() {
 
           <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/' />} />
           <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/' />} />
-          <Route path='/student/competition/:competitionId' element={<StudentCompetition />} />
+          <Route path='/student/competition/:competitionId' element={isAuth ? <StudentCompetition /> : <Navigate to='/login' />} />
           <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/' />} />
           <Route path='/teacher/competition/:competitionId' element={isAuth && role === 'Teacher' ? <TeacherCompetitionLobby /> : <Navigate to='/' />} />
           <Route path='/teacher/competitions-hub' element={isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? <UpcomingCompetitionsHub /> : <Navigate to='/' />} />

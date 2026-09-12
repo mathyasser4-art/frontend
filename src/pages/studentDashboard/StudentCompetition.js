@@ -68,17 +68,16 @@ function StudentCompetition() {
     const [badges, setBadges] = useState([]);
     const [isCertOpen, setIsCertOpen] = useState(false);
 
+    const token = safeLocalStorage.getItem('O_authWEB');
     let studentID = safeLocalStorage.getItem('pp_id') || safeLocalStorage.getItem('user_id') || safeLocalStorage.getItem('userId');
     let studentName = safeLocalStorage.getItem('pp_name') || safeLocalStorage.getItem('user_name') || safeLocalStorage.getItem('userName');
-    if (!studentID || studentID === 'undefined' || studentID === 'null') {
-        studentID = safeLocalStorage.getItem('guest_id');
-        if (!studentID || studentID === 'undefined' || studentID === 'null') {
-            studentID = 'guest_' + Math.random().toString(36).substr(2, 9);
-            safeLocalStorage.setItem('guest_id', studentID);
+
+    // Strict authentication guard: No guests permitted under any circumstance
+    useEffect(() => {
+        if (!token || !studentID || studentID === 'undefined' || studentID === 'null') {
+            navigate('/login');
         }
-        studentName = safeLocalStorage.getItem('guest_name') || 'Guest ' + Math.floor(100 + Math.random() * 900);
-        safeLocalStorage.setItem('guest_name', studentName);
-    }
+    }, [token, studentID, navigate]);
 
     // Refs to always have latest counts for background score sync
     const correctCountRef = useRef(0);
@@ -188,14 +187,20 @@ function StudentCompetition() {
     // Fetch initial details and join lobby
     useEffect(() => {
         const initLobby = async () => {
+            if (!token || !studentID || studentID === 'undefined' || studentID === 'null') {
+                navigate('/login');
+                return;
+            }
             try {
-                // Join the lobby
+                // Join the lobby as an authenticated student
                 console.log('[Competition] Joining competition:', competitionId);
-                console.log('[Competition] API Base URL:', API_BASE_URL);
-                const joinRes = await joinCompetition(competitionId, { guestId: studentID, guestName: studentName });
-                console.log('[Competition] Join response:', JSON.stringify(joinRes));
+                const joinRes = await joinCompetition(competitionId, { studentId: studentID, userName: studentName });
                 if (joinRes.message !== 'success') {
                     console.warn("[Competition] Could not join lobby:", joinRes.message);
+                    if (joinRes.message && (joinRes.message.includes("Guests are not allowed") || joinRes.message.includes("log in"))) {
+                        navigate('/login');
+                        return;
+                    }
                 } else {
                     console.log('[Competition] Successfully joined lobby!');
                 }
@@ -330,8 +335,7 @@ function StudentCompetition() {
         channel.bind('student-kicked', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             const myId = String(studentID);
-            const myGuestId = safeLocalStorage.getItem('guest_id') || safeLocalStorage.getItem('pp_id');
-            if (data && data.studentId && (String(data.studentId) === myId || String(data.studentId) === String(myGuestId))) {
+            if (data && data.studentId && String(data.studentId) === myId) {
                 alert("You were removed from this competition by the host teacher.");
                 navigate('/student/dashboard');
             } else if (data && data.studentId) {
@@ -370,10 +374,14 @@ function StudentCompetition() {
                     setLobbyCountdown(prev => prev - 1);
                 }, 1000);
                 return () => clearTimeout(timer);
-            } else {
-                setStatus('active');
-                setLobbyCountdown(null);
-                setTimerRemaining(prev => (prev && prev > 0 ? prev : (competition?.timer || 300)));
+            } else if (lobbyCountdown === 0) {
+                // Show GO! for 800ms before switching to active gameplay
+                const timer = setTimeout(() => {
+                    setStatus('active');
+                    setLobbyCountdown(null);
+                    setTimerRemaining(prev => (prev && prev > 0 ? prev : (competition?.timer || 300)));
+                }, 800);
+                return () => clearTimeout(timer);
             }
         }
     }, [status, lobbyCountdown, competition]);
@@ -459,24 +467,25 @@ function StudentCompetition() {
     // Background answer check (fire & forget) — secure flow
     const syncAnswerWithBackend = async (questionId, questionAnswer) => {
         try {
-            // First update the answersMap locally (optimistic)
-            setAnswersMap(prev => {
-                const updated = {
-                    ...prev,
-                    [questionId]: { ...prev[questionId], checked: true, answer: questionAnswer } // correct status unknown yet
-                };
-                answersMapRef.current = updated;
-                return updated;
-            });
+            // Synchronously ensure answersMapRef has the latest answer so it is never dropped on question 1
+            const currentAnswers = {
+                ...answersMapRef.current,
+                [questionId]: { ...answersMapRef.current[questionId], checked: true, answer: questionAnswer }
+            };
+            answersMapRef.current = currentAnswers;
+            setAnswersMap(currentAnswers);
 
-            // Send score update
+            // Send score update with synchronous latest answers and counts
             const response = await updateLiveScore(competitionId, {
                 studentId: studentID,
                 userName: studentName,
                 finished: false,
-                answers: Object.entries(answersMapRef.current).map(([qId, data]) => ({
+                score: correctCountRef.current,
+                totalAnswered: totalAnsweredRef.current,
+                wrongAnswers: wrongCountRef.current,
+                answers: Object.entries(currentAnswers).map(([qId, data]) => ({
                     question: qId,
-                    studentAnswer: data.answer || ""
+                    studentAnswer: data.answer !== undefined && data.answer !== null ? String(data.answer) : ""
                 }))
             });
 
@@ -487,28 +496,26 @@ function StudentCompetition() {
                  let newWrongCount = 0;
                  let newTotalAnswered = secureAnswers.length;
                  
-                 setAnswersMap(prev => {
-                     const updated = { ...prev };
-                     secureAnswers.forEach(ans => {
-                         if (updated[ans.question]) {
-                             updated[ans.question].correct = ans.isCorrect;
-                             updated[ans.question].checked = true;
-                         } else {
-                             updated[ans.question] = { answer: ans.studentAnswer, checked: true, correct: ans.isCorrect };
-                         }
-                         if (ans.isCorrect) newCorrectCount++;
-                         else newWrongCount++;
-                     });
-                     answersMapRef.current = updated;
-                     return updated;
+                 const updated = { ...answersMapRef.current };
+                 secureAnswers.forEach(ans => {
+                     if (updated[ans.question]) {
+                         updated[ans.question].correct = ans.isCorrect;
+                         updated[ans.question].checked = true;
+                     } else {
+                         updated[ans.question] = { answer: ans.studentAnswer, checked: true, correct: ans.isCorrect };
+                     }
+                     if (ans.isCorrect) newCorrectCount++;
+                     else newWrongCount++;
                  });
+                 answersMapRef.current = updated;
+                 setAnswersMap(updated);
                  
                  correctCountRef.current = newCorrectCount;
                  setCorrectCount(newCorrectCount);
                  wrongCountRef.current = newWrongCount;
                  setWrongCount(newWrongCount);
-                 totalAnsweredRef.current = newTotalAnswered;
-                 setTotalAnswered(newTotalAnswered);
+                 totalAnsweredRef.current = Math.max(totalAnsweredRef.current, newTotalAnswered);
+                 setTotalAnswered(totalAnsweredRef.current);
             }
         } catch (err) {
             console.error('Background sync failed for question', questionId, err);
@@ -521,17 +528,16 @@ function StudentCompetition() {
         requestWakeLock();
 
         const currentQuestion = questions[currentIndex];
+        const trimmed = answer.trim();
         const wasAlreadyAnswered = !!answersMapRef.current[currentQuestion._id];
         
-        // Save answer locally
-        setAnswersMap(prev => {
-            const updated = {
-                ...prev,
-                [currentQuestion._id]: { answer: answer.trim(), checked: false, correct: false }
-            };
-            answersMapRef.current = updated;
-            return updated;
-        });
+        // Synchronously save answer to ref so syncAnswerWithBackend immediately has it
+        const updated = {
+            ...answersMapRef.current,
+            [currentQuestion._id]: { answer: trimmed, checked: false, correct: false }
+        };
+        answersMapRef.current = updated;
+        setAnswersMap(updated);
 
         // Increment total answered only if newly answered
         if (!wasAlreadyAnswered) {
@@ -540,7 +546,7 @@ function StudentCompetition() {
         }
 
         // Fire background check (don't await — student moves on immediately)
-        syncAnswerWithBackend(currentQuestion._id, answer);
+        syncAnswerWithBackend(currentQuestion._id, trimmed);
 
         soundEffects.playClick();
 
@@ -565,24 +571,25 @@ function StudentCompetition() {
         requestWakeLock();
         lastAnswerClickTimeRef.current = new Date();
 
-        // Save answer locally immediately
-        setAnswersMap(prev => {
-            const updated = {
-                ...prev,
-                [currentQuestion._id]: { answer: selectedVal.trim(), checked: false, correct: false }
-            };
-            answersMapRef.current = updated;
-            return updated;
-        });
+        const trimmed = selectedVal.trim();
+        const wasAlreadyAnswered = !!answersMapRef.current[currentQuestion._id];
+
+        // Synchronously save answer to ref so syncAnswerWithBackend immediately has it
+        const updated = {
+            ...answersMapRef.current,
+            [currentQuestion._id]: { answer: trimmed, checked: false, correct: false }
+        };
+        answersMapRef.current = updated;
+        setAnswersMap(updated);
 
         // Increment total answered if not already answered
-        if (!answersMap[currentQuestion._id]) {
+        if (!wasAlreadyAnswered) {
             totalAnsweredRef.current += 1;
             setTotalAnswered(totalAnsweredRef.current);
         }
 
         // Fire background check immediately
-        syncAnswerWithBackend(currentQuestion._id, selectedVal);
+        syncAnswerWithBackend(currentQuestion._id, trimmed);
 
         // Auto-advance with 300ms visual select feedback delay
         setTimeout(() => {
@@ -601,28 +608,28 @@ function StudentCompetition() {
         // Save current answer before switching
         if (answer.trim() && questions[currentIndex]) {
             const currentQuestion = questions[currentIndex];
+            const trimmed = answer.trim();
             const prevAns = answersMapRef.current[currentQuestion._id]?.answer;
-            if (prevAns !== answer.trim()) {
-                setAnswersMap(prev => {
-                    const updated = {
-                        ...prev,
-                        [currentQuestion._id]: { answer: answer.trim(), checked: false, correct: false }
-                    };
-                    answersMapRef.current = updated;
-                    return updated;
-                });
+            if (prevAns !== trimmed) {
+                const updated = {
+                    ...answersMapRef.current,
+                    [currentQuestion._id]: { answer: trimmed, checked: false, correct: false }
+                };
+                answersMapRef.current = updated;
+                setAnswersMap(updated);
+
                 if (!prevAns) {
                     totalAnsweredRef.current += 1;
                     setTotalAnswered(totalAnsweredRef.current);
                 }
-                syncAnswerWithBackend(currentQuestion._id, answer.trim());
+                syncAnswerWithBackend(currentQuestion._id, trimmed);
             }
         }
         setCurrentIndex(index);
         // Restore saved answer if any
         const targetQ = questions[index];
-        if (targetQ && answersMap[targetQ._id]) {
-            setAnswer(answersMap[targetQ._id].answer || '');
+        if (targetQ && answersMapRef.current[targetQ._id]) {
+            setAnswer(answersMapRef.current[targetQ._id].answer || '');
         } else {
             setAnswer('');
         }
@@ -658,7 +665,7 @@ function StudentCompetition() {
                 finishedAt: now.toISOString(),
                 answers: Object.entries(answersMapRef.current).map(([qId, data]) => ({
                     question: qId,
-                    studentAnswer: data.answer || "",
+                    studentAnswer: data.answer !== undefined && data.answer !== null ? String(data.answer) : "",
                     isCorrect: !!data.correct
                 }))
             });

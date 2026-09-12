@@ -160,15 +160,43 @@ function TeacherCompetitionLobby() {
                     setCompetition(res.competition);
                     setParticipants(prev => {
                         const dbParticipants = res.competition.participants || [];
-                        const merged = [...dbParticipants];
+                        const merged = dbParticipants.map(dbP => {
+                            const pId = getParticipantId(dbP);
+                            const existing = prev.find(p => String(getParticipantId(p)) === String(pId));
+                            if (!existing) return dbP;
+
+                            const score = Math.max(dbP.score || 0, existing.score || 0);
+                            const totalAnswered = Math.max(
+                                dbP.totalAnswered || 0,
+                                existing.totalAnswered || 0,
+                                dbP.answers?.length || 0,
+                                existing.answers?.length || 0
+                            );
+                            const wrongAnswers = Math.max(dbP.wrongAnswers || 0, existing.wrongAnswers || 0);
+                            const finishedAt = existing.finishedAt || dbP.finishedAt || null;
+                            const answers = (dbP.answers && dbP.answers.length >= (existing.answers?.length || 0))
+                                ? dbP.answers
+                                : (existing.answers || dbP.answers || []);
+
+                            return {
+                                ...dbP,
+                                ...existing,
+                                student: dbP.student || existing.student,
+                                score,
+                                totalAnswered,
+                                wrongAnswers,
+                                finishedAt,
+                                answers
+                            };
+                        });
+
                         prev.forEach(p => {
                             const pId = getParticipantId(p);
-                            if (!pId) return;
-                            const exists = merged.some(dbP => String(getParticipantId(dbP)) === String(pId));
-                            if (!exists) {
+                            if (pId && !merged.some(m => String(getParticipantId(m)) === String(pId))) {
                                 merged.push(p);
                             }
                         });
+
                         return merged;
                     });
                     setStatus(res.competition.status || 'lobby');
@@ -235,15 +263,43 @@ function TeacherCompetitionLobby() {
                     // Sync competition object (ensures startedAt is always fresh)
                     setCompetition(res.competition);
                     setParticipants(prev => {
-                        const merged = [...dbParticipants];
+                        const merged = dbParticipants.map(dbP => {
+                            const pId = getParticipantId(dbP);
+                            const existing = prev.find(p => String(getParticipantId(p)) === String(pId));
+                            if (!existing) return dbP;
+
+                            const score = Math.max(dbP.score || 0, existing.score || 0);
+                            const totalAnswered = Math.max(
+                                dbP.totalAnswered || 0,
+                                existing.totalAnswered || 0,
+                                dbP.answers?.length || 0,
+                                existing.answers?.length || 0
+                            );
+                            const wrongAnswers = Math.max(dbP.wrongAnswers || 0, existing.wrongAnswers || 0);
+                            const finishedAt = existing.finishedAt || dbP.finishedAt || null;
+                            const answers = (dbP.answers && dbP.answers.length >= (existing.answers?.length || 0))
+                                ? dbP.answers
+                                : (existing.answers || dbP.answers || []);
+
+                            return {
+                                ...dbP,
+                                ...existing,
+                                student: dbP.student || existing.student,
+                                score,
+                                totalAnswered,
+                                wrongAnswers,
+                                finishedAt,
+                                answers
+                            };
+                        });
+
                         prev.forEach(p => {
                             const pId = getParticipantId(p);
-                            if (!pId) return;
-                            const exists = merged.some(dbP => String(getParticipantId(dbP)) === String(pId));
-                            if (!exists) {
+                            if (pId && !merged.some(m => String(getParticipantId(m)) === String(pId))) {
                                 merged.push(p);
                             }
                         });
+
                         return merged;
                     });
                     // Also sync status from DB
@@ -299,16 +355,40 @@ function TeacherCompetitionLobby() {
         channel.bind('score-updated', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             setParticipants(prev => {
+                const targetId = String(data.studentId);
+                const exists = prev.some(p => String(getParticipantId(p)) === targetId);
+                if (!exists) {
+                    return [...prev, {
+                        student: { _id: data.studentId, userName: data.userName },
+                        guestId: data.studentId,
+                        guestName: data.userName,
+                        score: data.score || 0,
+                        totalAnswered: data.totalAnswered || (data.answers ? data.answers.length : 0),
+                        wrongAnswers: data.wrongAnswers || 0,
+                        finishedAt: data.finishedAt ? new Date(data.finishedAt) : (data.finished ? new Date() : null),
+                        answers: data.answers || []
+                    }];
+                }
                 return prev.map(p => {
                     const pId = getParticipantId(p);
-                    if (String(pId) === String(data.studentId)) {
+                    if (String(pId) === targetId) {
+                        const newScore = data.score !== undefined ? data.score : (p.score || 0);
+                        const newTotal = Math.max(
+                            data.totalAnswered !== undefined ? data.totalAnswered : (p.totalAnswered || 0),
+                            p.totalAnswered || 0,
+                            data.answers?.length || 0,
+                            p.answers?.length || 0
+                        );
+                        const newWrong = data.wrongAnswers !== undefined ? data.wrongAnswers : (p.wrongAnswers || 0);
                         return { 
                             ...p, 
-                            score: data.score, 
-                            totalAnswered: data.totalAnswered,
-                            wrongAnswers: data.wrongAnswers,
-                            finishedAt: data.finishedAt ? new Date(data.finishedAt) : (data.finished ? new Date() : p.finishedAt),
-                            answers: data.answers || p.answers
+                            student: p.student || { _id: data.studentId, userName: data.userName },
+                            guestName: p.guestName || data.userName,
+                            score: newScore, 
+                            totalAnswered: newTotal,
+                            wrongAnswers: newWrong,
+                            finishedAt: data.finishedAt ? new Date(data.finishedAt) : (data.finished ? (p.finishedAt || new Date()) : p.finishedAt),
+                            answers: (data.answers && data.answers.length >= (p.answers?.length || 0)) ? data.answers : (p.answers || [])
                         };
                     }
                     return p;
@@ -387,10 +467,14 @@ function TeacherCompetitionLobby() {
                     setLobbyCountdown(prev => prev - 1);
                 }, 1000);
                 return () => clearTimeout(timer);
-            } else {
-                setStatus('active');
-                setLobbyCountdown(null);
-                setTimerRemaining(prev => (prev && prev > 0 ? prev : (competition?.timer || 300)));
+            } else if (lobbyCountdown === 0) {
+                // Show GO! for 800ms before switching to active gameplay
+                const timer = setTimeout(() => {
+                    setStatus('active');
+                    setLobbyCountdown(null);
+                    setTimerRemaining(prev => (prev && prev > 0 ? prev : (competition?.timer || 300)));
+                }, 800);
+                return () => clearTimeout(timer);
             }
         }
     }, [status, lobbyCountdown, competition]);
@@ -755,8 +839,10 @@ function TeacherCompetitionLobby() {
 
     // Helper to sort participants with tie-breakers (highest score, finish speed, accuracy)
     const sortedParticipants = [...participants].sort((a, b) => {
-        if (b.score !== a.score) {
-            return b.score - a.score;
+        const aScore = a.score || 0;
+        const bScore = b.score || 0;
+        if (bScore !== aScore) {
+            return bScore - aScore;
         }
         
         // Tie-breaker 1: Finished vs Unfinished
@@ -778,7 +864,9 @@ function TeacherCompetitionLobby() {
         }
         
         // Tie-breaker 4: Pace (more total answered first)
-        return (b.totalAnswered || 0) - (a.totalAnswered || 0);
+        const aTotal = Math.max(a.totalAnswered || 0, a.answers?.length || 0, aScore + aWrong);
+        const bTotal = Math.max(b.totalAnswered || 0, b.answers?.length || 0, bScore + bWrong);
+        return bTotal - aTotal;
     });
     const podiumWinners = sortedParticipants.slice(0, 3);
 
@@ -810,40 +898,6 @@ function TeacherCompetitionLobby() {
                         <p className="subtitle">Create a competition Host Dashboard</p>
                         
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'center' }}>
-                            <div className="battle-id-badge" style={{
-                                marginTop: '15px',
-                                background: 'rgba(255, 255, 255, 0.05)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                borderRadius: '10px',
-                                padding: '8px 15px',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '10px'
-                            }}>
-                                <span style={{ fontSize: '13px', color: '#a78bfa', fontWeight: 'bold' }}>COMPETITION ID:</span>
-                                <span style={{ fontFamily: 'monospace', fontSize: '14px', letterSpacing: '0.05em' }}>{competitionId}</span>
-                                <button
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(competitionId);
-                                        soundEffects.playClick();
-                                        alert("Competition ID copied! Share it with your students.");
-                                    }}
-                                    style={{
-                                        background: 'linear-gradient(135deg, #7c3aed, #db2777)',
-                                        border: 'none',
-                                        borderRadius: '6px',
-                                        color: '#fff',
-                                        padding: '4px 10px',
-                                        fontSize: '11px',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 8px rgba(124, 58, 237, 0.3)'
-                                    }}
-                                >
-                                    Copy ID
-                                </button>
-                            </div>
-
                             <div className="invite-link-badge" style={{
                                 marginTop: '15px',
                                 background: 'rgba(255, 255, 255, 0.05)',
@@ -860,7 +914,7 @@ function TeacherCompetitionLobby() {
                                         const inviteLink = `${window.location.origin}/student/competition/${competitionId}`;
                                         navigator.clipboard.writeText(inviteLink);
                                         soundEffects.playClick();
-                                        alert("Invite Link copied! Share it with anyone to join.");
+                                        alert("Invite Link copied! Share it with your students to join.");
                                     }}
                                     style={{
                                         background: 'linear-gradient(135deg, #ec4899, #f43f5e)',
@@ -1053,8 +1107,13 @@ function TeacherCompetitionLobby() {
 
                         <div className="live-race-track-list">
                             {sortedParticipants.map((p, idx) => {
-                                const progressPercent = totalQuestions > 0 ? ((p.totalAnswered || 0) / totalQuestions) * 100 : 0;
-                                const isFinished = !!p.finishedAt;
+                                const actualAnswered = Math.max(
+                                    p.totalAnswered || 0,
+                                    p.answers?.length || 0,
+                                    ((p.score || 0) + (p.wrongAnswers || 0))
+                                );
+                                const progressPercent = totalQuestions > 0 ? (actualAnswered / totalQuestions) * 100 : 0;
+                                const isFinished = !!p.finishedAt || (totalQuestions > 0 && actualAnswered >= totalQuestions);
 
                                 return (
                                     <div key={getParticipantId(p) || idx} className="race-track-row">
@@ -1087,7 +1146,7 @@ function TeacherCompetitionLobby() {
                                                 ✕ Kick
                                             </button>
                                             <span className="score-ratio">
-                                                {p.totalAnswered || 0} / {totalQuestions} Solved ({p.score} Correct, {p.wrongAnswers || 0} Wrong)
+                                                {actualAnswered} / {totalQuestions} Solved ({p.score || 0} Correct, {p.wrongAnswers || 0} Wrong)
                                                 {isFinished && competition.startedAt && (
                                                     <span style={{ display: 'block', fontSize: '11px', color: '#10b981', marginTop: '3px', fontWeight: 'bold' }}>
                                                         ⏱️ {formatElapsedMs(p.finishedAt, competition.startedAt)}
@@ -1098,10 +1157,10 @@ function TeacherCompetitionLobby() {
                                         <div className="track-lane">
                                             <div 
                                                 className={`racer-progress-bar ${isFinished ? 'finished-bar' : ''}`}
-                                                style={{ width: `${(p.totalAnswered || 0) > 0 ? Math.max(8, progressPercent) : 0}%` }}
+                                                style={{ width: isFinished ? '100%' : `${actualAnswered > 0 ? Math.max(8, Math.min(100, progressPercent)) : 0}%` }}
                                             >
                                                 <div className="racer-avatar-runner">
-                                                    {p.student?.userName?.charAt(0).toUpperCase()}
+                                                    {getStudentName(p).charAt(0).toUpperCase()}
                                                 </div>
                                             </div>
                                         </div>
