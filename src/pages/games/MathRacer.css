@@ -13,6 +13,8 @@
   overflow-y: auto;
   color: #ffffff;
   font-family: 'Outfit', sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
 .arcade-game-arena-wrapper.rtl-mode {
@@ -77,16 +79,16 @@
   direction: ltr !important;
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 1.25rem !important;
+  gap: 1rem !important;
   background: rgba(15, 23, 42, 0.94) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
   border: 2px solid rgba(168, 85, 247, 0.55) !important;
-  padding: 0.85rem 1.4rem !important;
-  border-radius: 22px !important;
+  padding: 0.65rem 1.25rem !important;
+  border-radius: 20px !important;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 25px rgba(168, 85, 247, 0.25) !important;
-  width: min(650px, 88vw) !important;
-  max-width: 650px !important;
+  width: min(620px, 86vw) !important;
+  max-width: 620px !important;
   color: #ffffff !important;
   box-sizing: border-box !important;
   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease !important;
@@ -232,12 +234,12 @@
   -webkit-user-select: none !important;
   background: rgba(30, 41, 59, 0.88) !important;
   border: 2px solid rgba(139, 92, 246, 0.6) !important;
-  padding: 10px 16px !important;
-  min-height: 52px !important;
-  font-size: clamp(1.15rem, 1.6vw, 1.35rem) !important;
+  padding: 8px 14px !important;
+  min-height: 46px !important;
+  font-size: clamp(1.1rem, 1.4vw, 1.28rem) !important;
   font-weight: 800 !important;
   color: #ffffff !important;
-  border-radius: 14px !important;
+  border-radius: 12px !important;
   cursor: pointer !important;
   transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
@@ -914,12 +916,17 @@
 .diff-btn.medium { background: linear-gradient(135deg, #fbbf24, #d97706); }
 .diff-btn.hard { background: linear-gradient(135deg, #f87171, #dc2626); }
 
-/* Gameplay State */
+/* Gameplay State Container */
 .racer-gameplay {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  width: 100% !important;
+  height: calc(100vh - 52px) !important;
+  min-height: calc(100vh - 52px) !important;
+  overflow: hidden !important;
+  gap: 0 !important;
 }
 
 .game-stats {
@@ -1174,9 +1181,11 @@
 /* Fullscreen Track Alignment */
 .track-container {
   flex: 1 !important;
-  height: calc(100vh - 90px) !important;
-  min-height: 520px !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
   position: relative !important;
+  overflow: hidden !important;
   margin-top: 0 !important;
 }
 

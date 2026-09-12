@@ -1,8 +1,8 @@
 .fullscreen-toggle-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
+    top: 14px;
+    right: 18px;
+    z-index: 600;
     background: rgba(15, 23, 42, 0.7);
     backdrop-filter: blur(8px);
     border: 2px solid rgba(255, 255, 255, 0.3);
