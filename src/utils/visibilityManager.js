@@ -128,7 +128,16 @@ export const getHiddenSystemIds = (schoolId) => {
  */
 export const isSystemVisible = (systemId, schoolId, systemObj) => {
   if (!systemId) return true;
-  if (systemObj && systemObj.isVisible === false) return false;
+  if (systemObj) {
+    if (systemObj.isVisible === false || systemObj.visibilityMode === 'none') return false;
+    if (systemObj.visibilityMode === 'specific') {
+      const currentSchoolId = resolveSchoolId(schoolId);
+      const allowedIds = (systemObj.allowedSchools || []).map(s => String(s._id || s));
+      if (!currentSchoolId || !allowedIds.includes(String(currentSchoolId))) {
+        return false;
+      }
+    }
+  }
   const hiddenIds = getHiddenSystemIds(schoolId);
   return !hiddenIds.includes(String(systemId));
 };
@@ -163,18 +172,32 @@ export const resetAllSystemsVisible = (schoolId) => {
 
 /**
  * Filter an array of systems so only VISIBLE (ON) systems are returned.
- * Filters both global DB visibility (configured from admin dashboard) and school-level overrides,
- * as well as filtering out any individual subjects/levels marked as hidden.
+ * Filters:
+ * 1. Global DB visibility (isVisible / visibilityMode === 'none')
+ * 2. School-specific visibility (visibilityMode === 'specific' matches user's school_id)
+ * 3. School-level local overrides
+ * 4. Hidden subjects / levels
  */
 export const filterVisibleSystems = (systems, schoolId) => {
   if (!Array.isArray(systems)) return [];
+  const currentSchoolId = resolveSchoolId(schoolId);
   const hiddenIds = getHiddenSystemIds(schoolId);
+
   return systems
     .filter(sys => {
       if (!sys) return false;
       // 1. Global DB visibility from admin dashboard
-      if (sys.isVisible === false) return false;
-      // 2. School-level visibility override
+      if (sys.isVisible === false || sys.visibilityMode === 'none') return false;
+
+      // 2. School-specific visibility assigned from admin dashboard
+      if (sys.visibilityMode === 'specific') {
+        const allowedIds = (sys.allowedSchools || []).map(s => String(s._id || s));
+        if (!currentSchoolId || !allowedIds.includes(String(currentSchoolId))) {
+          return false;
+        }
+      }
+
+      // 3. School-level visibility override
       if (hiddenIds.includes(String(sys._id))) return false;
       return true;
     })
