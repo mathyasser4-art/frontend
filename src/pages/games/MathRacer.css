@@ -13,8 +13,6 @@
   overflow-y: auto;
   color: #ffffff;
   font-family: 'Outfit', sans-serif;
-  display: flex;
-  flex-direction: column;
 }
 
 .arcade-game-arena-wrapper.rtl-mode {
@@ -69,7 +67,7 @@
 /* --- Centered Cockpit HUD Question Card Overlay (Desktop) --- */
 .problem-container {
   position: absolute !important;
-  top: 14px !important;
+  top: 68px !important; /* Positioned cleanly below the 52px top navbar in windowed mode */
   left: 50% !important;
   transform: translateX(-50%) !important;
   right: auto !important;
@@ -92,6 +90,12 @@
   color: #ffffff !important;
   box-sizing: border-box !important;
   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease !important;
+}
+
+/* When in browser Fullscreen mode, header is hidden so tuck neatly to top */
+:fullscreen .problem-container,
+.racer-gameplay:fullscreen .problem-container {
+  top: 18px !important;
 }
 
 .arcade-game-arena-wrapper.rtl-mode .problem-container {
@@ -347,7 +351,7 @@
   }
 
   .problem-container {
-    top: 8px !important;
+    top: 54px !important; /* Positioned below mobile 46px navbar */
     left: 50% !important;
     transform: translateX(-50%) !important;
     right: auto !important;
@@ -918,15 +922,11 @@
 
 /* Gameplay State Container */
 .racer-gameplay {
-  flex: 1 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  position: relative !important;
-  width: 100% !important;
-  height: calc(100vh - 52px) !important;
-  min-height: calc(100vh - 52px) !important;
-  overflow: hidden !important;
-  gap: 0 !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
 }
 
 .game-stats {
@@ -1182,8 +1182,8 @@
 .track-container {
   flex: 1 !important;
   width: 100% !important;
-  height: 100% !important;
-  min-height: 0 !important;
+  height: calc(100vh - 90px) !important;
+  min-height: 520px !important;
   position: relative !important;
   overflow: hidden !important;
   margin-top: 0 !important;
