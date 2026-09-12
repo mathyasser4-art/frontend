@@ -1857,9 +1857,16 @@ function MathRacer() {
                     </button>
                   </div>
                 ) : (
-                <div className={`problem-container ${feedback} ${currentProblem.typeOfAnswer || ''} ${customQuestions ? 'side-by-side' : ''}`}>
+                <div className={`problem-container ${feedback ? feedback : ''} ${currentProblem.typeOfAnswer || ''} ${customQuestions ? 'side-by-side' : ''}`}>
                   
                   <div className="racer-question-section">
+                    {/* Question Header Pill */}
+                    <div className="racer-question-badge-bar">
+                      <span className="racer-q-counter-pill">
+                        🏁 {isArabic ? `السؤال ${currentQuestionIndex + 1}` : `Question ${currentQuestionIndex + 1}`}
+                        {customQuestions && activeQuestionCount ? ` / ${activeQuestionCount}` : (customQuestions && customQuestions.length ? ` / ${customQuestions.length}` : '')}
+                      </span>
+                    </div>
                     {/* Optional Question Image */}
                     {currentProblem.questionPic && (
                       <div className="racer-question-image-wrapper">

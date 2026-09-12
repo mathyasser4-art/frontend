@@ -64,37 +64,60 @@
 .rank-chip { border-color: rgba(16, 185, 129, 0.6); }
 .timer-chip { border-color: rgba(56, 189, 248, 0.6); }
 
-/* --- Side-by-Side Floating HUD Question Card Overlay --- */
+/* --- Centered Cockpit HUD Question Card Overlay (Desktop) --- */
 .problem-container {
   position: absolute !important;
-  top: 10px !important;
-  left: 10px !important;
+  top: 14px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
   right: auto !important;
-  transform: none !important;
   z-index: 500 !important;
   display: flex !important;
-  flex-direction: row !important; /* ALWAYS SIDE BY SIDE: quest | choices */
-  direction: ltr !important; /* PREVENT RTL MODE FROM SWAPPING SIDES */
+  flex-direction: row !important; /* Side-by-side on wide screens: Question | Choices */
+  direction: ltr !important;
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 0.65rem !important;
-  background: rgba(15, 23, 42, 0.95) !important;
-  backdrop-filter: blur(14px) !important;
-  border: 3px solid rgba(168, 85, 247, 0.7) !important;
-  padding: 0.6rem 0.85rem !important;
-  border-radius: 20px !important;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(168, 85, 247, 0.4) !important;
-  width: 58% !important;
-  max-width: 480px !important;
+  gap: 1.25rem !important;
+  background: rgba(15, 23, 42, 0.94) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 2px solid rgba(168, 85, 247, 0.55) !important;
+  padding: 0.85rem 1.4rem !important;
+  border-radius: 22px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 25px rgba(168, 85, 247, 0.25) !important;
+  width: min(650px, 88vw) !important;
+  max-width: 650px !important;
   color: #ffffff !important;
   box-sizing: border-box !important;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease !important;
 }
 
 .arcade-game-arena-wrapper.rtl-mode .problem-container {
-  left: 10px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
   right: auto !important;
-  transform: none !important;
   direction: ltr !important;
+}
+
+/* Question Header Badge & Counter */
+.racer-question-badge-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 4px !important;
+  width: 100% !important;
+}
+
+.racer-q-counter-pill {
+  font-size: 0.82rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.5px !important;
+  color: #c084fc !important;
+  background: rgba(168, 85, 247, 0.15) !important;
+  border: 1px solid rgba(168, 85, 247, 0.4) !important;
+  padding: 2px 10px !important;
+  border-radius: 20px !important;
+  text-transform: uppercase !important;
 }
 
 .racer-question-section {
@@ -102,22 +125,39 @@
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 4px !important;
-  flex: 1 !important;
-  border-right: 2px solid rgba(168, 85, 247, 0.5) !important; /* VERTICAL DIVIDER LINE ALWAYS ON RIGHT */
-  padding-right: 0.6rem !important;
-  margin-right: 0.2rem !important;
+  gap: 6px !important;
+  flex: 1.1 !important;
+  border-right: 2px solid rgba(168, 85, 247, 0.35) !important;
+  padding-right: 1.25rem !important;
+  margin-right: 0.4rem !important;
   box-sizing: border-box !important;
   min-width: 0 !important;
 }
 
 .arcade-game-arena-wrapper.rtl-mode .racer-question-section {
-  border-right: 2px solid rgba(168, 85, 247, 0.5) !important;
+  border-right: 2px solid rgba(168, 85, 247, 0.35) !important;
   border-left: none !important;
-  padding-right: 0.6rem !important;
+  padding-right: 1.25rem !important;
   padding-left: 0 !important;
-  margin-right: 0.2rem !important;
+  margin-right: 0.4rem !important;
   margin-left: 0 !important;
+}
+
+.racer-question-image-wrapper {
+  max-width: 100% !important;
+  max-height: 110px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-bottom: 4px !important;
+}
+
+.racer-question-image {
+  max-height: 100px !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .racer-answer-section {
@@ -125,33 +165,63 @@
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  flex: 1.3 !important;
+  flex: 1.25 !important;
   box-sizing: border-box !important;
   min-width: 0 !important;
+  width: 100% !important;
 }
 
 .problem-text {
   direction: ltr !important;
   unicode-bidi: isolate !important;
-  font-size: 1.38rem !important;
-  line-height: 1.15 !important;
+  font-size: clamp(1.4rem, 2.2vw, 2rem) !important;
+  line-height: 1.25 !important;
   letter-spacing: 0.5px !important;
   font-weight: 900 !important;
-  color: #38bdf8 !important;
-  text-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important;
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8), 0 0 16px rgba(56, 189, 248, 0.4) !important;
   margin: 0 !important;
   text-align: center !important;
+  word-break: break-word !important;
 }
 
+/* Abacus Vertical Grid Display */
 .racer-abacus-display-table {
   direction: ltr !important;
   unicode-bidi: isolate !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
 }
 
+.racer-abacus-display-table tr {
+  line-height: 1.2 !important;
+}
+
+.racer-abacus-display-table td {
+  padding: 3px 8px !important;
+  font-size: clamp(1.35rem, 2.2vw, 1.85rem) !important;
+  font-weight: 900 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.racer-abacus-display-table td.op-cell {
+  color: #38bdf8 !important;
+  font-size: 1.15em !important;
+  text-align: right !important;
+  width: 28px !important;
+}
+
+.racer-abacus-display-table td.val-cell {
+  color: #ffffff !important;
+  text-align: right !important;
+  letter-spacing: 1px !important;
+}
+
+/* Option Buttons Grid */
 .math-racer-options {
   display: grid !important;
-  grid-template-columns: repeat(2, 1fr) !important; /* 2x2 side-by-side grid */
-  gap: 6px !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
   width: 100% !important;
   box-sizing: border-box !important;
 }
@@ -160,46 +230,94 @@
   -webkit-tap-highlight-color: transparent !important;
   user-select: none !important;
   -webkit-user-select: none !important;
-  background: rgba(30, 41, 59, 0.9) !important;
-  border: 2px solid #8b5cf6 !important;
-  padding: 7px 12px !important;
-  font-size: 1.14rem !important;
+  background: rgba(30, 41, 59, 0.88) !important;
+  border: 2px solid rgba(139, 92, 246, 0.6) !important;
+  padding: 10px 16px !important;
+  min-height: 52px !important;
+  font-size: clamp(1.15rem, 1.6vw, 1.35rem) !important;
   font-weight: 800 !important;
   color: #ffffff !important;
-  border-radius: 12px !important;
+  border-radius: 14px !important;
   cursor: pointer !important;
-  transition: transform 0.05s ease !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
-  white-space: nowrap !important;
-  word-break: normal !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow: visible !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   min-width: 0 !important;
   width: 100% !important;
   box-sizing: border-box !important;
+  text-align: center !important;
+  line-height: 1.25 !important;
 }
 
-/* Light up ONLY when physically pressed (:active), not on hover/focus */
-.racer-option-btn:focus,
-.racer-option-btn:focus-visible,
 .racer-option-btn:hover {
-  outline: none !important;
-  background: rgba(30, 41, 59, 0.9) !important;
-  border-color: #8b5cf6 !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  border-color: #c084fc !important;
+  background: rgba(55, 48, 163, 0.85) !important;
+  box-shadow: 0 6px 18px rgba(168, 85, 247, 0.45) !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
-  transform: none !important;
 }
 
 .racer-option-btn:active {
-  transform: scale(0.95) !important;
+  transform: scale(0.96) !important;
   background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
-  border-color: #a855f7 !important;
+  border-color: #c084fc !important;
   color: #ffffff !important;
-  box-shadow: 0 0 18px rgba(168, 85, 247, 0.9) !important;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.85) !important;
+}
+
+/* Feedback Response States */
+.problem-container.correct {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.65), 0 16px 40px rgba(0, 0, 0, 0.65) !important;
+}
+
+.problem-container.wrong {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.65), 0 16px 40px rgba(0, 0, 0, 0.65) !important;
+  animation: hudShake 0.4s ease-in-out;
+}
+
+@keyframes hudShake {
+  0%, 100% { transform: translateX(-50%) translateX(0); }
+  20%, 60% { transform: translateX(-50%) translateX(-6px); }
+  40%, 80% { transform: translateX(-50%) translateX(6px); }
+}
+
+/* Graph Question Choices */
+.math-racer-graph-options {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+.racer-graph-option-btn {
+  background: rgba(30, 41, 59, 0.88) !important;
+  border: 2px solid rgba(139, 92, 246, 0.6) !important;
+  border-radius: 14px !important;
+  padding: 6px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 52px !important;
+  transition: transform 0.12s ease, border-color 0.12s ease !important;
+}
+
+.racer-graph-option-btn:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  border-color: #c084fc !important;
+}
+
+.racer-graph-option-btn img {
+  max-height: 60px !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
 }
 
 /* --- Mobile Responsive Rule --- */
@@ -227,97 +345,145 @@
   }
 
   .problem-container {
-    top: 6px !important;
-    left: 6px !important;
+    top: 8px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     right: auto !important;
-    transform: none !important;
-    width: 62% !important;
-    max-width: 420px !important;
-    padding: 0.4rem 0.55rem !important;
-    flex-direction: row !important; /* SIDE BY SIDE: quest | choices */
-    direction: ltr !important; /* PREVENT RTL MODE FROM SWAPPING SIDES */
-    gap: 0.35rem !important;
-    border-radius: 14px !important;
+    width: 94% !important;
+    max-width: 440px !important;
+    padding: 0.65rem 0.85rem !important;
+    flex-direction: column !important; /* Stack vertically on phones: Question on top, buttons below */
+    direction: ltr !important;
+    gap: 0.55rem !important;
+    border-radius: 18px !important;
     background: rgba(15, 23, 42, 0.96) !important;
+    border: 2px solid rgba(168, 85, 247, 0.6) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 15px rgba(168, 85, 247, 0.3) !important;
     box-sizing: border-box !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
 
   .arcade-game-arena-wrapper.rtl-mode .problem-container {
-    left: 6px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     right: auto !important;
-    transform: none !important;
     direction: ltr !important;
+  }
+
+  .racer-question-badge-bar {
+    margin-bottom: 2px !important;
+  }
+
+  .racer-q-counter-pill {
+    font-size: 0.75rem !important;
+    padding: 2px 8px !important;
   }
 
   .racer-question-section {
     align-items: center !important;
     justify-content: center !important;
-    flex: 1 !important;
+    flex: none !important;
     width: 100% !important;
     max-width: 100% !important;
-    border-right: 2px solid rgba(168, 85, 247, 0.5) !important; /* VERTICAL DIVIDER LINE */
-    padding-right: 0.35rem !important;
-    margin-right: 0.1rem !important;
+    border-right: none !important;
+    border-bottom: 1.5px solid rgba(168, 85, 247, 0.35) !important;
+    padding-right: 0 !important;
+    padding-bottom: 0.45rem !important;
+    margin-right: 0 !important;
+    margin-bottom: 0.15rem !important;
     box-sizing: border-box !important;
   }
 
   .arcade-game-arena-wrapper.rtl-mode .racer-question-section {
-    border-right: 2px solid rgba(168, 85, 247, 0.5) !important;
-    border-left: none !important;
-    padding-right: 0.35rem !important;
-    padding-left: 0 !important;
-    margin-right: 0.1rem !important;
-    margin-left: 0 !important;
+    border-right: none !important;
+    border-bottom: 1.5px solid rgba(168, 85, 247, 0.35) !important;
+    padding-right: 0 !important;
+    padding-bottom: 0.45rem !important;
+    margin-right: 0 !important;
+    margin-bottom: 0.15rem !important;
   }
 
   .racer-answer-section {
     align-items: center !important;
     justify-content: center !important;
-    flex: 1.3 !important;
+    flex: none !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
   }
 
   .problem-text {
-    font-size: 1.14rem !important;
-    line-height: 1.12 !important;
+    font-size: clamp(1.25rem, 4.8vw, 1.65rem) !important;
+    line-height: 1.2 !important;
     letter-spacing: 0.5px !important;
     text-align: center !important;
     max-width: 100% !important;
     word-break: break-word !important;
     margin: 0 !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8), 0 0 10px rgba(56, 189, 248, 0.5) !important;
   }
 
   .racer-abacus-display-table td {
     padding: 2px 6px !important;
-    font-size: 1.14rem !important;
+    font-size: clamp(1.25rem, 4.5vw, 1.55rem) !important;
   }
 
   .math-racer-options {
     width: 100% !important;
     max-width: 100% !important;
-    gap: 4px !important;
+    gap: 8px !important;
     grid-template-columns: repeat(2, 1fr) !important;
     box-sizing: border-box !important;
   }
 
   .racer-option-btn {
-    padding: 6px 7px !important;
-    font-size: 1.02rem !important;
+    padding: 8px 10px !important;
+    min-height: 48px !important;
+    font-size: clamp(1.08rem, 3.8vw, 1.25rem) !important;
     font-weight: 800 !important;
-    border-radius: 10px !important;
-    white-space: nowrap !important;
-    word-break: normal !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    border-radius: 12px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
     min-width: 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Landscape mode optimization for mobile */
+  @media (max-height: 480px) and (orientation: landscape) {
+    .problem-container {
+      top: 4px !important;
+      padding: 0.35rem 0.75rem !important;
+      flex-direction: row !important;
+      max-width: 540px !important;
+      gap: 0.65rem !important;
+    }
+
+    .racer-question-section {
+      border-right: 1.5px solid rgba(168, 85, 247, 0.35) !important;
+      border-bottom: none !important;
+      padding-right: 0.65rem !important;
+      padding-bottom: 0 !important;
+      margin-bottom: 0 !important;
+      flex: 1.1 !important;
+    }
+
+    .racer-answer-section {
+      flex: 1.2 !important;
+    }
+
+    .racer-option-btn {
+      min-height: 38px !important;
+      padding: 5px 8px !important;
+      font-size: 1.02rem !important;
+    }
   }
 
   .track-container {
@@ -1005,63 +1171,6 @@
 
 
 
-.racer-question-section {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  gap: 6px !important;
-  flex: 1 !important;
-}
-
-.problem-text {
-  font-size: 1.02rem !important;
-  line-height: 1.1 !important;
-  font-weight: 900 !important;
-  color: #38bdf8 !important;
-  text-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important;
-  margin: 0 !important;
-}
-
-.math-racer-options {
-  display: grid !important;
-  grid-template-columns: repeat(2, 1fr) !important; /* 2x2 side-by-side grid */
-  gap: 5px !important;
-  flex-shrink: 0 !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.racer-option-btn {
-  background: rgba(30, 41, 59, 0.9) !important;
-  border: 2px solid #8b5cf6 !important;
-  padding: 6px 10px !important;
-  font-size: 1.02rem !important;
-  font-weight: 800 !important;
-  color: #ffffff !important;
-  border-radius: 12px !important;
-  cursor: pointer !important;
-  transition: transform 0.05s ease !important;
-}
-
-.racer-option-btn:focus,
-.racer-option-btn:focus-visible,
-.racer-option-btn:hover {
-  outline: none !important;
-  background: rgba(30, 41, 59, 0.9) !important;
-  border-color: #8b5cf6 !important;
-  color: #ffffff !important;
-  transform: none !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
-}
-
-.racer-option-btn:active {
-  transform: scale(0.95) !important;
-  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important;
-  border-color: #a855f7 !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 18px rgba(168, 85, 247, 0.9) !important;
-}
-
 /* Fullscreen Track Alignment */
 .track-container {
   flex: 1 !important;
@@ -1102,11 +1211,6 @@
   font-size: 0.85rem;
   font-weight: 800;
   cursor: pointer;
-}
-
-.racer-option-btn:active {
-  transform: translateY(2px);
-  background: #e2e8f0;
 }
 
 .problem-container.correct .answer-input { border-color: #4ade80; color: #16a34a; }
@@ -1748,11 +1852,6 @@
   .track-container { min-height: 180px; }
   .racer-car { transform: scale(0.8); }
   
-  .problem-container { padding: 0.4rem 0.55rem; gap: 0.35rem; }
-  .problem-text { font-size: 1.02rem; line-height: 1.1; }
-  .racer-option-btn { font-size: 0.96rem; padding: 5px 7px; min-width: 0; white-space: nowrap; }
-  .answer-input { font-size: 2rem; width: 120px; padding: 0.5rem; border-radius: 12px; }
-  
   .results-podium { flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
   .final-placement, .final-score { padding: 1rem; }
   .final-placement h3, .final-score h3 { font-size: 2rem; margin: 0.5rem 0; }
@@ -2063,58 +2162,16 @@
 }
 
 /* Side-by-Side Question and Answer/Keypad layout when opened from custom question file */
-.racer-question-section,
-.racer-answer-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+.problem-container.side-by-side {
+  width: min(680px, 90vw) !important;
+  max-width: 680px !important;
 }
 
-@media (min-width: 601px) {
+@media (max-width: 768px) {
   .problem-container.side-by-side {
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-    gap: 3rem;
-    padding: 2rem;
-    width: 100%;
-  }
-
-  .problem-container.side-by-side .racer-question-section {
-    flex: 1.2;
-    border-right: 2px solid #e2e8f0;
-    padding-right: 2rem;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-  }
-
-  .problem-container.side-by-side .racer-answer-section {
-    flex: 1;
-    padding-left: 1rem;
-    justify-content: center;
-  }
-
-  /* Wrap MCQ options nicely inside side-by-side layout */
-  .problem-container.side-by-side .math-racer-options {
-    flex-wrap: wrap;
-    max-width: 340px;
-    gap: 12px;
-  }
-  
-  .problem-container.side-by-side .racer-option-btn {
-    flex: 1 1 calc(50% - 12px);
-    min-width: 100px;
-    text-align: center;
-  }
-}
-
-@media (max-width: 600px) {
-  .problem-container.side-by-side {
-    flex-direction: column;
-    gap: 1.5rem;
-    padding: 1.5rem 1rem;
+    width: 94% !important;
+    max-width: 440px !important;
+    flex-direction: column !important;
   }
 }
 
