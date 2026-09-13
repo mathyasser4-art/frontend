@@ -15,11 +15,14 @@ import API_BASE_URL from '../../config/api.config'
 import html2pdf from 'html2pdf.js'
 import logo from '../../logo.png'
 import schoolLogo from '../../img/school-avatar.png'
+import { useTranslation } from 'react-i18next'
 import '../../reusable.css'
 import './Teacher.css'
 import { safeLocalStorage } from '../../utils/safeStorage';
 
 function Teacher() {
+    const { t, i18n } = useTranslation();
+    const isArabic = i18n.language === 'ar';
     const [teacherName, setTeacherName] = useState('')
     const [teacherEmail, setTeacherEmail] = useState('')
     const [teacherPassword, setTeacherPassword] = useState('')
@@ -782,16 +785,16 @@ function Teacher() {
             <Navbar />
             <div className="teacher-container">
                 <div className="teacher-header d-flex align-items-center">
-                    <input type="text" onChange={(e) => search(e.target.value)} placeholder='Enter teacher name...' />
-                    <div className='add-squer d-flex justify-content-space-around align-items-center' onClick={openAddPopup} title="Add Teacher"><p>+</p></div>
+                    <input type="text" onChange={(e) => search(e.target.value)} placeholder={isArabic ? 'ابحث باسم المعلم...' : 'Enter teacher name...'} />
+                    <div className='add-squer d-flex justify-content-space-around align-items-center' onClick={openAddPopup} title={isArabic ? "إضافة معلم" : "Add Teacher"}><p>+</p></div>
                     <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportToCSV} style={{ backgroundColor: '#10b981', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
-                        Export CSV
+                        {isArabic ? 'تصدير CSV' : 'Export CSV'}
                     </div>
                     <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportAllTeachersPDF} style={{ backgroundColor: '#ef4444', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
-                        Export PDF
+                        {isArabic ? 'تصدير PDF' : 'Export PDF'}
                     </div>
                     <div className='export-btn d-flex justify-content-space-around align-items-center' onClick={exportAllTeachersWord} style={{ backgroundColor: '#2563eb', marginLeft: '10px', padding: '0 15px', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: 'bold', height: '50px' }}>
-                        Export Word
+                        {isArabic ? 'تصدير Word' : 'Export Word'}
                     </div>
                 </div>
                 <div className="teacher-body">
@@ -799,12 +802,12 @@ function Teacher() {
                         <tbody className='teacher-header-body'>
                             <tr>
                                 <td className='text-purple'>{teacherNumber}</td>
-                                <td>Name ⌄</td>
-                                <td>Email ⌄</td>
-                                <td>Subject ⌄</td>
-                                <td>Student Limit ⌄</td>
-                                <td>Classes ⌄</td>
-                                <td>Action ⌄</td>
+                                <td>{isArabic ? 'الاسم ⌄' : 'Name ⌄'}</td>
+                                <td>{isArabic ? 'البريد الإلكتروني ⌄' : 'Email ⌄'}</td>
+                                <td>{isArabic ? 'المادة ⌄' : 'Subject ⌄'}</td>
+                                <td>{isArabic ? 'حد الطلاب ⌄' : 'Student Limit ⌄'}</td>
+                                <td>{isArabic ? 'الفصول ⌄' : 'Classes ⌄'}</td>
+                                <td>{isArabic ? 'الإجراء ⌄' : 'Action ⌄'}</td>
                             </tr>
                         </tbody>
                         {allTeacher?.map((item, index) => {
@@ -826,17 +829,17 @@ function Teacher() {
                                                 </div>
                                             </td>
                                             <td className="teacher-action" onClick={(e) => e.stopPropagation()}>
-                                                <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item?.subject?.schoolSubjectName, item.maxStudents)} aria-hidden="true" title="Edit Teacher"></i>
-                                                <i className="fa fa-file-pdf-o" onClick={() => exportTeacherPDF(item)} style={{ color: '#ef4444', marginRight: '0.7rem', cursor: 'pointer' }} aria-hidden="true" title="Export PDF"></i>
-                                                <i className="fa fa-file-word-o" onClick={() => exportTeacherWord(item)} style={{ color: '#2563eb', marginRight: '0.7rem', cursor: 'pointer' }} aria-hidden="true" title="Export Word"></i>
-                                                <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true" title="Remove Teacher"></i>
+                                                <i className="fa fa-pencil" onClick={() => openUpdatePopup(item._id, item.userName, item.email, item?.subject?.schoolSubjectName, item.maxStudents)} aria-hidden="true" title={isArabic ? "تعديل المعلم" : "Edit Teacher"}></i>
+                                                <i className="fa fa-file-pdf-o" onClick={() => exportTeacherPDF(item)} style={{ color: '#ef4444', marginRight: '0.7rem', cursor: 'pointer' }} aria-hidden="true" title={isArabic ? "تصدير PDF" : "Export PDF"}></i>
+                                                <i className="fa fa-file-word-o" onClick={() => exportTeacherWord(item)} style={{ color: '#2563eb', marginRight: '0.7rem', cursor: 'pointer' }} aria-hidden="true" title={isArabic ? "تصدير Word" : "Export Word"}></i>
+                                                <i className="fa fa-trash" onClick={() => openRemovePopup(item._id)} aria-hidden="true" title={isArabic ? "حذف المعلم" : "Remove Teacher"}></i>
                                             </td>
                                         </tr>
                                         {expandedTeacherId === item._id && (
                                             <tr className="expanded-content-row">
                                                 <td colSpan="7">
                                                     <div className="teacher-classes-container">
-                                                        <h4 className="classes-title">Assigned Classes</h4>
+                                                        <h4 className="classes-title">{isArabic ? 'الفصول المسندة' : 'Assigned Classes'}</h4>
                                                         {item.classList && item.classList.length > 0 ? (
                                                             <div className="classes-grid">
                                                                 {item.classList.map((cls, idx) => (
@@ -848,7 +851,7 @@ function Teacher() {
                                                             </div>
                                                         ) : (
                                                             <div className="no-classes-msg">
-                                                                <p>Oops! This teacher hasn't been assigned to any classes yet.</p>
+                                                                <p>{isArabic ? 'لم يتم إسناد أي فصول لهذا المعلم بعد.' : "Oops! This teacher hasn't been assigned to any classes yet."}</p>
                                                             </div>
                                                         )}
                                                     </div>
@@ -862,11 +865,11 @@ function Teacher() {
                     </table>}
                 </div>
                 {loading ? null : (searchValue !== '') ? null : (allTeacher.length === 0) ? (pageNumber === 1) ? null : <div className="teacher-footer d-flex align-items-center">
-                    <button onClick={previous}>Previous</button>
-                    <button onClick={next}>Next</button>
+                    <button onClick={previous}>{isArabic ? 'السابق' : 'Previous'}</button>
+                    <button onClick={next}>{isArabic ? 'التالي' : 'Next'}</button>
                 </div> : <div className="teacher-footer d-flex align-items-center">
-                    <button onClick={previous}>Previous</button>
-                    <button onClick={next}>Next</button>
+                    <button onClick={previous}>{isArabic ? 'السابق' : 'Previous'}</button>
+                    <button onClick={next}>{isArabic ? 'التالي' : 'Next'}</button>
                 </div>}
             </div>
 
@@ -874,26 +877,26 @@ function Teacher() {
             <div className="add-student-popup student-popup-hide d-none justify-content-center align-items-center">
                 <div className='add-student-container update-top'>
                     <div className="add-popup-head">
-                        <p>Add New Teacher</p>
+                        <p>{isArabic ? 'إضافة معلم جديد' : 'Add New Teacher'}</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="add-popup-body">
-                        <label>Teacher Name</label>
+                        <label>{isArabic ? 'اسم المعلم' : 'Teacher Name'}</label>
                         <input type="text" value={teacherName} onChange={(e) => setTeacherName(e.target.value)} placeholder='MR Yasser Ahmed' />
-                        <label>Teacher Email</label>
+                        <label>{isArabic ? 'البريد الإلكتروني' : 'Teacher Email'}</label>
                         <input type="email" value={teacherEmail} onChange={(e) => setTeacherEmail(e.target.value)} placeholder='yasserahmed@teacher.com' />
-                        <label>Teacher Password</label>
+                        <label>{isArabic ? 'كلمة المرور' : 'Teacher Password'}</label>
                         <input className='input-password' value={teacherPassword} onChange={(e) => setTeacherPassword(e.target.value)} type="password" placeholder='Yass1803cz@vv' />
                         <div className="show-password d-flex align-items-center">
                             <input type="checkbox" onClick={showPassword} />
-                            <p>Show Password</p>
+                            <p>{isArabic ? 'إظهار كلمة المرور' : 'Show Password'}</p>
                         </div>
-                        <label>Student Limit</label>
+                        <label>{isArabic ? 'الحد الأقصى للطلاب' : 'Student Limit'}</label>
                         <input type="number" value={maxStudents} onChange={(e) => setMaxStudents(e.target.value)} placeholder='e.g. 50' min="0" />
                         <div className="add-popup-select-class">
                             <select value={subject} onChange={(e) => setSubject(e.target.value)}>
-                                <option>Select Subject</option>
-                                {subjectLoading ? <option>Waiting Subjects...</option> : null}
+                                <option>{isArabic ? 'اختر المادة' : 'Select Subject'}</option>
+                                {subjectLoading ? <option>{isArabic ? 'جارٍ تحميل المواد...' : 'Waiting Subjects...'}</option> : null}
                                 {allSubject?.map(item => {
                                     return (
                                         <option key={item._id}>{item.schoolSubjectName}</option>
@@ -903,8 +906,8 @@ function Teacher() {
                         </div>
                     </div>
                     <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeAddPopup}>Cancel</button>
-                        <button className='button popup-btn2' onClick={newTeacher}>{loadingOperation ? <span className="loader"></span> : "Add"}</button>
+                        <button className='button popup-btn' onClick={closeAddPopup}>{isArabic ? 'إلغاء' : 'Cancel'}</button>
+                        <button className='button popup-btn2' onClick={newTeacher}>{loadingOperation ? <span className="loader"></span> : (isArabic ? 'إضافة' : "Add")}</button>
                     </div>
                 </div>
             </div>
@@ -914,25 +917,25 @@ function Teacher() {
             <div className="update-student-popup student-popup-hide d-none justify-content-center align-items-center">
                 <div className='update-student-container update-top'>
                     <div className="update-popup-head">
-                        <p>Update Teacher</p>
+                        <p>{isArabic ? 'تعديل بيانات المعلم' : 'Update Teacher'}</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="update-popup-body">
-                        <label>Teacher Name</label>
+                        <label>{isArabic ? 'اسم المعلم' : 'Teacher Name'}</label>
                         <input value={teacherName} onChange={(e) => setTeacherName(e.target.value)} type="text" placeholder='MR Yasser Ahmed' />
-                        <label>Teacher Email</label>
+                        <label>{isArabic ? 'البريد الإلكتروني' : 'Teacher Email'}</label>
                         <input value={teacherEmail} onChange={(e) => setTeacherEmail(e.target.value)} type="email" placeholder='yasserahmed@teacher.com' />
-                        <label>Teacher Password</label>
+                        <label>{isArabic ? 'كلمة المرور' : 'Teacher Password'}</label>
                         <input value={teacherPassword} onChange={(e) => setTeacherPassword(e.target.value)} className='input-password input-password-update' type="password" placeholder='●●●●●●●●●●●●●●●●●●●●●●●' />
                         <div className="show-password d-flex align-items-center">
                             <input type="checkbox" onClick={showUpdatePassword} />
-                            <p>Show Password</p>
+                            <p>{isArabic ? 'إظهار كلمة المرور' : 'Show Password'}</p>
                         </div>
-                        <label>Student Limit</label>
+                        <label>{isArabic ? 'الحد الأقصى للطلاب' : 'Student Limit'}</label>
                         <input type="number" value={maxStudents} onChange={(e) => setMaxStudents(e.target.value)} placeholder='e.g. 50' min="0" />
                         <div className="update-popup-select-class">
                             <select value={subject} onChange={(e) => setSubject(e.target.value)}>
-                                {subject ? <option>{subject}</option> : <option>Select Subject</option>}
+                                {subject ? <option>{subject}</option> : <option>{isArabic ? 'اختر المادة' : 'Select Subject'}</option>}
                                 {allSubject?.map(item => {
                                     return (
                                         <option key={item._id}>{item.schoolSubjectName}</option>
@@ -942,8 +945,8 @@ function Teacher() {
                         </div>
                     </div>
                     <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeUpdatePopup}>Cancel</button>
-                        <button className='button popup-btn2' onClick={handleUpdateTeacher}>{loadingOperation ? <span className="loader"></span> : "Update"}</button>
+                        <button className='button popup-btn' onClick={closeUpdatePopup}>{isArabic ? 'إلغاء' : 'Cancel'}</button>
+                        <button className='button popup-btn2' onClick={handleUpdateTeacher}>{loadingOperation ? <span className="loader"></span> : (isArabic ? 'تحديث' : "Update")}</button>
                     </div>
                 </div>
             </div>
@@ -953,16 +956,16 @@ function Teacher() {
             <div className="remove-student-popup student-popup-hide d-none justify-content-center align-items-center">
                 <div className='remove-student-container update-top'>
                     <div className="update-popup-head">
-                        <p>Remove Teacher</p>
+                        <p>{isArabic ? 'حذف المعلم' : 'Remove Teacher'}</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="remove-popup-body">
-                        <h3 className='text-red'>WARNING!!</h3>
-                        <p>If you remove this teacher, all his assignment will be deleted also.</p>
+                        <h3 className='text-red'>{isArabic ? 'تحذير هام!!' : 'WARNING!!'}</h3>
+                        <p>{isArabic ? 'في حال حذف هذا المعلم، سيتم حذف جميع واجباته وفصوله المرتبطة أيضاً.' : 'If you remove this teacher, all his assignment will be deleted also.'}</p>
                     </div>
                     <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeRemovePopup}>Cancel</button>
-                        <button className='button popup-btn2' onClick={handleRemoveTeacher}>{loadingOperation ? <span className="loader"></span> : "Delete"}</button>
+                        <button className='button popup-btn' onClick={closeRemovePopup}>{isArabic ? 'إلغاء' : 'Cancel'}</button>
+                        <button className='button popup-btn2' onClick={handleRemoveTeacher}>{loadingOperation ? <span className="loader"></span> : (isArabic ? 'حذف' : "Delete")}</button>
                     </div>
                 </div>
             </div>

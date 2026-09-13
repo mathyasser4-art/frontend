@@ -10,11 +10,14 @@ import updateStudent from '../../api/student/updateStudent.api'
 import removeStudent from '../../api/student/removeStudent.api'
 import searchStudent from '../../api/student/searchStudent.api'
 import DashboardLoading from '../../components/dashboardLoading/DashboardLoading'
+import { useTranslation } from 'react-i18next'
 import '../../reusable.css'
 import './Student.css'
 import { safeLocalStorage } from '../../utils/safeStorage';
 
 function Student() {
+    const { t, i18n } = useTranslation();
+    const isArabic = i18n.language === 'ar';
     const [studentName, setStudentName] = useState('')
     const [studentEmail, setStudentEmail] = useState('')
     const [studentPassword, setStudentPassword] = useState('')
@@ -196,7 +199,7 @@ function Student() {
             <Navbar />
             <div className="student-container">
                 <div className="student-header d-flex align-items-center">
-                    <input type="text" onChange={(e) => search(e.target.value)} placeholder='Enter student name...' />
+                    <input type="text" onChange={(e) => search(e.target.value)} placeholder={isArabic ? 'ابحث باسم الطالب...' : 'Enter student name...'} />
                     <div className='add-squer d-flex justify-content-space-around align-items-center' onClick={openAddPopup}><p>+</p></div>
                 </div>
                 <div className="student-body">
@@ -204,9 +207,9 @@ function Student() {
                         <tbody className='student-header-body'>
                             <tr>
                                 <td className='text-purple'>{studentNumber}</td>
-                                <td>Name ⌄</td>
-                                <td>Class ⌄</td>
-                                <td>Action ⌄</td>
+                                <td>{isArabic ? 'الاسم ⌄' : 'Name ⌄'}</td>
+                                <td>{isArabic ? 'الفصل ⌄' : 'Class ⌄'}</td>
+                                <td>{isArabic ? 'الإجراء ⌄' : 'Action ⌄'}</td>
                             </tr>
                         </tbody>
                         {allStudent?.map((item, index) => {
@@ -232,11 +235,11 @@ function Student() {
                     </table>}
                 </div>
                 {loading ? null : (searchValue !== '') ? null : (allStudent.length === 0) ? (pageNumber === 1) ? null : <div className="student-footer d-flex align-items-center">
-                    <button onClick={previous}>Previous</button>
-                    <button onClick={next}>Next</button>
+                    <button onClick={previous}>{isArabic ? 'السابق' : 'Previous'}</button>
+                    <button onClick={next}>{isArabic ? 'التالي' : 'Next'}</button>
                 </div> : <div className="student-footer d-flex align-items-center">
-                    <button onClick={previous}>Previous</button>
-                    <button onClick={next}>Next</button>
+                    <button onClick={previous}>{isArabic ? 'السابق' : 'Previous'}</button>
+                    <button onClick={next}>{isArabic ? 'التالي' : 'Next'}</button>
                 </div>}
             </div>
 
@@ -244,22 +247,22 @@ function Student() {
             <div className="add-student-popup student-popup-hide d-none justify-content-center align-items-center">
                 <div className='add-student-container update-top'>
                     <div className="add-popup-head">
-                        <p>Add New Student</p>
+                        <p>{isArabic ? 'إضافة طالب جديد' : 'Add New Student'}</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="add-popup-body">
-                        <label>Student Name</label>
-                        <input type="text" value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder='Mahmoud Mohamed Atta' />
-                        <label>Student Password</label>
+                        <label>{isArabic ? 'اسم الطالب' : 'Student Name'}</label>
+                        <input type="text" value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder={isArabic ? 'مثال: محمود محمد عطا' : 'Mahmoud Mohamed Atta'} />
+                        <label>{isArabic ? 'كلمة المرور' : 'Student Password'}</label>
                         <input className='input-password' value={studentPassword} onChange={(e) => setStudentPassword(e.target.value)} type="password" placeholder='M1803cz@vv' />
                         <div className="show-password d-flex align-items-center">
                             <input type="checkbox" onClick={showPassword} />
-                            <p>Show Password</p>
+                            <p>{isArabic ? 'إظهار كلمة المرور' : 'Show Password'}</p>
                         </div>
                         <div className="add-popup-select-class">
                             <select value={studentClass} onChange={(e) => setStudentClass(e.target.value)}>
-                                <option>Select Class</option>
-                                {classLoading ? <option>Waiting Classes...</option> : null}
+                                <option>{isArabic ? 'اختر الفصل' : 'Select Class'}</option>
+                                {classLoading ? <option>{isArabic ? 'جارٍ تحميل الفصول...' : 'Waiting Classes...'}</option> : null}
                                 {allClass?.map(item => {
                                     return (
                                         <option key={item._id}>{item.class}</option>
@@ -269,8 +272,8 @@ function Student() {
                         </div>
                     </div>
                     <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeAddPopup}>Cancel</button>
-                        <button className='button popup-btn2' onClick={newStudent}>{loadingOperation ? <span className="loader"></span> : "Add"}</button>
+                        <button className='button popup-btn' onClick={closeAddPopup}>{isArabic ? 'إلغاء' : 'Cancel'}</button>
+                        <button className='button popup-btn2' onClick={newStudent}>{loadingOperation ? <span className="loader"></span> : (isArabic ? 'إضافة' : 'Add')}</button>
                     </div>
                 </div>
             </div>
@@ -280,22 +283,22 @@ function Student() {
             <div className="update-student-popup student-popup-hide d-none justify-content-center align-items-center">
                 <div className='update-student-container update-top'>
                     <div className="update-popup-head">
-                        <p>Update Student</p>
+                        <p>{isArabic ? 'تعديل بيانات الطالب' : 'Update Student'}</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="update-popup-body">
-                        <label>Student Name</label>
-                        <input value={studentName} onChange={(e) => setStudentName(e.target.value)} type="text" placeholder='Mahmoud Mohamed Atta' />
-                        <label>Student Password</label>
+                        <label>{isArabic ? 'اسم الطالب' : 'Student Name'}</label>
+                        <input value={studentName} onChange={(e) => setStudentName(e.target.value)} type="text" placeholder={isArabic ? 'مثال: محمود محمد عطا' : 'Mahmoud Mohamed Atta'} />
+                        <label>{isArabic ? 'كلمة المرور' : 'Student Password'}</label>
                         <input value={studentPassword} onChange={(e) => setStudentPassword(e.target.value)} className='input-password input-password-update' type="password" placeholder='●●●●●●●●●●●●●●●●●●●●●●●' />
                         <div className="show-password d-flex align-items-center">
                             <input type="checkbox" onClick={showUpdatePassword} />
-                            <p>Show Password</p>
+                            <p>{isArabic ? 'إظهار كلمة المرور' : 'Show Password'}</p>
                         </div>
                         <div className="update-popup-select-class">
                             <select value={studentClass} onChange={(e) => setStudentClass(e.target.value)}>
-                                {studentClass !== '' ? <option>{studentClass}</option> : <option>Select Class</option>}
-                                {classLoading ? <option>Waiting Classes...</option> : null}
+                                {studentClass !== '' ? <option>{studentClass}</option> : <option>{isArabic ? 'اختر الفصل' : 'Select Class'}</option>}
+                                {classLoading ? <option>{isArabic ? 'جارٍ تحميل الفصول...' : 'Waiting Classes...'}</option> : null}
                                 {allClass?.map(item => {
                                     return (
                                         <option key={item._id}>{item.class}</option>
@@ -305,8 +308,8 @@ function Student() {
                         </div>
                     </div>
                     <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeUpdatePopup}>Cancel</button>
-                        <button className='button popup-btn2' onClick={handleUpdateStudent}>{loadingOperation ? <span className="loader"></span> : "Update"}</button>
+                        <button className='button popup-btn' onClick={closeUpdatePopup}>{isArabic ? 'إلغاء' : 'Cancel'}</button>
+                        <button className='button popup-btn2' onClick={handleUpdateStudent}>{loadingOperation ? <span className="loader"></span> : (isArabic ? 'تحديث' : 'Update')}</button>
                     </div>
                 </div>
             </div>
@@ -316,15 +319,15 @@ function Student() {
             <div className="remove-student-popup student-popup-hide d-none justify-content-center align-items-center">
                 <div className='remove-student-container update-top'>
                     <div className="update-popup-head">
-                        <p>Remove Student</p>
+                        <p>{isArabic ? 'حذف الطالب' : 'Remove Student'}</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="remove-popup-body">
-                        <p>Are you sure you want to delete this student?</p>
+                        <p>{isArabic ? 'هل أنت متأكد من رغبتك في حذف هذا الطالب نهائياً؟' : 'Are you sure you want to delete this student?'}</p>
                     </div>
                     <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeRemovePopup}>No</button>
-                        <button className='button popup-btn2' onClick={handleRemoveStudent}>{loadingOperation ? <span className="loader"></span> : "Yes"}</button>
+                        <button className='button popup-btn' onClick={closeRemovePopup}>{isArabic ? 'لا' : 'No'}</button>
+                        <button className='button popup-btn2' onClick={handleRemoveStudent}>{loadingOperation ? <span className="loader"></span> : (isArabic ? 'نعم' : 'Yes')}</button>
                     </div>
                 </div>
             </div>

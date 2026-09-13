@@ -13,19 +13,23 @@ function ContactUS() {
             alert('You must write your message first');
             return;
         }
-        window.location.href = `https://wa.me/201202281023?text=${message}`
+        window.location.href = `https://wa.me/201505252676?text=${message}`
     }
 
     return (
         <>
-            <div className='contact'>
-                <div className="contact-container">
-                    <div className="contact-title">
-                        <h3>📱 Contact Us</h3>
-                        <p>We're super happy to hear from you! Ask us anything and we'll reply faster than a speeding abacus! 🚀</p>
-                    </div>
-                    <div className="contact-content">
-                        <div className="contact-info-section">
+            <MobileNav role={role} />
+            <Navbar />
+            <div className="contact-container">
+                <div className="contact-hero">
+                    <p className="hero-badge">💬 Get in Touch</p>
+                    <h1 className="hero-title">We'd Love to Hear From You!</h1>
+                    <p className="hero-subtitle">Have questions about our mental math games or need help? Reach out to our superhero team!</p>
+                </div>
+                <div className="contact-content d-flex justify-content-center">
+                    <div className="contact-wrapper d-flex">
+                        <div className="contact-info">
+                            <p className="info-heading">📍 Contact Information</p>
                             <div className="contact-info-card">
                                 <div className="contact-emoji">🏠</div>
                                 <div className="info">
@@ -37,7 +41,7 @@ function ContactUS() {
                                 <div className="contact-emoji">📞</div>
                                 <div className="info">
                                     <p className="info-title">Phone</p>
-                                    <p className='text-gray'>01202281023</p>
+                                    <p className='text-gray'>01505252676</p>
                                 </div>
                             </div>
                             <div className="contact-info-card">

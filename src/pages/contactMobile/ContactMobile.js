@@ -44,7 +44,7 @@ function ContactMobile() {
         fullText += `Message:\n${message.trim()}`;
 
         const encoded = encodeURIComponent(fullText);
-        window.open(`https://wa.me/201202281023?text=${encoded}`, '_blank');
+        window.open(`https://wa.me/201505252676?text=${encoded}`, '_blank');
     };
 
     const androidApp = async () => {
@@ -93,7 +93,7 @@ function ContactMobile() {
                             </div>
                             <div className="info">
                                 <p>Phone / WhatsApp</p>
-                                <a href="https://wa.me/201202281023" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }} className='text-gray'>+20 120 228 1023</a>
+                                <a href="https://wa.me/201505252676" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }} className='text-gray'>+20 150 525 2676</a>
                             </div>
                         </div>
                         <div className="contact-mobile-info d-flex align-items-center">
@@ -104,7 +104,7 @@ function ContactMobile() {
                                 <p>Social Media</p>
                                 <div className='social-link'>
                                     <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i className="fa fa-facebook text-gray" aria-hidden="true"></i></a>
-                                    <a href="https://wa.me/201202281023" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i className="fa fa-whatsapp text-gray" aria-hidden="true"></i></a>
+                                    <a href="https://wa.me/201505252676" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i className="fa fa-whatsapp text-gray" aria-hidden="true"></i></a>
                                     <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i className="fa fa-linkedin-square text-gray" aria-hidden="true"></i></a>
                                     <a href="mailto:abacusheroes@gmail.com" aria-label="Email"><i className="fa fa-google text-gray" aria-hidden="true"></i></a>
                                 </div>

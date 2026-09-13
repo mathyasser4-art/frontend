@@ -11,8 +11,9 @@ import '../../reusable.css'
 import './QuestionType.css'
 
 function QuestionType() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const isArabic = i18n.language === 'ar';
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [showCreateCompetition, setShowCreateCompetition] = useState(false)
   const [showResourcesModal, setShowResourcesModal] = useState(false)
@@ -194,17 +195,19 @@ function QuestionType() {
             <button className="upgrade-close-btn" onClick={() => setShowUpgradeModal(false)}>×</button>
             <div className="upgrade-modal-header">
               <span className="lock-large-icon">🔒</span>
-              <h2>Upgrade to Use</h2>
+              <h2>{isArabic ? 'الترقية للاستخدام' : 'Upgrade to Use'}</h2>
             </div>
             <p className="upgrade-modal-text">
-              Guests cannot access the Fun Games room. Subscribe to play all interactive educational games!
+              {isArabic 
+                ? 'لا يمكن للزوار الوصول إلى قسم الألعاب التفاعلية. اشترك الآن للاستمتاع بجميع ألعاب الحساب الذهني التفاعلية!' 
+                : 'Guests cannot access the Fun Games room. Subscribe to play all interactive educational games!'}
             </p>
             <div className="upgrade-modal-actions">
               <button className="upgrade-btn-primary" onClick={() => { setShowUpgradeModal(false); navigate('/pricing'); }}>
-                View Pricing Plans
+                {isArabic ? 'عرض باقات الاشتراك' : 'View Pricing Plans'}
               </button>
               <button className="upgrade-btn-secondary" onClick={() => { setShowUpgradeModal(false); navigate('/auth/login'); }}>
-                Log In
+                {isArabic ? 'تسجيل الدخول' : 'Log In'}
               </button>
             </div>
           </div>
@@ -217,16 +220,18 @@ function QuestionType() {
             <button className="upgrade-close-btn" onClick={() => { setShowJoinBattleModal(false); setJoinCompError(null); }}>×</button>
             <div className="upgrade-modal-header">
               <span className="lock-large-icon">⚔️</span>
-              <h2>Enter Battle Arena</h2>
+              <h2>{isArabic ? 'دخول ساحة التحدي والمنافسة' : 'Enter Battle Arena'}</h2>
             </div>
             <p className="upgrade-modal-text">
-              Your teacher started a live battle! Paste the Competition ID below to enter the arena and compete:
+              {isArabic 
+                ? 'بدأ معلمك مسابقة حية! أدخل رمز المسابقة بالأسفل للانضمام إلى التحدي المباشر فوراً:' 
+                : 'Your teacher started a live battle! Paste the Competition ID below to enter the arena and compete:'}
             </p>
             <div className="battle-join-input-box" style={{ margin: '1.5rem 0', width: '100%' }}>
               <input
                 type="text"
                 className="battle-id-input-field"
-                placeholder="Paste Competition ID here..."
+                placeholder={isArabic ? 'الصق رمز المسابقة هنا...' : 'Paste Competition ID here...'}
                 value={compIdInput}
                 onChange={e => { setCompIdInput(e.target.value); setJoinCompError(null); }}
                 style={{
@@ -252,7 +257,7 @@ function QuestionType() {
                 disabled={joiningComp}
                 onClick={() => {
                   const id = compIdInput.trim();
-                  if (!id) { setJoinCompError('Please paste a valid Competition ID from your teacher.'); return; }
+                  if (!id) { setJoinCompError(isArabic ? 'يرجى لصق رمز مسابقة صالح من معلمك.' : 'Please paste a valid Competition ID from your teacher.'); return; }
                   soundEffects.playClick();
                   
                   setJoiningComp(true);
@@ -260,14 +265,14 @@ function QuestionType() {
                 }}
                 style={{ flex: 1 }}
               >
-                {joiningComp ? 'Entering Arena...' : 'Join Battle! ⚔️'}
+                {joiningComp ? (isArabic ? 'جارٍ الدخول...' : 'Entering Arena...') : (isArabic ? 'دخول التحدي! ⚔️' : 'Join Battle! ⚔️')}
               </button>
               <button 
                 className="upgrade-btn-secondary" 
                 onClick={() => { setShowJoinBattleModal(false); setJoinCompError(null); }}
                 style={{ flex: '0 0 auto' }}
               >
-                Cancel
+                {isArabic ? 'إلغاء' : 'Cancel'}
               </button>
             </div>
           </div>
@@ -286,10 +291,10 @@ function QuestionType() {
             <button className="upgrade-close-btn" onClick={() => setShowResourcesModal(false)}>×</button>
             <div className="upgrade-modal-header">
               <span className="lock-large-icon">📚</span>
-              <h2>{t('academy.worksheets', 'Pre-made Worksheets')}</h2>
+              <h2>{isArabic ? 'أوراق التمارين والتدريبات' : t('academy.worksheets', 'Pre-made Worksheets')}</h2>
             </div>
             <p className="upgrade-modal-text">
-              Select the format of the pre-made question sheets to start practicing:
+              {isArabic ? 'اختر نمط أسئلة أوراق العمل لبدء التدريب والتطبيق فوراً:' : 'Select the format of the pre-made question sheets to start practicing:'}
             </p>
             <div className="resources-options-grid" style={{ display: 'flex', gap: '1.5rem', margin: '2rem 0', width: '100%' }}>
               <div 
@@ -313,8 +318,12 @@ function QuestionType() {
                 <div style={{ background: 'rgba(101, 198, 238, 0.1)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                   <Circle size={32} color="#65C6EE" strokeWidth={2.5} />
                 </div>
-                <h4 style={{ margin: '0 0 6px', fontSize: '18px', color: 'var(--text-color, #333)' }}>{t('academy.freeWorksheets', 'Choose Questions')}</h4>
-                <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>Choose questions</p>
+                <h4 style={{ margin: '0 0 6px', fontSize: '18px', color: 'var(--text-color, #333)' }}>
+                  {isArabic ? 'أسئلة الاختيار من متعدد' : t('academy.freeWorksheets', 'Choose Questions')}
+                </h4>
+                <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>
+                  {isArabic ? 'اختر الإجابة الصحيحة' : 'Multiple choice questions'}
+                </p>
               </div>
               <div 
                 className="resource-type-option completion-select" 
@@ -338,9 +347,11 @@ function QuestionType() {
                   <CheckCircle2 size={32} color="#F875AA" strokeWidth={2.5} />
                 </div>
                 <h4 style={{ margin: '0 0 6px', fontSize: '18px', color: 'var(--text-color, #333)' }}>
-                  {t('academy.masterMinds', 'Complete Questions')}
+                  {isArabic ? 'أسئلة الإكمال والكتابة' : t('academy.masterMinds', 'Complete Questions')}
                 </h4>
-                <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>Complete questions</p>
+                <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>
+                  {isArabic ? 'اكتب الإجابة بالعداد' : 'Type or calculate the answer'}
+                </p>
               </div>
             </div>
           </div>

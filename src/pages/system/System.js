@@ -11,6 +11,8 @@ import { safeLocalStorage } from '../../utils/safeStorage';
 import '../../reusable.css'
 import './System.css'
 
+import translateCurriculumItem from '../../utils/itemTranslator';
+
 function System() {
     const { t, i18n } = useTranslation()
     const [systemData, setSystemData] = useState()
@@ -35,31 +37,8 @@ function System() {
         const translated = t(key);
         if (translated && translated !== key) return translated;
 
-        // 2. Lowercase key
-        const lowerKey = `systemNames.${raw.toLowerCase()}`;
-        const lowerTranslated = t(lowerKey);
-        if (lowerTranslated && lowerTranslated !== lowerKey) return lowerTranslated;
-
-        // 3. Fallback dictionary for unhandled variations
-        const fallbacks = {
-            'basic level': isArabic ? 'المستوى الأساسي' : 'Basic Level',
-            'level 0': isArabic ? 'المستوى 0' : 'Level 0',
-            'level 1': isArabic ? 'المستوى 1' : 'Level 1',
-            'level 2': isArabic ? 'المستوى 2' : 'Level 2',
-            'level 3': isArabic ? 'المستوى 3' : 'Level 3',
-            'level 4': isArabic ? 'المستوى 4' : 'Level 4',
-            'level 5': isArabic ? 'المستوى 5' : 'Level 5',
-            '+- from 1 to 9': isArabic ? 'جمع وطرح من 1 إلى 9' : '+- from 1 to 9',
-            'exercises on (ones , tens , hundreds)': isArabic ? 'تمارين على (الآحاد والعشرات والمئات)' : 'Exercises on (Ones, Tens, Hundreds)',
-            'friends of 5 (ones and tens)': isArabic ? 'أصدقاء العدد 5 (الآحاد والعشرات)' : 'Friends of 5 (Ones and Tens)',
-            'level 3 (friends of 10) +9 +8 .. +1': isArabic ? 'المستوى 3 (أصدقاء العدد 10) +9 +8 .. +1' : 'Level 3 (friends of 10) +9 +8 .. +1',
-            'level 4 (friends of 10) -9 -8 .. -1': isArabic ? 'المستوى 4 (أصدقاء العدد 10) -9 -8 .. -1' : 'Level 4 (friends of 10) -9 -8 .. -1'
-        };
-
-        const match = fallbacks[raw.toLowerCase()];
-        if (match) return match;
-
-        return raw;
+        // 2. Comprehensive fallback translator
+        return translateCurriculumItem(raw, isArabic);
     }
 
     const getLevelBadgeInfo = (name) => {

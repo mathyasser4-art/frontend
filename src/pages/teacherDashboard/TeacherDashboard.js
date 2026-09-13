@@ -16,11 +16,14 @@ import soundEffects from '../../utils/soundEffects'
 import { getTeacherCompetitions } from '../../api/competition/competition.api';
 import CreateCompetitionModal from '../../components/navbar/CreateCompetitionModal';
 import tipStudent from '../../api/user/tipStudent.api';
+import { useTranslation } from 'react-i18next'
 import '../../reusable.css'
 import './TeacherDashboard.css'
 import { safeLocalStorage } from '../../utils/safeStorage';
 
 function TeacherDashboard() {
+    const { t, i18n } = useTranslation();
+    const isArabic = i18n.language === 'ar';
     const navigate = useNavigate();
     const [studentList, setStudentList] = useState([])
     const [allAsignment, setAllAsignment] = useState([])
@@ -278,9 +281,9 @@ function TeacherDashboard() {
                             <div className="assignment-info">
                                 <p className="assignment-title">{item.title}</p>
                                 <div className="assignment-details">
-                                    <span>Points: {item.totalPoints}</span>
-                                    <span>Students: {item.students?.length || 0}</span>
-                                    <span>Questions: {item.questions?.length || 0}</span>
+                                    <span>{isArabic ? 'النقاط:' : 'Points:'} {item.totalPoints}</span>
+                                    <span>{isArabic ? 'الطلاب:' : 'Students:'} {item.students?.length || 0}</span>
+                                    <span>{isArabic ? 'الأسئلة:' : 'Questions:'} {item.questions?.length || 0}</span>
                                 </div>
                             </div>
                             <div className="assignment-icon d-flex align-items-center">
@@ -288,14 +291,14 @@ function TeacherDashboard() {
                                 <Link 
                                     to={`/assignment/${item._id}/reports`} 
                                     className="reports-hub-btn d-flex align-items-center"
-                                    title="Homework Reports Hub (Detailed, Combined & Historical)"
+                                    title={isArabic ? "مركز تقارير الواجبات" : "Homework Reports Hub (Detailed, Combined & Historical)"}
                                     onClick={() => soundEffects.playClick()}
                                 >
-                                    <i className="fa fa-bar-chart" aria-hidden="true" style={{marginRight: '6px'}}></i> Reports
+                                    <i className="fa fa-bar-chart" aria-hidden="true" style={{marginRight: '6px'}}></i> {isArabic ? 'التقارير' : 'Reports'}
                                 </Link>
 
-                                <i onClick={() => openReassignPopup(item.questions, item._id)} className="fa fa-copy" aria-hidden="true" title="Re-assign Assignment (Create New Copy)"></i>
-                                <i onClick={() => openRemovePopup(item._id)} className="fa fa-trash" aria-hidden="true" title="Delete Assignment"></i>
+                                <i onClick={() => openReassignPopup(item.questions, item._id)} className="fa fa-copy" aria-hidden="true" title={isArabic ? "إعادة تعيين الواجب (نسخة جديدة)" : "Re-assign Assignment (Create New Copy)"}></i>
+                                <i onClick={() => openRemovePopup(item._id)} className="fa fa-trash" aria-hidden="true" title={isArabic ? "حذف الواجب" : "Delete Assignment"}></i>
                             </div>
                         </div>
                     )
@@ -307,26 +310,26 @@ function TeacherDashboard() {
                 <div className="comp-panel-header">
                     <div className="comp-panel-title">
                         <Swords size={22} className="comp-sword-icon" />
-                        <h2>Create a competition</h2>
+                        <h2>{isArabic ? 'المسابقات والتحديات الحية' : 'Create a competition'}</h2>
                     </div>
                     <button
                         id="create-competition-btn"
                         className="comp-create-btn"
                         onClick={() => { soundEffects.playClick(); setShowCreateComp(true); }}
                     >
-                        ⚔️ Create a competition
+                        ⚔️ {isArabic ? 'إنشاء مسابقة حية' : 'Create a competition'}
                     </button>
                 </div>
 
                 {/* My Competitions List */}
                 <div className="comp-list-wrapper">
-                    <h3 className="comp-list-title">Your Past Competitions</h3>
+                    <h3 className="comp-list-title">{isArabic ? 'مسابقاتك السابقة' : 'Your Past Competitions'}</h3>
                     {compLoading ? (
-                        <div className="comp-loading-msg">Loading competitions...</div>
+                        <div className="comp-loading-msg">{isArabic ? 'جارٍ تحميل المسابقات...' : 'Loading competitions...'}</div>
                     ) : myCompetitions.length === 0 ? (
                         <div className="comp-empty-state">
                             <Trophy size={40} className="comp-empty-icon" />
-                            <p>No competitions yet. Create your first one above!</p>
+                            <p>{isArabic ? 'لا توجد مسابقات بعد. أنشئ أول مسابقة الآن بالضغط في الأعلى!' : 'No competitions yet. Create your first one above!'}</p>
                         </div>
                     ) : (
                         <div className="comp-items-grid">
@@ -342,7 +345,7 @@ function TeacherDashboard() {
                                         <div>
                                             <h4 className="comp-item-title">{comp.title}</h4>
                                             <p className="comp-item-meta">
-                                                {comp.participants?.length || 0} players • {comp.timer / 60} min
+                                                {comp.participants?.length || 0} {isArabic ? 'لاعبين' : 'players'} • {comp.timer / 60} {isArabic ? 'دقيقة' : 'min'}
                                             </p>
                                         </div>
                                     </div>
@@ -366,10 +369,10 @@ function TeacherDashboard() {
             <div className="add-to-class-popup student-list-popup class-popup-hide d-none justify-content-center align-items-center">
                 <div className='add-to-class-container student-list-container class-top'>
                     <div className="update-popup-head">
-                        <p>Students List</p>
+                        <p>{isArabic ? 'قائمة الطلاب' : 'Students List'}</p>
                     </div>
                     <div className="add-to-popup-body">
-                        {studentList?.length === 0 ? <p>Oops!!No student has passed this exam.</p> :
+                        {studentList?.length === 0 ? <p>{isArabic ? 'لم يقم أي طالب بإكمال هذا الواجب بعد.' : 'Oops!! No student has passed this exam.'}</p> :
                             studentList?.map(item => {
                                 return (
                                     <div key={item.solveBy._id} className="student-item-wrapper">
@@ -381,13 +384,13 @@ function TeacherDashboard() {
                                         <Link 
                                             to={`/teacher/student/${item.solveBy._id}/history`} 
                                             className="student-history-icon"
-                                            title="View Full Assignment History"
+                                            title={isArabic ? "عرض سجل الواجبات الكامل" : "View Full Assignment History"}
                                         >
                                             <History size={20} />
                                         </Link>
                                         <div 
                                             className="student-tip-icon" 
-                                            title={`Gift Coins to ${item.solveBy.userName}`}
+                                            title={isArabic ? `إهداء كوينز لـ ${item.solveBy.userName}` : `Gift Coins to ${item.solveBy.userName}`}
                                             onClick={() => handleTipStudent(item.solveBy._id, item.solveBy.userName)}
                                             style={{ cursor: 'pointer', marginLeft: '10px', fontSize: '20px' }}
                                         >
@@ -398,7 +401,7 @@ function TeacherDashboard() {
                             })}
                     </div>
                     <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeStudentListPopup}>Close</button>
+                        <button className='button popup-btn' onClick={closeStudentListPopup}>{isArabic ? 'إغلاق' : 'Close'}</button>
                     </div>
                 </div>
             </div>
@@ -408,15 +411,15 @@ function TeacherDashboard() {
             <div className="remove-class-popup class-popup-hide d-none justify-content-center align-items-center">
                 <div className='remove-class-container class-top'>
                     <div className="update-popup-head">
-                        <p>Remove Assignment</p>
+                        <p>{isArabic ? 'حذف الواجب' : 'Remove Assignment'}</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="remove-popup-body">
-                        <p>Are you sure you want to delete this Assignment?</p>
+                        <p>{isArabic ? 'هل أنت متأكد من رغبتك في حذف هذا الواجب نهائياً؟' : 'Are you sure you want to delete this Assignment?'}</p>
                     </div>
                     <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeRemovePopup}>No</button>
-                        <button onClick={handleRemoveAssignment} className='button popup-btn2'>{loadingOperation ? <span className="loader"></span> : "Yes"}</button>
+                        <button className='button popup-btn' onClick={closeRemovePopup}>{isArabic ? 'لا' : 'No'}</button>
+                        <button onClick={handleRemoveAssignment} className='button popup-btn2'>{loadingOperation ? <span className="loader"></span> : (isArabic ? 'نعم' : 'Yes')}</button>
                     </div>
                 </div>
             </div>
@@ -427,12 +430,14 @@ function TeacherDashboard() {
                 <div className='reassign-container teacher-list-container class-top'>
                     <div className="update-popup-head d-flex align-items-center justify-content-space-between">
                         <div>
-                            <p>Re-assign Assignment (Create New Copy)</p>
-                            <p style={{fontSize: '14px', color: '#666', marginTop: '5px'}}>This will create a NEW assignment with the same questions</p>
+                            <p>{isArabic ? 'إعادة تعيين الواجب (نسخة جديدة)' : 'Re-assign Assignment (Create New Copy)'}</p>
+                            <p style={{fontSize: '14px', color: '#666', marginTop: '5px'}}>
+                                {isArabic ? 'سيتم إنشاء واجب جديد مستقل يحتوي على نفس الأسئلة' : 'This will create a NEW assignment with the same questions'}
+                            </p>
                         </div>
                         <div className='d-flex align-items-center' style={{gap: '10px'}}>
                             <div 
-                                title={forceFlashMode ? 'Flash Mode Forced for Students' : 'Flash Mode Optional for Students'} 
+                                title={forceFlashMode ? (isArabic ? 'نمط الفلاش مفروض على الطلاب' : 'Flash Mode Forced for Students') : (isArabic ? 'نمط الفلاش اختياري للطلاب' : 'Flash Mode Optional for Students')} 
                                 className={`force-flash-toggle ${forceFlashMode ? 'force-flash-active' : ''}`}
                                 onClick={() => { soundEffects.playClick(); setForceFlashMode(!forceFlashMode); }}
                                 style={{
@@ -449,12 +454,12 @@ function TeacherDashboard() {
                             >
                                 <i className="fa fa-bolt" aria-hidden="true" style={{color: '#ffffff', fontSize: '16px'}}></i>
                                 <span style={{color: '#ffffff', fontSize: '14px', fontWeight: '500', whiteSpace: 'nowrap'}}>
-                                    {forceFlashMode ? 'Flash Forced' : 'Flash Optional'}
+                                    {forceFlashMode ? (isArabic ? 'إلزام الفلاش' : 'Flash Forced') : (isArabic ? 'فلاش اختياري' : 'Flash Optional')}
                                 </span>
                             </div>
                             {forceFlashMode && (
                                 <div className='flash-speed-selector' style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
-                                    <label style={{fontSize: '13px', color: '#666', whiteSpace: 'nowrap'}}>Flash Speed:</label>
+                                    <label style={{fontSize: '13px', color: '#666', whiteSpace: 'nowrap'}}>{isArabic ? 'سرعة الفلاش:' : 'Flash Speed:'}</label>
                                     <select 
                                         value={assignmentFlashSpeed} 
                                         onChange={(e) => { soundEffects.playClick(); setAssignmentFlashSpeed(parseFloat(e.target.value)); }}
@@ -491,13 +496,13 @@ function TeacherDashboard() {
                             )
                         })}
                         <div className='assignment-title'>
-                            <p>Title:</p>
-                            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder='Enter the title of assignment (required)' />
+                            <p>{isArabic ? 'العنوان:' : 'Title:'}</p>
+                            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={isArabic ? 'أدخل عنوان الواجب (مطلوب)' : 'Enter the title of assignment (required)'} />
                         </div>
                         <div className="timer d-flex align-items-center">
                             <div style={{width: '100%'}}>
-                                <p>Timer: (Minutes)</p>
-                                <input type="number" value={timer} onChange={(e) => setTimer(e.target.value)} placeholder='Assignment time in minute, if available' />
+                                <p>{isArabic ? 'المؤقت: (بالدقائق)' : 'Timer: (Minutes)'}</p>
+                                <input type="number" value={timer} onChange={(e) => setTimer(e.target.value)} placeholder={isArabic ? 'وقت الواجب بالدقائق إن رغبت' : 'Assignment time in minute, if available'} />
                             </div>
                         </div>
 
@@ -505,16 +510,16 @@ function TeacherDashboard() {
 
                         {isTrialMode ? (
                             <UpgradePrompt 
-                                message="Upgrade to create classes and assign homework to real students"
-                                ctaText="Upgrade to Get Classes"
+                                message={isArabic ? "قم بالترقية لإنشاء الفصول وتعيين الواجبات لطلابك" : "Upgrade to create classes and assign homework to real students"}
+                                ctaText={isArabic ? "ترقية الباقة الآن" : "Upgrade to Get Classes"}
                             />
                         ) : (
                             <>
                                 <div className="select-container d-flex">
                                     <div className="select-class">
                                         <select value={classSelector} onChange={(e) => setClassSelector(e.target.value)}>
-                                            <option>Select Class</option>
-                                            {classesList?.length === 0 ? <option>There is no classes for this teacher</option> : <option>All Classes</option>}
+                                            <option>{isArabic ? 'اختر الفصل' : 'Select Class'}</option>
+                                            {classesList?.length === 0 ? <option>{isArabic ? 'لا توجد فصول لهذا المعلم بعد' : 'There is no classes for this teacher'}</option> : <option>{isArabic ? 'جميع الفصول' : 'All Classes'}</option>}
                                             {classesList?.map(item => {
                                                 return (
                                                     <option key={item._id}>{item.class}</option>
@@ -522,7 +527,7 @@ function TeacherDashboard() {
                                             })}
                                         </select>
                                     </div>
-                                    <button onClick={addClassToBox}>Add</button>
+                                    <button onClick={addClassToBox}>{isArabic ? 'إضافة' : 'Add'}</button>
                                 </div>
                                 <div className='class-selector-container d-flex flex-wrap align-items-center'>
                                     {classesBox?.map(item => {
@@ -541,8 +546,8 @@ function TeacherDashboard() {
                         {errorOperation ? <div className="error error-dengare">{errorOperation}</div> : null}
                     </div>
                     <div className="update-popup-footer">
-                        <button className='button popup-btn' onClick={closeReassignPopup}>Cancel</button>
-                        <button className='button popup-btn2' onClick={handleReassignAssignment}>{loadingOperation ? <span className="loader"></span> : "Create New Assignment"}</button>
+                        <button className='button popup-btn' onClick={closeReassignPopup}>{isArabic ? 'إلغاء' : 'Cancel'}</button>
+                        <button className='button popup-btn2' onClick={handleReassignAssignment}>{loadingOperation ? <span className="loader"></span> : (isArabic ? 'إنشاء واجب جديد' : 'Create New Assignment')}</button>
                     </div>
                 </div>
             </div>

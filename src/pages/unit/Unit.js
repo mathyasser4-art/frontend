@@ -11,6 +11,8 @@ import { safeLocalStorage } from '../../utils/safeStorage';
 import '../../reusable.css'
 import './Unit.css'
 
+import translateCurriculumItem from '../../utils/itemTranslator';
+
 function Unit() {
     const { t, i18n } = useTranslation()
     const [unitData, setUnitData] = useState()
@@ -35,29 +37,8 @@ function Unit() {
         const translated = t(key);
         if (translated && translated !== key) return translated;
 
-        // 2. Lowercase key
-        const lowerKey = `systemNames.${raw.toLowerCase()}`;
-        const lowerTranslated = t(lowerKey);
-        if (lowerTranslated && lowerTranslated !== lowerKey) return lowerTranslated;
-
-        // 3. Fallback dictionary for unhandled variations
-        const fallbacks = {
-            '2 rows': isArabic ? 'سطران (2 أسطر)' : '2 Rows',
-            '3 rows': isArabic ? '٣ أسطر (3 أسطر)' : '3 Rows',
-            '4 rows': isArabic ? '٤ أسطر (4 أسطر)' : '4 Rows',
-            '5 rows': isArabic ? '٥ أسطر (5 أسطر)' : '5 Rows',
-            '6 rows': isArabic ? '٦ أسطر (6 أسطر)' : '6 Rows',
-            '20 questions': isArabic ? '٢٠ سؤالاً (20 سؤال)' : '20 questions',
-            '10 questions': isArabic ? '١٠ أسئلة (10 أسئلة)' : '10 questions',
-            '15 questions': isArabic ? '١٥ سؤالاً (15 سؤال)' : '15 questions',
-            '30 questions': isArabic ? '٣٠ سؤالاً (30 سؤال)' : '30 questions',
-            '50 questions': isArabic ? '٥٠ سؤالاً (50 سؤال)' : '50 questions'
-        };
-
-        const match = fallbacks[raw.toLowerCase()];
-        if (match) return match;
-
-        return raw;
+        // 2. Comprehensive fallback translator
+        return translateCurriculumItem(raw, isArabic);
     }
 
     const getUnitBadgeInfo = (name) => {
