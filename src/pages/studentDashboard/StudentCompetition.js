@@ -760,7 +760,13 @@ function StudentCompetition() {
         if (aWrong !== bWrong) {
             return aWrong - bWrong;
         }
-        return (b.totalAnswered || 0) - (a.totalAnswered || 0);
+        const aScore = a.score || 0;
+        const bScore = b.score || 0;
+        const aWrongFinal = a.wrongAnswers || 0;
+        const bWrongFinal = b.wrongAnswers || 0;
+        const aTotal = Math.max(a.totalAnswered || 0, a.answers?.length || 0, aScore + aWrongFinal);
+        const bTotal = Math.max(b.totalAnswered || 0, b.answers?.length || 0, bScore + bWrongFinal);
+        return bTotal - aTotal;
     });
     const podiumWinners = sortedParticipants.slice(0, 3);
     const myRank = sortedParticipants.findIndex(p => String(p.student?._id || p.student) === String(studentID)) + 1;
