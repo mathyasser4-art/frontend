@@ -179,7 +179,7 @@ function Subject() {
             <div className="remove-subject-popup subject-popup-hide d-none justify-content-center align-items-center">
                 <div className='remove-subject-container subject-top'>
                     <div className="update-popup-head">
-                        <p>Remove Skill Tree (<<span className='text-purple'>{subjectName}</span>)</p>
+                        <p>Remove Skill Tree (<span className='text-purple'>{subjectName}</span>)</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="remove-popup-body">
