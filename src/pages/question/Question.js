@@ -798,7 +798,12 @@ function Question() {
         // Tally results (using cached correct values for already-synced questions)
         let totalPoints = 0;
         let correctAnswers = 0;
+        let totalAnswered = 0;
         updatedQuestionData.forEach((q, i) => {
+            if (q.questionAnswer !== undefined && q.questionAnswer !== null && q.questionAnswer !== '') {
+                totalAnswered++;
+            }
+            
             if (!q.questionAnswer || q.questionAnswer === '') {
                 updatedQuestionData[i].correct = false;
             }
@@ -810,7 +815,7 @@ function Question() {
 
         setQuestionData(updatedQuestionData);
         setPoints(totalPoints);
-        setAnsweredQuestions(correctAnswers);
+        setAnsweredQuestions(totalAnswered);
         setIsCheckingAnswers(false);
 
         soundEffects.playWinSound();
