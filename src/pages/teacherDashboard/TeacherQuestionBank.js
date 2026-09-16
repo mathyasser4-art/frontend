@@ -529,7 +529,7 @@ function TeacherQuestionBank() {
                                 {/* 3. Units & Chapters List */}
                                 {selectedSubject && (
                                     <div className="qb-units-list animate-slide-in">
-                                        <h3>Units in {translateName(selectedSubject.subjectName)}</h3>
+                                        <h3>Topics in {translateName(selectedSubject.subjectName)}</h3>
                                         {unitData.length === 0 ? (
                                             <div className="qb-empty-state">No units found.</div>
                                         ) : (
@@ -620,7 +620,7 @@ function TeacherQuestionBank() {
                             <div className="qb-instruction-card">
                                 <HelpCircle size={48} className="help-icon" />
                                 <h2>No Chapter Selected</h2>
-                                <p>Select a worksheet format, choose a Book, select a Subject, and expand a Unit to choose a Chapter and load its questions.</p>
+                                <p>Select a practice style, choose a Book, select a Subject, and expand a Topic to choose an Exercise Set and load its questions.</p>
                             </div>
                         ) : (
                             <div className="qb-questions-list-wrapper">

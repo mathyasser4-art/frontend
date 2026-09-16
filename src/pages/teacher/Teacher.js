@@ -77,7 +77,7 @@ function Teacher() {
     }
 
     const newTeacher = () => {
-        if (teacherName === '' || teacherEmail === '' || teacherPassword === '' || subject === '' || subject === 'Select Subject') {
+        if (teacherName === '' || teacherEmail === '' || teacherPassword === '' || subject === '' || subject === 'Select Skill Tree') {
             setError('All field is required!!')
         } else {
             const subjectID = allSubject.filter(e => e.schoolSubjectName === subject)[0]._id
@@ -118,7 +118,7 @@ function Teacher() {
     }
 
     const handleUpdateTeacher = () => {
-        if (teacherName === '' || teacherEmail === '' || subject === '' || subject === 'Select Subject' || subject === undefined) {
+        if (teacherName === '' || teacherEmail === '' || subject === '' || subject === 'Select Skill Tree' || subject === undefined) {
             setError('All field is required!!')
         } else {
             const subjectID = allSubject.filter(e => e.schoolSubjectName === subject)[0]._id
@@ -804,7 +804,7 @@ function Teacher() {
                                 <td className='text-purple'>{teacherNumber}</td>
                                 <td>{isArabic ? 'الاسم ⌄' : 'Name ⌄'}</td>
                                 <td>{isArabic ? 'البريد الإلكتروني ⌄' : 'Email ⌄'}</td>
-                                <td>{isArabic ? 'المادة ⌄' : 'Subject ⌄'}</td>
+                                <td>{isArabic ? 'المادة ⌄' : 'Skill Tree ⌄'}</td>
                                 <td>{isArabic ? 'حد الطلاب ⌄' : 'Student Limit ⌄'}</td>
                                 <td>{isArabic ? 'الفصول ⌄' : 'Classes ⌄'}</td>
                                 <td>{isArabic ? 'الإجراء ⌄' : 'Action ⌄'}</td>
@@ -895,7 +895,7 @@ function Teacher() {
                         <input type="number" value={maxStudents} onChange={(e) => setMaxStudents(e.target.value)} placeholder='e.g. 50' min="0" />
                         <div className="add-popup-select-class">
                             <select value={subject} onChange={(e) => setSubject(e.target.value)}>
-                                <option>{isArabic ? 'اختر المادة' : 'Select Subject'}</option>
+                                <option>{isArabic ? 'اختر المادة' : 'Select Skill Tree'}</option>
                                 {subjectLoading ? <option>{isArabic ? 'جارٍ تحميل المواد...' : 'Waiting Subjects...'}</option> : null}
                                 {allSubject?.map(item => {
                                     return (
@@ -935,7 +935,7 @@ function Teacher() {
                         <input type="number" value={maxStudents} onChange={(e) => setMaxStudents(e.target.value)} placeholder='e.g. 50' min="0" />
                         <div className="update-popup-select-class">
                             <select value={subject} onChange={(e) => setSubject(e.target.value)}>
-                                {subject ? <option>{subject}</option> : <option>{isArabic ? 'اختر المادة' : 'Select Subject'}</option>}
+                                {subject ? <option>{subject}</option> : <option>{isArabic ? 'اختر المادة' : 'Select Skill Tree'}</option>}
                                 {allSubject?.map(item => {
                                     return (
                                         <option key={item._id}>{item.schoolSubjectName}</option>

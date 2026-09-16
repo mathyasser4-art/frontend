@@ -121,7 +121,7 @@ function Subject() {
             <div className="subject-container">
                 <div className="subject-header d-flex align-items-center" onClick={openAddPopup}>
                     <p>+</p>
-                    <p>Create New Subject</p>
+                    <p>Create New Skill Tree</p>
                 </div>
                 {loading ? <DashboardLoading /> :
                     allSubject?.map(item => {
@@ -141,11 +141,11 @@ function Subject() {
             <div className="add-subject-popup subject-popup-hide d-none justify-content-center align-items-center">
                 <div className='add-subject-container subject-top'>
                     <div className="add-popup-head">
-                        <p>Add New Subject</p>
+                        <p>Add New Skill Tree</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="add-popup-body">
-                        <label>Subject Name</label>
+                        <label>Skill Tree Name</label>
                         <input type="text" value={subjectName} onChange={(e) => setSubjectName(e.target.value)} placeholder='Math' />
                     </div>
                     <div className="update-popup-footer">
@@ -160,11 +160,11 @@ function Subject() {
             <div className="update-subject-popup subject-popup-hide d-none justify-content-center align-items-center">
                 <div className='update-subject-container subject-top'>
                     <div className="update-popup-head">
-                        <p>Update Subject</p>
+                        <p>Update Skill Tree</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="add-popup-body">
-                        <label>Subject Name</label>
+                        <label>Skill Tree Name</label>
                         <input type="text" value={subjectName} onChange={(e) => setSubjectName(e.target.value)} placeholder='Math' />
                     </div>
                     <div className="update-popup-footer">
@@ -179,12 +179,12 @@ function Subject() {
             <div className="remove-subject-popup subject-popup-hide d-none justify-content-center align-items-center">
                 <div className='remove-subject-container subject-top'>
                     <div className="update-popup-head">
-                        <p>Remove Subject (<span className='text-purple'>{subjectName}</span>)</p>
+                        <p>Remove Skill Tree (<<span className='text-purple'>{subjectName}</span>)</p>
                     </div>
                     {error ? <div className="error error-dengare">{error}</div> : null}
                     <div className="remove-popup-body">
                         <h3 className='text-red'>WARNING!!</h3>
-                        <p>Are you sure you want to delete this subject?</p>
+                        <p>Are you sure you want to delete this skill tree?</p>
                     </div>
                     <div className="update-popup-footer">
                         <button className='button popup-btn' onClick={closeRemovePopup}>Cancel</button>

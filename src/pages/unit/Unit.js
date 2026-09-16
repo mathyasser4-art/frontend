@@ -132,7 +132,7 @@ function Unit() {
                                         </div>
                                     </div>
                                     <button className={`game-open-btn ${isLocked ? 'btn-locked' : ''}`}>
-                                        <span>{isLocked ? (isArabic ? 'مغلق (اشترك للفتح) 🔒' : 'Locked 🔒') : (isArabic ? 'افتح التمارين 🚀' : 'Open Unit 🚀')}</span>
+                                        <span>{isLocked ? (isArabic ? 'مغلق (اشترك للفتح) 🔒' : 'Locked 🔒') : (isArabic ? 'افتح التمارين 🚀' : 'Open Topic 🚀')}</span>
                                     </button>
                                 </div>
                             );
