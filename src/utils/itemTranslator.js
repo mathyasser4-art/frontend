@@ -26,15 +26,15 @@ export const translateCurriculumItem = (name, isArabic = true) => {
         'level 4 (friends of 10) -9 -8 .. -1': isArabic ? 'المستوى 4 (أصدقاء 10) -9 -8 .. -1' : 'Level 4 (Friends of 10) -9 -8 .. -1',
 
         // Rows (Units)
-        '2 rows': isArabic ? 'سطران (2 أسطر)' : '2 Rows',
-        '3 rows': isArabic ? '٣ أسطر (3 أسطر)' : '3 Rows',
-        '4 rows': isArabic ? '٤ أسطر (4 أسطر)' : '4 Rows',
-        '5 rows': isArabic ? '٥ أسطر (5 أسطر)' : '5 Rows',
-        '6 rows': isArabic ? '٦ أسطر (6 أسطر)' : '6 Rows',
-        '7 rows': isArabic ? '٧ أسطر (7 أسطر)' : '7 Rows',
-        '8 rows': isArabic ? '٨ أسطر (8 أسطر)' : '8 Rows',
-        '9 rows': isArabic ? '٩ أسطر (9 أسطر)' : '9 Rows',
-        '10 rows': isArabic ? '١٠ أسطر (10 أسطر)' : '10 Rows',
+        '2 rows': isArabic ? 'صفان (2 صفوف)' : '2 Rows',
+        '3 rows': isArabic ? '٣ صفوف (3 صفوف)' : '3 Rows',
+        '4 rows': isArabic ? '٤ صفوف (4 صفوف)' : '4 Rows',
+        '5 rows': isArabic ? '٥ صفوف (5 صفوف)' : '5 Rows',
+        '6 rows': isArabic ? '٦ صفوف (6 صفوف)' : '6 Rows',
+        '7 rows': isArabic ? '٧ صفوف (7 صفوف)' : '7 Rows',
+        '8 rows': isArabic ? '٨ صفوف (8 صفوف)' : '8 Rows',
+        '9 rows': isArabic ? '٩ صفوف (9 صفوف)' : '9 Rows',
+        '10 rows': isArabic ? '١٠ صفوف (10 صفوف)' : '10 Rows',
 
         // Questions Count
         '10 questions': isArabic ? '١٠ أسئلة (10 أسئلة)' : '10 Questions',
@@ -79,10 +79,10 @@ export const translateCurriculumItem = (name, isArabic = true) => {
         const rowMatch = lower.match(/^(\d+)\s*rows?$/i);
         if (rowMatch) {
             const n = parseInt(rowMatch[1], 10);
-            if (n === 1) return 'سطر واحد';
-            if (n === 2) return 'سطران (2 أسطر)';
-            if (n >= 3 && n <= 10) return `${n} أسطر`;
-            return `${n} سطراً`;
+            if (n === 1) return 'صف واحد';
+            if (n === 2) return 'صفان (2 صفوف)';
+            if (n >= 3 && n <= 10) return `${n} صفوف`;
+            return `${n} صفاً`;
         }
 
         // Match: X questions

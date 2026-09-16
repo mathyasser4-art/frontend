@@ -9,9 +9,10 @@ import soundEffects from '../../utils/soundEffects';
 import { createCompetition } from '../../api/competition/competition.api';
 import './CreateCompetitionModal.css';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { translateCurriculumItem } from '../../utils/itemTranslator';
 
 function CreateCompetitionModal({ onClose }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
 
     const [step, setStep] = useState('source'); // 'source' | 'type' | 'system' | 'unit' | 'custom-ws' | 'assignments' | 'details'
@@ -201,9 +202,8 @@ function CreateCompetitionModal({ onClose }) {
 
     const translateName = (name) => {
         if (!name) return '';
-        const key = `systemNames.${name}`;
-        const translated = t(key);
-        return translated !== key ? translated : name;
+        const isArabic = i18n.language === 'ar' || document.documentElement.dir === 'rtl';
+        return translateCurriculumItem(name, isArabic);
     };
 
     const handleRemoveQuestion = (qId) => {

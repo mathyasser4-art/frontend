@@ -115,10 +115,10 @@ const LevelVisibilityManager = () => {
 
   const getUnitLevelBadge = (name) => {
     const raw = String(name || '').toLowerCase();
-    if (raw.includes('2') || raw.includes('سطران')) return { label: isArabic ? 'سطران (2 Rows)' : 'Level: 2 Rows', color: '#0284c7', bg: '#e0f2fe' };
-    if (raw.includes('3')) return { label: isArabic ? '٣ أسطر (3 Rows)' : 'Level: 3 Rows', color: '#7c3aed', bg: '#f3e8ff' };
-    if (raw.includes('4')) return { label: isArabic ? '٤ أسطر (4 Rows)' : 'Level: 4 Rows', color: '#e11d48', bg: '#ffe4e6' };
-    if (raw.includes('5')) return { label: isArabic ? '٥ أسطر (5 Rows)' : 'Level: 5 Rows', color: '#b45309', bg: '#fef3c7' };
+    if (raw.includes('2') || raw.includes('صفان')) return { label: isArabic ? 'صفان (2 Rows)' : 'Level: 2 Rows', color: '#0284c7', bg: '#e0f2fe' };
+    if (raw.includes('3')) return { label: isArabic ? '٣ أصف (3 Rows)' : 'Level: 3 Rows', color: '#7c3aed', bg: '#f3e8ff' };
+    if (raw.includes('4')) return { label: isArabic ? '٤ أصف (4 Rows)' : 'Level: 4 Rows', color: '#e11d48', bg: '#ffe4e6' };
+    if (raw.includes('5')) return { label: isArabic ? '٥ أصف (5 Rows)' : 'Level: 5 Rows', color: '#b45309', bg: '#fef3c7' };
     return { label: isArabic ? 'مستوى تدريبي' : 'Practice Level', color: '#059669', bg: '#d1fae5' };
   };
 

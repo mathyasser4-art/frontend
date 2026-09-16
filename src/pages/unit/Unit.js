@@ -43,7 +43,7 @@ function Unit() {
 
     const getUnitBadgeInfo = (name) => {
         const raw = String(name || '').toLowerCase().trim();
-        if (raw.includes('2') || raw.includes('سطران')) {
+        if (raw.includes('2') || raw.includes('صفان')) {
             return { icon: '🔢', bgGradient: 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)', shadowColor: 'rgba(2, 132, 199, 0.35)', badgeLabel: isArabic ? 'مستوى بسيط' : '2 Rows' };
         }
         if (raw.includes('3')) {
@@ -92,7 +92,7 @@ function Unit() {
                     <div className="game-instruction-banner">
                         <div className="banner-mascot-icon">🎯</div>
                         <div className="banner-text-content">
-                            <h4>{t('unit.selectUnit', 'اختر عدد الأسطر أو نوع التمرين 🎯')}</h4>
+                            <h4>{t('unit.selectUnit', 'اختر عدد الأصف أو نوع التمرين 🎯')}</h4>
                             <p>{t('unit.unitDescription', 'اضغط على أي كارت من الكروت التالية لعرض أوراق العمل والأسئلة!')}</p>
                         </div>
                     </div>
