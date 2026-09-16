@@ -190,45 +190,7 @@ const Navbar = () => {
             <div className='nav-container d-flex justify-content-space-between align-items-center'>
                 <Link to={'/'} onClick={() => soundEffects.playClick()}><img src={isTopsoroban ? '/img/topsoroban_abacusheroes_logo.png' : logo} alt="" /></Link>
                 
-                {/* Desktop Center Links */}
-                <div className="nav-center-links d-none d-lg-flex">
-                    <div className="nav-dropdown">
-                        <span className="nav-link">{t('navbar.forTeachers', 'For Teachers ▾')}</span>
-                        <div className="dropdown-menu">
-                            <span onClick={() => { soundEffects.playClick(); setShowTeacherHelp(true); }} className="dropdown-item">{t('navbar.websiteExplanation', 'Website Explanation')}</span>
-                            {false && <span onClick={() => { soundEffects.playClick(); navigate('/teacher/registration'); }} className="dropdown-item">Register as Teacher</span>}
-                            <span onClick={() => {
-                                soundEffects.playClick();
-                                if (role === 'Teacher' || role === 'School') {
-                                    setShowCreateHomework(true);
-                                } else {
-                                    navigate('/auth/login');
-                                }
-                            }} className="dropdown-item">{t('navbar.createHomework', 'Create Homework')}</span>
-
-                            <span onClick={() => {
-                                soundEffects.playClick();
-                                setTutorialRole('Teacher');
-                                setShowTutorialVideo(true);
-                            }} className="dropdown-item">{t('navbar.videos', 'Videos')}</span>
-                        </div>
-                    </div>
-                    <div className="nav-dropdown">
-                        <span className="nav-link">{t('navbar.forStudents', 'For Students ▾')}</span>
-                        <div className="dropdown-menu">
-                            <span onClick={() => { soundEffects.playClick(); setShowStudentHelp(true); }} className="dropdown-item">{t('navbar.websiteExplanation', 'Website Explanation')}</span>
-                            <span onClick={() => { soundEffects.playClick(); if (role === 'Student') { navigate('/dashboard/student'); } else { navigate('/auth/login'); } }} className="dropdown-item">{t('navbar.myHomework', 'My Homework')}</span>
-                            <span onClick={() => { soundEffects.playClick(); navigate('/student/games-menu'); }} className="dropdown-item">{t('navbar.gameRoom', 'Game Room')}</span>
-                            <span onClick={() => {
-                                soundEffects.playClick();
-                                setTutorialRole('Student');
-                                setShowTutorialVideo(true);
-                            }} className="dropdown-item">{t('navbar.videos', 'Videos')}</span>
-                        </div>
-                    </div>
-                    {SHOW_PRICING && <Link to="/pricing" onClick={() => soundEffects.playClick()} className="nav-link">{t('navbar.pricing', 'Pricing')}</Link>}
-                    <Link to="/contact" onClick={() => soundEffects.playClick()} className="nav-link">{t('navbar.contact', 'Contact')}</Link>
-                </div>
+                {/* Desktop Center Links removed */}
 
                 {/* Student Centered Header Homework Button */}
                 {role === 'Student' && (
@@ -304,6 +266,43 @@ const Navbar = () => {
                             <span className="text-desktop">{t('navbar.createHw', 'CREATE HW')}</span><span className="text-mobile">+HW</span>
                         </div>
                     ) : null}
+                    
+                    {isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? (
+                        <div 
+                            className="nav-btn create-competition-3d-btn"
+                            onClick={() => { soundEffects.playClick(); setShowCreateCompetition(true); }}
+                            style={{
+                                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                color: '#ffffff',
+                                border: 'none',
+                                fontWeight: '900',
+                                fontSize: '13px',
+                                padding: '0.45rem 1rem',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                marginRight: '6px',
+                                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.35), inset 0 -3px 0 rgba(0,0,0,0.2)',
+                                transition: 'transform 0.1s, box-shadow 0.1s',
+                            }}
+                            onMouseDown={(e) => {
+                                e.currentTarget.style.transform = 'translateY(2px)';
+                                e.currentTarget.style.boxShadow = '0 2px 6px rgba(16, 185, 129, 0.35), inset 0 -1px 0 rgba(0,0,0,0.2)';
+                            }}
+                            onMouseUp={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.35), inset 0 -3px 0 rgba(0,0,0,0.2)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.35), inset 0 -3px 0 rgba(0,0,0,0.2)';
+                            }}
+                        >
+                            {t('navbar.createCompetition', '⚔️ CREATE COMPETITION')}
+                        </div>
+                    ) : null}
                     {isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? (
                         <Link 
                             to="/teacher/competitions-hub" 
@@ -333,7 +332,7 @@ const Navbar = () => {
                                     boxShadow: hasUnreadEvents ? '0 4px 14px rgba(239, 68, 68, 0.45)' : '0 4px 12px rgba(245, 158, 11, 0.35)'
                                 }}
                             >
-                                {t('navbar.competitionsHub', '🏆 COMPETITIONS')}
+                                {t('navbar.competitionsHub', '🏆 JOIN A COMPETITION')}
                                 {hasUnreadEvents && (
                                     <span style={{
                                         backgroundColor: '#ffffff',
