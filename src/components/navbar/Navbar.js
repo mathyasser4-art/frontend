@@ -253,12 +253,8 @@ const Navbar = () => {
                     {role === 'Teacher' ? (
                         <>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ marginRight: '10px' }}>{t('navbar.games', 'GAMES')}</div></Link>
-                            <Link to={'/dashboard-school/class'} onClick={() => soundEffects.playClick()}>
-                                <div className="homework-btn" style={{ backgroundColor: '#3b82f6', border: 'none', marginRight: '10px' }}>{t('navbar.classes', 'CLASSES')}</div>
-                            </Link>
-                            <Link to={'/teacher/registration'} onClick={() => soundEffects.playClick()}>
-                                <div className="teachers-btn"><span className="text-desktop">{t('navbar.addStudents', 'ADD STUDENTS')}</span><span className="text-mobile">+STUDENTS</span></div>
-                            </Link>
+                            
+                            
                         </>
                     ) : null}
                     {role === 'Teacher' ? (

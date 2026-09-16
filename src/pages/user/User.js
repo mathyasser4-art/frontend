@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import Navbar from '../../components/navbar/Navbar'
 import MobileNav from '../../components/mobileNav/MobileNav'
 import ProfileLoading from '../../components/profileLoading/ProfileLoading'
@@ -205,6 +206,22 @@ function User() {
                             </div>
                         ) : null : null}
                     </div>
+
+                    
+                    {role === 'Teacher' && (
+                        <div className="teacher-management-buttons" style={{ display: 'flex', gap: '10px', marginTop: '1.5rem', width: '320px', maxWidth: '90%' }}>
+                            <Link to={'/dashboard-school/class'} style={{ flex: 1, textDecoration: 'none' }}>
+                                <div className="user-btn" style={{ background: 'linear-gradient(-45deg, #3b82f6, #60a5fa, #3b82f6, #60a5fa)', width: '100%', padding: '10px 0' }}>
+                                    {isArabic ? 'إدارة الفصول 🏫' : 'Classes 🏫'}
+                                </div>
+                            </Link>
+                            <Link to={'/teacher/registration'} style={{ flex: 1, textDecoration: 'none' }}>
+                                <div className="user-btn" style={{ background: 'linear-gradient(-45deg, #10b981, #34d399, #10b981, #34d399)', width: '100%', padding: '10px 0' }}>
+                                    {isArabic ? 'إضافة طلاب 👤' : 'Add Students 👤'}
+                                </div>
+                            </Link>
+                        </div>
+                    )}
 
                     <div onClick={openEditPopup} className="user-btn" style={{marginTop: '2rem'}}>
                         {isArabic ? 'تعديل البيانات ✏️' : 'Edit Profile ✏️'}
