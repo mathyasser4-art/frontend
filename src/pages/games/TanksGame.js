@@ -14,6 +14,7 @@ import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import './TanksGame.css';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { translateCurriculumItem } from '../../utils/itemTranslator';
 
 // Tank Color Schemes
 const TANK_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#fbbf24', '#a855f7'];
@@ -74,7 +75,7 @@ const formatQuestionText = (text) => {
 const TanksGame = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -168,11 +169,10 @@ const TanksGame = () => {
   }, [selectedSubject]);
 
   const translateName = (name) => {
-    if (!name) return '';
-    const key = `systemNames.${name}`;
-    const translated = t(key);
-    return translated !== key ? translated : name;
-  };
+        if (!name) return '';
+        const isArabic = (typeof i18n !== 'undefined' && i18n.language === 'ar') || document.documentElement.dir === 'rtl';
+        return translateCurriculumItem(name, isArabic);
+    };
 
   const handleSelectChapter = (chapter) => {
     soundEffects.playClick();

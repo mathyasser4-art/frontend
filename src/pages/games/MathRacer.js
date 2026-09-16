@@ -15,6 +15,7 @@ import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import Draggable from 'react-draggable';
 import './MathRacer.css';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { translateCurriculumItem } from '../../utils/itemTranslator';
 
 const F1CarSVG = ({ color, name, isBoosting }) => {
   const isCyber = color === '#a855f7';
@@ -300,11 +301,10 @@ function MathRacer() {
   };
 
   const translateName = (name) => {
-      if (!name) return '';
-      const key = `systemNames.${name}`;
-      const translated = t(key);
-      return translated !== key ? translated : name;
-  };
+        if (!name) return '';
+        const isArabic = (typeof i18n !== 'undefined' && i18n.language === 'ar') || document.documentElement.dir === 'rtl';
+        return translateCurriculumItem(name, isArabic);
+    };
 
   // Matchmaking & Multiplayer States
   const userRole = safeLocalStorage.getItem('auth_role') || '';

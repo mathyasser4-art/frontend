@@ -10,6 +10,7 @@ import getUnit from '../../api/unit/getUnit.api';
 import { isUnitVisible, setUnitVisibility, resetAllUnitsVisible, getHiddenUnitIds, isSystemVisible, setSystemVisibility, getHiddenSystemIds, resetAllSystemsVisible } from '../../utils/visibilityManager';
 import './LevelVisibilityManager.css';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { translateCurriculumItem } from '../../utils/itemTranslator';
 
 const LevelVisibilityManager = () => {
   const navigate = useNavigate();
@@ -55,11 +56,10 @@ const LevelVisibilityManager = () => {
   }, [selectedSubject]);
 
   const translateName = (name) => {
-    if (!name) return '';
-    const key = `systemNames.${name}`;
-    const translated = t(key);
-    return translated !== key ? translated : name;
-  };
+        if (!name) return '';
+        const isArabic = (typeof i18n !== 'undefined' && i18n.language === 'ar') || document.documentElement.dir === 'rtl';
+        return translateCurriculumItem(name, isArabic);
+    };
 
   // ========== SYSTEM TOGGLES ==========
   const handleSystemToggle = (systemId) => {

@@ -12,6 +12,7 @@ import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import './MazeGame.css';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { translateCurriculumItem } from '../../utils/itemTranslator';
 
 const CHARACTER_URL = 'https://api.dicebear.com/7.x/bottts/svg?seed=toothpaste&backgroundColor=b6e3f4';
 
@@ -195,7 +196,7 @@ const generateMaze = (width, height, customQs, diff) => {
 function MazeGame() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [gameState, setGameState] = useState('menu'); // menu, loading, playing, door-modal, won
   const [grid, setGrid] = useState([]);
@@ -251,11 +252,10 @@ function MazeGame() {
   }, [selectedSubject]);
 
   const translateName = (name) => {
-    if (!name) return '';
-    const key = `systemNames.${name}`;
-    const translated = t(key);
-    return translated !== key ? translated : name;
-  };
+        if (!name) return '';
+        const isArabic = (typeof i18n !== 'undefined' && i18n.language === 'ar') || document.documentElement.dir === 'rtl';
+        return translateCurriculumItem(name, isArabic);
+    };
 
   const handleSelectChapter = (chapter) => {
     soundEffects.playClick();

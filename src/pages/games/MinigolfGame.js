@@ -13,6 +13,7 @@ import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import './MinigolfGame.css';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { translateCurriculumItem } from '../../utils/itemTranslator';
 
 const parseGridRows = (questionText) => {
   if (!questionText) return null;
@@ -169,7 +170,7 @@ const HOLES = [
 const MinigolfGame = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -224,11 +225,10 @@ const MinigolfGame = () => {
   }, [selectedSubject]);
 
   const translateName = (name) => {
-    if (!name) return '';
-    const key = `systemNames.${name}`;
-    const translated = t(key);
-    return translated !== key ? translated : name;
-  };
+        if (!name) return '';
+        const isArabic = (typeof i18n !== 'undefined' && i18n.language === 'ar') || document.documentElement.dir === 'rtl';
+        return translateCurriculumItem(name, isArabic);
+    };
 
   const handleSelectChapter = (chapter) => {
     soundEffects.playClick();

@@ -13,6 +13,7 @@ import API_BASE_URL from '../../config/api.config';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
 import './SuperMarioGame.css';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { translateCurriculumItem } from '../../utils/itemTranslator';
 
 const parseGridRows = (questionText) => {
   if (!questionText) return null;
@@ -72,7 +73,7 @@ const QUESTIONS_TO_UNLOCK = 5;
 const SuperMarioGame = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const iframeRef = useRef(null);
   const containerRef = useRef(null);
   const [gameState, setGameState] = useState('menu'); // 'menu', 'locked', 'playing', 'revive_locked', 'in_game_lock'
@@ -110,11 +111,10 @@ const SuperMarioGame = () => {
   }, [selectedSubject]);
 
   const translateName = (name) => {
-    if (!name) return '';
-    const key = `systemNames.${name}`;
-    const translated = t(key);
-    return translated !== key ? translated : name;
-  };
+        if (!name) return '';
+        const isArabic = (typeof i18n !== 'undefined' && i18n.language === 'ar') || document.documentElement.dir === 'rtl';
+        return translateCurriculumItem(name, isArabic);
+    };
 
   const handleSelectChapter = (chapter) => {
     soundEffects.playClick();
