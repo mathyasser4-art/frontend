@@ -101,6 +101,7 @@ const TeacherQuestionBank = safeLazy(() => import('./pages/teacherDashboard/Teac
 const LevelVisibilityManager = safeLazy(() => import('./pages/dashboardSchool/LevelVisibilityManager'));
 const Shop = safeLazy(() => import('./pages/shop/Shop'));
 const LiveAdminDashboard = safeLazy(() => import('./pages/dashboardSchool/LiveAdminDashboard'));
+const LearningPath = safeLazy(() => import('./pages/learningPath/LearningPath'));
 
 function App() {
   const isAuth = safeLocalStorage.getItem('O_authWEB');
@@ -206,6 +207,7 @@ function App() {
           <Route path='/student/games/tanks' element={<TanksGame />} />
           <Route path='/student/games/minigolf' element={<MinigolfGame />} />
           <Route path='/student/games-menu' element={<GamesMenu />} />
+          <Route path='/student/learning-path' element={isAuth && role === 'Student' ? <LearningPath /> : <Navigate to='/' />} />
           <Route path='/shop' element={isAuth ? <Shop /> : <Navigate to='/' />} />
         </Routes>
       </Suspense>

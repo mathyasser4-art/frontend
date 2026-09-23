@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import logo from '../../logo.png';
 import avatarExam from '../../img/avatar-exam.png';
@@ -19,6 +19,7 @@ import '../../reusable.css';
 import './Question.css';
 import jsPDF from 'jspdf';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { markChapterComplete, calculateStars } from '../../utils/learningPathProgress';
 
 // ── Abacus grid helpers ───────────────────────────────────────────────────────
 
@@ -151,6 +152,8 @@ const normalizeToWesternDigits = (str) => {
 function Question() {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const location = useLocation();
+    const isFromLearningPath = location.state?.fromLearningPath === true;
     const isNavigatingRef = useRef(false);
     
     // State for Abacus visibility
@@ -818,6 +821,16 @@ function Question() {
         setAnsweredQuestions(totalAnswered);
         setIsCheckingAnswers(false);
 
+        // ── Learning Path: mark chapter complete ──
+        if (isFromLearningPath && chapterID) {
+            const userId = safeLocalStorage.getItem('pp_id') || 'guest';
+            const percentage = updatedQuestionData.length > 0
+                ? Math.round((correctAnswers / updatedQuestionData.length) * 100)
+                : 0;
+            const stars = calculateStars(percentage);
+            markChapterComplete(userId, subjectID, chapterID, stars);
+        }
+
         soundEffects.playWinSound();
         const popup = document.querySelector('.result-popup');
         popup.classList.replace('d-none', 'd-flex');
@@ -1238,7 +1251,11 @@ function Question() {
                             <tbody><tr><td>{answeredQuestions}</td><td>{points}</td><td>{totalSummation}</td></tr></tbody>
                         </table>
                     </div>
-                    <Link to={subjectID === 'custom' ? '/teacher/question-bank' : `/Unit/${questionTypeID}/${subjectID}`} onClick={() => soundEffects.playClick()}><button className='button popup-btn'>Close</button></Link>
+                    {isFromLearningPath ? (
+                        <Link to='/student/learning-path' onClick={() => soundEffects.playClick()}><button className='button popup-btn'>Back to Learning Path 🗺️</button></Link>
+                    ) : (
+                        <Link to={subjectID === 'custom' ? '/teacher/question-bank' : `/Unit/${questionTypeID}/${subjectID}`} onClick={() => soundEffects.playClick()}><button className='button popup-btn'>Close</button></Link>
+                    )}
                 </div>
             </div>
             
