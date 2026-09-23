@@ -102,6 +102,7 @@ const LevelVisibilityManager = safeLazy(() => import('./pages/dashboardSchool/Le
 const Shop = safeLazy(() => import('./pages/shop/Shop'));
 const LiveAdminDashboard = safeLazy(() => import('./pages/dashboardSchool/LiveAdminDashboard'));
 const LearningPath = safeLazy(() => import('./pages/learningPath/LearningPath'));
+const JourneyHub = safeLazy(() => import('./pages/learningPath/JourneyHub'));
 
 function App() {
   const isAuth = safeLocalStorage.getItem('O_authWEB');
