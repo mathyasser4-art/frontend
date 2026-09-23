@@ -30,6 +30,7 @@ export const getProgress = (userId, subjectId) => {
     return {
       completedChapters: parsed.completedChapters || [],
       stars: parsed.stars || {},
+      scores: parsed.scores || {},
       lastUpdated: parsed.lastUpdated || 0,
     };
   } catch (e) {
@@ -45,7 +46,7 @@ export const getProgress = (userId, subjectId) => {
  * @param {string} chapterId
  * @param {number} stars - 0 to 3
  */
-export const markChapterComplete = (userId, subjectId, chapterId, stars = 1) => {
+export const markChapterComplete = (userId, subjectId, chapterId, stars = 1, percentage = 0) => {
   try {
     const progress = getProgress(userId, subjectId);
 
@@ -57,6 +58,11 @@ export const markChapterComplete = (userId, subjectId, chapterId, stars = 1) => 
     // Update stars (keep the best rating)
     const existingStars = progress.stars[chapterId] || 0;
     progress.stars[chapterId] = Math.max(existingStars, stars);
+
+    // Update score
+    progress.scores = progress.scores || {};
+    const existingScore = progress.scores[chapterId] || 0;
+    progress.scores[chapterId] = Math.max(existingScore, percentage);
 
     progress.lastUpdated = Date.now();
 
@@ -130,16 +136,25 @@ export const flattenChapters = (units) => {
  * @returns {'completed' | 'current' | 'locked'}
  */
 export const getChapterStatus = (progress, chapterId, allChaptersFlat) => {
-  if (progress.completedChapters.includes(chapterId)) {
-    return 'completed';
+  const index = allChaptersFlat.findIndex((c) => c.chapterId === chapterId);
+  if (index === -1) return 'locked';
+
+  // The first lesson is always unlocked
+  if (index === 0) {
+    const score = progress.scores?.[chapterId];
+    if (score >= 70 || progress.completedChapters.includes(chapterId)) return 'completed';
+    return 'current';
   }
 
-  // Find the first uncompleted chapter — that's the "current" one
-  const firstUncompleted = allChaptersFlat.find(
-    (c) => !progress.completedChapters.includes(c.chapterId)
-  );
+  // To unlock this one, the previous one MUST have >= 70% or be historically completed
+  const prevChapter = allChaptersFlat[index - 1];
+  const prevScore = progress.scores?.[prevChapter.chapterId] || 0;
 
-  if (firstUncompleted && firstUncompleted.chapterId === chapterId) {
+  if (prevScore >= 70 || progress.completedChapters.includes(prevChapter.chapterId)) {
+    const score = progress.scores?.[chapterId];
+    if (score >= 70 || progress.completedChapters.includes(chapterId)) {
+      return 'completed';
+    }
     return 'current';
   }
 
@@ -172,4 +187,11 @@ export const getOverallStats = (progress, allChaptersFlat) => {
   const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   return { total, completed, totalStars, maxStars, percentage };
+};
+
+/**
+ * Get score for a chapter
+ */
+export const getScore = (progress, chapterId) => {
+  return progress.scores?.[chapterId] || 0;
 };

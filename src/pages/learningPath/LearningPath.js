@@ -12,6 +12,7 @@ import {
   getStars,
   getOverallStats,
   resetProgress,
+  getScore,
 } from '../../utils/learningPathProgress';
 import { safeLocalStorage } from '../../utils/safeStorage';
 import soundEffects from '../../utils/soundEffects';
@@ -411,6 +412,7 @@ const LearningPath = () => {
       const coord = interpolateWaypoints(waypoints, t);
       const status = getChapterStatus(progress, chapter.chapterId, allChapters);
       const stars = getStars(progress, chapter.chapterId);
+      const score = getScore(progress, chapter.chapterId);
 
       // Assign distinct visual unit theme from palette
       const unitTheme = UNIT_THEME_PALETTE[chapter.unitIndex % UNIT_THEME_PALETTE.length];
@@ -421,6 +423,7 @@ const LearningPath = () => {
         index: idx,
         status,
         stars,
+        score,
         x: coord.x,
         y: coord.y,
         biome: `${unitTheme.icon} ${chapter.unitName}`,
@@ -725,7 +728,7 @@ const LearningPath = () => {
           >
             <span className="wumpa-badge-icon">{currentStage?.unitTheme?.icon || '📍'}</span>
             <div className="wumpa-badge-text">
-              <span className="badge-lbl">UNIT {currentStage ? currentStage.unitIndex + 1 : 1}</span>
+              <span className="badge-lbl">REGION</span>
               <span
                 className="badge-val"
                 style={{ color: currentStage?.unitTheme?.color || '#a78bfa' }}
@@ -808,7 +811,7 @@ const LearningPath = () => {
                 <div className="archway-plank">
                   <span className="archway-icon">{stage.unitTheme.icon}</span>
                   <div className="archway-text-col">
-                    <span className="archway-tag">UNIT {stage.unitIndex + 1}</span>
+                    
                     <span className="archway-name">{stage.unitName}</span>
                   </div>
                 </div>
@@ -919,7 +922,7 @@ const LearningPath = () => {
                     className="tag-index"
                     style={{ color: stage.unitTheme.color }}
                   >
-                    {stage.unitTheme.icon} Unit {stage.unitIndex + 1} • Lesson {stage.chapterIndex + 1}
+                    {stage.unitTheme.icon} Lesson {stage.chapterIndex + 1}
                   </span>
                   <span className="tag-name">{stage.chapterName}</span>
                 </div>

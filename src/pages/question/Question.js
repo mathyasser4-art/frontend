@@ -828,7 +828,7 @@ function Question() {
                 ? Math.round((correctAnswers / updatedQuestionData.length) * 100)
                 : 0;
             const stars = calculateStars(percentage);
-            markChapterComplete(userId, subjectID, chapterID, stars);
+            markChapterComplete(userId, subjectID, chapterID, stars, percentage);
         }
 
         soundEffects.playWinSound();
