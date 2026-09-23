@@ -560,8 +560,6 @@ const LearningPath = () => {
   if (showSelector) {
     return (
       <div className={`learning-path-page gamified-adventure-view ${activeWorld.filterClass}`}>
-        <MobileNav role="Student" />
-        <Navbar />
         <div className="lp-selector-overlay">
           <div className="wumpa-modal-frame">
             <div className="wumpa-modal-header">
@@ -634,8 +632,6 @@ const LearningPath = () => {
   if (mapLoading) {
     return (
       <div className={`learning-path-page gamified-adventure-view ${activeWorld.filterClass}`}>
-        <MobileNav role="Student" />
-        <Navbar />
         <div className="lp-loading">
           <div className="lp-loading-spinner" />
           <p>Unfolding the {activeWorld.worldTitle}...</p>
@@ -655,9 +651,6 @@ const LearningPath = () => {
 
   return (
     <div className={`learning-path-page gamified-adventure-view ${activeWorld.filterClass}`}>
-      <MobileNav role="Student" />
-      <Navbar />
-
       {/* ── TOP ADVENTURE HUD BANNER (Subject-Themed) ── */}
       <div className="wumpa-top-hud">
         {/* Left Stats: Lives & Back */}
