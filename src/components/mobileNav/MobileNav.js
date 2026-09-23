@@ -47,6 +47,17 @@ const MobileNav = () => {
         <span>Dashboard</span>
       </Link>
 
+      {role === 'Student' && (
+        <Link 
+          to="/student/learning-path" 
+          className={`mobile-nav-item ${location.pathname.includes('/learning-path') ? 'active' : ''}`}
+          onClick={() => { try { soundEffects.playClick(); } catch(e) {} }}
+        >
+          <span style={{ fontSize: '20px', lineHeight: 1 }}>🗺️</span>
+          <span>Journey</span>
+        </Link>
+      )}
+
       {(role === 'School' || role === 'IT' || role === 'Teacher') && (
         <Link 
           to="/dashboard-school/class" 

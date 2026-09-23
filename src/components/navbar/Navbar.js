@@ -194,10 +194,15 @@ const Navbar = () => {
 
                 {/* Student Centered Header Homework Button */}
                 {role === 'Student' && (
-                    <div className="student-header-hw-center">
+                    <div className="student-header-hw-center" style={{ display: 'flex', alignItems: 'center' }}>
                         <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}>
                             <div className="student-navbar-hw-btn">
                                 <span>📝 {t('navbar.homework', 'HOMEWORK')}</span>
+                            </div>
+                        </Link>
+                        <Link to={'/student/learning-path'} onClick={() => soundEffects.playClick()}>
+                            <div className="student-navbar-hw-btn" style={{ backgroundColor: '#f59e0b', borderColor: '#d97706', marginLeft: '10px' }}>
+                                <span>🗺️ {t('navbar.journey', 'Journey (الرحلة)')}</span>
                             </div>
                         </Link>
                     </div>
