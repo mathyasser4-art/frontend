@@ -49,8 +49,8 @@ const MobileNav = () => {
 
       {role === 'Student' && (
         <Link 
-          to="/student/learning-path" 
-          className={`mobile-nav-item ${location.pathname.includes('/learning-path') ? 'active' : ''}`}
+          to="/student/journey-hub" 
+          className={`mobile-nav-item ${(location.pathname.includes('/learning-path') || location.pathname.includes('/journey-hub')) ? 'active' : ''}`}
           onClick={() => { try { soundEffects.playClick(); } catch(e) {} }}
         >
           <span style={{ fontSize: '20px', lineHeight: 1 }}>🗺️</span>

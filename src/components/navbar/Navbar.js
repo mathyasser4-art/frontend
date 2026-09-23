@@ -200,7 +200,7 @@ const Navbar = () => {
                                 <span>📝 {t('navbar.homework', 'HOMEWORK')}</span>
                             </div>
                         </Link>
-                        <Link to={'/student/learning-path'} onClick={() => soundEffects.playClick()}>
+                        <Link to={'/student/journey-hub'} onClick={() => soundEffects.playClick()}>
                             <div className="student-navbar-hw-btn" style={{ backgroundColor: '#f59e0b', borderColor: '#d97706', marginLeft: '10px' }}>
                                 <span>🗺️ {t('navbar.journey', 'Journey (الرحلة)')}</span>
                             </div>

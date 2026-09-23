@@ -207,6 +207,7 @@ function App() {
           <Route path='/student/games/tanks' element={<TanksGame />} />
           <Route path='/student/games/minigolf' element={<MinigolfGame />} />
           <Route path='/student/games-menu' element={<GamesMenu />} />
+          <Route path='/student/journey-hub' element={isAuth && role === 'Student' ? <JourneyHub /> : <Navigate to='/' />} />
           <Route path='/student/learning-path' element={isAuth && role === 'Student' ? <LearningPath /> : <Navigate to='/' />} />
           <Route path='/shop' element={isAuth ? <Shop /> : <Navigate to='/' />} />
         </Routes>

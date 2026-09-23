@@ -289,11 +289,11 @@ const LearningPath = () => {
   const questionTypeID = '65a4963482dbaac16d820fc6';
 
   // Selector state
-  const [showSelector, setShowSelector] = useState(false);
+  
   const [systemData, setSystemData] = useState([]);
   const [selectedSystemId, setSelectedSystemId] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
-  const [selectorLoading, setSelectorLoading] = useState(false);
+  
 
   // Map state
   const [unitData, setUnitData] = useState([]);
@@ -368,6 +368,10 @@ const LearningPath = () => {
 
   // ── 3. Fetch units when subject is known ──
   useEffect(() => {
+    if (!savedSubjectId && parsed && !parsed.subjectId) {
+      navigate('/student/journey-hub');
+      return;
+    }
     if (!savedSubjectId) return;
     setMapLoading(true);
     getUnit(
