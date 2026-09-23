@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, RotateCcw, Volume2, VolumeX, ChevronLeft, ChevronRight, Play, Trophy, Sparkles, Compass, Globe } from 'lucide-react';
-import Navbar from '../../components/navbar/Navbar';
-import MobileNav from '../../components/mobileNav/MobileNav';
+import { ArrowLeft, BookOpen, RotateCcw, Volume2, VolumeX, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import getUnit from '../../api/unit/getUnit.api';
 import {
   getProgress,
@@ -287,12 +285,7 @@ const LearningPath = () => {
   const userId = safeLocalStorage.getItem('pp_id') || 'guest';
   const questionTypeID = '65a4963482dbaac16d820fc6';
 
-  // Selector state
-  
-  const [systemData, setSystemData] = useState([]);
-  const [selectedSystemId, setSelectedSystemId] = useState(null);
-  const [selectedSubject, setSelectedSubject] = useState(null);
-  
+
 
   // Map state
   const [unitData, setUnitData] = useState([]);
@@ -350,27 +343,27 @@ const LearningPath = () => {
 
   // ── 2. Load saved subject preference on mount ──
   useEffect(() => {
-    const saved = safeLocalStorage.getItem('lp_selected_subject');
+    const saved = safeLocalStorage.getItem('lp_selected_subject') || safeLocalStorage.getItem('learning_path_last_subject');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setSavedSubjectId(parsed.subjectId);
-        setSavedSubjectName(parsed.subjectName || '');
-        setSavedSystemName(parsed.systemName || '');
+        if (parsed && parsed.subjectId) {
+          setSavedSubjectId(parsed.subjectId);
+          setSavedSubjectName(parsed.subjectName || '');
+          setSavedSystemName(parsed.systemName || '');
+        } else {
+          navigate('/student/journey-hub');
+        }
       } catch (e) {
-        setShowSelector(true);
+        navigate('/student/journey-hub');
       }
     } else {
-      setShowSelector(true);
+      navigate('/student/journey-hub');
     }
-  }, []);
+  }, [navigate]);
 
   // ── 3. Fetch units when subject is known ──
   useEffect(() => {
-    if (!savedSubjectId && parsed && !parsed.subjectId) {
-      navigate('/student/journey-hub');
-      return;
-    }
     if (!savedSubjectId) return;
     setMapLoading(true);
     getUnit(
@@ -388,12 +381,7 @@ const LearningPath = () => {
     }
   }, [savedSubjectId, userId]);
 
-  // ── 5. Load systems for selector ──
-  useEffect(() => {
-    if (showSelector) {
-      getSystem(setSelectorLoading, setSystemData, questionTypeID);
-    }
-  }, [showSelector]);
+
 
   // Automatically detect world based on subject name (Option A)
   const activeWorld = useMemo(() => {
@@ -554,23 +542,7 @@ const LearningPath = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [characterIndex, mappedStages.length, moveToStage, launchCurrentStage]);
 
-  // ── Subject Selector Confirm ──
-  const handleSubjectConfirm = useCallback(() => {
-    if (!selectedSubject) return;
-    const system = systemData.find((s) => s._id === selectedSystemId);
-    const saved = {
-      subjectId: selectedSubject._id,
-      subjectName: selectedSubject.subjectName,
-      systemId: selectedSystemId,
-      systemName: system?.systemName || '',
-    };
-    safeLocalStorage.setItem('lp_selected_subject', JSON.stringify(saved));
-    setSavedSubjectId(saved.subjectId);
-    setSavedSubjectName(saved.subjectName);
-    setSavedSystemName(saved.systemName);
-    setShowSelector(false);
-    playSfx('hop');
-  }, [selectedSubject, selectedSystemId, systemData, playSfx]);
+
 
   // ── Dev Progress Reset ──
   const handleReset = useCallback(() => {
@@ -581,78 +553,6 @@ const LearningPath = () => {
       playSfx('hop');
     }
   }, [userId, savedSubjectId, playSfx]);
-
-  // ── Render Subject Selector Modal ──
-  if (showSelector) {
-    return (
-      <div className={`learning-path-page gamified-adventure-view ${activeWorld.filterClass}`}>
-        <div className="lp-selector-overlay">
-          <div className="wumpa-modal-frame">
-            <div className="wumpa-modal-header">
-              <span className="wumpa-tiki-mini">{activeWorld.iconLeft}</span>
-              <h2>CHOOSE YOUR REALM</h2>
-              <span className="wumpa-tiki-mini">{activeWorld.iconRight}</span>
-            </div>
-            <p className="wumpa-modal-subtitle">Pick your grade & subject to load the adventure map!</p>
-
-            {selectorLoading ? (
-              <div className="lp-loading">
-                <div className="lp-loading-spinner" />
-                <p>Consulting the ancient map...</p>
-              </div>
-            ) : (
-              <div className="wumpa-modal-body">
-                <select
-                  className="wumpa-select"
-                  value={selectedSystemId || ''}
-                  onChange={(e) => {
-                    setSelectedSystemId(e.target.value);
-                    setSelectedSubject(null);
-                    playSfx('hop');
-                  }}
-                >
-                  <option value="" disabled>📚 Select Grade...</option>
-                  {systemData.map((s) => (
-                    <option key={s._id} value={s._id}>{s.systemName}</option>
-                  ))}
-                </select>
-
-                {selectedSystemId && (
-                  <select
-                    className="wumpa-select"
-                    value={selectedSubject?._id || ''}
-                    onChange={(e) => {
-                      const system = systemData.find((s) => s._id === selectedSystemId);
-                      const sub = system?.subjects?.find((s) => s._id === e.target.value);
-                      if (sub) {
-                        setSelectedSubject(sub);
-                        playSfx('hop');
-                      }
-                    }}
-                  >
-                    <option value="" disabled>📖 Select Subject...</option>
-                    {systemData
-                      .find((s) => s._id === selectedSystemId)
-                      ?.subjects?.map((sub) => (
-                        <option key={sub._id} value={sub._id}>{sub.subjectName}</option>
-                      ))}
-                  </select>
-                )}
-
-                <button
-                  className="wumpa-btn-gold"
-                  disabled={!selectedSubject}
-                  onClick={handleSubjectConfirm}
-                >
-                  ⚔️ START EXPEDITION
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // ── Render Loading ──
   if (mapLoading) {
@@ -670,7 +570,6 @@ const LearningPath = () => {
   const pathD = mappedStages.reduce((acc, stage, idx) => {
     if (idx === 0) return `M ${stage.x} ${stage.y}`;
     const prev = mappedStages[idx - 1];
-    const cx = (prev.x + stage.x) / 2;
     const cy = (prev.y + stage.y) / 2;
     return `${acc} Q ${prev.x} ${cy}, ${stage.x} ${stage.y}`;
   }, '');
@@ -744,8 +643,8 @@ const LearningPath = () => {
           <button
             className="wumpa-icon-btn"
             onClick={() => {
-              setShowSelector(true);
               playSfx('hop');
+              navigate('/student/journey-hub');
             }}
             title="Change Grade/Subject"
           >
