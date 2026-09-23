@@ -203,23 +203,7 @@ function StudentDashboard() {
                             )}
                         </div>
 
-                        {/* Learning Path Adventure Button */}
-                        <div 
-                            className="lp-dashboard-card"
-                            onClick={() => {
-                                soundEffects.playClick();
-                                navigate('/student/learning-path');
-                            }}
-                        >
-                            <div className="lp-card-icon">🗺️</div>
-                            <div className="lp-card-text">
-                                <h3>{t('studentDashboard.learningPath', 'Learning Path')}</h3>
-                                <p>{t('studentDashboard.learningPathDesc', 'Follow your adventure map! Complete stages and earn stars ⭐')}</p>
-                            </div>
-                            <div className="lp-card-arrow">▶</div>
-                        </div>
-
-                        {/* Assignment List Header */}
+{/* Assignment List Header */}
                         <div className="assignment-list-header">
                             <h3>{t('studentDashboard.homeworkListTitle', '📝 Your Homework List')}</h3>
                             <p className="list-tagline">{t('studentDashboard.homeworkListTagline', 'Solve pending assignments or review your grades below.')}</p>
