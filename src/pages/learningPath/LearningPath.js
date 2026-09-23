@@ -311,6 +311,24 @@ const LearningPath = () => {
 
   const speechTimerRef = useRef(null);
   const characterRef = useRef(null);
+
+  // Auto-pan camera to follow character on mobile or narrow viewports
+  useEffect(() => {
+    if (!mapAreaRef.current) return;
+    const container = mapAreaRef.current;
+    const timer = setTimeout(() => {
+      const stageEl = container.querySelector(`.wumpa-portal-node[data-index="${characterIndex}"]`);
+      if (stageEl) {
+        const containerWidth = container.clientWidth;
+        const scrollWidth = container.scrollWidth;
+        if (scrollWidth > containerWidth) {
+          const targetLeft = stageEl.offsetLeft - containerWidth / 2 + stageEl.clientWidth / 2;
+          container.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+        }
+      }
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [characterIndex, mappedStages]);
   const mapAreaRef = useRef(null);
 
   // ── 1. Create transparent character sprite on load ──
@@ -808,6 +826,7 @@ const LearningPath = () => {
               <div
                 key={stage.chapterId}
                 className={`wumpa-portal-node ${stage.status} ${isCharacterHere ? 'active-target' : ''} theme-${stage.unitTheme.id}`}
+                data-index={stage.index}
                 style={{
                   left: `${stage.x}%`,
                   top: `${stage.y}%`,
