@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, LayoutDashboard, BookOpen, User, LogOut } from 'lucide-react';
 import soundEffects from '../../utils/soundEffects';
@@ -10,6 +11,8 @@ const MobileNav = () => {
   const navigate = useNavigate();
   const isAuth = safeLocalStorage.getItem('O_authWEB');
   const role = safeLocalStorage.getItem('auth_role');
+  const { i18n } = useTranslation();
+  const isArabic = i18n?.language === 'ar';
 
   const getDashboardPath = () => {
     if (role === 'Student') return '/dashboard/student';
@@ -54,7 +57,7 @@ const MobileNav = () => {
           onClick={() => { try { soundEffects.playClick(); } catch(e) {} }}
         >
           <span style={{ fontSize: '20px', lineHeight: 1 }}>🗺️</span>
-          <span>Journey</span>
+          <span>{isArabic ? 'المغامرة' : 'Adventure'}</span>
         </Link>
       )}
 

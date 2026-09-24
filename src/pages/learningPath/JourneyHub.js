@@ -1,24 +1,116 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Sparkles, BookOpen, Layers, X, CheckCircle, Flame } from 'lucide-react';
+import { ArrowLeft, Sparkles, BookOpen, Layers, X, CheckCircle, Flame, Compass } from 'lucide-react';
 import getSystem from '../../api/system/getSystem.api';
 import { safeLocalStorage } from '../../utils/safeStorage';
 import soundEffects from '../../utils/soundEffects';
-import { UNIT_THEME_PALETTE } from './LearningPath';
 import { fetchStudentJourneyOverview, getProgress } from '../../utils/learningPathProgress';
 import Navbar from '../../components/navbar/Navbar';
 import './JourneyHub.css';
 import adventureMapBg from '../../img/adventure_map_bg.jpg';
 
-const LEVEL_BADGES = [
-  { icon: '🐣', badgeLabel: 'Basic' },
-  { icon: '⭐️', badgeLabel: 'Stage 1' },
-  { icon: '🌟', badgeLabel: 'Stage 2' },
-  { icon: '⚡️', badgeLabel: 'Stage 3' },
-  { icon: '🏆', badgeLabel: 'Stage 4' },
-  { icon: '👑', badgeLabel: 'Stage 5' },
+// Import Custom Generated Wumpa Illustrations
+import cardBasicImg from '../../img/wumpa_card_basic.jpg';
+import cardLevel1Img from '../../img/wumpa_card_level1.jpg';
+import cardLevel2Img from '../../img/wumpa_card_level2.jpg';
+import cardLevel3Img from '../../img/wumpa_card_level3.jpg';
+import cardLevel4Img from '../../img/wumpa_card_level4.jpg';
+import cardLevel5Img from '../../img/wumpa_card_level5.jpg';
+
+const ADVENTURE_WORLDS = [
+  {
+    key: 'basic',
+    matcher: (name) => name.toLowerCase().includes('basic') || name.toLowerCase().includes('أساس') || name.toLowerCase().includes('0'),
+    titleEn: 'Jungle Hatchery',
+    titleAr: 'مستعمرة الغابة',
+    badgeLabel: 'Basic Adventure',
+    badgeLabelAr: 'مغامرة المبتدئين',
+    icon: '🐣',
+    image: cardBasicImg,
+    themeColor: '#10b981',
+    themeBorder: '#059669',
+    themeGlow: 'rgba(16, 185, 129, 0.45)',
+    woodClass: 'wood-jungle'
+  },
+  {
+    key: 'level1',
+    matcher: (name) => name.toLowerCase().includes('level 1') || name.toLowerCase().includes('مستوى 1') || name.toLowerCase().includes('المستوى 1'),
+    titleEn: 'Wumpa Coast',
+    titleAr: 'شاطئ وومبا',
+    badgeLabel: 'Adventure 1',
+    badgeLabelAr: 'المغامرة 1',
+    icon: '⭐️',
+    image: cardLevel1Img,
+    themeColor: '#f59e0b',
+    themeBorder: '#d97706',
+    themeGlow: 'rgba(245, 158, 11, 0.45)',
+    woodClass: 'wood-beach'
+  },
+  {
+    key: 'level2',
+    matcher: (name) => name.toLowerCase().includes('level 2') || name.toLowerCase().includes('مستوى 2') || name.toLowerCase().includes('المستوى 2'),
+    titleEn: 'Lava Caverns',
+    titleAr: 'كهوف الحمم البركانية',
+    badgeLabel: 'Adventure 2',
+    badgeLabelAr: 'المغامرة 2',
+    icon: '🌟',
+    image: cardLevel2Img,
+    themeColor: '#ef4444',
+    themeBorder: '#dc2626',
+    themeGlow: 'rgba(239, 68, 68, 0.5)',
+    woodClass: 'wood-volcano'
+  },
+  {
+    key: 'level3',
+    matcher: (name) => name.toLowerCase().includes('level 3') || name.toLowerCase().includes('مستوى 3') || name.toLowerCase().includes('المستوى 3'),
+    titleEn: 'Sky Temple',
+    titleAr: 'معبد السحاب والصواعق',
+    badgeLabel: 'Adventure 3',
+    badgeLabelAr: 'المغامرة 3',
+    icon: '⚡️',
+    image: cardLevel3Img,
+    themeColor: '#06b6d4',
+    themeBorder: '#0891b2',
+    themeGlow: 'rgba(6, 182, 212, 0.45)',
+    woodClass: 'wood-sky'
+  },
+  {
+    key: 'level4',
+    matcher: (name) => name.toLowerCase().includes('level 4') || name.toLowerCase().includes('مستوى 4') || name.toLowerCase().includes('المستوى 4'),
+    titleEn: 'Golden Ruins',
+    titleAr: 'أطلال التيكي الذهبية',
+    badgeLabel: 'Adventure 4',
+    badgeLabelAr: 'المغامرة 4',
+    icon: '🏆',
+    image: cardLevel4Img,
+    themeColor: '#a855f7',
+    themeBorder: '#9333ea',
+    themeGlow: 'rgba(168, 85, 247, 0.45)',
+    woodClass: 'wood-ruins'
+  },
+  {
+    key: 'level5',
+    matcher: (name) => name.toLowerCase().includes('level 5') || name.toLowerCase().includes('مستوى 5') || name.toLowerCase().includes('المستوى 5'),
+    titleEn: 'Master Citadel',
+    titleAr: 'القلعة الأسطورية',
+    badgeLabel: 'Master Adventure',
+    badgeLabelAr: 'المغامرة الكبرى',
+    icon: '👑',
+    image: cardLevel5Img,
+    themeColor: '#eab308',
+    themeBorder: '#ca8a04',
+    themeGlow: 'rgba(234, 179, 8, 0.55)',
+    woodClass: 'wood-citadel'
+  },
 ];
+
+const getAdventureWorld = (systemName, index) => {
+    const raw = String(systemName || '');
+    const found = ADVENTURE_WORLDS.find(w => w.matcher(raw));
+    if (found) return found;
+    return ADVENTURE_WORLDS[index % ADVENTURE_WORLDS.length];
+};
 
 const JourneyHub = () => {
     const { t, i18n } = useTranslation();
@@ -34,13 +126,11 @@ const JourneyHub = () => {
     const questionTypeID = '65a4963482dbaac16d820fc6';
 
     useEffect(() => {
-        // 1. Fetch systems
         getSystem(setLoading, (data) => {
             const valid = (data || []).filter(s => s.systemName && s.systemName.trim().length > 0);
             setSystemData(valid);
         }, questionTypeID);
 
-        // 2. Fetch live completion overview from backend
         if (userId && userId !== 'guest') {
             fetchStudentJourneyOverview(userId).then((overview) => {
                 if (overview && Array.isArray(overview)) {
@@ -54,41 +144,56 @@ const JourneyHub = () => {
         }
     }, [userId]);
 
-    // Compute completion percentage for a system (backend first, local storage fallback)
+    // Live completion percentage calculation based on actual questions/chapters score
     const getSystemPercentage = (sys) => {
         const sysId = String(sys._id);
         if (overviewStats[sysId] !== undefined) {
             return overviewStats[sysId].completionPercentage || 0;
         }
 
-        // Local storage fallback calculation
+        // Local storage calculation based on actual question score %
         const subjects = sys.subjects || [];
         if (subjects.length === 0) return 0;
 
-        let completed = 0;
+        let totalScoreSum = 0;
+        let totalCount = 0;
+
         subjects.forEach(sub => {
             const prog = getProgress(userId, sub._id);
-            completed += (prog.completedChapters || []).length;
+            const scoreValues = Object.values(prog.scores || {});
+            if (scoreValues.length > 0) {
+                scoreValues.forEach(s => {
+                    totalScoreSum += Number(s || 0);
+                    totalCount++;
+                });
+            } else {
+                totalCount += 1;
+            }
         });
 
-        // Approximate 1 lesson per subject as baseline
-        const totalEstimated = Math.max(subjects.length, 1);
-        return Math.min(100, Math.round((completed / totalEstimated) * 100));
+        if (totalCount === 0) return 0;
+        return Math.min(100, Math.round(totalScoreSum / totalCount));
     };
 
-    // Get subject completion percentage inside modal
+    // Subject score inside modal
     const getSubjectPercentage = (sys, sub) => {
         const sysId = String(sys._id);
         const subId = String(sub._id);
 
         if (overviewStats[sysId]?.subjects) {
             const match = overviewStats[sysId].subjects.find(s => String(s.subjectId) === subId);
-            if (match) return match.completionPercentage || 0;
+            if (match && match.completionPercentage !== undefined) {
+                return match.completionPercentage;
+            }
         }
 
         const prog = getProgress(userId, sub._id);
-        const count = prog.completedChapters?.length || 0;
-        return count > 0 ? 100 : 0;
+        const scoreValues = Object.values(prog.scores || {});
+        if (scoreValues.length > 0) {
+            const sum = scoreValues.reduce((a, b) => a + Number(b || 0), 0);
+            return Math.min(100, Math.round(sum / scoreValues.length));
+        }
+        return 0;
     };
 
     const handleSelectLevel = (sys) => {
@@ -123,38 +228,40 @@ const JourneyHub = () => {
                 <div className="journey-hub-container">
                     <div className="hub-header-actions">
                         <button 
-                            className="hub-back-btn"
+                            className="hub-back-btn wumpa-wood-btn"
                             onClick={() => {
                                 soundEffects.playClick();
                                 navigate('/student/homework');
                             }}
                         >
                             <ArrowLeft size={18} />
-                            <span>{t('journey.dashboard', isArabic ? 'لوحة التحكم' : 'Dashboard')}</span>
+                            <span>{isArabic ? 'لوحة التحكم' : 'Dashboard'}</span>
                         </button>
                     </div>
 
                     <div className="hub-title-group">
-                        <div className="hub-badge-pill">
+                        <div className="hub-badge-pill wumpa-tiki-pill">
                             <Sparkles size={16} />
-                            <span>{t('journey.realmsTitle', isArabic ? 'عوالم المغامرة التعليمية' : 'ADVENTURE REALMS')}</span>
+                            <span>{isArabic ? 'خريطة المغامرات التعليمية' : 'WUMPA ADVENTURE WORLDS'}</span>
+                            <Sparkles size={16} />
                         </div>
-                        <h1 className="journey-hub-title">{t('journey.chooseRealm', isArabic ? 'اختر مستواك التعليمي' : 'CHOOSE YOUR REALM')}</h1>
+                        <h1 className="journey-hub-title">
+                            {isArabic ? 'اختر مغامرتك' : 'CHOOSE YOUR ADVENTURE'}
+                        </h1>
                         <p className="journey-hub-subtitle">
-                            {t('journey.subtitle', isArabic ? 'تابع رحلتك وتحدياتك واكتشف نسبة إنجازك في كل مرحلة!' : 'Track your adventure progress and conquer each mathematical world!')}
+                            {isArabic ? 'اختر مستواك التعليمي واكتشف نسبة إنجازك في كل مغامرة!' : 'Pick your adventure level and conquer every mathematical challenge!'}
                         </p>
                     </div>
                     
                     {loading ? (
                         <div className="hub-loader">
                             <div className="hub-spinner" />
-                            <p>{isArabic ? 'جاري تجهيز الخرائط...' : 'Summoning ancient maps...'}</p>
+                            <p>{isArabic ? 'جاري استدعاء خرائط وومبا...' : 'Unfolding Wumpa Adventure Maps...'}</p>
                         </div>
                     ) : (
                         <div className="hub-grid">
                             {systemData.map((sys, idx) => {
-                                const theme = UNIT_THEME_PALETTE[idx % UNIT_THEME_PALETTE.length];
-                                const badge = LEVEL_BADGES[idx % LEVEL_BADGES.length];
+                                const world = getAdventureWorld(sys.systemName, idx);
                                 const topicCount = sys.subjects?.length || 0;
                                 const completionPct = getSystemPercentage(sys);
                                 const isMastered = completionPct >= 100;
@@ -163,64 +270,88 @@ const JourneyHub = () => {
                                 return (
                                     <div 
                                         key={sys._id} 
-                                        className={`hub-card ${isMastered ? 'card-mastered' : ''}`}
+                                        className={`wumpa-card ${world.woodClass} ${isMastered ? 'card-mastered' : ''}`}
                                         onClick={() => handleSelectLevel(sys)}
                                         style={{
-                                            '--card-color': theme.color,
-                                            '--card-glow': theme.colorGlow,
-                                            '--card-bg': theme.colorBg,
-                                            '--card-border': theme.accentBorder
+                                            '--theme-color': world.themeColor,
+                                            '--theme-border': world.themeBorder,
+                                            '--theme-glow': world.themeGlow,
                                         }}
                                     >
-                                        <div className="hub-card-badge">
-                                            {isMastered ? '🏆 Mastered' : badge.badgeLabel}
-                                        </div>
-                                        <div className="hub-card-icon">{badge.icon || theme.icon}</div>
-                                        <h3 className="hub-card-title">{sys.systemName.trim()}</h3>
-                                        
-                                        <div className="hub-card-meta">
-                                            <Layers size={14} />
-                                            <span>{topicCount} {topicCount === 1 ? (isArabic ? 'تدريب' : 'Topic') : (isArabic ? 'تدريبات' : 'Topics')}</span>
-                                        </div>
-
-                                        {/* ── LIVE COMPLETION PROGRESS BAR ── */}
-                                        <div className="hub-card-progress-container">
-                                            <div className="hub-card-progress-header">
-                                                <span className="hub-progress-lbl">
-                                                    {isArabic ? 'نسبة الإنجاز' : 'COMPLETION'}
-                                                </span>
-                                                <span className="hub-progress-pct" style={{ color: isMastered ? '#34d399' : theme.color }}>
-                                                    {completionPct}%
+                                        {/* Top Image Banner */}
+                                        <div className="wumpa-card-art-frame">
+                                            <img 
+                                                src={world.image} 
+                                                alt={sys.systemName}
+                                                className="wumpa-card-art-img"
+                                                loading="lazy"
+                                            />
+                                            <div className="wumpa-card-art-overlay" />
+                                            
+                                            {/* Level Badge in Corner */}
+                                            <div className="wumpa-card-badge">
+                                                <span className="badge-icon">{world.icon}</span>
+                                                <span className="badge-text">
+                                                    {isArabic ? world.badgeLabelAr : world.badgeLabel}
                                                 </span>
                                             </div>
 
-                                            <div className="hub-card-progress-track">
-                                                <div 
-                                                    className="hub-card-progress-fill"
-                                                    style={{ 
-                                                        width: `${Math.max(completionPct, 4)}%`,
-                                                        background: isMastered
-                                                            ? 'linear-gradient(90deg, #10b981 0%, #34d399 100%)'
-                                                            : `linear-gradient(90deg, ${theme.color} 0%, #fff 100%)`,
-                                                        boxShadow: `0 0 12px ${theme.colorGlow}`
-                                                    }}
-                                                />
-                                            </div>
-
-                                            <div className="hub-card-progress-sub">
-                                                {isMastered ? (
-                                                    <span className="sub-mastered"><CheckCircle size={12} /> {isArabic ? 'تم إتقان المستوى بالكامل!' : 'Level Mastered!'}</span>
-                                                ) : isStarted ? (
-                                                    <span>{completionPct}% {isArabic ? 'مكتمل' : 'Completed'}</span>
-                                                ) : (
-                                                    <span>{isArabic ? 'مرحلة جديدة جاهزة للبدء' : 'Ready to start'}</span>
-                                                )}
+                                            {/* World Subtitle on Art */}
+                                            <div className="wumpa-art-title-tag">
+                                                <Compass size={13} />
+                                                <span>{isArabic ? world.titleAr : world.titleEn}</span>
                                             </div>
                                         </div>
 
-                                        <div className="hub-card-btn">
-                                            <span>{isStarted ? (isArabic ? 'متابعة الرحلة' : 'Continue Quest') : (isArabic ? 'دخول العالم' : 'Enter Realm')}</span>
-                                            <span>{isStarted ? '🚀' : '⚔️'}</span>
+                                        {/* Card Body with Wumpa Planks */}
+                                        <div className="wumpa-card-body">
+                                            <h3 className="wumpa-card-title">{sys.systemName.trim()}</h3>
+                                            
+                                            <div className="wumpa-card-topics-count">
+                                                <Layers size={14} />
+                                                <span>{topicCount} {topicCount === 1 ? (isArabic ? 'تدريب' : 'Topic') : (isArabic ? 'تدريبات' : 'Topics')}</span>
+                                            </div>
+
+                                            {/* ── LIVE COMPLETION PROGRESS BAR ── */}
+                                            <div className="wumpa-progress-box">
+                                                <div className="wumpa-progress-row">
+                                                    <span className="wumpa-prog-lbl">
+                                                        {isArabic ? 'نسبة التقدم' : 'COMPLETION'}
+                                                    </span>
+                                                    <span className="wumpa-prog-val" style={{ color: isMastered ? '#34d399' : world.themeColor }}>
+                                                        {completionPct}%
+                                                    </span>
+                                                </div>
+
+                                                <div className="wumpa-progress-track">
+                                                    <div 
+                                                        className="wumpa-progress-fill"
+                                                        style={{ 
+                                                            width: `${Math.max(completionPct, 4)}%`,
+                                                            background: isMastered
+                                                                ? 'linear-gradient(90deg, #10b981 0%, #34d399 100%)'
+                                                                : `linear-gradient(90deg, ${world.themeColor} 0%, #fff 100%)`,
+                                                            boxShadow: `0 0 14px ${world.themeGlow}`
+                                                        }}
+                                                    />
+                                                </div>
+
+                                                <div className="wumpa-progress-footer">
+                                                    {isMastered ? (
+                                                        <span className="wumpa-sub-mastered"><CheckCircle size={13} /> {isArabic ? 'تم إتقان المغامرة!' : 'Adventure Mastered!'}</span>
+                                                    ) : isStarted ? (
+                                                        <span>{completionPct}% {isArabic ? 'مكتمل حتى الآن' : 'Completed so far'}</span>
+                                                    ) : (
+                                                        <span>{isArabic ? 'مغامرة جديدة جاهزة للبدء' : 'Ready to start'}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* 3D Wumpa Wooden Button */}
+                                            <button className="wumpa-action-btn">
+                                                <span>{isStarted ? (isArabic ? 'تابع المغامرة' : 'Continue Adventure') : (isArabic ? 'ابدأ المغامرة' : 'Start Adventure')}</span>
+                                                <span>{isStarted ? '🚀' : '⚔️'}</span>
+                                            </button>
                                         </div>
                                     </div>
                                 );
@@ -230,26 +361,30 @@ const JourneyHub = () => {
                 </div>
             </div>
 
-            {/* Topic Selection Modal when level has multiple sheets/topics */}
+            {/* Topic Selection Modal in Wumpa Theme */}
             {activeSystemModal && (
-                <div className="hub-topic-modal-overlay" onClick={() => setActiveSystemModal(null)}>
-                    <div className="hub-topic-modal-card" onClick={(e) => e.stopPropagation()}>
+                <div className="wumpa-topic-modal-overlay" onClick={() => setActiveSystemModal(null)}>
+                    <div className="wumpa-topic-modal-frame" onClick={(e) => e.stopPropagation()}>
                         <button 
-                            className="hub-topic-close" 
+                            className="wumpa-topic-close-btn" 
                             onClick={() => {
                                 soundEffects.playClick();
                                 setActiveSystemModal(null);
                             }}
+                            title="Close"
                         >
                             <X size={20} />
                         </button>
                         
-                        <div className="hub-topic-modal-header">
-                            <h2>{activeSystemModal.systemName.trim()}</h2>
-                            <p>{isArabic ? 'اختر التدريب للبدء في خريطة التحدي:' : 'Choose your training stage to start the adventure:'}</p>
+                        <div className="wumpa-topic-modal-header">
+                            <span className="wumpa-modal-tiki">🗿</span>
+                            <div>
+                                <h2>{activeSystemModal.systemName.trim()}</h2>
+                                <p>{isArabic ? 'اختر التدريب للانطلاق في مغامرة وومبا:' : 'Select a training stage to enter the Wumpa adventure map:'}</p>
+                            </div>
                         </div>
 
-                        <div className="hub-topic-list">
+                        <div className="wumpa-topic-list">
                             {(activeSystemModal.subjects || []).map((sub, sIdx) => {
                                 const subPct = getSubjectPercentage(activeSystemModal, sub);
                                 const isSubDone = subPct >= 70;
@@ -257,28 +392,28 @@ const JourneyHub = () => {
                                 return (
                                     <button
                                         key={sub._id}
-                                        className={`hub-topic-item-btn ${isSubDone ? 'topic-done' : ''}`}
+                                        className={`wumpa-topic-row-btn ${isSubDone ? 'stage-done' : ''}`}
                                         onClick={() => launchSubject(activeSystemModal, sub)}
                                     >
-                                        <span className="hub-topic-number">#{sIdx + 1}</span>
-                                        <div className="hub-topic-text-col">
-                                            <span className="hub-topic-name">{sub.subjectName}</span>
+                                        <div className="wumpa-topic-num">#{sIdx + 1}</div>
+                                        <div className="wumpa-topic-info">
+                                            <span className="wumpa-topic-title">{sub.subjectName}</span>
                                             {subPct > 0 && (
-                                                <div className="hub-topic-mini-bar">
+                                                <div className="wumpa-topic-mini-track">
                                                     <div 
-                                                        className="hub-topic-mini-fill"
+                                                        className="wumpa-topic-mini-fill"
                                                         style={{ width: `${subPct}%` }}
                                                     />
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="hub-topic-score-badge">
+                                        <div className="wumpa-topic-badge-col">
                                             {isSubDone ? (
-                                                <span className="badge-done"><CheckCircle size={14} /> {subPct}%</span>
+                                                <span className="wumpa-pill-done"><CheckCircle size={13} /> {subPct}%</span>
                                             ) : subPct > 0 ? (
-                                                <span className="badge-prog"><Flame size={14} /> {subPct}%</span>
+                                                <span className="wumpa-pill-prog"><Flame size={13} /> {subPct}%</span>
                                             ) : (
-                                                <span className="badge-new"><BookOpen size={14} /> {isArabic ? 'ابدأ' : 'Start'}</span>
+                                                <span className="wumpa-pill-new"><BookOpen size={13} /> {isArabic ? 'ابدأ' : 'Start'}</span>
                                             )}
                                         </div>
                                     </button>

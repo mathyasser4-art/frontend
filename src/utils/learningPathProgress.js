@@ -37,8 +37,10 @@ export const markChapterComplete = (userId, subjectId, chapterId, stars = 1, per
   try {
     const progress = getProgress(userId, subjectId);
 
-    if (!progress.completedChapters.includes(chapterId)) {
-      progress.completedChapters.push(chapterId);
+    if (percentage >= 70) {
+      if (!progress.completedChapters.includes(chapterId)) {
+        progress.completedChapters.push(chapterId);
+      }
     }
 
     const existingStars = progress.stars[chapterId] || 0;

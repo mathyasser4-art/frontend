@@ -202,7 +202,7 @@ const Navbar = () => {
                         </Link>
                         <Link to={'/student/journey-hub'} onClick={() => soundEffects.playClick()}>
                             <div className="student-navbar-hw-btn" style={{ backgroundColor: '#f59e0b', borderColor: '#d97706', marginLeft: '10px' }}>
-                                <span>🗺️ {t('navbar.journey', 'Journey (الرحلة)')}</span>
+                                <span>🗺️ {t('navbar.adventure', 'Adventure (المغامرة)')}</span>
                             </div>
                         </Link>
                     </div>
