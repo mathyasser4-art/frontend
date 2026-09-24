@@ -10,6 +10,7 @@ import {
   getOverallStats,
   resetProgress,
   getScore,
+  fetchBackendJourneyProgress,
 } from '../../utils/learningPathProgress';
 import { safeLocalStorage } from '../../utils/safeStorage';
 import soundEffects from '../../utils/soundEffects';
@@ -374,10 +375,15 @@ const LearningPath = () => {
     );
   }, [savedSubjectId]);
 
-  // ── 4. Load progress ──
+  // ── 4. Load progress with backend cloud sync ──
   useEffect(() => {
     if (savedSubjectId) {
       setProgress(getProgress(userId, savedSubjectId));
+      if (userId && userId !== 'guest') {
+        fetchBackendJourneyProgress(userId, savedSubjectId).then((cloudProg) => {
+          if (cloudProg) setProgress(cloudProg);
+        });
+      }
     }
   }, [savedSubjectId, userId]);
 
@@ -800,6 +806,13 @@ const LearningPath = () => {
                         ★
                       </span>
                     ))}
+                  </div>
+                )}
+
+                {/* Score Percentage Pill */}
+                {isCompleted && stage.score > 0 && (
+                  <div className="portal-score-pill">
+                    {stage.score}%
                   </div>
                 )}
 
