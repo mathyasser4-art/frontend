@@ -5,12 +5,13 @@ import logo from '../../logo.png'
 import profileImg from '../../img/avatar-profile.png'
 import school from '../../img/school-avatar.png'
 import soundEffects from '../../utils/soundEffects'
-import TeacherRegistration from '../teacherRegistration/TeacherRegistration'
-import TeacherHelpModal from '../teacherHelpModal/TeacherHelpModal'
-import StudentHelpModal from '../studentHelpModal/StudentHelpModal'
-import CreateHomeworkModal from './CreateHomeworkModal'
-import CreateCompetitionModal from './CreateCompetitionModal'
-import TutorialVideoModal from '../tutorialVideoModal/TutorialVideoModal'
+import { lazy, Suspense } from 'react'
+const TeacherRegistration = lazy(() => import('../teacherRegistration/TeacherRegistration'))
+const TeacherHelpModal = lazy(() => import('../teacherHelpModal/TeacherHelpModal'))
+const StudentHelpModal = lazy(() => import('../studentHelpModal/StudentHelpModal'))
+const CreateHomeworkModal = lazy(() => import('./CreateHomeworkModal'))
+const CreateCompetitionModal = lazy(() => import('./CreateCompetitionModal'))
+const TutorialVideoModal = lazy(() => import('../tutorialVideoModal/TutorialVideoModal'))
 import { safeLocalStorage } from '../../utils/safeStorage'
 import { getSchoolCompetitionEvents } from '../../api/competitionEvent/competitionEvent.api'
 import '../../reusable.css'
@@ -405,37 +406,49 @@ const Navbar = () => {
                 </div>
             </div>
             {showTeacherForm && (
-                <TeacherRegistration
-                    onClose={closeTeacherForm}
-                    onSave={handleSaveTeacher}
-                />
+                <Suspense fallback={<div className="loader" />}> 
+                  <TeacherRegistration
+                      onClose={closeTeacherForm}
+                      onSave={handleSaveTeacher}
+                  />
+                </Suspense>
             )}
             {showTeacherHelp && (
-                <TeacherHelpModal
-                    onClose={() => setShowTeacherHelp(false)}
-                />
+                <Suspense fallback={<div className="loader" />}> 
+                  <TeacherHelpModal
+                      onClose={() => setShowTeacherHelp(false)}
+                  />
+                </Suspense>
             )}
             {showStudentHelp && (
-                <StudentHelpModal
-                    onClose={() => setShowStudentHelp(false)}
-                />
+                <Suspense fallback={<div className="loader" />}> 
+                  <StudentHelpModal
+                      onClose={() => setShowStudentHelp(false)}
+                  />
+                </Suspense>
             )}
             {showCreateHomework && (
-                <CreateHomeworkModal
-                    onClose={() => setShowCreateHomework(false)}
-                />
+                <Suspense fallback={<div className="loader" />}> 
+                  <CreateHomeworkModal
+                      onClose={() => setShowCreateHomework(false)}
+                  />
+                </Suspense>
             )}
             {showCreateCompetition && (
-                <CreateCompetitionModal
-                    onClose={() => setShowCreateCompetition(false)}
-                />
+                <Suspense fallback={<div className="loader" />}> 
+                  <CreateCompetitionModal
+                      onClose={() => setShowCreateCompetition(false)}
+                  />
+                </Suspense>
             )}
             {showTutorialVideo && (
-                <TutorialVideoModal
-                    isOpen={showTutorialVideo}
-                    onClose={() => setShowTutorialVideo(false)}
-                    role={tutorialRole}
-                />
+                <Suspense fallback={<div className="loader" />}> 
+                  <TutorialVideoModal
+                      isOpen={showTutorialVideo}
+                      onClose={() => setShowTutorialVideo(false)}
+                      role={tutorialRole}
+                  />
+                </Suspense>
             )}
 
             {/* Premium real-time student overlay battle thinking bubble notification */}
