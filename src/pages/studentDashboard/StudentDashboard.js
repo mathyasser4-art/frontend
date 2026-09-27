@@ -88,22 +88,23 @@ function StudentDashboard() {
         }
     }, [])
 
-    // Fetch results for all completed assignments when the popup opens
+    // Fetch results for recent completed assignments progressively without overwhelming network
     const fetchCompletedResults = async (assignments) => {
-        const completed = assignments.filter(a => a.isCompleted || a.isSubmitted)
-        const cache = {}
-        await Promise.all(completed.map(async (a) => {
+        const completed = assignments.filter(a => a.isCompleted || a.isSubmitted).slice(0, 8)
+        for (const a of completed) {
             try {
                 const result = await getAllAttempts(a._id)
                 if (result.success && result.statistics) {
-                    cache[a._id] = {
-                        score: result.statistics.bestScore,
-                        total: result.statistics.totalPossiblePoints
-                    }
+                    setResultsCache(prev => ({
+                        ...prev,
+                        [a._id]: {
+                            score: result.statistics.bestScore,
+                            total: result.statistics.totalPossiblePoints
+                        }
+                    }))
                 }
             } catch (e) { /* ignore */ }
-        }))
-        setResultsCache(cache)
+        }
     }
 
     useEffect(() => {

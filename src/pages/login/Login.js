@@ -36,13 +36,16 @@ function Login() {
                 <p>Sign in to your account</p>
             </div>
             {error ? <div className="error">{error}</div> : null}
-            <form onSubmit={handleLogin} className="login-form">
+            <form onSubmit={handleLogin} className="login-form" autoComplete="off">
                 <input 
                     type="text" 
                     value={email} 
                     onChange={e => setEmail(e.target.value)} 
                     placeholder='Enter your email or username'
-                    autoComplete="username" 
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck="false"
                 />
                 <div style={{ position: 'relative', width: '100%' }}>
                     <input 
@@ -50,7 +53,7 @@ function Login() {
                         value={password} 
                         onChange={e => setPassword(e.target.value)} 
                         placeholder='Password'
-                        autoComplete="current-password"
+                        autoComplete="off"
                         style={{ paddingRight: '45px' }}
                     />
                     <button 
