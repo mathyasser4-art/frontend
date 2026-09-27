@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import logo from '../../logo.png'
 import profileImg from '../../img/avatar-profile.png'
 import school from '../../img/school-avatar.png'
 import soundEffects from '../../utils/soundEffects'
-import { lazy, Suspense } from 'react'
+import { safeLocalStorage } from '../../utils/safeStorage'
+import { getSchoolCompetitionEvents } from '../../api/competitionEvent/competitionEvent.api'
+import '../../reusable.css'
+import './Navbar.css'
+import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
+
 const TeacherRegistration = lazy(() => import('../teacherRegistration/TeacherRegistration'))
 const TeacherHelpModal = lazy(() => import('../teacherHelpModal/TeacherHelpModal'))
 const StudentHelpModal = lazy(() => import('../studentHelpModal/StudentHelpModal'))
 const CreateHomeworkModal = lazy(() => import('./CreateHomeworkModal'))
 const CreateCompetitionModal = lazy(() => import('./CreateCompetitionModal'))
 const TutorialVideoModal = lazy(() => import('../tutorialVideoModal/TutorialVideoModal'))
-import { safeLocalStorage } from '../../utils/safeStorage'
-import { getSchoolCompetitionEvents } from '../../api/competitionEvent/competitionEvent.api'
-import '../../reusable.css'
-import './Navbar.css'
-import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
 
 const Navbar = () => {
     const { t, i18n } = useTranslation();
