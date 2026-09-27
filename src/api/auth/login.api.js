@@ -66,7 +66,7 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                     safeLocalStorage.removeItem('trial_remaining_days');
                 }
                 const route = ROLE_ROUTES[responseJson.role] || '/';
-                navigate(route);
+                window.location.href = route;
             } else {
                 let errorMsg = responseJson.message;
                 if (errorMsg === 'This email is not registered' || errorMsg === 'Incorrect password') {
