@@ -17,8 +17,8 @@ const register = (userData, setError, setLoading, navigate) => {
                     safeLocalStorage.removeItem('isTrialMode');
                     safeLocalStorage.removeItem('teacher_trial');
                     
-                    safeLocalStorage.setItem('O_authWEB', responseJson.userToken);
-                    safeLocalStorage.setItem('auth_role', 'Student');
+                    const assignedRole = (responseJson.role === 'Teacher' || userData.role === 'Teacher') ? 'Teacher' : 'Student';
+                    safeLocalStorage.setItem('auth_role', assignedRole);
                     safeLocalStorage.setItem('pp_name', responseJson.userName || userData.userName);
                     if (responseJson.userID) {
                         safeLocalStorage.setItem('pp_id', responseJson.userID);
@@ -33,8 +33,9 @@ const register = (userData, setError, setLoading, navigate) => {
                     safeLocalStorage.setItem('trial_ends_at', responseJson.trialEndsAt || defaultTrialEnd);
                     safeLocalStorage.setItem('trial_remaining_days', responseJson.remainingDays !== undefined ? responseJson.remainingDays : 3);
 
+                    const targetRoute = assignedRole === 'Teacher' ? '/dashboard/teacher' : '/dashboard/student';
                     setTimeout(() => {
-                        window.location.href = '/dashboard/student';
+                        window.location.href = targetRoute;
                     }, 150);
                 } else {
                     navigate('/auth/login');

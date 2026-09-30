@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 function Register() {
     const { t, i18n } = useTranslation();
     const isArabic = i18n.language === 'ar';
+    const [accountType, setAccountType] = useState('Student'); // 'Student' or 'Teacher'
     const [userName, setUserName] = useState('');
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
@@ -66,7 +67,7 @@ function Register() {
             academy: 'MasterMinds',
             password,
             cPassword,
-            role: 'Student'
+            role: accountType
         };
 
         register(userData, setError, setLoading, navigate);
@@ -86,19 +87,47 @@ function Register() {
                 <div className="trial-badge-banner">
                     <span className="trial-badge-sparkle">🎉</span>
                     <span className="trial-badge-text">
-                        {isArabic ? 'تجربة مجانية لمدة 3 أيام لجميع الألعاب والتمارين' : '3-Day Free Trial Full Platform Access'}
+                        {isArabic ? 'تجربة مجانية لمدة 3 أيام لجميع المميزات' : '3-Day Free Trial Full Platform Access'}
                     </span>
+                </div>
+
+                {/* Role Selector: Student vs Trainer */}
+                <div className="role-selector-wrap">
+                    <button
+                        type="button"
+                        className={`role-tab-btn ${accountType === 'Student' ? 'active' : ''}`}
+                        onClick={() => {
+                            setAccountType('Student');
+                            setError(null);
+                        }}
+                    >
+                        <span className="role-tab-icon">🎓</span>
+                        <span className="role-tab-label">{isArabic ? 'طالب' : 'Student'}</span>
+                    </button>
+                    <button
+                        type="button"
+                        className={`role-tab-btn ${accountType === 'Teacher' ? 'active' : ''}`}
+                        onClick={() => {
+                            setAccountType('Teacher');
+                            setError(null);
+                        }}
+                    >
+                        <span className="role-tab-icon">👨‍🏫</span>
+                        <span className="role-tab-label">{isArabic ? 'مدرب / معلّم' : 'Trainer / Teacher'}</span>
+                    </button>
                 </div>
 
                 {/* Header */}
                 <div className="register-header">
                     <h2 className="register-main-title">
-                        {isArabic ? 'إنشاء حساب بطل جديد' : 'Create Your Account'}
+                        {accountType === 'Teacher'
+                            ? (isArabic ? 'إنشاء حساب مدرب جديد' : 'Create Trainer Account')
+                            : (isArabic ? 'إنشاء حساب بطل جديد' : 'Create Student Account')}
                     </h2>
                     <p className="register-subtitle">
-                        {isArabic 
-                            ? 'سجّل الآن بالاسم ورقم الهاتف وابدأ التدريب فوراً' 
-                            : 'Sign up with username & phone to start practicing right away'}
+                        {accountType === 'Teacher'
+                            ? (isArabic ? 'أدِر فصولك، واجباتك، ومسابقات طلابك بكل سهولة' : 'Manage classes, assign homework & host live battles')
+                            : (isArabic ? 'سجّل الآن بالاسم ورقم الهاتف وابدأ التدريب فوراً' : 'Sign up with username & phone to start practicing right away')}
                     </p>
                 </div>
 
@@ -108,14 +137,29 @@ function Register() {
                         <span className="perk-icon">⚡</span>
                         <span>{isArabic ? 'تفعيل فوري خلال ثوانٍ' : 'Instant activation in seconds'}</span>
                     </div>
-                    <div className="perk-item">
-                        <span className="perk-icon">🎮</span>
-                        <span>{isArabic ? 'وصول كامل لجميع الألعاب والواجبات' : 'Full access to games & homework'}</span>
-                    </div>
-                    <div className="perk-item">
-                        <span className="perk-icon">🪙</span>
-                        <span>{isArabic ? '100 عملة ترحيبية مجانية' : '100 Free Welcome Coins'}</span>
-                    </div>
+                    {accountType === 'Teacher' ? (
+                        <>
+                            <div className="perk-item">
+                                <span className="perk-icon">📋</span>
+                                <span>{isArabic ? 'إنشاء الفصول وتعيين الواجبات لطلابك' : 'Create classes & assign homework'}</span>
+                            </div>
+                            <div className="perk-item">
+                                <span className="perk-icon">🏆</span>
+                                <span>{isArabic ? 'إقامة بطولات ومسابقات حماسية مباشرة' : 'Host live competitions & battles'}</span>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="perk-item">
+                                <span className="perk-icon">🎮</span>
+                                <span>{isArabic ? 'وصول كامل لجميع الألعاب والواجبات' : 'Full access to games & homework'}</span>
+                            </div>
+                            <div className="perk-item">
+                                <span className="perk-icon">🪙</span>
+                                <span>{isArabic ? '100 عملة ترحيبية مجانية' : '100 Free Welcome Coins'}</span>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Error Banner */}
@@ -143,7 +187,9 @@ function Register() {
                 <form onSubmit={handleRegister} className="register-form-modern">
                     <div className="input-group">
                         <label htmlFor="reg-username">
-                            {isArabic ? 'اسم المستخدم / الاسم الكامل' : 'Username / Full Name'}
+                            {accountType === 'Teacher'
+                                ? (isArabic ? 'اسم المدرب / الاسم الكامل' : 'Trainer Name / Full Name')
+                                : (isArabic ? 'اسم الطالب / الاسم الكامل' : 'Student Name / Full Name')}
                         </label>
                         <div className="input-field-wrap">
                             <span className="input-icon">👤</span>
@@ -230,7 +276,11 @@ function Register() {
                             <span className="reg-loader"></span>
                         ) : (
                             <>
-                                <span>{isArabic ? 'ابدأ التجربة المجانية (3 أيام)' : 'Start 3-Day Free Trial'}</span>
+                                <span>
+                                    {accountType === 'Teacher'
+                                        ? (isArabic ? 'ابدأ تجربة المدرب (3 أيام)' : 'Start 3-Day Trainer Trial')
+                                        : (isArabic ? 'ابدأ تجربة الطالب (3 أيام)' : 'Start 3-Day Student Trial')}
+                                </span>
                                 <span className="btn-arrow">🚀</span>
                             </>
                         )}
