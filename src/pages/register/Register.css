@@ -229,6 +229,47 @@
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
 }
 
+.input-field-wrap select.academy-select-field {
+    width: 100%;
+    padding: 0.85rem 2.25rem 0.85rem 2.75rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0f172a;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+[dir="rtl"] .input-field-wrap select.academy-select-field {
+    padding: 0.85rem 2.75rem 0.85rem 2.25rem;
+}
+
+.input-field-wrap select.academy-select-field:focus {
+    border-color: #3b82f6;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+.select-dropdown-arrow {
+    position: absolute;
+    right: 14px;
+    font-size: 0.7rem;
+    pointer-events: none;
+    color: #64748b;
+}
+
+[dir="rtl"] .select-dropdown-arrow {
+    right: auto;
+    left: 14px;
+}
+
 .toggle-pass-btn {
     position: absolute;
     right: 12px;

@@ -106,6 +106,10 @@ export const resetAllUnitsVisible = (schoolId) => {
  */
 export const filterVisibleUnits = (units, schoolId) => {
   if (!Array.isArray(units)) return [];
+  const trialEndsAt = safeLocalStorage.getItem('trial_ends_at');
+  const isTrial = (trialEndsAt && new Date(trialEndsAt).getTime() > Date.now()) ||
+                  (parseInt(safeLocalStorage.getItem('trial_remaining_days'), 10) > 0);
+  if (isTrial) return units;
   const hiddenIds = getHiddenUnitIds(schoolId);
   if (hiddenIds.length === 0) return units;
   return units.filter(unit => unit && !hiddenIds.includes(String(unit._id)));
@@ -190,6 +194,9 @@ export const filterVisibleSystems = (systems, schoolId) => {
   if (!Array.isArray(systems)) return [];
   const currentSchoolId = resolveSchoolId(schoolId);
   const hiddenIds = getHiddenSystemIds(schoolId);
+  const trialEndsAt = safeLocalStorage.getItem('trial_ends_at');
+  const isTrial = (trialEndsAt && new Date(trialEndsAt).getTime() > Date.now()) ||
+                  (parseInt(safeLocalStorage.getItem('trial_remaining_days'), 10) > 0);
 
   return systems
     .filter(sys => {
@@ -200,20 +207,21 @@ export const filterVisibleSystems = (systems, schoolId) => {
       // 2. School-specific visibility assigned from admin dashboard
       if (sys.visibilityMode === 'specific') {
         const allowedIds = (sys.allowedSchools || []).map(s => String(s._id || s));
-        if (!currentSchoolId || !allowedIds.includes(String(currentSchoolId))) {
+        const matchesSchool = currentSchoolId && allowedIds.includes(String(currentSchoolId));
+        if (!matchesSchool && !isTrial) {
           return false;
         }
       }
 
       // 3. School-level visibility override
-      if (hiddenIds.includes(String(sys._id))) return false;
+      if (!isTrial && hiddenIds.includes(String(sys._id))) return false;
       return true;
     })
     .map(sys => {
       if (!Array.isArray(sys.subjects)) return sys;
       return {
         ...sys,
-        subjects: sys.subjects.filter(sub => sub && sub.isVisible !== false)
+        subjects: sys.subjects.filter(sub => sub && (isTrial || sub.isVisible !== false))
       };
     });
 };
