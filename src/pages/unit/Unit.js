@@ -8,6 +8,7 @@ import SystemLoading from '../../components/systemLoding/SystemLoading';
 import getUnit from '../../api/unit/getUnit.api';
 import soundEffects from '../../utils/soundEffects';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { hasFullAccess } from '../../utils/trialAccess';
 import '../../reusable.css'
 import './Unit.css'
 
@@ -18,7 +19,7 @@ function Unit() {
     const [unitData, setUnitData] = useState()
     const [loading, setLoading] = useState(true)
     const { questionTypeID, subjectID } = useParams()
-    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const isAuth = safeLocalStorage.getItem('O_authWEB') || hasFullAccess()
     const role = safeLocalStorage.getItem('auth_role')
     const navigate = useNavigate()
     
@@ -103,7 +104,7 @@ function Unit() {
                             const badgeInfo = getUnitBadgeInfo(item.unitName);
                             const chapterCount = item.chapters?.length || 0;
                             const isTwoRows = item.unitName?.toLowerCase().trim() === '2 rows';
-                            const isLocked = !isAuth && !isTwoRows;
+                            const isLocked = !isAuth && !hasFullAccess() && !isTwoRows;
 
                             return (
                                 <div 

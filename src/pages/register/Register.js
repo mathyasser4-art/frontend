@@ -64,7 +64,7 @@ function Register() {
             userName: trimmedName,
             phone: trimmedPhone,
             email: fallbackEmail,
-            academy: 'MasterMinds',
+            academy: 'Other',
             password,
             cPassword,
             role: accountType

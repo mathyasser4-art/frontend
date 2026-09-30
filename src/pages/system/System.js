@@ -8,6 +8,7 @@ import SystemLoading from '../../components/systemLoding/SystemLoading';
 import getSystem from '../../api/system/getSystem.api';
 import soundEffects from '../../utils/soundEffects';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { hasFullAccess } from '../../utils/trialAccess';
 import '../../reusable.css'
 import './System.css'
 
@@ -18,7 +19,7 @@ function System() {
     const [systemData, setSystemData] = useState()
     const [loading, setLoading] = useState(true)
     const { questionTypeID } = useParams()
-    const isAuth = safeLocalStorage.getItem('O_authWEB')
+    const isAuth = safeLocalStorage.getItem('O_authWEB') || hasFullAccess()
     const role = safeLocalStorage.getItem('auth_role')
     const navigate = useNavigate()
     
@@ -166,7 +167,7 @@ function System() {
                             {activeLevel.subjects?.map((subItem, index) => {
                                 const isFreeSystem = activeLevel.systemName?.toLowerCase().trim() === 'basic level' || activeLevel.systemName?.toLowerCase().trim() === 'level 0';
                                 const isFreeSheet = isFreeSystem && index === 0;
-                                const isLocked = !isAuth && !isFreeSheet;
+                                const isLocked = !isAuth && !hasFullAccess() && !isFreeSheet;
 
                                 if (isLocked) {
                                     return (

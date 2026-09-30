@@ -6,11 +6,12 @@ import Navbar from '../../components/navbar/Navbar';
 import MobileNav from '../../components/mobileNav/MobileNav';
 import './GamesMenu.css';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { hasFullAccess } from '../../utils/trialAccess';
 
 const GamesMenu = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const isAuth = safeLocalStorage.getItem('O_authWEB');
+  const isAuth = safeLocalStorage.getItem('O_authWEB') || hasFullAccess();
 
   return (
     <div className="dashboard-layout">

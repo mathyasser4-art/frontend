@@ -13,6 +13,7 @@ import {
   fetchBackendJourneyProgress,
 } from '../../utils/learningPathProgress';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { hasFullAccess } from '../../utils/trialAccess';
 import soundEffects from '../../utils/soundEffects';
 import adventureMapBg from '../../img/adventure_map_bg.jpg';
 import scienceMapBg from '../../img/science_map_bg.jpg';
@@ -407,7 +408,7 @@ const LearningPath = () => {
     return allChapters.map((chapter, idx) => {
       const t = count === 1 ? 0 : idx / (count - 1);
       const coord = interpolateWaypoints(waypoints, t);
-      const status = getChapterStatus(progress, chapter.chapterId, allChapters);
+      const status = getChapterStatus(progress, chapter.chapterId, allChapters, hasFullAccess());
       const stars = getStars(progress, chapter.chapterId);
       const score = getScore(progress, chapter.chapterId);
 

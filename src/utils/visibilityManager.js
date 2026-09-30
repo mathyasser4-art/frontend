@@ -65,6 +65,10 @@ export const getHiddenUnitIds = (schoolId) => {
  */
 export const isUnitVisible = (unitId, schoolId) => {
   if (!unitId) return true;
+  const trialEndsAt = safeLocalStorage.getItem('trial_ends_at');
+  if (trialEndsAt && new Date(trialEndsAt).getTime() > Date.now()) {
+    return true;
+  }
   const hiddenIds = getHiddenUnitIds(schoolId);
   return !hiddenIds.includes(String(unitId));
 };
@@ -128,6 +132,10 @@ export const getHiddenSystemIds = (schoolId) => {
  */
 export const isSystemVisible = (systemId, schoolId, systemObj) => {
   if (!systemId) return true;
+  const trialEndsAt = safeLocalStorage.getItem('trial_ends_at');
+  if (trialEndsAt && new Date(trialEndsAt).getTime() > Date.now()) {
+    return true;
+  }
   if (systemObj) {
     if (systemObj.isVisible === false || systemObj.visibilityMode === 'none') return false;
     if (systemObj.visibilityMode === 'specific') {

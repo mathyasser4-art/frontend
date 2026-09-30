@@ -44,7 +44,9 @@ function TeacherDashboard() {
     const [forceFlashMode, setForceFlashMode] = useState(false)
     const [assignmentFlashSpeed, setAssignmentFlashSpeed] = useState(1.0)
     const isAuth = safeLocalStorage.getItem('O_authWEB')
-    const isTrialMode = safeLocalStorage.getItem('isTrialMode') === 'true'
+    const trialEndsAt = safeLocalStorage.getItem('trial_ends_at');
+    const isTrialActive = trialEndsAt && new Date(trialEndsAt).getTime() > Date.now();
+    const isTrialMode = !isTrialActive && safeLocalStorage.getItem('isTrialMode') === 'true';
 
     // Competition states
     const [myCompetitions, setMyCompetitions] = useState([])

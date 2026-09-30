@@ -199,24 +199,26 @@ export const flattenChapters = (units) => {
 /**
  * Determine a chapter's status: 'completed' | 'current' | 'locked'
  */
-export const getChapterStatus = (progress, chapterId, allChaptersFlat) => {
+export const getChapterStatus = (progress, chapterId, allChaptersFlat, hasFullTrialAccess = false) => {
   const index = allChaptersFlat.findIndex((c) => c.chapterId === chapterId);
-  if (index === -1) return 'locked';
+  if (index === -1) return hasFullTrialAccess ? 'current' : 'locked';
+
+  const score = progress.scores?.[chapterId];
+  if (score >= 70 || progress.completedChapters?.includes(chapterId)) return 'completed';
+
+  // If user has trial/paid access, all stages are unlocked and playable
+  if (hasFullTrialAccess) {
+    return 'current';
+  }
 
   if (index === 0) {
-    const score = progress.scores?.[chapterId];
-    if (score >= 70 || progress.completedChapters.includes(chapterId)) return 'completed';
     return 'current';
   }
 
   const prevChapter = allChaptersFlat[index - 1];
   const prevScore = progress.scores?.[prevChapter.chapterId] || 0;
 
-  if (prevScore >= 70 || progress.completedChapters.includes(prevChapter.chapterId)) {
-    const score = progress.scores?.[chapterId];
-    if (score >= 70 || progress.completedChapters.includes(chapterId)) {
-      return 'completed';
-    }
+  if (prevScore >= 70 || progress.completedChapters?.includes(prevChapter.chapterId)) {
     return 'current';
   }
 

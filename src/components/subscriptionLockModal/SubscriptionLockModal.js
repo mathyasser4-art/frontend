@@ -44,6 +44,10 @@ function SubscriptionLockModal() {
         if (trialEndsAt && new Date(trialEndsAt).getTime() > Date.now()) {
             return false;
         }
+        const remainingDays = safeLocalStorage.getItem('trial_remaining_days');
+        if (remainingDays !== null && remainingDays !== undefined && parseInt(remainingDays, 10) > 0) {
+            return false;
+        }
 
         // Check if cutoff time has been reached (or test override via ?test_lock=1)
         const isPastCutoff = Date.now() >= LOCKOUT_DATE.getTime();

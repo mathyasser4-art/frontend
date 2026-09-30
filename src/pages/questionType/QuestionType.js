@@ -6,6 +6,7 @@ import soundEffects from '../../utils/soundEffects'
 import CreateCompetitionModal from '../../components/navbar/CreateCompetitionModal';
 import { ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
 import { safeLocalStorage } from '../../utils/safeStorage'
+import { hasFullAccess } from '../../utils/trialAccess'
 import logo from '../../logo.png'
 import '../../reusable.css'
 import './QuestionType.css'
@@ -24,7 +25,7 @@ function QuestionType() {
   const [joinCompError, setJoinCompError] = useState(null)
   const [joiningComp, setJoiningComp] = useState(false)
 
-  const isAuth = safeLocalStorage.getItem('O_authWEB')
+  const isAuth = safeLocalStorage.getItem('O_authWEB') || hasFullAccess()
   
   const schoolName = safeLocalStorage.getItem('school_name') || '';
   const userName = safeLocalStorage.getItem('pp_name') || '';

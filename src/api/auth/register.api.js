@@ -17,6 +17,9 @@ const register = (userData, setError, setLoading, navigate) => {
                     safeLocalStorage.removeItem('isTrialMode');
                     safeLocalStorage.removeItem('teacher_trial');
                     
+                    // Crucial: Set auth token so entire app recognizes user as authenticated
+                    safeLocalStorage.setItem('O_authWEB', responseJson.userToken);
+
                     const assignedRole = (responseJson.role === 'Teacher' || userData.role === 'Teacher') ? 'Teacher' : 'Student';
                     safeLocalStorage.setItem('auth_role', assignedRole);
                     safeLocalStorage.setItem('pp_name', responseJson.userName || userData.userName);
@@ -32,6 +35,12 @@ const register = (userData, setError, setLoading, navigate) => {
                     const defaultTrialEnd = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
                     safeLocalStorage.setItem('trial_ends_at', responseJson.trialEndsAt || defaultTrialEnd);
                     safeLocalStorage.setItem('trial_remaining_days', responseJson.remainingDays !== undefined ? responseJson.remainingDays : 3);
+
+                    if (responseJson.schoolId) {
+                        safeLocalStorage.setItem('school_id', responseJson.schoolId);
+                    } else if (responseJson.createdBy) {
+                        safeLocalStorage.setItem('school_id', responseJson.createdBy._id || responseJson.createdBy);
+                    }
 
                     const targetRoute = assignedRole === 'Teacher' ? '/dashboard/teacher' : '/dashboard/student';
                     setTimeout(() => {
