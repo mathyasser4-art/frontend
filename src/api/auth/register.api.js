@@ -40,7 +40,11 @@ const register = (userData, setError, setLoading, navigate) => {
                     navigate('/auth/login');
                 }
             } else {
-                setError(responseJson.message);
+                let msg = responseJson.message;
+                if (/email.*already/i.test(msg) || /already exists/i.test(msg)) {
+                    msg = 'This username or phone number is already registered. Please log in.';
+                }
+                setError(msg);
                 setLoading(false);
             }
         })

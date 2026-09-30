@@ -52,8 +52,12 @@ function Register() {
             return;
         }
 
-        const cleanDigits = trimmedPhone.replace(/[^\d+]/g, '');
-        const fallbackEmail = `${cleanDigits}@abacusheroes.com`;
+        const cleanDigits = trimmedPhone.replace(/[^\d]/g, '');
+        let cleanUser = trimmedName.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (!cleanUser) {
+            cleanUser = 'student_' + Math.abs(trimmedName.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0));
+        }
+        const fallbackEmail = `${cleanUser}_${cleanDigits}@abacusheroes.com`;
 
         const userData = {
             userName: trimmedName,
@@ -118,7 +122,20 @@ function Register() {
                 {error && (
                     <div className="register-error-msg">
                         <span className="error-icon">⚠️</span>
-                        <span>{error}</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span>
+                                {error === 'This username or phone number is already registered. Please log in.' 
+                                    ? (isArabic ? 'اسم المستخدم أو رقم الهاتف هذا مسجل بالفعل. يرجى تسجيل الدخول.' : error)
+                                    : (/email.*already/i.test(error) || /already exists/i.test(error))
+                                        ? (isArabic ? 'اسم المستخدم أو رقم الهاتف هذا مسجل بالفعل.' : 'This account is already registered.')
+                                        : error}
+                            </span>
+                            {(error.includes('already') || error.includes('مسجل')) && (
+                                <Link to="/auth/login" className="login-link" style={{ fontSize: '0.85rem' }}>
+                                    {isArabic ? 'تسجيل الدخول من هنا ←' : 'Log In Here →'}
+                                </Link>
+                            )}
+                        </div>
                     </div>
                 )}
 
