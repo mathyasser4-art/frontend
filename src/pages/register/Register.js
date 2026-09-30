@@ -52,9 +52,14 @@ function Register() {
             return;
         }
 
+        const cleanDigits = trimmedPhone.replace(/[^\d+]/g, '');
+        const fallbackEmail = `${cleanDigits}@abacusheroes.com`;
+
         const userData = {
             userName: trimmedName,
             phone: trimmedPhone,
+            email: fallbackEmail,
+            academy: 'MasterMinds',
             password,
             cPassword,
             role: 'Student'

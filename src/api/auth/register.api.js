@@ -13,27 +13,26 @@ const register = (userData, setError, setLoading, navigate) => {
         .then((response) => response.json())
         .then((responseJson) => {
             if (responseJson.message === 'success') {
-                // If backend returns token directly, log the user in with 3-day trial
                 if (responseJson.userToken) {
                     safeLocalStorage.removeItem('isTrialMode');
                     safeLocalStorage.removeItem('teacher_trial');
                     
                     safeLocalStorage.setItem('O_authWEB', responseJson.userToken);
-                    safeLocalStorage.setItem('auth_role', responseJson.role || 'Student');
-                    safeLocalStorage.setItem('pp_name', responseJson.userName);
+                    safeLocalStorage.setItem('auth_role', 'Student');
+                    safeLocalStorage.setItem('pp_name', responseJson.userName || userData.userName);
                     if (responseJson.userID) {
                         safeLocalStorage.setItem('pp_id', responseJson.userID);
                     }
-                    if (responseJson.phone) {
-                        safeLocalStorage.setItem('user_phone', responseJson.phone);
+                    if (userData.phone || responseJson.phone) {
+                        safeLocalStorage.setItem('user_phone', userData.phone || responseJson.phone);
                     }
                     safeLocalStorage.setItem('is_paid', responseJson.isPaid ? 'true' : 'false');
-                    if (responseJson.trialEndsAt) {
-                        safeLocalStorage.setItem('trial_ends_at', responseJson.trialEndsAt);
-                    }
-                    if (responseJson.remainingDays !== undefined) {
-                        safeLocalStorage.setItem('trial_remaining_days', responseJson.remainingDays);
-                    }
+
+                    // 3-Day Free Trial default
+                    const defaultTrialEnd = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+                    safeLocalStorage.setItem('trial_ends_at', responseJson.trialEndsAt || defaultTrialEnd);
+                    safeLocalStorage.setItem('trial_remaining_days', responseJson.remainingDays !== undefined ? responseJson.remainingDays : 3);
+
                     setTimeout(() => {
                         window.location.href = '/dashboard/student';
                     }, 150);
