@@ -19,6 +19,15 @@ const userInfo = (userToken, setLoading, setUserData) => {
                 } else if (responseJson.userInfo?.createdBy?.userName) {
                     safeLocalStorage.setItem('school_name', responseJson.userInfo.createdBy.userName)
                 }
+                if (responseJson.userInfo?.isPaid !== undefined) {
+                    safeLocalStorage.setItem('is_paid', responseJson.userInfo.isPaid ? 'true' : 'false');
+                }
+                if (responseJson.userInfo?.trialEndsAt) {
+                    safeLocalStorage.setItem('trial_ends_at', responseJson.userInfo.trialEndsAt);
+                }
+                if (responseJson.userInfo?.phone) {
+                    safeLocalStorage.setItem('user_phone', responseJson.userInfo.phone);
+                }
                 if (responseJson.remainingDays !== undefined && responseJson.remainingDays !== null) {
                     safeLocalStorage.setItem('trial_remaining_days', responseJson.remainingDays);
                 } else if (responseJson.userInfo?.remainingDays !== undefined && responseJson.userInfo?.remainingDays !== null) {

@@ -65,6 +65,19 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 } else {
                     safeLocalStorage.removeItem('trial_remaining_days');
                 }
+                if (responseJson.isPaid !== undefined) {
+                    safeLocalStorage.setItem('is_paid', responseJson.isPaid ? 'true' : 'false');
+                } else {
+                    safeLocalStorage.setItem('is_paid', 'false');
+                }
+                if (responseJson.trialEndsAt) {
+                    safeLocalStorage.setItem('trial_ends_at', responseJson.trialEndsAt);
+                } else {
+                    safeLocalStorage.removeItem('trial_ends_at');
+                }
+                if (responseJson.phone) {
+                    safeLocalStorage.setItem('user_phone', responseJson.phone);
+                }
                 const route = ROLE_ROUTES[responseJson.role] || '/';
                 window.location.href = route;
             } else {

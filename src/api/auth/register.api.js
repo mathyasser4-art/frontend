@@ -4,7 +4,7 @@ import { safeLocalStorage } from '../../utils/safeStorage';
 const URL = `${API_BASE_URL}/auth/register`;
 
 const register = (userData, setError, setLoading, navigate) => {
-    setLoading(true)
+    setLoading(true);
     fetch(`${URL}`, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
@@ -13,31 +13,42 @@ const register = (userData, setError, setLoading, navigate) => {
         .then((response) => response.json())
         .then((responseJson) => {
             if (responseJson.message === 'success') {
-                // If backend returns token directly, log the user in
+                // If backend returns token directly, log the user in with 3-day trial
                 if (responseJson.userToken) {
-                    // Clear any trial data when registering a real account
-                    safeLocalStorage.removeItem('isTrialMode')
-                    safeLocalStorage.removeItem('teacher_trial')
+                    safeLocalStorage.removeItem('isTrialMode');
+                    safeLocalStorage.removeItem('teacher_trial');
                     
-                    safeLocalStorage.setItem('O_authWEB', responseJson.userToken)
-                    safeLocalStorage.setItem('auth_role', responseJson.role)
-                    safeLocalStorage.setItem('pp_name', responseJson.userName)
+                    safeLocalStorage.setItem('O_authWEB', responseJson.userToken);
+                    safeLocalStorage.setItem('auth_role', responseJson.role || 'Student');
+                    safeLocalStorage.setItem('pp_name', responseJson.userName);
+                    if (responseJson.userID) {
+                        safeLocalStorage.setItem('pp_id', responseJson.userID);
+                    }
+                    if (responseJson.phone) {
+                        safeLocalStorage.setItem('user_phone', responseJson.phone);
+                    }
+                    safeLocalStorage.setItem('is_paid', responseJson.isPaid ? 'true' : 'false');
+                    if (responseJson.trialEndsAt) {
+                        safeLocalStorage.setItem('trial_ends_at', responseJson.trialEndsAt);
+                    }
+                    if (responseJson.remainingDays !== undefined) {
+                        safeLocalStorage.setItem('trial_remaining_days', responseJson.remainingDays);
+                    }
                     setTimeout(() => {
-                        window.location.href = '/';
-                    }, 100);
+                        window.location.href = '/dashboard/student';
+                    }, 150);
                 } else {
-                    // Otherwise redirect to login page
-                    navigate('/auth/login')
+                    navigate('/auth/login');
                 }
             } else {
-                setError(responseJson.message)
-                setLoading(false)
+                setError(responseJson.message);
+                setLoading(false);
             }
         })
         .catch((error) => {
-            setError(error.message)
-            setLoading(false)
+            setError(error.message);
+            setLoading(false);
         });
-}
+};
 
 export default register;

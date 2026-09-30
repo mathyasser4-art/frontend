@@ -389,13 +389,32 @@ const Navbar = () => {
                                     </div>
                                 </Link>
                             )}
-                            {false && (
-                                <Link to={'/auth/register'} onClick={() => soundEffects.playClick()} style={{ marginRight: '10px' }}>
-                                    <div className="nav-btn" style={{ background: '#2563eb', color: 'white', border: 'none' }}>
-                                        Sign Up
-                                    </div>
-                                </Link>
-                            )}
+                            <Link to={'/auth/register'} onClick={() => soundEffects.playClick()} style={{ marginRight: '10px', textDecoration: 'none' }}>
+                                <div className="nav-btn nav-btn-signup" style={{ 
+                                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
+                                    color: 'white', 
+                                    border: 'none',
+                                    fontWeight: '700',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.35)',
+                                    borderRadius: '10px',
+                                    padding: '8px 14px'
+                                }}>
+                                    <span>Sign Up</span>
+                                    <span style={{
+                                        background: '#fef08a',
+                                        color: '#854d0e',
+                                        fontSize: '0.65rem',
+                                        fontWeight: '800',
+                                        padding: '2px 6px',
+                                        borderRadius: '999px',
+                                        letterSpacing: '0.5px',
+                                        textTransform: 'uppercase'
+                                    }}>3 Days Free</span>
+                                </div>
+                            </Link>
                             <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}>
                                 <div className="nav-btn">
                                     {t('common.login')}

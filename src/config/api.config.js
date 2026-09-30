@@ -11,8 +11,7 @@ const API_CONFIG = {
 export const API_BASE_URL = USE_LOCAL ? API_CONFIG.local : API_CONFIG.production;
 
 // Feature flag to show or hide pricing packages across the app.
-// Set to false to hide, change to true to restore pricing.
-export const SHOW_PRICING = false;
+export const SHOW_PRICING = true;
 
 // Feature flag to enable custom question bank & worksheets creation.
 // Set to false to hide, change to true to restore custom worksheets.
