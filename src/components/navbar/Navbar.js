@@ -364,22 +364,6 @@ const Navbar = () => {
                         </Link>
                     ) : (
                         <>
-                            <Link to={'/student/games/math-racer'} onClick={() => soundEffects.playClick()} style={{ marginRight: '10px', textDecoration: 'none' }}>
-                                <div className="nav-btn nav-btn-mathracer" style={{
-                                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                                    color: 'white',
-                                    border: 'none',
-                                    fontWeight: '800',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    boxShadow: '0 4px 12px rgba(245, 158, 11, 0.35)',
-                                    borderRadius: '10px',
-                                    padding: '8px 14px'
-                                }}>
-                                    <span>🏎️ {isArabic ? 'سباق الرياضيات (مجاناً)' : 'Math Racer (Free)'}</span>
-                                </div>
-                            </Link>
                             {SHOW_PRICING && (
                                 <Link to={'/pricing'} onClick={() => soundEffects.playClick()}>
                                     <div className="nav-btn nav-btn-join" style={{ marginRight: '15px' }}>
