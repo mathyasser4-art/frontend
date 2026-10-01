@@ -1,19 +1,5 @@
-/* Add font-face at the very top */
-@font-face {
-    font-family: 'Comic Jungle';
-    src: url('../../fonts/Happy\ School.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
+/* Legacy font-face declarations removed for professional look */
 
-@font-face {
-    font-family: 'Spicy Sale';
-    src: url('../../fonts/Spicy\ Sale.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
 
 .home-page-root {
     background-image: url('../../img/webbackground10.jpg');
@@ -45,6 +31,468 @@
     animation: fadeInUp 0.8s ease-out;
 }
 
+/* ── Top Persona / Role Switcher ── */
+.persona-toggle-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem auto 1.5rem auto;
+    position: relative;
+    z-index: 10;
+}
+
+.persona-toggle-track {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 6px;
+    border-radius: 9999px;
+    display: inline-flex;
+    gap: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+}
+
+.persona-toggle-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.65rem 1.4rem;
+    border-radius: 9999px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 0.96rem;
+    color: #475569;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    outline: none;
+}
+
+.persona-toggle-tab:hover {
+    color: #0f172a;
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.persona-icon {
+    font-size: 1.25rem;
+}
+
+.persona-title {
+    letter-spacing: -0.2px;
+}
+
+/* Active Student State */
+.persona-toggle-tab.active-student {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    transform: scale(1.02);
+}
+
+.persona-badge-glow {
+    background: #fef08a;
+    color: #166534;
+    font-size: 0.68rem;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 9999px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 10px rgba(254, 240, 138, 0.6);
+    animation: badgePulse 2s infinite alternate;
+}
+
+@keyframes badgePulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.08); }
+}
+
+/* Active Teacher State */
+.persona-toggle-tab.active-teacher {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+    transform: scale(1.02);
+}
+
+.persona-badge-trial {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 9999px;
+    letter-spacing: 0.5px;
+}
+
+/* ── Student Hero Enhancements ── */
+.hero-student-box {
+    background: rgba(255, 255, 255, 0.75) !important;
+    border: 2px solid rgba(16, 185, 129, 0.3) !important;
+    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.12) !important;
+}
+
+.hero-student-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #047857;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    margin-bottom: 0.8rem;
+}
+
+.tag-dot {
+    color: #10b981;
+    font-size: 0.75rem;
+    animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.3); }
+}
+
+.text-orange {
+    color: #ea580c !important;
+}
+
+.student-hero-buttons {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+}
+
+.journey-btn-epic {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45) !important;
+    padding: 0.85rem 1.6rem !important;
+    border-radius: 20px !important;
+    border: 2px solid #6ee7b7 !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 0.98rem !important;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.journey-btn-epic:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 10px 28px rgba(16, 185, 129, 0.6) !important;
+}
+
+.racer-btn-epic {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4) !important;
+    padding: 0.85rem 1.6rem !important;
+    border-radius: 20px !important;
+    border: 2px solid #fde68a !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 0.98rem !important;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.racer-btn-epic:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 10px 28px rgba(245, 158, 11, 0.6) !important;
+}
+
+.student-helper-row {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.student-how-btn {
+    background: transparent;
+    border: none;
+    color: #0284c7;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    text-decoration: underline;
+}
+
+.student-how-btn:hover {
+    color: #0369a1;
+    background: rgba(2, 132, 199, 0.08);
+}
+
+/* ── Journey Preview Showcase Card (Right Column) ── */
+.journey-preview-card {
+    width: 100%;
+    max-width: 480px;
+    background: #0f172a;
+    border-radius: 24px;
+    border: 4px solid #ffffff;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35), 0 0 30px rgba(16, 185, 129, 0.2);
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.journey-preview-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.45), 0 0 40px rgba(16, 185, 129, 0.3);
+}
+
+.journey-card-header {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 0.75rem 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.journey-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.journey-map-icon {
+    font-size: 1.5rem;
+}
+
+.journey-header-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: 0.3px;
+}
+
+.journey-header-sub {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    display: block;
+}
+
+.journey-level1-free-pill {
+    background: #10b981;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    letter-spacing: 0.4px;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+}
+
+.journey-map-canvas-preview {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/10;
+    background: #090d16;
+    overflow: hidden;
+}
+
+.journey-preview-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    filter: brightness(0.9) contrast(1.05);
+}
+
+.preview-trail-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Interactive Preview Stage Nodes */
+.preview-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.preview-node:hover {
+    transform: translate(-50%, -50%) scale(1.15);
+}
+
+.node-pos-1 { left: 22%; top: 70%; }
+.node-pos-2 { left: 45%; top: 52%; }
+.node-pos-3 { left: 66%; top: 58%; }
+.node-pos-4 { left: 82%; top: 32%; }
+
+.node-glow-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid #34d399;
+    box-shadow: 0 0 14px rgba(52, 211, 153, 0.8);
+    animation: ringPulse 2s infinite;
+}
+
+@keyframes ringPulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.node-bubble {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 2;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.unlocked-bubble {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+}
+
+.locked-bubble {
+    background: #334155;
+    color: #cbd5e1;
+    border-color: #64748b;
+    font-size: 0.85rem;
+}
+
+.node-label-popup {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 4px 8px;
+    white-space: nowrap;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    pointer-events: none;
+}
+
+.node-unit-tag {
+    font-size: 0.65rem;
+    color: #6ee7b7;
+    display: block;
+    font-weight: 700;
+}
+
+.node-title {
+    font-size: 0.72rem;
+    color: #ffffff;
+    font-weight: 700;
+    display: block;
+}
+
+.node-badge-free {
+    font-size: 0.62rem;
+    color: #fef08a;
+    font-weight: 800;
+    display: block;
+}
+
+.node-badge-trial {
+    font-size: 0.62rem;
+    color: #94a3b8;
+    font-weight: 700;
+    display: block;
+}
+
+/* Mascot on Map Preview */
+.preview-mascot-wrap {
+    position: absolute;
+    left: 18%;
+    top: 38%;
+    z-index: 4;
+    cursor: pointer;
+    text-align: center;
+    animation: floatMascotPreview 2.5s ease-in-out infinite;
+}
+
+@keyframes floatMascotPreview {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.mascot-speech {
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 800;
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    margin-bottom: 4px;
+    white-space: nowrap;
+}
+
+.preview-mascot-img {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 3px solid #10b981;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+    object-fit: cover;
+}
+
+.journey-card-footer {
+    background: #0f172a;
+    padding: 0.75rem 1.2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.journey-play-now-cta {
+    width: 100%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    font-weight: 800;
+    font-size: 0.95rem;
+    padding: 0.7rem 1.2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.journey-play-now-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+}
+
+.cta-arrow {
+    transition: transform 0.2s;
+}
+
+.journey-play-now-cta:hover .cta-arrow {
+    transform: translateX(4px);
+}
 
 /* ── Hero Hybrid Layout ── */
 .hero-hybrid {
@@ -52,7 +500,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 3rem;
-    margin-top: 2rem;
+    margin-top: 1rem;
 }
 
 .hero-left {
@@ -245,10 +693,7 @@
 
 .game-strip-outer {
     width: 100%;
-    background-image: url('../../img/webbackground10.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8edf5 50%, #f5f0ff 100%);
     background-attachment: fixed;
     padding-bottom: 2rem;
 }
@@ -887,5 +1332,41 @@
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
+    }
+
+    .persona-toggle-container {
+        margin: 0.5rem auto 1rem auto;
+    }
+
+    .persona-toggle-track {
+        width: 100%;
+        max-width: 360px;
+        justify-content: center;
+        padding: 4px;
+    }
+
+    .persona-toggle-tab {
+        padding: 0.55rem 0.9rem;
+        font-size: 0.85rem;
+        gap: 6px;
+    }
+
+    .persona-icon {
+        font-size: 1.1rem;
+    }
+
+    .persona-badge-glow, .persona-badge-trial {
+        font-size: 0.6rem;
+        padding: 1px 5px;
+    }
+
+    .mobile-journey-card {
+        margin: 1rem 0;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .mobile-journey-card .journey-map-canvas-preview {
+        aspect-ratio: 16/9;
     }
 }

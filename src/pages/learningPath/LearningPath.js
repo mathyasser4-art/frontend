@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, BookOpen, RotateCcw, Volume2, VolumeX, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import getUnit from '../../api/unit/getUnit.api';
 import {
@@ -284,10 +285,11 @@ export function detectSubjectWorld(subjectName) {
 
 const LearningPath = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const token = safeLocalStorage.getItem('token');
   const userId = safeLocalStorage.getItem('pp_id') || 'guest';
+  const isAuth = Boolean(token && userId && userId !== 'guest');
   const questionTypeID = '65a4963482dbaac16d820fc6';
-
-
 
   // Map state
   const [unitData, setUnitData] = useState([]);
@@ -296,6 +298,7 @@ const LearningPath = () => {
   const [savedSubjectId, setSavedSubjectId] = useState(null);
   const [savedSubjectName, setSavedSubjectName] = useState('');
   const [savedSystemName, setSavedSystemName] = useState('');
+  const [showGuestTrialModal, setShowGuestTrialModal] = useState(false);
 
   // Character controller state
   const [characterIndex, setCharacterIndex] = useState(0);
@@ -343,7 +346,7 @@ const LearningPath = () => {
     img.onerror = () => setHeroSpriteUrl(heroCharacterImg);
   }, []);
 
-  // ── 2. Load saved subject preference on mount ──
+  // ── 2. Load saved subject preference on mount (with guest fallback) ──
   useEffect(() => {
     const saved = safeLocalStorage.getItem('lp_selected_subject') || safeLocalStorage.getItem('learning_path_last_subject');
     if (saved) {
@@ -353,16 +356,22 @@ const LearningPath = () => {
           setSavedSubjectId(parsed.subjectId);
           setSavedSubjectName(parsed.subjectName || '');
           setSavedSystemName(parsed.systemName || '');
-        } else {
-          navigate('/student/journey-hub');
+          return;
         }
       } catch (e) {
-        navigate('/student/journey-hub');
+        // Fallback below
       }
-    } else {
-      navigate('/student/journey-hub');
     }
-  }, [navigate]);
+    // Guest or default fallback: Grade 4 Mathematics (School Book)
+    const defaultSubject = {
+      subjectId: '6aac4579568208683c425dbb',
+      subjectName: 'Mathematics (School Book)',
+      systemName: 'Grade 4'
+    };
+    setSavedSubjectId(defaultSubject.subjectId);
+    setSavedSubjectName(defaultSubject.subjectName);
+    setSavedSystemName(defaultSubject.systemName);
+  }, []);
 
   // ── 3. Fetch units when subject is known ──
   useEffect(() => {
@@ -408,7 +417,10 @@ const LearningPath = () => {
     return allChapters.map((chapter, idx) => {
       const t = count === 1 ? 0 : idx / (count - 1);
       const coord = interpolateWaypoints(waypoints, t);
-      const status = getChapterStatus(progress, chapter.chapterId, allChapters, hasFullAccess());
+      const isGuestLocked = !isAuth && idx >= 2;
+      const status = isGuestLocked
+        ? 'locked'
+        : getChapterStatus(progress, chapter.chapterId, allChapters, hasFullAccess());
       const stars = getStars(progress, chapter.chapterId);
       const score = getScore(progress, chapter.chapterId);
 
@@ -419,6 +431,7 @@ const LearningPath = () => {
       return {
         ...chapter,
         index: idx,
+        isGuestLocked,
         status,
         stars,
         score,
@@ -429,7 +442,7 @@ const LearningPath = () => {
         isUnitFirstStage,
       };
     });
-  }, [allChapters, progress, activeWorld]);
+  }, [allChapters, progress, activeWorld, isAuth]);
 
   // Auto-pan camera to follow character on mobile or narrow viewports
   useEffect(() => {
@@ -496,6 +509,13 @@ const LearningPath = () => {
     if (!mappedStages[targetIdx]) return;
     const targetStage = mappedStages[targetIdx];
 
+    // Guest locked check for stage >= 2
+    if (!isAuth && targetIdx >= 2) {
+      playSfx('wrong');
+      setShowGuestTrialModal(true);
+      return;
+    }
+
     if (targetStage.status === 'locked') {
       showLockedToast(`🔒 Lesson ${targetIdx + 1} is locked! Complete Lesson ${targetIdx} first.`);
       return;
@@ -507,11 +527,18 @@ const LearningPath = () => {
       setCharacterIndex(targetIdx);
       setLockedSpeech(null);
     }
-  }, [mappedStages, characterIndex, playSfx, triggerHop, showLockedToast]);
+  }, [mappedStages, characterIndex, isAuth, playSfx, triggerHop, showLockedToast]);
 
   // Launch quiz for current stage
   const launchCurrentStage = useCallback(() => {
     if (!currentStage) return;
+
+    if (!isAuth && characterIndex >= 2) {
+      playSfx('wrong');
+      setShowGuestTrialModal(true);
+      return;
+    }
+
     if (currentStage.status === 'locked') {
       showLockedToast(`🔒 Complete previous lessons first!`);
       return;
@@ -521,7 +548,7 @@ const LearningPath = () => {
     navigate(`/question/${currentStage.chapterId}/${questionTypeID}/${savedSubjectId}`, {
       state: { fromLearningPath: true },
     });
-  }, [currentStage, navigate, questionTypeID, savedSubjectId, playSfx, showLockedToast]);
+  }, [currentStage, characterIndex, isAuth, navigate, questionTypeID, savedSubjectId, playSfx, showLockedToast]);
 
   // ── Keyboard Controller (Arrows / WASD / Enter / Space) ──
   useEffect(() => {
@@ -587,7 +614,11 @@ const LearningPath = () => {
       <div className="wumpa-top-hud">
         {/* Left Stats: Lives & Back */}
         <div className="wumpa-hud-cluster hud-left">
-          <button className="wumpa-icon-btn" onClick={() => navigate('/dashboard/student')} title="Back to Dashboard">
+          <button
+            className="wumpa-icon-btn"
+            onClick={() => navigate(isAuth ? '/dashboard/student' : '/')}
+            title={isAuth ? 'Back to Dashboard' : 'Home'}
+          >
             <ArrowLeft size={18} />
           </button>
           <div className="wumpa-badge badge-lives">
@@ -667,6 +698,28 @@ const LearningPath = () => {
           </button>
         </div>
       </div>
+
+      {/* ── GUEST EXPLORER RIBBON BANNER (Level 1 Free) ── */}
+      {!isAuth && (
+        <div className="guest-journey-ribbon">
+          <div className="guest-ribbon-text">
+            <span className="guest-ribbon-icon">🌟</span>
+            <span className="guest-ribbon-msg">
+              <strong>{t('learningPath.guestBannerTitle', 'Guest Mode: Level 1 is Free to Play!')}</strong>{' '}
+              {t('learningPath.guestBannerSubtitle', 'Start your 3-Day Free Trial to unlock all 8 biomes, 40+ lessons & save your stars!')}
+            </span>
+          </div>
+          <button
+            className="guest-trial-cta-btn"
+            onClick={() => {
+              soundEffects.playClick();
+              navigate('/register');
+            }}
+          >
+            ⭐ {t('learningPath.startTrialBtn', 'Start 3-Day Free Trial')}
+          </button>
+        </div>
+      )}
 
       {/* ── THE INTERACTIVE WORLD MAP VIEWPORT ── */}
       <div className="wumpa-world-container" ref={mapAreaRef}>
@@ -1013,6 +1066,53 @@ const LearningPath = () => {
         <RotateCcw size={14} style={{ marginRight: 4 }} />
         Reset Progress
       </button>
+
+      {/* ── GUEST TRIAL CONVERSION MODAL ── */}
+      {showGuestTrialModal && (
+        <div className="guest-trial-overlay" onClick={() => setShowGuestTrialModal(false)}>
+          <div className="guest-trial-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="guest-modal-hero-icon">🗺️</div>
+            <h2 className="guest-modal-title">
+              {t('learningPath.unlockModalTitle', 'Unlock All 8 Worlds & 40+ Lessons!')}
+            </h2>
+            <p className="guest-modal-desc">
+              {t(
+                'learningPath.unlockModalDesc',
+                'You are currently exploring Level 1 for free. Start your 3-Day Free Trial to unlock all mathematical realms, save your stars & XP, compete on the leaderboard, and earn official mastery certificates!'
+              )}
+            </p>
+            <div className="guest-modal-actions">
+              <button
+                className="guest-modal-btn-trial"
+                onClick={() => {
+                  soundEffects.playClick();
+                  navigate('/register');
+                }}
+              >
+                ⭐ {t('learningPath.startTrialBtn', 'Start 3-Day Free Trial')}
+              </button>
+              <button
+                className="guest-modal-btn-login"
+                onClick={() => {
+                  soundEffects.playClick();
+                  navigate('/login');
+                }}
+              >
+                🔑 {t('navbar.login', 'Log In')}
+              </button>
+              <button
+                className="guest-modal-btn-stay"
+                onClick={() => {
+                  soundEffects.playClick();
+                  setShowGuestTrialModal(false);
+                }}
+              >
+                🎮 {t('learningPath.keepExploring', 'Keep Exploring Level 1 (Free)')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

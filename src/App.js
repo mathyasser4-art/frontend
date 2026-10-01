@@ -88,7 +88,7 @@ const JetSkiGame = safeLazy(() => import('./pages/games/JetSkiGame'));
 const CartoonAirplanesGame = safeLazy(() => import('./pages/games/CartoonAirplanesGame'));
 const SudokuGame = safeLazy(() => import('./pages/games/SudokuGame'));
 const KenKenGame = safeLazy(() => import('./pages/games/KenKenGame'));
-const AbacusMatchGame = safeLazy(() => import('./pages/games/AbacusMatchGame'));
+
 const TanksGame = safeLazy(() => import('./pages/games/TanksGame'));
 const MinigolfGame = safeLazy(() => import('./pages/games/MinigolfGame'));
 const GamesMenu = safeLazy(() => import('./pages/studentDashboard/GamesMenu'));
@@ -101,13 +101,13 @@ const StudentCompetition = safeLazy(() => import('./pages/studentDashboard/Stude
 const TeacherQuestionBank = safeLazy(() => import('./pages/teacherDashboard/TeacherQuestionBank'));
 const LevelVisibilityManager = safeLazy(() => import('./pages/dashboardSchool/LevelVisibilityManager'));
 const Shop = safeLazy(() => import('./pages/shop/Shop'));
-const LiveAdminDashboard = safeLazy(() => import('./pages/dashboardSchool/LiveAdminDashboard'));
 const LearningPath = safeLazy(() => import('./pages/learningPath/LearningPath'));
 const JourneyHub = safeLazy(() => import('./pages/learningPath/JourneyHub'));
 
 function App() {
   const isAuth = safeLocalStorage.getItem('O_authWEB');
   const role = safeLocalStorage.getItem('auth_role');
+  const isSchoolOrOrg = role === 'School' || role === 'IT' || role === 'Organization';
   const location = useLocation();
 
   useEffect(() => {
@@ -170,18 +170,18 @@ function App() {
           <Route path='/user/info' element={<User />} />
           <Route path='/contact' element={<ContactMobile />} />
           <Route path='/question/:chapterID/:questionTypeID/:subjectID' element={<Question />} />
-          <Route path='/dashboard-school' element={isAuth && (role === 'School' || role === 'IT') ? <DashboardSchool /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/student' element={isAuth && (role === 'School' || role === 'IT') ? <Student /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/class' element={isAuth && (role === 'School' || role === 'IT' || role === 'Teacher') ? <Class /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/class/:classID/homework' element={isAuth && (role === 'School' || role === 'IT' || role === 'Teacher') ? <ClassHomework /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/subject' element={isAuth && (role === 'School' || role === 'IT') ? <Subject /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/teacher' element={isAuth && (role === 'School' || role === 'IT') ? <Teacher /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/it' element={isAuth && (role === 'School' || role === 'IT') ? <IT /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/supervisor' element={isAuth && (role === 'School' || role === 'IT') ? <Supervisor /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/chats' element={isAuth && (role === 'School' || role === 'IT') ? <ChatManagement /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/reported-questions' element={isAuth && (role === 'School' || role === 'IT') ? <ReportedQuestions /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/live' element={isAuth && (role === 'School' || role === 'IT') ? <LiveAdminDashboard /> : <Navigate to='/' />} />
-          <Route path='/dashboard-school/visibility' element={isAuth && (role === 'School' || role === 'IT') ? <LevelVisibilityManager /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school' element={isAuth && isSchoolOrOrg ? <DashboardSchool /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/student' element={isAuth && isSchoolOrOrg ? <Student /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/class' element={isAuth && (isSchoolOrOrg || role === 'Teacher') ? <Class /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/class/:classID/homework' element={isAuth && (isSchoolOrOrg || role === 'Teacher') ? <ClassHomework /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/subject' element={isAuth && isSchoolOrOrg ? <Subject /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/teacher' element={isAuth && isSchoolOrOrg ? <Teacher /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/it' element={isAuth && isSchoolOrOrg ? <IT /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/supervisor' element={isAuth && isSchoolOrOrg ? <Supervisor /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/chats' element={isAuth && isSchoolOrOrg ? <ChatManagement /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/reported-questions' element={isAuth && isSchoolOrOrg ? <ReportedQuestions /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/live' element={isAuth && isSchoolOrOrg ? <LiveAdminDashboard /> : <Navigate to='/' />} />
+          <Route path='/dashboard-school/visibility' element={isAuth && isSchoolOrOrg ? <LevelVisibilityManager /> : <Navigate to='/' />} />
 
           <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/' />} />
           <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/' />} />
@@ -205,12 +205,12 @@ function App() {
           <Route path='/student/games/airplanes' element={<CartoonAirplanesGame />} />
           <Route path='/student/games/sudoku' element={<SudokuGame />} />
           <Route path='/student/games/kenken' element={<KenKenGame />} />
-          <Route path='/student/games/abacus-match' element={<AbacusMatchGame />} />
+
           <Route path='/student/games/tanks' element={<TanksGame />} />
           <Route path='/student/games/minigolf' element={<MinigolfGame />} />
           <Route path='/student/games-menu' element={<GamesMenu />} />
-          <Route path='/student/journey-hub' element={isAuth && role === 'Student' ? <JourneyHub /> : <Navigate to='/' />} />
-          <Route path='/student/learning-path' element={isAuth && role === 'Student' ? <LearningPath /> : <Navigate to='/' />} />
+          <Route path='/student/learning-path' element={<LearningPath />} />
+          <Route path='/student/journey-hub' element={<JourneyHub />} />
           <Route path='/shop' element={isAuth ? <Shop /> : <Navigate to='/' />} />
         </Routes>
       </Suspense>

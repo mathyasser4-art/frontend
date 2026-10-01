@@ -5,18 +5,18 @@ import logo from '../../logo.png'
 import profileImg from '../../img/avatar-profile.png'
 import school from '../../img/school-avatar.png'
 import soundEffects from '../../utils/soundEffects'
+const TeacherRegistration = lazy(() => import('../teacherRegistration/TeacherRegistration'));
+const TeacherHelpModal = lazy(() => import('../teacherHelpModal/TeacherHelpModal'));
+const StudentHelpModal = lazy(() => import('../studentHelpModal/StudentHelpModal'));
+const CreateHomeworkModal = lazy(() => import('./CreateHomeworkModal'));
+const CreateCompetitionModal = lazy(() => import('./CreateCompetitionModal'));
+const TutorialVideoModal = lazy(() => import('../tutorialVideoModal/TutorialVideoModal'));
 import { safeLocalStorage } from '../../utils/safeStorage'
 import { getSchoolCompetitionEvents } from '../../api/competitionEvent/competitionEvent.api'
+import { fetchAndCacheTeacherScope } from '../../utils/teacherFilter'
 import '../../reusable.css'
 import './Navbar.css'
 import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
-
-const TeacherRegistration = lazy(() => import('../teacherRegistration/TeacherRegistration'))
-const TeacherHelpModal = lazy(() => import('../teacherHelpModal/TeacherHelpModal'))
-const StudentHelpModal = lazy(() => import('../studentHelpModal/StudentHelpModal'))
-const CreateHomeworkModal = lazy(() => import('./CreateHomeworkModal'))
-const CreateCompetitionModal = lazy(() => import('./CreateCompetitionModal'))
-const TutorialVideoModal = lazy(() => import('../tutorialVideoModal/TutorialVideoModal'))
 
 const Navbar = () => {
     const { t, i18n } = useTranslation();
@@ -26,9 +26,6 @@ const Navbar = () => {
     const schoolName = safeLocalStorage.getItem('school_name') || '';
     const userName = safeLocalStorage.getItem('pp_name') || '';
     const userRole = safeLocalStorage.getItem('auth_role') || '';
-    
-    const isTopsoroban = (schoolName.toLowerCase() === 'topsoroban') || 
-                        (userRole === 'School' && userName.toLowerCase() === 'topsoroban');
 
     const [showTeacherForm, setShowTeacherForm] = useState(false)
     const [showTeacherHelp, setShowTeacherHelp] = useState(false)
@@ -45,6 +42,7 @@ const Navbar = () => {
     // Check for unread competition events published by school for teacher accounts
     useEffect(() => {
         if (isAuth && role === 'Teacher') {
+            fetchAndCacheTeacherScope();
             getSchoolCompetitionEvents().then(res => {
                 if (res.message === 'success' && Array.isArray(res.events) && res.events.length > 0) {
                     const lastView = safeLocalStorage.getItem('teacher_last_competitions_view');
@@ -189,21 +187,21 @@ const Navbar = () => {
 
         <nav>
             <div className='nav-container d-flex justify-content-space-between align-items-center'>
-                <Link to={'/'} onClick={() => soundEffects.playClick()}><img src={isTopsoroban ? '/img/topsoroban_abacusheroes_logo.png' : logo} alt="" /></Link>
+                <Link to={'/'} onClick={() => soundEffects.playClick()}><img src={logo} alt="Egypt Schools" /></Link>
                 
                 {/* Desktop Center Links removed */}
 
                 {/* Student Centered Header Homework Button */}
                 {role === 'Student' && (
-                    <div className="student-header-hw-center" style={{ display: 'flex', alignItems: 'center' }}>
+                    <div className="student-header-hw-center" style={{ display: 'flex', gap: '10px' }}>
                         <Link to={'/dashboard/student'} onClick={() => soundEffects.playClick()}>
                             <div className="student-navbar-hw-btn">
                                 <span>📝 {t('navbar.homework', 'HOMEWORK')}</span>
                             </div>
                         </Link>
-                        <Link to={'/student/journey-hub'} onClick={() => soundEffects.playClick()}>
-                            <div className="student-navbar-hw-btn" style={{ backgroundColor: '#f59e0b', borderColor: '#d97706', marginLeft: '10px' }}>
-                                <span>🗺️ {t('navbar.adventure', 'Adventure (المغامرة)')}</span>
+                        <Link to={'/student/learning-path'} onClick={() => soundEffects.playClick()}>
+                            <div className="student-navbar-hw-btn" style={{ backgroundColor: '#f59e0b', borderColor: '#d97706' }}>
+                                <span>🗺️ {t('navbar.journey', 'Journey (الرحلة)')}</span>
                             </div>
                         </Link>
                     </div>
@@ -224,25 +222,7 @@ const Navbar = () => {
 
                 <div className={`nav-right-side d-flex align-items-center ${isAuth ? 'auth-menu' : 'unauth-menu'} ${isMobileMenuOpen ? 'mobile-open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                     <div style={{ marginRight: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        {isAuth && isTopsoroban && safeLocalStorage.getItem('trial_remaining_days') !== null && (
-                            <div style={{
-                                backgroundColor: Number(safeLocalStorage.getItem('trial_remaining_days')) <= 5 ? '#dc2626' : '#f59e0b',
-                                color: '#ffffff',
-                                padding: '5px 12px',
-                                borderRadius: '20px',
-                                fontSize: '0.82rem',
-                                fontWeight: 'bold',
-                                boxShadow: '0 2px 5px rgba(0,0,0,0.15)',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '5px',
-                                whiteSpace: 'nowrap'
-                            }}>
-                                ⏳ {i18n.language === 'ar' 
-                                    ? `تجريبي: متبقي ${safeLocalStorage.getItem('trial_remaining_days')} يوم` 
-                                    : `Trial: ${safeLocalStorage.getItem('trial_remaining_days')} days left`}
-                            </div>
-                        )}
+    
                         <div 
                             className="nav-btn" 
                             style={{ backgroundColor: '#10b981', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', gap: '5px' }}
@@ -255,7 +235,7 @@ const Navbar = () => {
                             🌐 {i18n.language === 'ar' ? 'English' : 'العربية'}
                         </div>
                     </div>
-                    {role === 'School' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
+                    {(role === 'School' || role === 'Organization') ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Teacher' ? (
                         <>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ marginRight: '10px' }}>{t('navbar.games', 'GAMES')}</div></Link>
@@ -269,7 +249,7 @@ const Navbar = () => {
                         </div>
                     ) : null}
                     
-                    {isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? (
+                    {isAuth && (role === 'Teacher' || role === 'School' || role === 'IT' || role === 'Organization') ? (
                         <div 
                             className="nav-btn create-competition-3d-btn"
                             onClick={() => { soundEffects.playClick(); setShowCreateCompetition(true); }}
@@ -382,6 +362,22 @@ const Navbar = () => {
                         </Link>
                     ) : (
                         <>
+                            <Link to={'/student/games/math-racer'} onClick={() => soundEffects.playClick()} style={{ marginRight: '10px', textDecoration: 'none' }}>
+                                <div className="nav-btn nav-btn-mathracer" style={{
+                                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                                    color: 'white',
+                                    border: 'none',
+                                    fontWeight: '800',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    boxShadow: '0 4px 12px rgba(245, 158, 11, 0.35)',
+                                    borderRadius: '10px',
+                                    padding: '8px 14px'
+                                }}>
+                                    <span>🏎️ {isArabic ? 'سباق الرياضيات (مجاناً)' : 'Math Racer (Free)'}</span>
+                                </div>
+                            </Link>
                             {SHOW_PRICING && (
                                 <Link to={'/pricing'} onClick={() => soundEffects.playClick()}>
                                     <div className="nav-btn nav-btn-join" style={{ marginRight: '15px' }}>
@@ -425,49 +421,45 @@ const Navbar = () => {
                 </div>
             </div>
             {showTeacherForm && (
-                <Suspense fallback={<div className="loader" />}> 
-                  <TeacherRegistration
-                      onClose={closeTeacherForm}
-                      onSave={handleSaveTeacher}
-                  />
+                <Suspense fallback={null}>
+                    <TeacherRegistration
+                        onClose={closeTeacherForm}
+                        onSave={handleSaveTeacher}
+                    />
                 </Suspense>
             )}
             {showTeacherHelp && (
-                <Suspense fallback={<div className="loader" />}> 
-                  <TeacherHelpModal
-                      onClose={() => setShowTeacherHelp(false)}
-                  />
-                </Suspense>
-            )}
+    <Suspense fallback={null}>
+        <TeacherHelpModal
+            onClose={() => setShowTeacherHelp(false)}
+        />
+    </Suspense>
+)}
             {showStudentHelp && (
-                <Suspense fallback={<div className="loader" />}> 
-                  <StudentHelpModal
-                      onClose={() => setShowStudentHelp(false)}
-                  />
-                </Suspense>
-            )}
+    <Suspense fallback={null}>
+        <StudentHelpModal
+            onClose={() => setShowStudentHelp(false)}
+        />
+    </Suspense>
+)}
             {showCreateHomework && (
-                <Suspense fallback={<div className="loader" />}> 
-                  <CreateHomeworkModal
-                      onClose={() => setShowCreateHomework(false)}
-                  />
+                <Suspense fallback={null}>
+                    <CreateHomeworkModal
+                        onClose={() => setShowCreateHomework(false)}
+                    />
                 </Suspense>
             )}
             {showCreateCompetition && (
-                <Suspense fallback={<div className="loader" />}> 
-                  <CreateCompetitionModal
-                      onClose={() => setShowCreateCompetition(false)}
-                  />
-                </Suspense>
+                <CreateCompetitionModal
+                    onClose={() => setShowCreateCompetition(false)}
+                />
             )}
             {showTutorialVideo && (
-                <Suspense fallback={<div className="loader" />}> 
-                  <TutorialVideoModal
-                      isOpen={showTutorialVideo}
-                      onClose={() => setShowTutorialVideo(false)}
-                      role={tutorialRole}
-                  />
-                </Suspense>
+                <TutorialVideoModal
+                    isOpen={showTutorialVideo}
+                    onClose={() => setShowTutorialVideo(false)}
+                    role={tutorialRole}
+                />
             )}
 
             {/* Premium real-time student overlay battle thinking bubble notification */}
