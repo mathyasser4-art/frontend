@@ -20,7 +20,7 @@ const register = (userData, setError, setLoading, navigate) => {
                     // Crucial: Set auth token so entire app recognizes user as authenticated
                     safeLocalStorage.setItem('O_authWEB', responseJson.userToken);
 
-                    const assignedRole = (responseJson.role === 'Teacher' || userData.role === 'Teacher') ? 'Teacher' : 'Student';
+                    const assignedRole = userData.role || responseJson.role || 'Student';
                     safeLocalStorage.setItem('auth_role', assignedRole);
                     safeLocalStorage.setItem('pp_name', responseJson.userName || userData.userName);
                     if (responseJson.userID) {
