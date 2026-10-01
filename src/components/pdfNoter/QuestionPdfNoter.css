@@ -1,0 +1,487 @@
+/* Question PDF Noter Modal & Canvas Styles */
+
+.pdf-noter-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 15, 29, 0.88);
+  backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: noterFadeIn 0.2s ease-out;
+}
+
+@keyframes noterFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.pdf-noter-container {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  width: 95vw;
+  max-width: 1100px;
+  height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Header & Toolbar */
+.pdf-noter-header {
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pdf-noter-title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pdf-noter-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 750;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pdf-noter-badge {
+  background: #1e3a8a;
+  color: #93c5fd;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* Toolbar Controls */
+.pdf-noter-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pdf-tool-group {
+  display: flex;
+  align-items: center;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.pdf-tool-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.pdf-tool-btn:hover {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.pdf-tool-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.4);
+}
+
+/* Color Picker Row */
+.pdf-color-swatches {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 4px;
+}
+
+.pdf-color-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.pdf-color-dot:hover {
+  transform: scale(1.2);
+}
+
+.pdf-color-dot.active {
+  transform: scale(1.25);
+  border-color: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+.pdf-color-native-input {
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+}
+
+/* Width selector */
+.pdf-width-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdf-width-btn.active {
+  background: #334155;
+  color: #38bdf8;
+}
+
+/* Canvas & Workspace Body */
+.pdf-noter-body {
+  flex: 1;
+  position: relative;
+  overflow-y: auto;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.pdf-noter-workspace {
+  position: relative;
+  width: 100%;
+  min-height: 850px;
+  padding: 30px 40px 100px 40px;
+  box-sizing: border-box;
+  background: #ffffff;
+  user-select: none;
+}
+
+/* Question Content inside white paper */
+.pdf-noter-question-content {
+  pointer-events: none; /* Let canvas capture draw events */
+}
+
+.pdf-noter-q-header {
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pdf-noter-q-num {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e3a8a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pdf-noter-q-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #0f172a;
+  margin-bottom: 16px;
+  overflow: visible !important;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.pdf-noter-q-text .katex,
+.pdf-noter-q-text span.katex {
+  overflow: visible !important;
+}
+
+.pdf-noter-q-pic {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.pdf-noter-q-pic img {
+  max-width: 90%;
+  max-height: 320px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+.pdf-noter-choices-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.pdf-noter-choice-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13.5px;
+  color: #1e293b;
+}
+
+.pdf-noter-choice-letter {
+  font-weight: 800;
+  color: #2563eb;
+  background: #e0e7ff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.pdf-noter-whiteboard-area {
+  min-height: 440px;
+  margin-top: 24px;
+  border: 2px dashed #94a3b8;
+  border-radius: 12px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.pdf-noter-whiteboard-guide {
+  width: 100%;
+  border-bottom: 1px dashed #cbd5e1;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Layered Drawing Canvas - Stylus / Pen Cursor */
+.pdf-drawing-canvas,
+.pdf-drawing-canvas.tool-pen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cfilter id='s' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeDropShadow dx='1' dy='1' stdDeviation='0.8' flood-color='rgba(0,0,0,0.6)'/%3E%3C/filter%3E%3C/defs%3E%3Cg filter='url(%23s)'%3E%3Cpath d='M25.5 3.5 C27 5 27 7.5 25.5 9 L12.5 22 L4 28 L10 19.5 L23 6.5 C24 5.5 24.5 4.5 25.5 3.5 Z' fill='%230f172a' stroke='%23ffffff' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpolygon points='4,28 6,22 10,26' fill='%2338bdf8'/%3E%3Cline x1='11' y1='18' x2='15' y2='22' stroke='%2338bdf8' stroke-width='1.5'/%3E%3Ccircle cx='3' cy='29' r='1.2' fill='%23000000' stroke='%23ffffff' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E") 3 29, crosshair !important;
+  z-index: 10;
+  touch-action: none;
+}
+
+.pdf-drawing-canvas.tool-eraser {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cdefs%3E%3Cfilter id='es' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeDropShadow dx='1' dy='1' stdDeviation='0.8' flood-color='rgba(0,0,0,0.5)'/%3E%3C/filter%3E%3C/defs%3E%3Cg filter='url(%23es)'%3E%3Cpath d='M18 4L24 10L10 24H4V18L18 4Z' fill='%23f43f5e' stroke='%23ffffff' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M8 20L4 24H10L14 20Z' fill='%23cbd5e1' stroke='%23ffffff' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E") 4 24, cell !important;
+}
+
+.pdf-drawing-canvas.tool-line,
+.pdf-drawing-canvas.tool-arrow,
+.pdf-drawing-canvas.tool-rect,
+.pdf-drawing-canvas.tool-circle {
+  cursor: crosshair;
+}
+
+/* Footer Action Bar */
+.pdf-noter-footer {
+  background: #1e293b;
+  border-top: 1px solid #334155;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pdf-footer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pdf-footer-btn-primary {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.pdf-footer-btn-primary:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+.pdf-footer-btn-screenshot {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+}
+
+.pdf-footer-btn-screenshot:hover {
+  background: linear-gradient(135deg, #0369a1, #075985);
+}
+
+.pdf-footer-btn-secondary {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.pdf-footer-btn-secondary:hover {
+  background: #475569;
+}
+
+.pdf-footer-btn-amber {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Saved Notes Box Drawer / Modal */
+.notes-box-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 15, 29, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: noterFadeIn 0.2s ease-out;
+}
+
+.notes-box-content {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  width: 90vw;
+  max-width: 850px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+.notes-box-header {
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notes-box-grid {
+  padding: 18px 20px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  max-height: 55vh;
+}
+
+.notes-box-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.notes-box-card:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+}
+
+.notes-box-thumb {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  background: #ffffff;
+  border-bottom: 1px solid #334155;
+}
+
+.notes-box-info {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notes-box-footer {
+  background: #1e293b;
+  border-top: 1px solid #334155;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.whatsapp-share-btn {
+  background: #25D366 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(37, 211, 102, 0.35) !important;
+}
+
+.whatsapp-share-btn:hover {
+  background: #1da851 !important;
+}

@@ -1,0 +1,244 @@
+/* ── MathQuill Editor & Renderer Styles ── */
+
+/* ── Editor Container ── */
+.mq-editor-container {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+    transition: border-color 0.2s;
+}
+
+.mq-editor-container:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* ── Toolbar ── */
+.mq-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 8px 10px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.mq-toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Times New Roman', serif;
+}
+
+.mq-toolbar-btn:hover {
+    background: #6366f1;
+    color: #ffffff;
+    border-color: #6366f1;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+}
+
+.mq-toolbar-btn:active {
+    transform: translateY(0);
+}
+
+.mq-preview-toggle.active {
+    background: #6366f1;
+    color: #ffffff;
+    border-color: #6366f1;
+}
+
+/* ── Textarea ── */
+.mq-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    outline: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    background: #ffffff;
+    color: #1e293b;
+    box-sizing: border-box;
+}
+
+.mq-textarea::placeholder {
+    color: #94a3b8;
+}
+
+/* ── Live Preview ── */
+.mq-live-preview {
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+    border-top: 1px dashed #d1d5db;
+}
+
+.mq-preview-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #92400e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.mq-preview-content {
+    font-size: 20px;
+    color: #1e293b;
+    padding: 8px 0;
+    line-height: 1.8;
+}
+
+/* ── Renderer Styles (used in both preview and question display) ── */
+.mq-renderer, .mq-renderer-plain {
+    display: inline;
+    font-family: 'Times New Roman', 'STIX Two Math', Georgia, serif;
+}
+
+.mq-renderer-plain {
+    white-space: pre-wrap;
+}
+
+/* Fraction */
+.mq-fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 3px;
+    text-align: center;
+}
+
+.mq-numerator {
+    padding: 0 4px 2px;
+    font-size: 0.85em;
+    line-height: 1.2;
+}
+
+.mq-fraction-bar {
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    min-width: 20px;
+}
+
+.mq-denominator {
+    padding: 2px 4px 0;
+    font-size: 0.85em;
+    line-height: 1.2;
+}
+
+/* Square Root */
+.mq-sqrt {
+    display: inline-flex;
+    align-items: flex-start;
+    vertical-align: middle;
+}
+
+.mq-sqrt-symbol {
+    font-size: 1.2em;
+    line-height: 1;
+    margin-right: 1px;
+}
+
+.mq-sqrt-content {
+    border-top: 1.5px solid currentColor;
+    padding: 0 3px;
+    margin-top: 2px;
+}
+
+/* Superscript & Subscript */
+.mq-sup {
+    font-size: 0.7em;
+    vertical-align: super;
+    line-height: 1;
+}
+
+.mq-sub {
+    font-size: 0.7em;
+    vertical-align: sub;
+    line-height: 1;
+}
+
+/* Text mode */
+.mq-text {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-style: normal;
+}
+
+/* ── Question Display Integration ── */
+.question-math-display {
+    font-size: 1.4rem;
+    line-height: 2;
+    text-align: center;
+    padding: 16px;
+    color: #1e293b;
+}
+
+.question-math-display .mq-fraction {
+    font-size: 1.1em;
+}
+
+/* RTL Support */
+[dir="rtl"] .mq-editor-container,
+.rtl-mode .mq-editor-container {
+    direction: ltr; /* Math is always LTR */
+}
+
+[dir="rtl"] .mq-toolbar,
+.rtl-mode .mq-toolbar {
+    direction: ltr;
+}
+
+/* ── Large Display Mode (for exam/assignment view) ── */
+.mq-display-large .mq-renderer {
+    font-size: 1.6rem;
+}
+
+.mq-display-large .mq-fraction {
+    margin: 0 6px;
+}
+
+.mq-display-large .mq-numerator,
+.mq-display-large .mq-denominator {
+    padding: 2px 6px;
+    font-size: 0.9em;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .mq-toolbar {
+        gap: 3px;
+        padding: 6px 8px;
+    }
+
+    .mq-toolbar-btn {
+        min-width: 28px;
+        height: 28px;
+        font-size: 12px;
+        padding: 0 5px;
+    }
+
+    .mq-textarea {
+        font-size: 13px;
+        padding: 10px;
+    }
+
+    .mq-preview-content {
+        font-size: 16px;
+    }
+}
