@@ -40,6 +40,10 @@ function VipManager() {
     const [recentUsers, setRecentUsers] = useState([]);
     const [recentLoading, setRecentLoading] = useState(false);
 
+    // Platform-wide Live Stats
+    const [stats, setStats] = useState(null);
+    const [statsLoading, setStatsLoading] = useState(false);
+
     // Verify PIN on enter
     const handleLogin = (e) => {
         if (e) e.preventDefault();
@@ -61,12 +65,34 @@ function VipManager() {
         }
     }, [pin]);
 
-    // Fetch recent users when switching to 'recent' tab
+    // Fetch stats & recent users when authenticated
     useEffect(() => {
-        if (isAuthenticated && activeTab === 'recent') {
-            fetchRecentUsers();
+        if (isAuthenticated) {
+            fetchStats();
+            if (activeTab === 'recent') {
+                fetchRecentUsers();
+            }
         }
     }, [isAuthenticated, activeTab]);
+
+    const fetchStats = async () => {
+        setStatsLoading(true);
+        try {
+            const res = await fetch(`${API_BASE_URL}/user/vip/stats`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin })
+            });
+            const data = await res.json();
+            if (data.message === 'success') {
+                setStats(data.stats);
+            }
+        } catch (err) {
+            console.error('Failed to load stats', err);
+        } finally {
+            setStatsLoading(false);
+        }
+    };
 
     const fetchRecentUsers = async () => {
         setRecentLoading(true);
@@ -258,6 +284,40 @@ function VipManager() {
                         {isArabic ? 'خروج 🔒' : 'Lock 🔒'}
                     </button>
                 </header>
+
+                {/* Real-time Platform Stats Banner */}
+                {stats && (
+                    <div className="vip-stats-banner">
+                        <div className="vip-stat-card vip-stat-paid">
+                            <span className="vip-stat-icon">👑</span>
+                            <div className="vip-stat-info">
+                                <span className="vip-stat-num">{stats.paidUsers?.toLocaleString()}</span>
+                                <span className="vip-stat-label">{isArabic ? 'حساب مفتوح مدفوع (VIP)' : 'Paid VIP Unlocked'}</span>
+                            </div>
+                        </div>
+                        <div className="vip-stat-card vip-stat-trial">
+                            <span className="vip-stat-icon">⚡</span>
+                            <div className="vip-stat-info">
+                                <span className="vip-stat-num">{stats.activeTrialUsers}</span>
+                                <span className="vip-stat-label">{isArabic ? 'في التجربة المجانية' : 'Active Trial'}</span>
+                            </div>
+                        </div>
+                        <div className="vip-stat-card vip-stat-locked">
+                            <span className="vip-stat-icon">🔒</span>
+                            <div className="vip-stat-info">
+                                <span className="vip-stat-num">{stats.expiredTrialUsers?.toLocaleString()}</span>
+                                <span className="vip-stat-label">{isArabic ? 'حساب مقفل (انتهت التجربة)' : 'Locked (Trial Ended)'}</span>
+                            </div>
+                        </div>
+                        <div className="vip-stat-card vip-stat-total">
+                            <span className="vip-stat-icon">👥</span>
+                            <div className="vip-stat-info">
+                                <span className="vip-stat-num">{stats.totalUsers?.toLocaleString()}</span>
+                                <span className="vip-stat-label">{isArabic ? 'إجمالي الحسابات المسجلة' : 'Total Registered'}</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Tab Navigation */}
                 <nav className="vip-tabs-bar">

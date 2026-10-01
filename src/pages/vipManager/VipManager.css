@@ -608,3 +608,85 @@
         width: 100%;
     }
 }
+
+/* ── VIP STATS BANNER ── */
+.vip-stats-banner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.vip-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vip-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.vip-stat-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.vip-stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.vip-stat-num {
+    font-size: 1.6rem;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #ffffff;
+}
+
+.vip-stat-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.vip-stat-paid {
+    border-color: rgba(234, 179, 8, 0.3);
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.12) 0%, rgba(30, 41, 59, 0.8) 100%);
+}
+.vip-stat-paid .vip-stat-num {
+    color: #facc15;
+}
+
+.vip-stat-trial {
+    border-color: rgba(59, 130, 246, 0.3);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(30, 41, 59, 0.8) 100%);
+}
+.vip-stat-trial .vip-stat-num {
+    color: #60a5fa;
+}
+
+.vip-stat-locked {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(30, 41, 59, 0.8) 100%);
+}
+.vip-stat-locked .vip-stat-num {
+    color: #f87171;
+}
+
+.vip-stat-total {
+    border-color: rgba(168, 85, 247, 0.3);
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(30, 41, 59, 0.8) 100%);
+}
+.vip-stat-total .vip-stat-num {
+    color: #c084fc;
+}
+
