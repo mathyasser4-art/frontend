@@ -36,6 +36,7 @@ function Footer() {
             <li><Link to="/about">{t('footer.aboutUs', 'About Us')}</Link></li>
             <li><Link to="/contact">{t('navbar.contact', 'Contact')}</Link></li>
             <li><Link to="/privacy">{t('footer.privacyPolicy', 'Privacy Policy')}</Link></li>
+            <li><Link to="/vip" style={{ opacity: 0.65 }}>👑 VIP Manager</Link></li>
           </ul>
         </div>
       </div>

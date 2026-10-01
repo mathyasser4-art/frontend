@@ -31,8 +31,8 @@ function SubscriptionLockModal() {
         // Admin accounts are exempt
         if (role === 'Admin') return false;
 
-        // Exclude pricing and auth pages so users can browse plans, log in, or sign up
-        const exemptPaths = ['/pricing', '/auth/login', '/auth/register'];
+        // Exclude pricing, auth pages, and VIP manager so admin can access
+        const exemptPaths = ['/pricing', '/auth/login', '/auth/register', '/vip', '/vip-manager'];
         if (exemptPaths.includes(location.pathname)) return false;
 
         // Paid accounts are exempt
