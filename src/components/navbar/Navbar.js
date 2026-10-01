@@ -5,21 +5,23 @@ import logo from '../../logo.png'
 import profileImg from '../../img/avatar-profile.png'
 import school from '../../img/school-avatar.png'
 import soundEffects from '../../utils/soundEffects'
+import { safeLocalStorage } from '../../utils/safeStorage'
+import { getSchoolCompetitionEvents } from '../../api/competitionEvent/competitionEvent.api'
+import { fetchAndCacheTeacherScope } from '../../utils/teacherFilter'
+import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
+import '../../reusable.css'
+import './Navbar.css'
+
 const TeacherRegistration = lazy(() => import('../teacherRegistration/TeacherRegistration'));
 const TeacherHelpModal = lazy(() => import('../teacherHelpModal/TeacherHelpModal'));
 const StudentHelpModal = lazy(() => import('../studentHelpModal/StudentHelpModal'));
 const CreateHomeworkModal = lazy(() => import('./CreateHomeworkModal'));
 const CreateCompetitionModal = lazy(() => import('./CreateCompetitionModal'));
 const TutorialVideoModal = lazy(() => import('../tutorialVideoModal/TutorialVideoModal'));
-import { safeLocalStorage } from '../../utils/safeStorage'
-import { getSchoolCompetitionEvents } from '../../api/competitionEvent/competitionEvent.api'
-import { fetchAndCacheTeacherScope } from '../../utils/teacherFilter'
-import '../../reusable.css'
-import './Navbar.css'
-import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
 
 const Navbar = () => {
     const { t, i18n } = useTranslation();
+    const isArabic = i18n.language === 'ar';
     const navigate = useNavigate();
     const isAuth = safeLocalStorage.getItem('O_authWEB')
     const role = safeLocalStorage.getItem('auth_role')

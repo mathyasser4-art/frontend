@@ -493,7 +493,6 @@ function Home() {
           </div>
         </div>
       </div>
-      </div>
 
       <TutorialVideoModal isOpen={showTutorialModal} onClose={() => setShowTutorialModal(false)} />
       {showTeacherTrialModal && <TeacherTrialModal onClose={() => setShowTeacherTrialModal(false)} />}

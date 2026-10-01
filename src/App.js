@@ -100,6 +100,7 @@ const UpcomingCompetitionsHub = safeLazy(() => import('./pages/teacherDashboard/
 const StudentCompetition = safeLazy(() => import('./pages/studentDashboard/StudentCompetition'));
 const TeacherQuestionBank = safeLazy(() => import('./pages/teacherDashboard/TeacherQuestionBank'));
 const LevelVisibilityManager = safeLazy(() => import('./pages/dashboardSchool/LevelVisibilityManager'));
+const LiveAdminDashboard = safeLazy(() => import('./pages/dashboardSchool/LiveAdminDashboard'));
 const Shop = safeLazy(() => import('./pages/shop/Shop'));
 const LearningPath = safeLazy(() => import('./pages/learningPath/LearningPath'));
 const JourneyHub = safeLazy(() => import('./pages/learningPath/JourneyHub'));
