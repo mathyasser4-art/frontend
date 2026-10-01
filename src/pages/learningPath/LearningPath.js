@@ -362,11 +362,11 @@ const LearningPath = () => {
         // Fallback below
       }
     }
-    // Guest or default fallback: Grade 4 Mathematics (School Book)
+    // Guest or default fallback: Level 1 - Mental Math & Soroban (+- from 1 to 9 Ones)
     const defaultSubject = {
-      subjectId: '6aac4579568208683c425dbb',
-      subjectName: 'Mathematics (School Book)',
-      systemName: 'Grade 4'
+      subjectId: '69e1d6413b0cd13f2150883a',
+      subjectName: '+- from 1 to 9 (Ones)',
+      systemName: 'Level 1'
     };
     setSavedSubjectId(defaultSubject.subjectId);
     setSavedSubjectName(defaultSubject.subjectName);

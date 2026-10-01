@@ -218,11 +218,11 @@ function Home() {
                       <div className="journey-header-left">
                         <span className="journey-map-icon">🗺️</span>
                         <div>
-                          <h3 className="journey-header-title">THE LEARNING JOURNEY</h3>
-                          <span className="journey-header-sub">Wumpa Archipelago • Grade 4 Math</span>
+                          <h3 className="journey-header-title">{isArabic ? 'رحلة أبطال العداد' : 'THE LEARNING JOURNEY'}</h3>
+                          <span className="journey-header-sub">{isArabic ? 'جزر الأباكس • مغامرة الحساب الذهني' : 'Abacus Archipelago • Mental Math Quest'}</span>
                         </div>
                       </div>
-                      <span className="journey-level1-free-pill">🔓 LEVEL 1 UNLOCKED</span>
+                      <span className="journey-level1-free-pill">🔓 {isArabic ? 'المستوى 1 مجاناً' : 'LEVEL 1 UNLOCKED'}</span>
                     </div>
 
                     <div className="journey-map-canvas-preview">
@@ -240,9 +240,9 @@ function Home() {
                           <span className="node-num">1</span>
                         </div>
                         <div className="node-label-popup">
-                          <span className="node-unit-tag">🌿 Unit 1</span>
-                          <span className="node-title">Lesson 1: Big Numbers</span>
-                          <span className="node-badge-free">✓ FREE TO PLAY</span>
+                          <span className="node-unit-tag">{isArabic ? '🧮 المستوى 1' : '🧮 Level 1'}</span>
+                          <span className="node-title">{isArabic ? 'الجمع المباشر على العداد' : 'Direct Addition & Beads'}</span>
+                          <span className="node-badge-free">{isArabic ? '✓ متاح مجاناً' : '✓ FREE TO PLAY'}</span>
                         </div>
                       </div>
 
@@ -253,9 +253,9 @@ function Home() {
                           <span className="node-num">2</span>
                         </div>
                         <div className="node-label-popup">
-                          <span className="node-unit-tag">🌿 Unit 1</span>
-                          <span className="node-title">Lesson 2: Place Values</span>
-                          <span className="node-badge-free">✓ FREE TO PLAY</span>
+                          <span className="node-unit-tag">{isArabic ? '🧮 المستوى 1' : '🧮 Level 1'}</span>
+                          <span className="node-title">{isArabic ? 'الطرح المباشر البسيط' : 'Direct Subtraction'}</span>
+                          <span className="node-badge-free">{isArabic ? '✓ متاح مجاناً' : '✓ FREE TO PLAY'}</span>
                         </div>
                       </div>
 
@@ -265,7 +265,8 @@ function Home() {
                           <span className="node-lock">🔒</span>
                         </div>
                         <div className="node-label-popup">
-                          <span className="node-unit-tag">🌿 Lesson 3</span>
+                          <span className="node-unit-tag">{isArabic ? '🌟 أصدقاء 5' : '🌟 Small Friends'}</span>
+                          <span className="node-title">{isArabic ? 'قاعدة (+5) المساعد الصغير' : 'Small Friends (+5 Rule)'}</span>
                           <span className="node-badge-trial">3-DAY TRIAL</span>
                         </div>
                       </div>
@@ -276,7 +277,8 @@ function Home() {
                           <span className="node-lock">🔒</span>
                         </div>
                         <div className="node-label-popup">
-                          <span className="node-unit-tag">☀️ Unit 2</span>
+                          <span className="node-unit-tag">{isArabic ? '⚡ أصدقاء 10' : '⚡ Big Friends'}</span>
+                          <span className="node-title">{isArabic ? 'قاعدة (+10) المساعد الكبير' : 'Big Friends (+10 Rule)'}</span>
                           <span className="node-badge-trial">3-DAY TRIAL</span>
                         </div>
                       </div>
@@ -397,7 +399,7 @@ function Home() {
                 <div className="journey-preview-card mobile-journey-card">
                   <div className="journey-card-header">
                     <span className="journey-map-icon">🗺️</span>
-                    <span className="journey-header-title">JOURNEY: LEVEL 1 UNLOCKED</span>
+                    <span className="journey-header-title">{isArabic ? 'رحلة الأبطال: المستوى 1 مجاناً' : 'JOURNEY: LEVEL 1 UNLOCKED'}</span>
                   </div>
                   <div className="journey-map-canvas-preview">
                     <img src="/img/adventure_map_bg.jpg" alt="Journey Map" className="journey-preview-bg" />
