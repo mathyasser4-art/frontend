@@ -39,7 +39,8 @@ const GAME_PREVIEWS = [
 ]
 
 function Home() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const isArabic = i18n.language === 'ar'
   const role = safeLocalStorage.getItem('auth_role')
   const navigate = useNavigate()
   const [showTutorialModal, setShowTutorialModal] = useState(false)
