@@ -1335,6 +1335,24 @@
   color: #475569;
 }
 
+/* Score Percentage Pill on Completed Nodes */
+.portal-score-pill {
+  position: absolute;
+  bottom: -11px;
+  background: rgba(15, 23, 42, 0.94);
+  border: 1.5px solid rgba(251, 191, 36, 0.7);
+  color: #fef08a;
+  font-size: 0.62rem;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.75), 0 0 8px rgba(251, 191, 36, 0.4);
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  z-index: 5;
+  pointer-events: none;
+}
+
 /* Portal Label Tag on Hover */
 .portal-label-tag {
   position: absolute;
@@ -1354,6 +1372,26 @@
   transition: all 0.2s ease-out;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
   z-index: 50;
+  gap: 2px;
+}
+
+.portal-label-tag .tag-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.portal-label-tag .tag-score-pill {
+  font-size: 0.62rem;
+  font-weight: 900;
+  color: #fef08a;
+  background: rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(251, 191, 36, 0.6);
+  padding: 1px 5px;
+  border-radius: 9999px;
+  white-space: nowrap;
 }
 
 .portal-label-tag .tag-index {
@@ -1461,25 +1499,90 @@
   100% { transform: scale(1.2); opacity: 1; }
 }
 
-/* Ready Beacon Arrow Above Head */
+/* Ready Beacon & Floating Score Pill Above Mascot Head */
 .hero-ready-beacon {
   position: absolute;
-  top: -24px;
-  z-index: 4;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  z-index: 10;
+  pointer-events: none;
+  animation: beaconBounce 1.8s ease-in-out infinite;
+}
+
+.hero-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  border: 1.5px solid transparent;
+}
+
+.hero-score-pill.score-mastered {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(180, 83, 9, 0.95));
+  border-color: #fef08a !important;
+  color: #fffbeb;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 14px rgba(245, 158, 11, 0.6);
+}
+
+.hero-score-pill.score-excellent {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(4, 120, 87, 0.95));
+  border-color: #6ee7b7 !important;
+  color: #ecfdf5;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 14px rgba(16, 185, 129, 0.6);
+}
+
+.hero-score-pill.score-passed {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(14, 116, 144, 0.95));
+  border-color: #67e8f9 !important;
+  color: #ecfeff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 14px rgba(6, 182, 212, 0.6);
+}
+
+.hero-score-pill.score-replay {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.95), rgba(194, 65, 12, 0.95));
+  border-color: #fed7aa !important;
+  color: #fff7ed;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 14px rgba(249, 115, 22, 0.6);
+}
+
+.hero-score-pill.score-ready {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.95), rgba(3, 105, 161, 0.95));
+  border-color: #7dd3fc !important;
+  color: #f0f9ff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 14px rgba(14, 165, 233, 0.6);
+}
+
+.hero-score-pill .hero-score-icon {
+  font-size: 0.8rem;
+  line-height: 1;
 }
 
 .beacon-bounce {
   display: block;
   color: #fef08a;
-  font-size: 1.3rem;
+  font-size: 0.95rem;
   font-weight: 900;
-  text-shadow: 0 0 10px #fbbf24, 0 3px 6px rgba(0, 0, 0, 0.7);
-  animation: beaconBounce 1.2s ease-in-out infinite;
+  line-height: 0.8;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+  margin-top: -2px;
 }
 
 @keyframes beaconBounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 
 /* Cartoon Speech Bubble */
@@ -1582,8 +1685,9 @@
 .card-meta-row {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.65rem;
   margin-top: 0.2rem;
+  flex-wrap: wrap;
 }
 
 .card-stars-display {
@@ -1600,6 +1704,68 @@
 .card-star.empty {
   color: #475569;
 }
+
+/* Card High Score Pill */
+.card-highscore-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(15, 23, 42, 0.75);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  white-space: nowrap;
+}
+
+.card-highscore-badge .highscore-icon {
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.card-highscore-badge .highscore-lbl {
+  font-size: 0.62rem;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.card-highscore-badge .highscore-val {
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.card-highscore-badge.score-mastered {
+  border-color: rgba(251, 191, 36, 0.75);
+  background: rgba(180, 83, 9, 0.35);
+}
+.card-highscore-badge.score-mastered .highscore-val { color: #fde047; }
+
+.card-highscore-badge.score-excellent {
+  border-color: rgba(16, 185, 129, 0.75);
+  background: rgba(5, 150, 105, 0.35);
+}
+.card-highscore-badge.score-excellent .highscore-val { color: #6ee7b7; }
+
+.card-highscore-badge.score-passed {
+  border-color: rgba(6, 182, 212, 0.75);
+  background: rgba(8, 145, 178, 0.35);
+}
+.card-highscore-badge.score-passed .highscore-val { color: #67e8f9; }
+
+.card-highscore-badge.score-replay {
+  border-color: rgba(249, 115, 22, 0.75);
+  background: rgba(234, 88, 12, 0.35);
+}
+.card-highscore-badge.score-replay .highscore-val { color: #fed7aa; }
+
+.card-highscore-badge.score-ready {
+  border-color: rgba(56, 189, 248, 0.75);
+  background: rgba(2, 132, 199, 0.35);
+}
+.card-highscore-badge.score-ready .highscore-val { color: #7dd3fc; }
 
 .card-status-text {
   font-size: 0.85rem;
@@ -2244,8 +2410,22 @@
   }
 
   .card-meta-row {
-    gap: 0.4rem !important;
+    gap: 0.35rem !important;
     margin-top: 0.1rem !important;
+  }
+
+  .hero-score-pill {
+    padding: 2px 7px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .card-highscore-badge {
+    padding: 1px 6px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .card-highscore-badge .highscore-lbl {
+    display: none !important;
   }
 
   .card-stars-display {

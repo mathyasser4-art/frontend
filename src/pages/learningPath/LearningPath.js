@@ -283,6 +283,55 @@ export function detectSubjectWorld(subjectName) {
 }
 
 
+export function getScoreTierData(score, status, isArabic) {
+  if (status === 'locked') {
+    return {
+      text: isArabic ? 'مقفل' : 'Locked',
+      icon: '🔒',
+      colorClass: 'score-locked',
+      accentColor: '#94a3b8',
+    };
+  }
+  if (!score || score <= 0) {
+    return {
+      text: isArabic ? 'جاهز' : 'Ready',
+      icon: '✨',
+      colorClass: 'score-ready',
+      accentColor: '#38bdf8',
+    };
+  }
+  if (score >= 100) {
+    return {
+      text: '100%',
+      icon: '🏆',
+      colorClass: 'score-mastered',
+      accentColor: '#fbbf24',
+    };
+  }
+  if (score >= 85) {
+    return {
+      text: `${score}%`,
+      icon: '⭐',
+      colorClass: 'score-excellent',
+      accentColor: '#10b981',
+    };
+  }
+  if (score >= 70) {
+    return {
+      text: `${score}%`,
+      icon: '🎯',
+      colorClass: 'score-passed',
+      accentColor: '#06b6d4',
+    };
+  }
+  return {
+    text: `${score}%`,
+    icon: '⚡',
+    colorClass: 'score-replay',
+    accentColor: '#f97316',
+  };
+}
+
 const LearningPath = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -504,6 +553,11 @@ const LearningPath = () => {
 
   // Active stage node that the character is currently standing on
   const currentStage = mappedStages[characterIndex] || mappedStages[0];
+
+  // Active stage score tier calculation for floating beacon & HUD
+  const currentScoreTier = useMemo(() => {
+    return getScoreTierData(currentStage?.score || 0, currentStage?.status || 'locked', isArabic);
+  }, [currentStage?.score, currentStage?.status, isArabic]);
 
   // ── Play sound helper ──
   const playSfx = useCallback((type) => {
@@ -936,12 +990,19 @@ const LearningPath = () => {
                     borderLeftColor: stage.unitTheme.color,
                   }}
                 >
-                  <span
-                    className="tag-index"
-                    style={{ color: stage.unitTheme.color }}
-                  >
-                    {stage.unitTheme.icon} Lesson {stage.chapterIndex + 1}
-                  </span>
+                  <div className="tag-header-row">
+                    <span
+                      className="tag-index"
+                      style={{ color: stage.unitTheme.color }}
+                    >
+                      {stage.unitTheme.icon} Lesson {stage.chapterIndex + 1}
+                    </span>
+                    {stage.score > 0 && (
+                      <span className="tag-score-pill">
+                        {stage.score === 100 ? '🏆 100%' : `🎯 ${stage.score}%`}
+                      </span>
+                    )}
+                  </div>
                   <span className="tag-name">{stage.chapterName}</span>
                 </div>
               </div>
@@ -985,11 +1046,22 @@ const LearningPath = () => {
                 />
               </div>
 
-              {/* Ready Indicator Above Head */}
+              {/* Ready / Highest Score Floating Pill Above Mascot Head */}
               <div className="hero-ready-beacon">
+                <div 
+                  className={`hero-score-pill ${currentScoreTier.colorClass}`}
+                  style={{
+                    borderColor: currentScoreTier.accentColor,
+                  }}
+                >
+                  <span className="hero-score-icon">{currentScoreTier.icon}</span>
+                  <span className="hero-score-val">
+                    {currentStage?.score > 0 ? `${currentStage.score}%` : currentScoreTier.text}
+                  </span>
+                </div>
                 <span
                   className="beacon-bounce"
-                  style={{ color: currentStage.unitTheme.accentBorder }}
+                  style={{ color: currentScoreTier.accentColor }}
                 >
                   ▼
                 </span>
@@ -1042,6 +1114,19 @@ const LearningPath = () => {
                   </span>
                 ))}
               </div>
+
+              {/* Best Score Percentage Pill in HUD */}
+              <div 
+                className={`card-highscore-badge ${currentScoreTier.colorClass}`}
+                title={isArabic ? 'أعلى نسبة تم تحقيقها في هذا الدرس' : 'Highest score achieved on this lesson'}
+              >
+                <span className="highscore-icon">{currentScoreTier.icon}</span>
+                <span className="highscore-lbl">{isArabic ? 'النتيجة:' : 'BEST:'}</span>
+                <span className="highscore-val" style={{ color: currentScoreTier.accentColor }}>
+                  {currentStage?.score > 0 ? `${currentStage.score}%` : (isArabic ? 'غير ملعوب' : 'Not Played')}
+                </span>
+              </div>
+
               <span
                 className="card-status-text"
                 style={{
@@ -1054,10 +1139,10 @@ const LearningPath = () => {
                 }}
               >
                 {currentStage?.status === 'completed'
-                  ? '🏆 Completed'
+                  ? (isArabic ? '🏆 مكتمل' : '🏆 Completed')
                   : currentStage?.status === 'current'
-                  ? '✨ Ready to Play'
-                  : '🔒 Locked'}
+                  ? (isArabic ? '✨ جاهز للبدء' : '✨ Ready to Play')
+                  : (isArabic ? '🔒 مقفل' : '🔒 Locked')}
               </span>
             </div>
           </div>
