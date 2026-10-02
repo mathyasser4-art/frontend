@@ -39,8 +39,7 @@ const GAME_PREVIEWS = [
 ]
 
 function Home() {
-  const { t, i18n } = useTranslation()
-  const isArabic = i18n.language === 'ar'
+  const { t } = useTranslation()
   const role = safeLocalStorage.getItem('auth_role')
   const isAuth = Boolean(safeLocalStorage.getItem('O_authWEB'))
   const navigate = useNavigate()
@@ -152,7 +151,7 @@ function Home() {
                       <h1 className="text-red">{t('home.studentTitle3', 'Level 1 Free to Play!')}</h1>
                     </div>
                     <div className="home-paragraph">
-                      <p>{t('home.studentDesc1', 'Embark on the Archipelago math adventure & race in turbo Math Racer.')}</p>
+                      <p>{t('home.studentDesc1', 'Embark on the Wumpa Island math adventure & race in turbo Math Racer.')}</p>
                       <p>{t('home.studentDesc2', 'Explore Level 1 for free right now — no credit card, no login required!')}</p>
                     </div>
                     <div className="hero-buttons student-hero-buttons">
@@ -240,7 +239,7 @@ function Home() {
                         <span className="journey-map-icon">🗺️</span>
                         <div>
                           <h3 className="journey-header-title">{isArabic ? 'رحلة أبطال العداد' : 'THE LEARNING JOURNEY'}</h3>
-                          <span className="journey-header-sub">{isArabic ? 'جزر الأباكس • مغامرة الحساب الذهني' : 'Abacus Archipelago • Mental Math Quest'}</span>
+                          <span className="journey-header-sub">{isArabic ? 'جزيرة وومبا • مغامرة الحساب الذهني' : 'Wumpa Island • Mental Math Quest'}</span>
                         </div>
                       </div>
                       <span className="journey-level1-free-pill">🔓 {isArabic ? 'المستوى 1 مجاناً' : 'LEVEL 1 UNLOCKED'}</span>

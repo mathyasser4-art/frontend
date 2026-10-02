@@ -1112,6 +1112,134 @@
   border-color: #ef4444;
 }
 
+/* ── Viewport Frame & Floating Camera Controls ─────────── */
+.wumpa-viewport-frame {
+  position: relative;
+  width: 100%;
+  max-width: 1320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.wumpa-cam-step-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(251, 191, 36, 0.7);
+  color: #fef08a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(251, 191, 36, 0.35);
+  cursor: pointer;
+  z-index: 38;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, box-shadow 0.2s;
+}
+
+.wumpa-cam-step-btn:hover {
+  background: rgba(30, 41, 59, 0.95);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 18px rgba(251, 191, 36, 0.6);
+}
+
+.wumpa-cam-step-btn:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+.cam-step-left {
+  left: 14px;
+}
+
+.cam-step-right {
+  right: 14px;
+  animation: camStepPulse 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes camStepPulse {
+  0% { transform: translateY(-50%) scale(0.97); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+  100% { transform: translateY(-50%) scale(1.06); box-shadow: 0 4px 20px rgba(251, 191, 36, 0.65); }
+}
+
+/* Stage Minimap / Radar */
+.wumpa-mobile-stage-radar {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 37;
+  max-width: 92%;
+  pointer-events: auto;
+}
+
+.radar-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: none;
+}
+
+.radar-track::-webkit-scrollbar {
+  display: none;
+}
+
+.radar-node-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: inherit;
+}
+
+.radar-node-pill.radar-active {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #78350f;
+  border-color: #fef08a;
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.75);
+  transform: scale(1.08);
+}
+
+.radar-node-pill.radar-done {
+  background: rgba(16, 185, 129, 0.25);
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.radar-node-pill.radar-lock {
+  opacity: 0.55;
+}
+
+.radar-star {
+  color: #f59e0b;
+  font-size: 0.7rem;
+}
+
+.radar-lock-icon {
+  font-size: 0.68rem;
+}
+
 /* ── The World Map Viewport ───────────────────────────── */
 .wumpa-world-container {
   width: 100%;
@@ -2145,21 +2273,18 @@
    MOBILE PHONES & SMALL SCREENS (Clear, High-Contrast, Touch-Friendly)
    ========================================================================== */
 @media (max-width: 768px) {
-  /* 1. Page Container: Smooth vertical scrolling for whole view */
+  /* 1. Page Container: Edge-to-edge native game screen on phones */
   .learning-path-page.gamified-adventure-view {
-    position: relative !important;
-    inset: auto !important;
-    width: 100% !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
     min-height: 100dvh !important;
-    height: auto !important;
-    max-width: 100% !important;
-    max-height: none !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    overflow: hidden !important;
     display: flex !important;
     flex-direction: column !important;
-    padding: 0 0 calc(115px + env(safe-area-inset-bottom, 16px)) !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
   }
 
@@ -2276,18 +2401,32 @@
     font-size: 0.9rem !important;
   }
 
-  /* 3. Keep the map stage touch-scrollable and fluid */
+  /* 3. Viewport frame and Map stage: Fills full middle screen space */
+  .wumpa-viewport-frame {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
   .wumpa-world-container {
+    flex: 1 1 auto !important;
     position: relative !important;
     inset: auto !important;
     width: 100% !important;
     max-width: 100% !important;
-    height: clamp(340px, 50vh, 480px) !important;
-    min-height: 340px !important;
-    margin: 4px 0 !important;
-    border-width: 4px !important;
-    border-radius: 16px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    border-width: 0 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch !important;
@@ -2305,8 +2444,8 @@
   }
 
   .wumpa-map-stage {
-    min-width: 900px !important;
-    width: 900px !important;
+    min-width: 820px !important;
+    width: 820px !important;
     height: 100% !important;
     position: relative !important;
     overflow: hidden !important;
@@ -2318,13 +2457,44 @@
     object-fit: cover !important;
   }
 
+  /* Compact Floating Steppers for Mobile Screen */
+  .wumpa-cam-step-btn {
+    width: 36px !important;
+    height: 36px !important;
+    z-index: 38 !important;
+  }
+
+  .cam-step-left {
+    left: 8px !important;
+  }
+
+  .cam-step-right {
+    right: 8px !important;
+  }
+
+  /* Mobile Stage Radar */
+  .wumpa-mobile-stage-radar {
+    top: 8px !important;
+    max-width: 96% !important;
+  }
+
+  .radar-track {
+    gap: 4px !important;
+    padding: 3px 8px !important;
+  }
+
+  .radar-node-pill {
+    padding: 2px 7px !important;
+    font-size: 0.7rem !important;
+  }
+
   /* Subtle Swipe Hint for new students on phone */
   .wumpa-mobile-swipe-hint {
     position: absolute;
-    top: 10px;
+    top: 44px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(15, 23, 42, 0.88);
+    background: rgba(15, 23, 42, 0.9);
     border: 1.5px solid rgba(251, 191, 36, 0.6);
     color: #fef08a;
     font-size: 0.72rem;
@@ -2367,20 +2537,21 @@
 
   /* 4. Mobile Bottom Floating Controls: Elevated Dock */
   .wumpa-bottom-controls {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
     transform: none !important;
     width: 100% !important;
     max-width: 100% !important;
+    flex-shrink: 0 !important;
     border-radius: 18px 18px 0 0 !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     border-bottom: none !important;
-    padding: 0.45rem 0.8rem calc(0.55rem + env(safe-area-inset-bottom, 16px)) !important;
+    padding: 0.45rem 0.8rem calc(0.55rem + env(safe-area-inset-bottom, 14px)) !important;
     gap: 0.5rem !important;
     flex-wrap: nowrap !important;
-    z-index: 70 !important;
+    z-index: 50 !important;
     box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.85) !important;
     background: rgba(15, 23, 42, 0.97) !important;
     backdrop-filter: blur(18px) !important;
@@ -2392,13 +2563,14 @@
 
   /* Clear the bottom MobileNav when student is logged in */
   .learning-path-page.has-mobile-nav .wumpa-bottom-controls {
-    bottom: 60px !important;
+    margin-bottom: 60px !important;
     border-radius: 16px !important;
   }
 
   .stage-action-card {
     min-width: 0 !important;
     flex: 1 1 auto !important;
+    overflow: hidden !important;
   }
 
   .card-stage-badge {
@@ -2415,16 +2587,19 @@
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-    max-width: 100px !important;
+    max-width: 120px !important;
   }
 
   .card-lesson-title {
-    font-size: 0.88rem !important;
-    line-height: 1.15 !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    max-width: 140px !important;
+    font-size: 0.86rem !important;
+    line-height: 1.25 !important;
+    white-space: normal !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
   }
 
   .card-meta-row {

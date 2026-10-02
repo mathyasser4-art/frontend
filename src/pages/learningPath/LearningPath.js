@@ -167,8 +167,10 @@ function interpolateWaypoints(points, t) {
 export const WORLD_CONFIGS = {
   math: {
     key: 'math',
-    worldTitle: 'Wumpa Archipelago',
-    worldSubtitle: 'Mathematical Quest & Islands',
+    worldTitle: 'Wumpa Island',
+    worldTitleAr: 'جزيرة وومبا',
+    worldSubtitle: 'Mathematical Quest & Island Adventure',
+    worldSubtitleAr: 'مغامرات وتحديات الرياضيات',
     iconLeft: '🌴',
     iconRight: '🌋',
     bgImage: adventureMapBg,
@@ -419,11 +421,11 @@ const LearningPath = () => {
         // Fallback below
       }
     }
-    // Guest or default fallback: Level 1 - Mental Math & Soroban (+- from 1 to 9 Ones)
+    // Guest or default fallback: Grade 4 Mathematics (School Book)
     const defaultSubject = {
-      subjectId: '69e1d6413b0cd13f2150883a',
-      subjectName: '+- from 1 to 9 (Ones)',
-      systemName: 'Level 1'
+      subjectId: '6aac4579568208683c425dbb',
+      subjectName: 'Mathematics (School Book)',
+      systemName: 'Grade 4'
     };
     setSavedSubjectId(defaultSubject.subjectId);
     setSavedSubjectName(defaultSubject.subjectName);
@@ -601,6 +603,21 @@ const LearningPath = () => {
   // Active stage node that the character is currently standing on
   const currentStage = mappedStages[characterIndex] || mappedStages[0];
 
+  // Auto-center camera viewport smoothly on the current active stage
+  useEffect(() => {
+    if (!currentStage || !mapAreaRef.current) return;
+    const centerCamera = () => {
+      const el = mapAreaRef.current;
+      if (!el || !el.scrollWidth) return;
+      const stagePixelX = (currentStage.x / 100) * el.scrollWidth;
+      const scrollTarget = Math.max(0, stagePixelX - (el.clientWidth / 2));
+      el.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+    };
+
+    const timer = setTimeout(centerCamera, 120);
+    return () => clearTimeout(timer);
+  }, [characterIndex, currentStage?.x]);
+
   // Active stage score tier calculation for floating beacon & HUD
   const currentScoreTier = useMemo(() => {
     return getScoreTierData(currentStage?.score || 0, currentStage?.status || 'locked', isArabic);
@@ -717,7 +734,11 @@ const LearningPath = () => {
       <div className={`learning-path-page gamified-adventure-view ${activeWorld.filterClass}`}>
         <div className="lp-loading">
           <div className="lp-loading-spinner" />
-          <p>Unfolding the {activeWorld.worldTitle}...</p>
+          <p>
+            {isArabic
+              ? `جارٍ استكشاف ${activeWorld.worldTitleAr || activeWorld.worldTitle}...`
+              : `Unfolding ${activeWorld.worldTitle}...`}
+          </p>
         </div>
       </div>
     );
@@ -779,9 +800,14 @@ const LearningPath = () => {
         >
           <span className="wumpa-tiki-mask">{activeWorld.iconLeft}</span>
           <div className="wumpa-title-content wumpa-title-inner">
-            <h1 className="wumpa-main-title">{activeWorld.worldTitle.toUpperCase()}</h1>
+            <h1 className="wumpa-main-title">
+              {isArabic && activeWorld.worldTitleAr
+                ? activeWorld.worldTitleAr
+                : activeWorld.worldTitle.toUpperCase()}
+            </h1>
             <p className="wumpa-sub-title">
-              {savedSystemName ? `${savedSystemName} — ` : ''}{savedSubjectName || activeWorld.worldSubtitle}
+              {savedSystemName ? `${savedSystemName} — ` : ''}
+              {savedSubjectName || (isArabic && activeWorld.worldSubtitleAr ? activeWorld.worldSubtitleAr : activeWorld.worldSubtitle)}
             </p>
           </div>
           <button
@@ -862,17 +888,67 @@ const LearningPath = () => {
       )}
 
       {/* ── THE INTERACTIVE WORLD MAP VIEWPORT ── */}
-      <div 
-        className="wumpa-world-container" 
-        ref={mapAreaRef}
-        onTouchStart={() => setShowSwipeHint(false)}
-        onMouseDown={() => setShowSwipeHint(false)}
-      >
-        {showSwipeHint && (
-          <div className="wumpa-mobile-swipe-hint">
-            <span>↔️ {isArabic ? 'اسحب الخريطة للمغامرة' : 'Swipe map to explore'}</span>
+      <div className="wumpa-viewport-frame">
+        {/* Floating Cam Steppers (◀ / ▶) for smooth one-tap exploration on mobile */}
+        {characterIndex > 0 && (
+          <button
+            type="button"
+            className="wumpa-cam-step-btn cam-step-left"
+            onClick={() => moveToStage(characterIndex - 1)}
+            aria-label={isArabic ? 'المرحلة السابقة' : 'Previous Stage'}
+          >
+            <ChevronLeft size={24} />
+          </button>
+        )}
+
+        {characterIndex < mappedStages.length - 1 && (
+          <button
+            type="button"
+            className="wumpa-cam-step-btn cam-step-right"
+            onClick={() => moveToStage(characterIndex + 1)}
+            aria-label={isArabic ? 'المرحلة التالية' : 'Next Stage'}
+          >
+            <ChevronRight size={24} />
+          </button>
+        )}
+
+        {/* Stage Radar / Minimap Dots */}
+        {mappedStages.length > 1 && (
+          <div className="wumpa-mobile-stage-radar">
+            <div className="radar-track">
+              {mappedStages.map((stg) => {
+                const isSel = stg.index === characterIndex;
+                const isComp = stg.status === 'completed';
+                const isLock = stg.status === 'locked';
+                return (
+                  <button
+                    key={`radar-${stg.index}`}
+                    type="button"
+                    className={`radar-node-pill ${isSel ? 'radar-active' : ''} ${isComp ? 'radar-done' : ''} ${isLock ? 'radar-lock' : ''}`}
+                    onClick={() => moveToStage(stg.index)}
+                    title={`${isArabic ? 'المرحلة' : 'Stage'} ${stg.index + 1}`}
+                  >
+                    <span className="radar-num">{stg.index + 1}</span>
+                    {isComp && <span className="radar-star">★</span>}
+                    {isLock && <span className="radar-lock-icon">🔒</span>}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
+
+        <div 
+          className="wumpa-world-container" 
+          ref={mapAreaRef}
+          onTouchStart={() => setShowSwipeHint(false)}
+          onMouseDown={() => setShowSwipeHint(false)}
+        >
+          {showSwipeHint && (
+            <div className="wumpa-mobile-swipe-hint">
+              <span>↔️ {isArabic ? 'اسحب الخريطة للمغامرة' : 'Swipe map to explore'}</span>
+            </div>
+          )}
         <div className="wumpa-map-stage">
           {/* Background Map Art */}
           <img
@@ -1117,6 +1193,7 @@ const LearningPath = () => {
           )}
         </div>
       </div>
+    </div>
 
       {/* ── FLOATING STAGE ACTION DIALOG & CONTROLLER BAR ── */}
       <div
@@ -1146,7 +1223,7 @@ const LearningPath = () => {
                 className="card-stage-num"
                 style={{ color: currentStage?.unitTheme?.accentBorder || '#fbbf24' }}
               >
-                STAGE {characterIndex + 1}:
+                {isArabic ? `المرحلة ${characterIndex + 1}:` : `STAGE ${characterIndex + 1}:`}
               </span>{' '}
               {currentStage?.chapterName}
             </h3>
@@ -1212,7 +1289,9 @@ const LearningPath = () => {
           <Play size={24} fill="currentColor" />
           <div className="play-btn-text">
             <span className="play-main-lbl">
-              {currentStage?.status === 'completed' ? 'REPLAY LESSON' : 'START LESSON'}
+              {currentStage?.status === 'completed'
+                ? (isArabic ? 'إعادة الدرس' : 'REPLAY LESSON')
+                : (isArabic ? 'ابدأ الدرس' : 'START LESSON')}
             </span>
             <span className="play-hint-lbl">Press [SPACE] or [ENTER]</span>
           </div>
