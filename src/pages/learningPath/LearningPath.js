@@ -356,7 +356,9 @@ const LearningPath = () => {
   const [characterIndex, setCharacterIndex] = useState(0);
   const [isHopping, setIsHopping] = useState(false);
   const [lockedSpeech, setLockedSpeech] = useState(null);
-  const [soundMuted, setSoundMuted] = useState(false);
+  const [soundMuted, setSoundMuted] = useState(() => {
+    return safeLocalStorage.getItem('wumpa_sound_muted') === 'true';
+  });
   const [heroSpriteUrl, setHeroSpriteUrl] = useState(null);
   const [showSwipeHint, setShowSwipeHint] = useState(true);
 
@@ -613,12 +615,51 @@ const LearningPath = () => {
     return getScoreTierData(currentStage?.score || 0, currentStage?.status || 'locked', isArabic);
   }, [currentStage?.score, currentStage?.status, isArabic]);
 
-  // ── Play sound helper ──
+  // ── Play sound helper (Crash Bandicoot Wumpa Audio System) ──
   const playSfx = useCallback((type) => {
     if (soundMuted) return;
-    if (type === 'hop') soundEffects.playClick();
-    if (type === 'win') soundEffects.playWinSound();
-    if (type === 'wrong') soundEffects.playWrongSound();
+    if (type === 'wumpa') soundEffects.playWumpaFruit();
+    else if (type === 'crate') soundEffects.playWoodenCrate();
+    else if (type === 'hop') soundEffects.playMascotHop();
+    else if (type === 'fanfare') soundEffects.playTikiFanfare();
+    else if (type === 'win') soundEffects.playWinSound();
+    else if (type === 'wrong') soundEffects.playWrong();
+    else soundEffects.playWoodenCrate();
+  }, [soundMuted]);
+
+  // Sound mute/unmute toggle handler
+  const handleToggleSound = useCallback(() => {
+    setSoundMuted((prev) => {
+      const next = !prev;
+      safeLocalStorage.setItem('wumpa_sound_muted', String(next));
+      if (next) {
+        soundEffects.stopIslandAmbience();
+      } else {
+        soundEffects.startIslandAmbience();
+        soundEffects.playWumpaFruit();
+      }
+      return next;
+    });
+  }, []);
+
+  // Ambient Tropical Island Soundscape loop (starts on user interaction if not muted)
+  useEffect(() => {
+    if (!soundMuted) {
+      const startAmbience = () => {
+        if (!soundMuted) {
+          soundEffects.startIslandAmbience();
+        }
+        window.removeEventListener('click', startAmbience);
+        window.removeEventListener('touchstart', startAmbience);
+      };
+      window.addEventListener('click', startAmbience, { once: true, passive: true });
+      window.addEventListener('touchstart', startAmbience, { once: true, passive: true });
+    } else {
+      soundEffects.stopIslandAmbience();
+    }
+    return () => {
+      soundEffects.stopIslandAmbience();
+    };
   }, [soundMuted]);
 
   // ── Movement & Action Handlers ──
@@ -652,7 +693,11 @@ const LearningPath = () => {
     }
 
     if (targetIdx !== characterIndex) {
-      playSfx('hop');
+      if (targetStage.status === 'completed' && targetStage.score === 100) {
+        playSfx('fanfare');
+      } else {
+        playSfx('hop');
+      }
       triggerHop();
       setCharacterIndex(targetIdx);
       setLockedSpeech(null);
@@ -674,7 +719,7 @@ const LearningPath = () => {
       return;
     }
 
-    playSfx('hop');
+    playSfx('wumpa');
     navigate(`/question/${currentStage.chapterId}/${questionTypeID}/${savedSubjectId}`, {
       state: { fromLearningPath: true },
     });
@@ -847,7 +892,7 @@ const LearningPath = () => {
 
           <button
             className={`wumpa-icon-btn ${soundMuted ? 'muted' : ''}`}
-            onClick={() => setSoundMuted(!soundMuted)}
+            onClick={handleToggleSound}
             title={soundMuted ? (isArabic ? 'تشغيل الصوت' : 'Unmute Audio') : (isArabic ? 'كتم الصوت' : 'Mute Audio')}
           >
             {soundMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
@@ -884,7 +929,10 @@ const LearningPath = () => {
           <button
             type="button"
             className="wumpa-cam-step-btn cam-step-left"
-            onClick={() => moveToStage(characterIndex - 1)}
+            onClick={() => {
+              playSfx('crate');
+              moveToStage(characterIndex - 1);
+            }}
             aria-label={isArabic ? 'المرحلة السابقة' : 'Previous Stage'}
           >
             <ChevronLeft size={24} />
@@ -895,7 +943,10 @@ const LearningPath = () => {
           <button
             type="button"
             className="wumpa-cam-step-btn cam-step-right"
-            onClick={() => moveToStage(characterIndex + 1)}
+            onClick={() => {
+              playSfx('crate');
+              moveToStage(characterIndex + 1);
+            }}
             aria-label={isArabic ? 'المرحلة التالية' : 'Next Stage'}
           >
             <ChevronRight size={24} />
@@ -915,7 +966,10 @@ const LearningPath = () => {
                     key={`radar-${stg.index}`}
                     type="button"
                     className={`radar-node-pill ${isSel ? 'radar-active' : ''} ${isComp ? 'radar-done' : ''} ${isLock ? 'radar-lock' : ''}`}
-                    onClick={() => moveToStage(stg.index)}
+                    onClick={() => {
+                      playSfx('crate');
+                      moveToStage(stg.index);
+                    }}
                     title={`${isArabic ? 'المرحلة' : 'Stage'} ${stg.index + 1}`}
                   >
                     <span className="radar-num">{stg.index + 1}</span>
@@ -1018,7 +1072,10 @@ const LearningPath = () => {
                   '--stage-grad': stage.unitTheme.colorBg,
                   '--stage-border': stage.unitTheme.accentBorder,
                 }}
-                onClick={() => moveToStage(stage.index)}
+                onClick={() => {
+                  playSfx('crate');
+                  moveToStage(stage.index);
+                }}
               >
                 {/* Glowing Ground Pedestal with Unit Colors */}
                 <div className="portal-pedestal">
@@ -1292,7 +1349,10 @@ const LearningPath = () => {
             <button
               className="wumpa-nav-btn"
               disabled={characterIndex <= 0}
-              onClick={() => moveToStage(characterIndex - 1)}
+              onClick={() => {
+                playSfx('crate');
+                moveToStage(characterIndex - 1);
+              }}
               title="Previous Stage [← / A]"
             >
               <ChevronLeft size={22} />
@@ -1302,7 +1362,10 @@ const LearningPath = () => {
             <button
               className="wumpa-nav-btn"
               disabled={characterIndex >= mappedStages.length - 1}
-              onClick={() => moveToStage(characterIndex + 1)}
+              onClick={() => {
+                playSfx('crate');
+                moveToStage(characterIndex + 1);
+              }}
               title="Next Stage [→ / D]"
             >
               <span>NEXT</span>
