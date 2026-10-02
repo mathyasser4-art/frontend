@@ -364,13 +364,6 @@ const Navbar = () => {
                         </Link>
                     ) : (
                         <>
-                            {SHOW_PRICING && (
-                                <Link to={'/pricing'} onClick={() => soundEffects.playClick()}>
-                                    <div className="nav-btn nav-btn-join" style={{ marginRight: '15px' }}>
-                                        {t('home.joinNow')}
-                                    </div>
-                                </Link>
-                            )}
                             <Link to={'/auth/register'} onClick={() => soundEffects.playClick()} style={{ marginRight: '10px', textDecoration: 'none' }}>
                                 <div className="nav-btn nav-btn-signup" style={{ 
                                     background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
