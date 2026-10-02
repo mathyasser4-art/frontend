@@ -42,6 +42,7 @@ function Home() {
   const { t, i18n } = useTranslation()
   const isArabic = i18n.language === 'ar'
   const role = safeLocalStorage.getItem('auth_role')
+  const isAuth = Boolean(safeLocalStorage.getItem('O_authWEB'))
   const navigate = useNavigate()
   const [showTutorialModal, setShowTutorialModal] = useState(false)
   const [showTeacherTrialModal, setShowTeacherTrialModal] = useState(false)
@@ -53,8 +54,25 @@ function Home() {
 
   // Top Persona Switcher: 'Student' (default with unlocked Level 1 Journey) vs 'Teacher'
   const [activePersona, setActivePersona] = useState(() => {
+    if (isAuth && role) {
+      if (role === 'Teacher' || role === 'School' || role === 'IT' || role === 'Supervisor') {
+        return 'Teacher';
+      }
+      return 'Student';
+    }
     return safeLocalStorage.getItem('home_active_persona') || 'Student';
   });
+
+  // Automatically match active persona to user's real role if logged in
+  React.useEffect(() => {
+    if (isAuth && role) {
+      if (role === 'Teacher' || role === 'School' || role === 'IT' || role === 'Supervisor') {
+        setActivePersona('Teacher');
+      } else {
+        setActivePersona('Student');
+      }
+    }
+  }, [isAuth, role]);
 
   const handlePersonaChange = (newPersona) => {
     soundEffects.playClick();
@@ -91,31 +109,33 @@ function Home() {
         <div className='home'>
           <div className="home-container">
             
-            {/* ── TOP ROLE / PERSONA SELECTOR (STUDENT vs TEACHER) ── */}
-            <div className="persona-toggle-container">
-              <div className="persona-toggle-track">
-                <button
-                  type="button"
-                  className={`persona-toggle-tab ${activePersona === 'Student' ? 'active-student' : ''}`}
-                  onClick={() => handlePersonaChange('Student')}
-                  aria-label="Student View"
-                >
-                  <span className="persona-icon">🎓</span>
-                  <span className="persona-title">{t('home.studentSelector', 'أنا طالب / Student')}</span>
-                  <span className="persona-badge-glow">FREE LEVEL 1</span>
-                </button>
-                <button
-                  type="button"
-                  className={`persona-toggle-tab ${activePersona === 'Teacher' ? 'active-teacher' : ''}`}
-                  onClick={() => handlePersonaChange('Teacher')}
-                  aria-label="Teacher View"
-                >
-                  <span className="persona-icon">👨‍🏫</span>
-                  <span className="persona-title">{t('home.teacherSelector', 'أنا معلّم / Teacher')}</span>
-                  <span className="persona-badge-trial">3-DAY TRIAL</span>
-                </button>
+            {/* ── TOP ROLE / PERSONA SELECTOR (STUDENT vs TEACHER) - Only for visitors not logged in ── */}
+            {!isAuth && (
+              <div className="persona-toggle-container">
+                <div className="persona-toggle-track">
+                  <button
+                    type="button"
+                    className={`persona-toggle-tab ${activePersona === 'Student' ? 'active-student' : ''}`}
+                    onClick={() => handlePersonaChange('Student')}
+                    aria-label="Student View"
+                  >
+                    <span className="persona-icon">🎓</span>
+                    <span className="persona-title">{t('home.studentSelector', 'أنا طالب / Student')}</span>
+                    <span className="persona-badge-glow">FREE LEVEL 1</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`persona-toggle-tab ${activePersona === 'Teacher' ? 'active-teacher' : ''}`}
+                    onClick={() => handlePersonaChange('Teacher')}
+                    aria-label="Teacher View"
+                  >
+                    <span className="persona-icon">👨‍🏫</span>
+                    <span className="persona-title">{t('home.teacherSelector', 'أنا معلّم / Teacher')}</span>
+                    <span className="persona-badge-trial">3-DAY TRIAL</span>
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="hero-hybrid">
               {/* ── LEFT COLUMN: Text and Buttons ── */}
@@ -361,28 +381,30 @@ function Home() {
         <div className='home-mobile'>
           {/* Mobile version with persona toggle */}
           <div className="mobile-hero-container">
-            <div className="persona-toggle-container mobile-toggle-container">
-              <div className="persona-toggle-track">
-                <button
-                  type="button"
-                  className={`persona-toggle-tab ${activePersona === 'Student' ? 'active-student' : ''}`}
-                  onClick={() => handlePersonaChange('Student')}
-                >
-                  <span className="persona-icon">🎓</span>
-                  <span className="persona-title">{t('home.studentSelector', 'طالب / Student')}</span>
-                  <span className="persona-badge-glow">FREE</span>
-                </button>
-                <button
-                  type="button"
-                  className={`persona-toggle-tab ${activePersona === 'Teacher' ? 'active-teacher' : ''}`}
-                  onClick={() => handlePersonaChange('Teacher')}
-                >
-                  <span className="persona-icon">👨‍🏫</span>
-                  <span className="persona-title">{t('home.teacherSelector', 'معلّم / Teacher')}</span>
-                  <span className="persona-badge-trial">TRIAL</span>
-                </button>
+            {!isAuth && (
+              <div className="persona-toggle-container mobile-toggle-container">
+                <div className="persona-toggle-track">
+                  <button
+                    type="button"
+                    className={`persona-toggle-tab ${activePersona === 'Student' ? 'active-student' : ''}`}
+                    onClick={() => handlePersonaChange('Student')}
+                  >
+                    <span className="persona-icon">🎓</span>
+                    <span className="persona-title">{t('home.studentSelector', 'طالب / Student')}</span>
+                    <span className="persona-badge-glow">FREE</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`persona-toggle-tab ${activePersona === 'Teacher' ? 'active-teacher' : ''}`}
+                    onClick={() => handlePersonaChange('Teacher')}
+                  >
+                    <span className="persona-icon">👨‍🏫</span>
+                    <span className="persona-title">{t('home.teacherSelector', 'معلّم / Teacher')}</span>
+                    <span className="persona-badge-trial">TRIAL</span>
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {activePersona === 'Student' ? (
               <>
