@@ -39,7 +39,8 @@ const GAME_PREVIEWS = [
 ]
 
 function Home() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const isArabic = i18n?.language === 'ar' || document.documentElement.dir === 'rtl'
   const role = safeLocalStorage.getItem('auth_role')
   const isAuth = Boolean(safeLocalStorage.getItem('O_authWEB'))
   const navigate = useNavigate()
