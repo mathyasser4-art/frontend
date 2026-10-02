@@ -377,17 +377,7 @@ const Navbar = () => {
                                     borderRadius: '10px',
                                     padding: '8px 14px'
                                 }}>
-                                    <span>Sign Up</span>
-                                    <span style={{
-                                        background: '#fef08a',
-                                        color: '#854d0e',
-                                        fontSize: '0.65rem',
-                                        fontWeight: '800',
-                                        padding: '2px 6px',
-                                        borderRadius: '999px',
-                                        letterSpacing: '0.5px',
-                                        textTransform: 'uppercase'
-                                    }}>3 Days Free</span>
+                                    <span>{isArabic ? 'إنشاء حساب' : 'Sign Up'}</span>
                                 </div>
                             </Link>
                             <Link to={'/auth/login'} onClick={() => soundEffects.playClick()}>
