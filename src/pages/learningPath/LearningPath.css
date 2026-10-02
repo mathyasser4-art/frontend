@@ -2401,7 +2401,7 @@
     font-size: 0.9rem !important;
   }
 
-  /* 3. Viewport frame & Map Stage: Fit the ENTIRE Island 100% on phone screens */
+  /* 3. Viewport frame & Map Stage: Fluid & Touch-Scrollable (Horizontal View) */
   .wumpa-viewport-frame {
     flex: 1 1 auto !important;
     height: auto !important;
@@ -2411,31 +2411,32 @@
     overflow: hidden !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 6px 8px !important;
-    box-sizing: border-box !important;
   }
 
   .wumpa-world-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    aspect-ratio: 16 / 9 !important;
-    flex: 0 0 auto !important;
+    flex: 1 1 auto !important;
     position: relative !important;
     inset: auto !important;
-    margin: auto 0 !important;
-    border-radius: 16px !important;
-    border: 3px solid #78350f !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(251, 191, 36, 0.4) !important;
-    overflow: hidden !important;
-    touch-action: manipulation !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    border-width: 0 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
+    cursor: grab !important;
     box-sizing: border-box !important;
   }
 
   .wumpa-world-container:active {
-    cursor: default !important;
+    cursor: grabbing !important;
   }
 
   .wumpa-world-container::-webkit-scrollbar {
@@ -2443,11 +2444,9 @@
   }
 
   .wumpa-map-stage {
-    min-width: 100% !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    min-width: 820px !important;
+    width: 820px !important;
     height: 100% !important;
-    aspect-ratio: 16 / 9 !important;
     position: relative !important;
     overflow: hidden !important;
   }
@@ -2458,22 +2457,26 @@
     object-fit: cover !important;
   }
 
-  /* Hide horizontal steppers & swipe hint since the whole island fits at once */
-  .wumpa-cam-step-btn,
-  .wumpa-mobile-swipe-hint {
-    display: none !important;
+  /* Compact Floating Steppers for Horizontal View */
+  .wumpa-cam-step-btn {
+    width: 36px !important;
+    height: 36px !important;
+    z-index: 38 !important;
+    display: flex !important;
+  }
+
+  .cam-step-left {
+    left: 8px !important;
+  }
+
+  .cam-step-right {
+    right: 8px !important;
   }
 
   /* Mobile Stage Radar */
   .wumpa-mobile-stage-radar {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    transform: none !important;
-    margin-bottom: 8px !important;
-    max-width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
+    top: 8px !important;
+    max-width: 96% !important;
   }
 
   .radar-track {
@@ -2486,84 +2489,180 @@
     font-size: 0.7rem !important;
   }
 
-  /* Scaled Waypoint Nodes for 100% Island Overview */
+  /* Subtle Swipe Hint for new students on phone */
+  .wumpa-mobile-swipe-hint {
+    position: absolute;
+    top: 44px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.9);
+    border: 1.5px solid rgba(251, 191, 36, 0.6);
+    color: #fef08a;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+    z-index: 35;
+    pointer-events: none;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    animation: swipeHintPulse 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes swipeHintPulse {
+    0% { transform: translateX(-50%) scale(0.96); opacity: 0.85; }
+    100% { transform: translateX(-50%) scale(1.02); opacity: 1; }
+  }
+
+  /* Waypoint node sizing on horizontal view */
   .wumpa-portal-node {
-    width: 32px !important;
-    height: 32px !important;
-  }
-
-  .portal-pedestal {
-    width: 32px !important;
-    height: 32px !important;
-  }
-
-  .pedestal-outer-ring {
-    border-width: 2px !important;
-  }
-
-  .portal-center-badge {
-    width: 24px !important;
-    height: 24px !important;
-    font-size: 0.74rem !important;
-    font-weight: 900 !important;
-    border-width: 2px !important;
-  }
-
-  .portal-beacon-pulse {
-    width: 36px !important;
-    height: 36px !important;
-    border-width: 2px !important;
-  }
-
-  .portal-floating-stars {
-    top: -12px !important;
-    gap: 1px !important;
-    font-size: 0.65rem !important;
-  }
-
-  .portal-score-pill {
-    bottom: -11px !important;
-    font-size: 0.58rem !important;
-    padding: 0 4px !important;
-    border-width: 1px !important;
-  }
-
-  /* Hide hover tooltip to prevent covering miniature island paths */
-  .portal-label-tag {
-    display: none !important;
-  }
-
-  /* Scaled Unit Archways */
-  .wumpa-unit-archway {
-    transform: scale(0.58) translate(-50%, -100%) !important;
-    transform-origin: bottom center !important;
-  }
-
-  /* Scaled Mascot Hero Character */
-  .wumpa-hero-mascot {
-    width: 44px !important;
-    height: 52px !important;
-    transform: translate(-50%, -80%) !important;
-  }
-
-  .hero-sprite-wrapper {
-    width: 42px !important;
+    width: 48px !important;
     height: 48px !important;
   }
 
-  .hero-ground-halo {
-    width: 44px !important;
-    height: 22px !important;
+  .portal-center-badge {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 1rem !important;
   }
 
-  .hero-ground-shadow {
-    width: 30px !important;
-    height: 10px !important;
+  .portal-label-tag {
+    font-size: 0.82rem !important;
+    padding: 0.35rem 0.65rem !important;
+    max-width: 160px !important;
+    white-space: normal !important;
   }
 
-  .hero-ready-beacon {
-    top: -14px !important;
-    transform: translateX(-50%) scale(0.8) !important;
+  /* ==========================================================================
+     VERTICAL VIEW (PORTRAIT MODE): Fit the ENTIRE island on screen at once
+     ========================================================================== */
+  @media (orientation: portrait) {
+    .wumpa-viewport-frame {
+      justify-content: center !important;
+      align-items: center !important;
+      padding: 6px 8px !important;
+    }
+
+    .wumpa-world-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 16 / 9 !important;
+      flex: 0 0 auto !important;
+      position: relative !important;
+      inset: auto !important;
+      margin: auto 0 !important;
+      border-radius: 16px !important;
+      border: 3px solid #78350f !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(251, 191, 36, 0.4) !important;
+      overflow: hidden !important;
+      touch-action: manipulation !important;
+      cursor: default !important;
+    }
+
+    .wumpa-map-stage {
+      min-width: 100% !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      aspect-ratio: 16 / 9 !important;
+    }
+
+    /* In portrait overview, hide swipe hint & steppers since whole island fits */
+    .wumpa-cam-step-btn,
+    .wumpa-mobile-swipe-hint {
+      display: none !important;
+    }
+
+    .wumpa-mobile-stage-radar {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      transform: none !important;
+      margin-bottom: 8px !important;
+      display: flex !important;
+      justify-content: center !important;
+    }
+
+    /* Scaled Waypoint Nodes for 100% Island Overview */
+    .wumpa-portal-node {
+      width: 32px !important;
+      height: 32px !important;
+    }
+
+    .portal-pedestal {
+      width: 32px !important;
+      height: 32px !important;
+    }
+
+    .pedestal-outer-ring {
+      border-width: 2px !important;
+    }
+
+    .portal-center-badge {
+      width: 24px !important;
+      height: 24px !important;
+      font-size: 0.74rem !important;
+      font-weight: 900 !important;
+      border-width: 2px !important;
+    }
+
+    .portal-beacon-pulse {
+      width: 36px !important;
+      height: 36px !important;
+      border-width: 2px !important;
+    }
+
+    .portal-floating-stars {
+      top: -12px !important;
+      gap: 1px !important;
+      font-size: 0.65rem !important;
+    }
+
+    .portal-score-pill {
+      bottom: -11px !important;
+      font-size: 0.58rem !important;
+      padding: 0 4px !important;
+      border-width: 1px !important;
+    }
+
+    .portal-label-tag {
+      display: none !important;
+    }
+
+    .wumpa-unit-archway {
+      transform: scale(0.58) translate(-50%, -100%) !important;
+      transform-origin: bottom center !important;
+    }
+
+    .wumpa-hero-mascot {
+      width: 44px !important;
+      height: 52px !important;
+      transform: translate(-50%, -80%) !important;
+    }
+
+    .hero-sprite-wrapper {
+      width: 42px !important;
+      height: 48px !important;
+    }
+
+    .hero-ground-halo {
+      width: 44px !important;
+      height: 22px !important;
+    }
+
+    .hero-ground-shadow {
+      width: 30px !important;
+      height: 10px !important;
+    }
+
+    .hero-ready-beacon {
+      top: -14px !important;
+      transform: translateX(-50%) scale(0.8) !important;
+    }
   }
 
   /* 4. Mobile Bottom Floating Controls: Elevated Dock */
