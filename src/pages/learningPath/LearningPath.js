@@ -533,6 +533,53 @@ const LearningPath = () => {
     return () => clearTimeout(timer);
   }, [characterIndex, mappedStages]);
 
+  // Touch & Mouse Drag Panning for World Map Viewport
+  useEffect(() => {
+    const el = mapAreaRef.current;
+    if (!el) return;
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    const onStart = (e) => {
+      if (e.target.closest('.wumpa-portal-node, button, a')) return;
+      isDown = true;
+      startX = e.pageX || (e.touches && e.touches[0].pageX);
+      scrollLeft = el.scrollLeft;
+    };
+
+    const onMove = (e) => {
+      if (!isDown) return;
+      const currentX = e.pageX || (e.touches && e.touches[0].pageX);
+      if (!currentX) return;
+      const walk = (currentX - startX) * 1.5;
+      el.scrollLeft = scrollLeft - walk;
+    };
+
+    const onEnd = () => {
+      isDown = false;
+    };
+
+    el.addEventListener('mousedown', onStart);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onEnd);
+
+    el.addEventListener('touchstart', onStart, { passive: true });
+    window.addEventListener('touchmove', onMove, { passive: true });
+    window.addEventListener('touchend', onEnd);
+
+    return () => {
+      el.removeEventListener('mousedown', onStart);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onEnd);
+
+      el.removeEventListener('touchstart', onStart);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onEnd);
+    };
+  }, []);
+
 
   // Set initial character position to current active stage
   useEffect(() => {
