@@ -230,17 +230,30 @@ function TeacherCompetitionLobby() {
             setLoadingStudents(true);
             try {
                 const Token = safeLocalStorage.getItem('O_authWEB');
-                const res = await fetch(`${API_BASE_URL}/student/getStudent/1`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'authrization': `pracYas09${Token}`
+                let allStudents = [];
+                let page = 1;
+                let totalPages = 1;
+                while (page <= totalPages) {
+                    const res = await fetch(`${API_BASE_URL}/student/getStudent/${page}?all=true`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'authrization': `pracYas09${Token}`
+                        }
+                    });
+                    const data = await res.json();
+                    if (data && data.message === 'success' && Array.isArray(data.allStudent)) {
+                        allStudents = [...allStudents, ...data.allStudent];
+                        totalPages = data.totalPage || 1;
+                        page++;
+                        if (totalPages <= 1 || (data.numberOfStudent && allStudents.length >= data.numberOfStudent)) {
+                            break;
+                        }
+                    } else {
+                        break;
                     }
-                });
-                const data = await res.json();
-                if (data.message === 'success') {
-                    setMyStudents(data.allStudent || []);
                 }
+                setMyStudents(allStudents);
             } catch (err) {
                 console.error('Failed to fetch students:', err);
             } finally {

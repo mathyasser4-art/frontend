@@ -26,26 +26,51 @@ function UpcomingCompetitionsHub() {
         fetchData();
     }, []);
 
-    const fetchData = async () => {
-        setLoading(true);
+    const fetchAllTeacherStudents = async (token) => {
+        let allStudents = [];
+        let page = 1;
+        let totalPages = 1;
         try {
-            const token = safeLocalStorage.getItem('O_authWEB');
-            const [eventsRes, studentsRes] = await Promise.all([
-                getSchoolCompetitionEvents(),
-                fetch(`${API_BASE_URL}/student/getStudent/1`, {
+            while (page <= totalPages) {
+                const res = await fetch(`${API_BASE_URL}/student/getStudent/${page}?all=true`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'authrization': `pracYas09${token}`
                     }
-                }).then(r => r.json()).catch(() => ({ message: 'error' }))
+                });
+                const data = await res.json();
+                if (data && data.message === 'success' && Array.isArray(data.allStudent)) {
+                    allStudents = [...allStudents, ...data.allStudent];
+                    totalPages = data.totalPage || 1;
+                    page++;
+                    if (totalPages <= 1 || (data.numberOfStudent && allStudents.length >= data.numberOfStudent)) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching all students for competitions hub:', e);
+        }
+        return allStudents;
+    };
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const token = safeLocalStorage.getItem('O_authWEB');
+            const [eventsRes, studentsList] = await Promise.all([
+                getSchoolCompetitionEvents(),
+                fetchAllTeacherStudents(token)
             ]);
 
             if (eventsRes.message === 'success') {
                 setEvents(eventsRes.events || []);
             }
 
-            if (studentsRes && studentsRes.message === 'success' && Array.isArray(studentsRes.allStudent)) {
-                setMyStudents(studentsRes.allStudent);
+            if (Array.isArray(studentsList)) {
+                setMyStudents(studentsList);
             }
         } catch (err) {
             console.error('Error fetching competitions hub data:', err);
