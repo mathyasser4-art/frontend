@@ -2145,78 +2145,29 @@
   margin: 0 !important;
   padding: 0 !important;
   overflow: hidden !important;
-  background: #020617 !important;
-  display: block !important;
-  user-select: none !important;
-}
-
-/* 2. Map World Container: Fills 100% of the viewport behind floating controls */
-.wumpa-world-container {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  background: #020617 !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  -webkit-overflow-scrolling: touch !important;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-  z-index: 1 !important;
+  background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 60%, #020617 100%) !important;
   display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  flex-direction: column !important;
+  user-select: none !important;
+  box-sizing: border-box !important;
 }
 
-.wumpa-world-container::-webkit-scrollbar {
-  display: none !important;
-}
-
-/* 3. Map Stage: True 100% full screen coverage on Desktop */
-.wumpa-map-stage {
-  position: relative !important;
-  width: 100% !important;
-  height: 100% !important;
-  min-width: 100% !important;
-  min-height: 100% !important;
-  aspect-ratio: auto !important;
-  overflow: hidden !important;
-  margin: 0 !important;
-}
-
-.wumpa-bg-map-image {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center bottom !important;
-  pointer-events: none !important;
-}
-
-/* 4. Top Floating HUD: Translucent glassmorphic bar floating over the sky */
+/* 2. Top Floating HUD: Translucent glassmorphic bar */
 .wumpa-top-hud {
-  position: absolute !important;
-  top: 14px !important;
-  left: 18px !important;
-  right: 18px !important;
-  width: auto !important;
-  max-width: none !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  width: 100% !important;
+  max-width: 1360px !important;
+  margin: 0 auto !important;
+  flex-shrink: 0 !important;
   z-index: 50 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 0 !important;
-  pointer-events: none !important;
-}
-
-.wumpa-top-hud > * {
-  pointer-events: auto !important;
+  padding: 10px 18px !important;
+  box-sizing: border-box !important;
 }
 
 .wumpa-title-plank {
@@ -2239,16 +2190,106 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* 5. Bottom Floating Controls: Floating Action Card Dock */
-.wumpa-bottom-controls {
-  position: absolute !important;
-  bottom: 16px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+/* 3. Guest Journey Ribbon */
+.guest-journey-ribbon {
+  position: relative !important;
+  z-index: 35 !important;
+  margin: 0 auto 6px !important;
   width: calc(100% - 36px) !important;
-  max-width: 1040px !important;
-  z-index: 50 !important;
+  max-width: 1360px !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* 4. The Viewport Frame: Expands to fill 100% of remaining vertical space */
+.wumpa-viewport-frame {
+  flex: 1 1 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: 1360px !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  padding: 4px 16px !important;
+}
+
+/* 5. Map World Container: Centers and scales cleanly with aspect ratio */
+.wumpa-world-container {
+  position: relative !important;
+  inset: auto !important;
+  width: auto !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  aspect-ratio: 16 / 9 !important;
+  margin: auto !important;
+  border: 6px solid #5c2d13 !important;
+  border-image: linear-gradient(180deg, #78350f, #451a03, #291102) 30 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 0 2px #92400e, inset 0 0 25px rgba(0, 0, 0, 0.6) !important;
+  background: #020617 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  z-index: 10 !important;
+}
+
+.wumpa-world-container::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* 6. Map Stage: True crisp presentation of Wumpa Island */
+.wumpa-map-stage {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  aspect-ratio: 16 / 9 !important;
+  overflow: hidden !important;
   margin: 0 !important;
+}
+
+.wumpa-bg-map-image {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  pointer-events: none !important;
+}
+
+/* Hide mobile-specific radar and steppers on desktop so the map is crystal clear */
+@media (min-width: 769px) {
+  .wumpa-mobile-stage-radar {
+    display: none !important;
+  }
+  .wumpa-cam-step-btn {
+    display: none !important;
+  }
+}
+
+/* 7. Bottom Floating Controls: Action Card Dock */
+.wumpa-bottom-controls {
+  position: relative !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+  width: calc(100% - 36px) !important;
+  max-width: 1100px !important;
+  margin: 6px auto 14px !important;
+  flex-shrink: 0 !important;
+  z-index: 50 !important;
   padding: 0.6rem 1.4rem !important;
   backdrop-filter: blur(16px) !important;
   background: rgba(15, 23, 42, 0.88) !important;
@@ -2261,7 +2302,7 @@
   box-sizing: border-box !important;
 }
 
-/* 6. Discreet Reset Button */
+/* 8. Discreet Reset Button */
 .lp-reset-btn {
   position: fixed !important;
   bottom: 4px !important;
