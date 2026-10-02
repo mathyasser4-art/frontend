@@ -659,15 +659,43 @@ const LearningPath = () => {
           </div>
         </div>
 
-        {/* Center Title Plank */}
-        <div className="wumpa-title-plank">
+        {/* Center Title Plank (With Interactive Journey Hub Book Button) */}
+        <div
+          className="wumpa-title-plank interactive-plank"
+          onClick={() => {
+            playSfx('hop');
+            navigate('/student/journey-hub');
+          }}
+          title={isArabic ? 'تغيير المرحلة / المنهج' : 'Change Grade/Subject'}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              playSfx('hop');
+              navigate('/student/journey-hub');
+            }
+          }}
+        >
           <span className="wumpa-tiki-mask">{activeWorld.iconLeft}</span>
-          <div className="wumpa-title-content">
+          <div className="wumpa-title-content wumpa-title-inner">
             <h1 className="wumpa-main-title">{activeWorld.worldTitle.toUpperCase()}</h1>
             <p className="wumpa-sub-title">
               {savedSystemName ? `${savedSystemName} — ` : ''}{savedSubjectName || activeWorld.worldSubtitle}
             </p>
           </div>
+          <button
+            type="button"
+            className="wumpa-plank-book-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              playSfx('hop');
+              navigate('/student/journey-hub');
+            }}
+            title={isArabic ? 'تغيير المرحلة / المنهج' : 'Change Grade/Subject'}
+            aria-label={isArabic ? 'تغيير المرحلة والمنهج' : 'Change Grade or Subject'}
+          >
+            <BookOpen size={18} />
+          </button>
           <span className="wumpa-tiki-mask mask-flip">{activeWorld.iconRight}</span>
         </div>
 
@@ -701,20 +729,9 @@ const LearningPath = () => {
           </div>
 
           <button
-            className="wumpa-icon-btn"
-            onClick={() => {
-              playSfx('hop');
-              navigate('/student/journey-hub');
-            }}
-            title="Change Grade/Subject"
-          >
-            <BookOpen size={18} />
-          </button>
-
-          <button
             className={`wumpa-icon-btn ${soundMuted ? 'muted' : ''}`}
             onClick={() => setSoundMuted(!soundMuted)}
-            title={soundMuted ? 'Unmute Audio' : 'Mute Audio'}
+            title={soundMuted ? (isArabic ? 'تشغيل الصوت' : 'Unmute Audio') : (isArabic ? 'كتم الصوت' : 'Mute Audio')}
           >
             {soundMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
           </button>

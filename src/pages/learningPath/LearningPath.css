@@ -1011,7 +1011,58 @@
   100% { transform: translateY(-4px) rotate(3deg); }
 }
 
-.wumpa-title-inner h1 {
+.wumpa-title-plank.interactive-plank {
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+}
+
+.wumpa-title-plank.interactive-plank:hover {
+  transform: translateY(-2px) scale(1.02);
+  border-color: #f59e0b;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75), 0 0 22px rgba(245, 158, 11, 0.35), inset 0 2px 2px rgba(255, 255, 255, 0.35);
+}
+
+.wumpa-title-plank.interactive-plank:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+/* Wumpa Plank Book Button */
+.wumpa-plank-book-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 60%, #b45309 100%);
+  border: 2px solid #fef08a;
+  border-bottom: 3.5px solid #78350f;
+  color: #451a03;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 11px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-inline-start: 0.35rem;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.wumpa-plank-book-btn:hover {
+  transform: scale(1.12) rotate(-4deg);
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  border-color: #ffffff;
+  color: #291102;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.75), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+.wumpa-plank-book-btn:active {
+  transform: scale(0.94);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.wumpa-title-inner h1,
+.wumpa-main-title {
   font-size: 1.5rem;
   font-weight: 900;
   letter-spacing: 1px;
@@ -1019,15 +1070,18 @@
   text-shadow: 2px 2px 0px #854d0e, 3px 3px 0px #451a03, 0 4px 10px rgba(0, 0, 0, 0.7);
   margin: 0;
   text-transform: uppercase;
+  line-height: 1.1;
 }
 
-.wumpa-title-inner h2 {
+.wumpa-title-inner h2,
+.wumpa-sub-title {
   font-size: 0.8rem;
   font-weight: 700;
   color: #fed7aa;
   margin: 0;
   letter-spacing: 0.5px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  line-height: 1.2;
 }
 
 /* Wumpa HUD Icon Buttons */
@@ -2084,22 +2138,45 @@
   }
 
   .wumpa-title-plank {
-    padding: 0.25rem 0.75rem !important;
+    padding: 0.25rem 0.65rem !important;
     border-radius: 12px !important;
-    gap: 0.4rem !important;
+    gap: 0.35rem !important;
+  }
+
+  .wumpa-plank-book-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 8px !important;
+    border-width: 1.5px !important;
+    border-bottom-width: 2.5px !important;
+    margin-inline-start: 0.15rem !important;
+  }
+
+  .wumpa-plank-book-btn svg {
+    width: 16px !important;
+    height: 16px !important;
   }
 
   .wumpa-tiki-mask {
-    font-size: 1.25rem !important;
+    font-size: 1.15rem !important;
   }
 
-  .wumpa-title-inner h1 {
+  .wumpa-title-inner h1,
+  .wumpa-main-title {
     font-size: 0.95rem !important;
     letter-spacing: 0.5px !important;
   }
 
-  .wumpa-title-inner h2 {
+  .wumpa-title-inner h2,
+  .wumpa-sub-title {
     display: none !important; /* Hide long subtitle on phones */
+  }
+
+  @media (max-width: 540px) {
+    .wumpa-tiki-mask {
+      display: none !important;
+    }
   }
 
   .wumpa-badge.badge-stars {
