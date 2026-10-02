@@ -22,6 +22,8 @@ class SoundEffects {
     // Ambient soundscape reference
     this.ambienceNodes = null;
     this.isAmbienceActive = false;
+    this.wildlifeTimer = null;
+    this.activeWildlifeNodes = new Set();
 
     // Initialize Web Audio API lazily
     this.audioContext = null;
@@ -298,7 +300,7 @@ class SoundEffects {
     } catch (e) {}
   }
 
-  // 5. Procedural Tropical Island Ambient Soundscape (Gentle ocean waves & soft breeze)
+  // 5. Procedural Tropical Island Ambient Soundscape (Ocean waves + Little birds, Elephant, Monkeys, Parrots)
   startIslandAmbience(targetVolume = 0.035) {
     try {
       this.ensureInitialized();
@@ -327,7 +329,7 @@ class SoundEffects {
         b6 = white * 0.115926;
       }
 
-      // Loop source
+      // Ocean wave loop source
       const noiseSource = ctx.createBufferSource();
       noiseSource.buffer = noiseBuffer;
       noiseSource.loop = true;
@@ -367,12 +369,388 @@ class SoundEffects {
         masterGain: masterAmbienceGain,
       };
       this.isAmbienceActive = true;
+
+      // Start the lively island wildlife sound scheduler (birds, elephant, monkeys)
+      if (this.wildlifeTimer) {
+        clearTimeout(this.wildlifeTimer);
+      }
+      // First cheerful bird greets the player after 1.2 seconds
+      this.wildlifeTimer = setTimeout(() => {
+        if (this.isAmbienceActive) {
+          this.playBirdChirp();
+          this.scheduleNextWildlife();
+        }
+      }, 1200);
     } catch (e) {
       console.warn('Could not start island ambience:', e);
     }
   }
 
+  // Schedule periodic wildlife sounds (birds, elephant, monkeys, parrots)
+  scheduleNextWildlife() {
+    if (!this.isAmbienceActive) return;
+    // Dynamic interval: pleasant calls every 3.5 to 6.5 seconds
+    const interval = 3500 + Math.random() * 3200;
+    this.wildlifeTimer = setTimeout(() => {
+      if (!this.isAmbienceActive) return;
+      this.playRandomWildlife();
+      this.scheduleNextWildlife();
+    }, interval);
+  }
+
+  // Play a random lively jungle animal / bird sound
+  playRandomWildlife() {
+    if (!this.audioContext) return;
+    const roll = Math.random();
+    if (roll < 0.44) {
+      // 44% Little birds chirping (most frequent, sweet canopy twittering)
+      this.playBirdChirp();
+    } else if (roll < 0.68) {
+      // 24% Distant majestic elephant trumpet
+      this.playElephantTrumpet();
+    } else if (roll < 0.86) {
+      // 18% Playful jungle monkey / chimp chatter
+      this.playMonkeyChatter();
+    } else {
+      // 14% Exotic tropical parrot squawk
+      this.playParrotCall();
+    }
+  }
+
+  // ── Procedural Tropical Birds (Sweet Twittering, Chirping & Melodic Trills) ──
+  playBirdChirp(volume = 0.065) {
+    try {
+      this.ensureInitialized();
+      if (!this.audioContext) return;
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      const ctx = this.audioContext;
+      const baseTime = ctx.currentTime;
+
+      // Select between 3 natural bird song motifs
+      const motif = Math.floor(Math.random() * 3);
+
+      const master = ctx.createGain();
+      master.gain.setValueAtTime(volume, baseTime);
+
+      // Stereo panning across the island canopy
+      if (ctx.createStereoPanner) {
+        const panner = ctx.createStereoPanner();
+        panner.pan.setValueAtTime((Math.random() * 1.4) - 0.7, baseTime);
+        master.connect(panner);
+        panner.connect(ctx.destination);
+      } else {
+        master.connect(ctx.destination);
+      }
+
+      if (motif === 0) {
+        // Motif 0: Double sweet chirp ("tweet-tweet!")
+        const chirps = [
+          { start: 0, dur: 0.08, f0: 3100, f1: 4300, f2: 3600 },
+          { start: 0.12, dur: 0.09, f0: 3400, f1: 4700, f2: 3900 }
+        ];
+
+        chirps.forEach(({ start, dur, f0, f1, f2 }) => {
+          const t = baseTime + start;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f0, t);
+          osc.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.45);
+          osc.frequency.exponentialRampToValueAtTime(f2, t + dur);
+
+          gain.gain.setValueAtTime(0.001, t);
+          gain.gain.linearRampToValueAtTime(0.85, t + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+          osc.connect(gain);
+          gain.connect(master);
+
+          osc.start(t);
+          osc.stop(t + dur + 0.01);
+        });
+      } else if (motif === 1) {
+        // Motif 1: 3-note melodic canopy cascade
+        const notes = [
+          { start: 0, dur: 0.065, f0: 2900, f1: 3800 },
+          { start: 0.08, dur: 0.065, f0: 3600, f1: 4400 },
+          { start: 0.16, dur: 0.085, f0: 4400, f1: 3300 }
+        ];
+
+        notes.forEach(({ start, dur, f0, f1 }) => {
+          const t = baseTime + start;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f0, t);
+          osc.frequency.exponentialRampToValueAtTime(f1, t + dur);
+
+          gain.gain.setValueAtTime(0.001, t);
+          gain.gain.linearRampToValueAtTime(0.75, t + 0.012);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+          osc.connect(gain);
+          gain.connect(master);
+
+          osc.start(t);
+          osc.stop(t + dur + 0.01);
+        });
+      } else {
+        // Motif 2: Fast playful canopy trill
+        const t = baseTime;
+        const dur = 0.22;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(3600, t);
+        osc.frequency.exponentialRampToValueAtTime(4200, t + dur * 0.5);
+        osc.frequency.exponentialRampToValueAtTime(3400, t + dur);
+
+        // Rapid trill vibrato
+        lfo.frequency.setValueAtTime(26, t);
+        lfoGain.gain.setValueAtTime(320, t);
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.8, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        osc.connect(gain);
+        gain.connect(master);
+
+        lfo.start(t);
+        osc.start(t);
+        lfo.stop(t + dur + 0.01);
+        osc.stop(t + dur + 0.01);
+      }
+    } catch (e) {}
+  }
+
+  // ── Procedural Elephant Trumpet (Distant Majestic Island Jungle Call) ──
+  playElephantTrumpet(volume = 0.075) {
+    try {
+      this.ensureInitialized();
+      if (!this.audioContext) return;
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      const ctx = this.audioContext;
+      const now = ctx.currentTime;
+      const duration = 1.45;
+
+      const master = ctx.createGain();
+      master.gain.setValueAtTime(0.001, now);
+      master.gain.linearRampToValueAtTime(volume, now + 0.18);
+      master.gain.setValueAtTime(volume * 0.92, now + 0.65);
+      master.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+      // Stereo positioning (slightly off-center in the deep jungle)
+      if (ctx.createStereoPanner) {
+        const panner = ctx.createStereoPanner();
+        panner.pan.setValueAtTime((Math.random() > 0.5 ? 1 : -1) * (0.3 + Math.random() * 0.4), now);
+        master.connect(panner);
+        panner.connect(ctx.destination);
+      } else {
+        master.connect(ctx.destination);
+      }
+
+      // Primary brassy oscillator (Sawtooth for rich harmonic spectrum)
+      const osc = ctx.createOscillator();
+      osc.type = 'sawtooth';
+
+      // Elephant trumpet pitch curve: low growl -> majestic high trumpet blast -> sliding roar
+      osc.frequency.setValueAtTime(210, now);
+      osc.frequency.exponentialRampToValueAtTime(440, now + 0.18);
+      osc.frequency.linearRampToValueAtTime(510, now + 0.55);
+      osc.frequency.exponentialRampToValueAtTime(250, now + duration);
+
+      // Second harmonic oscillator (Square wave for resonant trunk nasal cavity)
+      const osc2 = ctx.createOscillator();
+      osc2.type = 'square';
+      osc2.frequency.setValueAtTime(212, now);
+      osc2.frequency.exponentialRampToValueAtTime(444, now + 0.18);
+      osc2.frequency.linearRampToValueAtTime(514, now + 0.55);
+      osc2.frequency.exponentialRampToValueAtTime(252, now + duration);
+
+      const osc2Gain = ctx.createGain();
+      osc2Gain.gain.setValueAtTime(0.24, now);
+
+      // LFO for trunk lip-flutter vibrato (~21 Hz flutter)
+      const lfo = ctx.createOscillator();
+      lfo.frequency.setValueAtTime(21, now);
+      const lfoGain = ctx.createGain();
+      lfoGain.gain.setValueAtTime(28, now); // ±28 Hz frequency flutter
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
+      lfoGain.connect(osc2.frequency);
+
+      // Elephant trunk vocal formant bandpass filter
+      const trunkFilter = ctx.createBiquadFilter();
+      trunkFilter.type = 'bandpass';
+      trunkFilter.frequency.setValueAtTime(820, now);
+      trunkFilter.frequency.linearRampToValueAtTime(1160, now + 0.35);
+      trunkFilter.frequency.exponentialRampToValueAtTime(640, now + duration);
+      trunkFilter.Q.setValueAtTime(3.6, now);
+
+      // Distant atmosphere warm lowpass filter
+      const distFilter = ctx.createBiquadFilter();
+      distFilter.type = 'lowpass';
+      distFilter.frequency.setValueAtTime(2800, now);
+
+      osc.connect(trunkFilter);
+      osc2.connect(osc2Gain);
+      osc2Gain.connect(trunkFilter);
+      trunkFilter.connect(distFilter);
+      distFilter.connect(master);
+
+      osc.start(now);
+      osc2.start(now);
+      lfo.start(now);
+
+      osc.stop(now + duration + 0.05);
+      osc2.stop(now + duration + 0.05);
+      lfo.stop(now + duration + 0.05);
+    } catch (e) {}
+  }
+
+  // ── Procedural Jungle Monkey / Chimp Chatter ("Ooh-ooh Aah-aah!") ──
+  playMonkeyChatter(volume = 0.065) {
+    try {
+      this.ensureInitialized();
+      if (!this.audioContext) return;
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      const ctx = this.audioContext;
+      const baseTime = ctx.currentTime;
+
+      const master = ctx.createGain();
+      master.gain.setValueAtTime(volume, baseTime);
+
+      if (ctx.createStereoPanner) {
+        const panner = ctx.createStereoPanner();
+        panner.pan.setValueAtTime((Math.random() * 1.2) - 0.6, baseTime);
+        master.connect(panner);
+        panner.connect(ctx.destination);
+      } else {
+        master.connect(ctx.destination);
+      }
+
+      // 4 quick playful chatter bursts
+      const calls = [
+        { start: 0, dur: 0.065, f0: 490, f1: 660 },
+        { start: 0.11, dur: 0.065, f0: 530, f1: 720 },
+        { start: 0.23, dur: 0.075, f0: 690, f1: 940 },
+        { start: 0.35, dur: 0.085, f0: 740, f1: 1010 }
+      ];
+
+      calls.forEach(({ start, dur, f0, f1 }) => {
+        const t = baseTime + start;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f0, t);
+        osc.frequency.exponentialRampToValueAtTime(f1, t + dur);
+
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1150, t);
+        filter.Q.setValueAtTime(4.0, t);
+
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.85, t + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(master);
+
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      });
+    } catch (e) {}
+  }
+
+  // ── Procedural Exotic Tropical Parrot Squawk ──
+  playParrotCall(volume = 0.055) {
+    try {
+      this.ensureInitialized();
+      if (!this.audioContext) return;
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      const ctx = this.audioContext;
+      const baseTime = ctx.currentTime;
+
+      const master = ctx.createGain();
+      master.gain.setValueAtTime(volume, baseTime);
+
+      if (ctx.createStereoPanner) {
+        const panner = ctx.createStereoPanner();
+        panner.pan.setValueAtTime((Math.random() * 1.4) - 0.7, baseTime);
+        master.connect(panner);
+        panner.connect(ctx.destination);
+      } else {
+        master.connect(ctx.destination);
+      }
+
+      const squawks = [
+        { start: 0, dur: 0.11, f0: 1650, f1: 1100 },
+        { start: 0.16, dur: 0.14, f0: 1850, f1: 1200 }
+      ];
+
+      squawks.forEach(({ start, dur, f0, f1 }) => {
+        const t = baseTime + start;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        // Modulator for raspy squawk texture
+        const mod = ctx.createOscillator();
+        const modGain = ctx.createGain();
+        mod.frequency.setValueAtTime(36, t);
+        modGain.gain.setValueAtTime(110, t);
+        mod.connect(modGain);
+        modGain.connect(osc.frequency);
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(f0, t);
+        osc.frequency.exponentialRampToValueAtTime(f1, t + dur);
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1400, t);
+        filter.Q.setValueAtTime(3.0, t);
+
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.7, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(master);
+
+        mod.start(t);
+        osc.start(t);
+        mod.stop(t + dur + 0.01);
+        osc.stop(t + dur + 0.01);
+      });
+    } catch (e) {}
+  }
+
   stopIslandAmbience() {
+    this.isAmbienceActive = false;
+    if (this.wildlifeTimer) {
+      clearTimeout(this.wildlifeTimer);
+      this.wildlifeTimer = null;
+    }
     if (!this.ambienceNodes) return;
     try {
       const { noiseSource, lfo, masterGain } = this.ambienceNodes;
@@ -392,7 +770,6 @@ class SoundEffects {
       }
     } catch (e) {}
     this.ambienceNodes = null;
-    this.isAmbienceActive = false;
   }
 
   // Special softer, lower-pitched sound for number/button clicks

@@ -615,7 +615,7 @@ const LearningPath = () => {
     return getScoreTierData(currentStage?.score || 0, currentStage?.status || 'locked', isArabic);
   }, [currentStage?.score, currentStage?.status, isArabic]);
 
-  // ── Play sound helper (Crash Bandicoot Wumpa Audio System) ──
+  // ── Play sound helper (Crash Bandicoot Wumpa Audio System + Wildlife) ──
   const playSfx = useCallback((type) => {
     if (soundMuted) return;
     if (type === 'wumpa') soundEffects.playWumpaFruit();
@@ -624,6 +624,11 @@ const LearningPath = () => {
     else if (type === 'fanfare') soundEffects.playTikiFanfare();
     else if (type === 'win') soundEffects.playWinSound();
     else if (type === 'wrong') soundEffects.playWrong();
+    else if (type === 'bird') soundEffects.playBirdChirp();
+    else if (type === 'elephant') soundEffects.playElephantTrumpet();
+    else if (type === 'monkey') soundEffects.playMonkeyChatter();
+    else if (type === 'parrot') soundEffects.playParrotCall();
+    else if (type === 'wildlife') soundEffects.playRandomWildlife();
     else soundEffects.playWoodenCrate();
   }, [soundMuted]);
 
@@ -889,6 +894,20 @@ const LearningPath = () => {
               </span>
             </div>
           </div>
+
+          <button
+            className="wumpa-icon-btn wildlife-btn"
+            onClick={() => {
+              if (soundMuted) {
+                handleToggleSound();
+              } else {
+                soundEffects.playRandomWildlife();
+              }
+            }}
+            title={isArabic ? 'أصوات كائنات الجزيرة (طيور، فيل، قرود)' : 'Tap for Island Wildlife (Birds, Elephant, Monkeys)'}
+          >
+            <span role="img" aria-label="Wildlife" style={{ fontSize: '1.1rem' }}>🌴</span>
+          </button>
 
           <button
             className={`wumpa-icon-btn ${soundMuted ? 'muted' : ''}`}
