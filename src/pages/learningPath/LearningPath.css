@@ -1969,21 +1969,74 @@
    MOBILE PHONES & SMALL SCREENS (Clear, High-Contrast, Touch-Friendly)
    ========================================================================== */
 @media (max-width: 768px) {
-  /* Keep the map landscape crisp & detailed, allowing smooth panning */
+  .learning-path-page.gamified-adventure-view {
+    padding: 0 0.5rem 6.5rem !important;
+  }
+
+  /* Keep the map landscape crisp & detailed, allowing smooth touch panning */
   .wumpa-world-container {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-behavior: smooth !important;
+    scrollbar-width: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0.35rem 0 !important;
+    border-width: 6px !important;
+    border-radius: 18px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7) !important;
+    touch-action: pan-x !important;
+    position: relative !important;
     justify-content: flex-start !important;
   }
 
+  .wumpa-world-container::-webkit-scrollbar {
+    display: none !important;
+  }
+
   .wumpa-map-stage {
-    min-width: 860px !important;
-    width: 860px !important;
-    height: 100% !important;
+    min-width: 920px !important;
+    width: 920px !important;
+    height: clamp(380px, 58vh, 520px) !important;
+    min-height: 380px !important;
+    max-height: 520px !important;
+    position: relative !important;
+    overflow: hidden !important;
   }
 
   .wumpa-bg-map-image {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
+  }
+
+  /* Subtle Swipe Hint for new students on phone */
+  .wumpa-mobile-swipe-hint {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.88);
+    border: 1.5px solid rgba(251, 191, 36, 0.6);
+    color: #fef08a;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+    z-index: 35;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    animation: swipeHintPulse 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes swipeHintPulse {
+    0% { transform: translateX(-50%) scale(0.96); opacity: 0.85; }
+    100% { transform: translateX(-50%) scale(1.02); opacity: 1; }
   }
 
   /* Waypoint node sizing on mobile: larger, punchier tap targets */
@@ -2064,15 +2117,22 @@
 
   /* Mobile Bottom Floating Controls */
   .wumpa-bottom-controls {
-    bottom: 8px !important;
+    bottom: 12px !important;
     left: 8px !important;
     right: 8px !important;
     transform: none !important;
     width: auto !important;
-    padding: 0.5rem 0.8rem !important;
-    gap: 0.5rem !important;
+    padding: 0.45rem 0.75rem !important;
+    gap: 0.4rem !important;
     border-radius: 16px !important;
     flex-wrap: nowrap !important;
+    z-index: 50 !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  }
+
+  /* Clear the bottom MobileNav when student is logged in */
+  .learning-path-page.has-mobile-nav .wumpa-bottom-controls {
+    bottom: 74px !important;
   }
 
   .stage-action-card {

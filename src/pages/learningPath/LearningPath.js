@@ -285,7 +285,8 @@ export function detectSubjectWorld(subjectName) {
 
 const LearningPath = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n?.language === 'ar';
   const token = safeLocalStorage.getItem('token');
   const userId = safeLocalStorage.getItem('pp_id') || 'guest';
   const isAuth = Boolean(token && userId && userId !== 'guest');
@@ -306,11 +307,18 @@ const LearningPath = () => {
   const [lockedSpeech, setLockedSpeech] = useState(null);
   const [soundMuted, setSoundMuted] = useState(false);
   const [heroSpriteUrl, setHeroSpriteUrl] = useState(null);
+  const [showSwipeHint, setShowSwipeHint] = useState(true);
 
   const speechTimerRef = useRef(null);
   const characterRef = useRef(null);
-
   const mapAreaRef = useRef(null);
+  const isFirstPanRef = useRef(true);
+
+  // Auto-dismiss swipe hint on mobile after 5s
+  useEffect(() => {
+    const hintTimer = setTimeout(() => setShowSwipeHint(false), 5000);
+    return () => clearTimeout(hintTimer);
+  }, []);
 
   // ── 1. Create transparent character sprite on load ──
   useEffect(() => {
@@ -446,19 +454,33 @@ const LearningPath = () => {
 
   // Auto-pan camera to follow character on mobile or narrow viewports
   useEffect(() => {
-    if (!mapAreaRef.current) return;
+    if (!mapAreaRef.current || mappedStages.length === 0) return;
     const container = mapAreaRef.current;
-    const timer = setTimeout(() => {
+
+    const centerCamera = (smooth = true) => {
       const stageEl = container.querySelector(`.wumpa-portal-node[data-index="${characterIndex}"]`);
       if (stageEl) {
         const containerWidth = container.clientWidth;
         const scrollWidth = container.scrollWidth;
         if (scrollWidth > containerWidth) {
           const targetLeft = stageEl.offsetLeft - containerWidth / 2 + stageEl.clientWidth / 2;
-          container.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+          container.scrollTo({
+            left: Math.max(0, targetLeft),
+            behavior: smooth ? 'smooth' : 'auto',
+          });
         }
       }
-    }, 150);
+    };
+
+    // First load: position instantly without delay
+    if (isFirstPanRef.current) {
+      isFirstPanRef.current = false;
+      const initialTimer = setTimeout(() => centerCamera(false), 80);
+      return () => clearTimeout(initialTimer);
+    }
+
+    // Subsequent movement: smooth cinematic pan
+    const timer = setTimeout(() => centerCamera(true), 120);
     return () => clearTimeout(timer);
   }, [characterIndex, mappedStages]);
 
@@ -609,7 +631,7 @@ const LearningPath = () => {
   }, '');
 
   return (
-    <div className={`learning-path-page gamified-adventure-view ${activeWorld.filterClass}`}>
+    <div className={`learning-path-page gamified-adventure-view ${activeWorld.filterClass} ${isAuth ? 'has-mobile-nav' : ''}`}>
       {/* ── TOP ADVENTURE HUD BANNER (Subject-Themed) ── */}
       <div className="wumpa-top-hud">
         {/* Left Stats: Lives & Back */}
@@ -722,7 +744,17 @@ const LearningPath = () => {
       )}
 
       {/* ── THE INTERACTIVE WORLD MAP VIEWPORT ── */}
-      <div className="wumpa-world-container" ref={mapAreaRef}>
+      <div 
+        className="wumpa-world-container" 
+        ref={mapAreaRef}
+        onTouchStart={() => setShowSwipeHint(false)}
+        onMouseDown={() => setShowSwipeHint(false)}
+      >
+        {showSwipeHint && (
+          <div className="wumpa-mobile-swipe-hint">
+            <span>↔️ {isArabic ? 'اسحب الخريطة للمغامرة' : 'Swipe map to explore'}</span>
+          </div>
+        )}
         <div className="wumpa-map-stage">
           {/* Background Map Art */}
           <img

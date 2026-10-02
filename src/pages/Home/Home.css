@@ -1367,6 +1367,11 @@
     }
 
     .mobile-journey-card .journey-map-canvas-preview {
-        aspect-ratio: 16/9;
+        aspect-ratio: 4/3;
+        min-height: 260px;
+    }
+
+    .mobile-journey-card .journey-preview-bg {
+        object-position: 15% center;
     }
 }
