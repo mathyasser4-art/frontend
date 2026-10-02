@@ -1901,6 +1901,14 @@
   color: #38bdf8;
 }
 
+/* Bottom Actions Row (Play button + Navigation D-Pad) */
+.wumpa-bottom-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
 /* Center Primary Arcade Play Button */
 .wumpa-play-button {
   display: flex;
@@ -2633,9 +2641,9 @@
       display: none !important;
     }
 
+    /* Hide unit archways on mobile portrait so the whole island is crystal clear */
     .wumpa-unit-archway {
-      transform: scale(0.58) translate(-50%, -100%) !important;
-      transform-origin: bottom center !important;
+      display: none !important;
     }
 
     .wumpa-hero-mascot {
@@ -2662,6 +2670,57 @@
     .hero-ready-beacon {
       top: -14px !important;
       transform: translateX(-50%) scale(0.8) !important;
+    }
+
+    /* Clean 2-Tier Bottom Dock for Portrait Mode */
+    .wumpa-bottom-controls {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 6px !important;
+      padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 16px)) !important;
+      box-sizing: border-box !important;
+      width: 100% !important;
+      border-radius: 18px 18px 0 0 !important;
+    }
+
+    .stage-action-card {
+      width: 100% !important;
+      max-width: 100% !important;
+      flex: 1 1 auto !important;
+    }
+
+    .card-lesson-title {
+      font-size: 0.92rem !important;
+      line-height: 1.25 !important;
+      white-space: normal !important;
+      margin: 2px 0 !important;
+      max-width: 100% !important;
+    }
+
+    .card-meta-row {
+      gap: 0.45rem !important;
+      flex-wrap: wrap !important;
+      margin-top: 2px !important;
+    }
+
+    .wumpa-bottom-actions-row {
+      display: flex !important;
+      align-items: center !important;
+      width: 100% !important;
+      gap: 8px !important;
+    }
+
+    .wumpa-play-button {
+      flex: 1 1 auto !important;
+      min-height: 44px !important;
+      justify-content: center !important;
+      padding: 0.5rem 1rem !important;
+    }
+
+    .wumpa-dpad-buttons {
+      flex-shrink: 0 !important;
+      display: flex !important;
+      gap: 6px !important;
     }
   }
 
@@ -2816,20 +2875,31 @@
    ========================================================================== */
 @media (max-height: 500px) and (orientation: landscape) {
   .wumpa-map-stage {
-    min-width: 100% !important;
-    width: 100% !important;
+    min-width: 1100px !important;
+    width: 1100px !important;
     height: 100% !important;
   }
 
+  .wumpa-world-container {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
+  }
+
   .wumpa-top-hud {
-    top: 6px !important;
-    left: 10px !important;
-    right: 10px !important;
+    padding: 3px 8px !important;
+    gap: 4px !important;
+    top: 0 !important;
+  }
+
+  .guest-journey-ribbon {
+    margin: 2px 8px !important;
+    padding: 3px 8px !important;
   }
 
   .wumpa-bottom-controls {
-    bottom: 6px !important;
-    padding: 0.35rem 0.8rem !important;
+    padding: 3px 8px calc(4px + env(safe-area-inset-bottom, 6px)) !important;
   }
 
   .wumpa-play-button {

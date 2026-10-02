@@ -535,7 +535,7 @@ const LearningPath = () => {
     return () => clearTimeout(timer);
   }, [characterIndex, mappedStages]);
 
-  // Touch & Mouse Drag Panning for World Map Viewport
+  // Mouse Drag Panning for Desktop / Pointer Users (Mobile uses smooth native touch scroll)
   useEffect(() => {
     const el = mapAreaRef.current;
     if (!el) return;
@@ -544,41 +544,31 @@ const LearningPath = () => {
     let startX = 0;
     let scrollLeft = 0;
 
-    const onStart = (e) => {
+    const onMouseDown = (e) => {
       if (e.target.closest('.wumpa-portal-node, button, a')) return;
       isDown = true;
-      startX = e.pageX || (e.touches && e.touches[0].pageX);
+      startX = e.pageX;
       scrollLeft = el.scrollLeft;
     };
 
-    const onMove = (e) => {
+    const onMouseMove = (e) => {
       if (!isDown) return;
-      const currentX = e.pageX || (e.touches && e.touches[0].pageX);
-      if (!currentX) return;
-      const walk = (currentX - startX) * 1.5;
+      const walk = (e.pageX - startX) * 1.5;
       el.scrollLeft = scrollLeft - walk;
     };
 
-    const onEnd = () => {
+    const onMouseUp = () => {
       isDown = false;
     };
 
-    el.addEventListener('mousedown', onStart);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onEnd);
-
-    el.addEventListener('touchstart', onStart, { passive: true });
-    window.addEventListener('touchmove', onMove, { passive: true });
-    window.addEventListener('touchend', onEnd);
+    el.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
 
     return () => {
-      el.removeEventListener('mousedown', onStart);
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onEnd);
-
-      el.removeEventListener('touchstart', onStart);
-      window.removeEventListener('touchmove', onMove);
-      window.removeEventListener('touchend', onEnd);
+      el.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
     };
   }, []);
 
@@ -1272,52 +1262,53 @@ const LearningPath = () => {
           </div>
         </div>
 
-        {/* Center Primary Action Button */}
-        <button
-          className={`wumpa-play-button ${currentStage?.status === 'locked' ? 'btn-locked' : 'btn-active'}`}
-          style={
-            currentStage?.status !== 'locked' && currentStage?.unitTheme
-              ? {
-                  borderTopColor: currentStage.unitTheme.accentBorder,
-                  boxShadow: `0 8px 25px ${currentStage.unitTheme.colorGlow}`,
-                }
-              : {}
-          }
-          onClick={launchCurrentStage}
-          disabled={currentStage?.status === 'locked'}
-        >
-          <Play size={24} fill="currentColor" />
-          <div className="play-btn-text">
-            <span className="play-main-lbl">
-              {currentStage?.status === 'completed'
-                ? (isArabic ? 'إعادة الدرس' : 'REPLAY LESSON')
-                : (isArabic ? 'ابدأ الدرس' : 'START LESSON')}
-            </span>
-            <span className="play-hint-lbl">Press [SPACE] or [ENTER]</span>
+        {/* Bottom Actions Row: Play Button & Nav Chevrons */}
+        <div className="wumpa-bottom-actions-row">
+          <button
+            className={`wumpa-play-button ${currentStage?.status === 'locked' ? 'btn-locked' : 'btn-active'}`}
+            style={
+              currentStage?.status !== 'locked' && currentStage?.unitTheme
+                ? {
+                    borderTopColor: currentStage.unitTheme.accentBorder,
+                    boxShadow: `0 8px 25px ${currentStage.unitTheme.colorGlow}`,
+                  }
+                : {}
+            }
+            onClick={launchCurrentStage}
+            disabled={currentStage?.status === 'locked'}
+          >
+            <Play size={24} fill="currentColor" />
+            <div className="play-btn-text">
+              <span className="play-main-lbl">
+                {currentStage?.status === 'completed'
+                  ? (isArabic ? 'إعادة الدرس' : 'REPLAY LESSON')
+                  : (isArabic ? 'ابدأ الدرس' : 'START LESSON')}
+              </span>
+              <span className="play-hint-lbl">Press [SPACE] or [ENTER]</span>
+            </div>
+          </button>
+
+          <div className="wumpa-dpad-buttons">
+            <button
+              className="wumpa-nav-btn"
+              disabled={characterIndex <= 0}
+              onClick={() => moveToStage(characterIndex - 1)}
+              title="Previous Stage [← / A]"
+            >
+              <ChevronLeft size={22} />
+              <span>PREV</span>
+            </button>
+
+            <button
+              className="wumpa-nav-btn"
+              disabled={characterIndex >= mappedStages.length - 1}
+              onClick={() => moveToStage(characterIndex + 1)}
+              title="Next Stage [→ / D]"
+            >
+              <span>NEXT</span>
+              <ChevronRight size={22} />
+            </button>
           </div>
-        </button>
-
-        {/* Right Navigation Arrows (Gamepad Style) */}
-        <div className="wumpa-dpad-buttons">
-          <button
-            className="wumpa-nav-btn"
-            disabled={characterIndex <= 0}
-            onClick={() => moveToStage(characterIndex - 1)}
-            title="Previous Stage [← / A]"
-          >
-            <ChevronLeft size={22} />
-            <span>PREV</span>
-          </button>
-
-          <button
-            className="wumpa-nav-btn"
-            disabled={characterIndex >= mappedStages.length - 1}
-            onClick={() => moveToStage(characterIndex + 1)}
-            title="Next Stage [→ / D]"
-          >
-            <span>NEXT</span>
-            <ChevronRight size={22} />
-          </button>
         </div>
       </div>
 
