@@ -537,7 +537,7 @@ const LearningPath = () => {
     return () => clearTimeout(timer);
   }, [characterIndex, mappedStages]);
 
-  // Mouse Drag Panning for Desktop / Pointer Users (Mobile uses smooth native touch scroll)
+  // Mouse & Touch Drag Panning for fluid exploration on all screens
   useEffect(() => {
     const el = mapAreaRef.current;
     if (!el) return;
@@ -563,14 +563,46 @@ const LearningPath = () => {
       isDown = false;
     };
 
+    // Touch Drag Panning for mobile rotation & landscape mode
+    let isTouching = false;
+    let touchStartX = 0;
+    let touchScrollLeft = 0;
+
+    const onTouchStart = (e) => {
+      if (e.target.closest('.wumpa-portal-node, button, a')) return;
+      if (e.touches && e.touches.length === 1) {
+        isTouching = true;
+        touchStartX = e.touches[0].pageX;
+        touchScrollLeft = el.scrollLeft;
+      }
+    };
+
+    const onTouchMove = (e) => {
+      if (!isTouching || !e.touches || e.touches.length !== 1) return;
+      const walk = (e.touches[0].pageX - touchStartX) * 1.35;
+      el.scrollLeft = touchScrollLeft - walk;
+    };
+
+    const onTouchEnd = () => {
+      isTouching = false;
+    };
+
     el.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: true });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
 
     return () => {
       el.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
+
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
     };
   }, []);
 
