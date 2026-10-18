@@ -203,19 +203,24 @@ function TeacherDashboard() {
     }
 
     const addClassToBox = () => {
-        if (classSelector === '' || classSelector === 'Select Class' || classSelector === 'There is no classes for this teacher') {
-            setError('You must select class first')
+        const cleanSelector = (classSelector || '').trim().replace(/\s+/g, ' ');
+        if (!cleanSelector || cleanSelector === 'Select Class' || cleanSelector === 'اختر الفصل' || cleanSelector === 'There is no classes for this teacher' || cleanSelector === 'لا توجد فصول لهذا المعلم بعد') {
+            setError(isArabic ? 'يجب اختيار فصل أولاً' : 'You must select class first')
         } else {
             setError(null)
-            if (classSelector === 'All Classes') {
+            if (cleanSelector === 'All Classes' || cleanSelector === 'جميع الفصول') {
                 setClassesBox(classesList)
             } else {
-                const findClass = classesBox.filter(e => e.class === classSelector)[0]
-                if (findClass) {
-                    setError('This class is already added')
+                const isAlreadyAdded = classesBox.some(c => (c.class || '').trim().replace(/\s+/g, ' ') === cleanSelector)
+                if (isAlreadyAdded) {
+                    setError(isArabic ? 'تمت إضافة هذا الفصل بالفعل' : 'This class is already added')
                 } else {
-                    const getClass = classesList.filter(e => e.class === classSelector)[0]
-                    setClassesBox(classesBox => [...classesBox, getClass]);
+                    const getClass = classesList.find(c => (c.class || '').trim().replace(/\s+/g, ' ') === cleanSelector)
+                    if (getClass) {
+                        setClassesBox(classesBox => [...classesBox, getClass]);
+                    } else {
+                        setError(isArabic ? 'لم يتم العثور على الفصل' : 'Class could not be found');
+                    }
                 }
             }
         }
@@ -520,11 +525,11 @@ function TeacherDashboard() {
                                 <div className="select-container d-flex">
                                     <div className="select-class">
                                         <select value={classSelector} onChange={(e) => setClassSelector(e.target.value)}>
-                                            <option>{isArabic ? 'اختر الفصل' : 'Select Class'}</option>
-                                            {classesList?.length === 0 ? <option>{isArabic ? 'لا توجد فصول لهذا المعلم بعد' : 'There is no classes for this teacher'}</option> : <option>{isArabic ? 'جميع الفصول' : 'All Classes'}</option>}
+                                            <option value="">{isArabic ? 'اختر الفصل' : 'Select Class'}</option>
+                                            {classesList?.length === 0 ? <option disabled>{isArabic ? 'لا توجد فصول لهذا المعلم بعد' : 'There is no classes for this teacher'}</option> : <option value={isArabic ? 'جميع الفصول' : 'All Classes'}>{isArabic ? 'جميع الفصول' : 'All Classes'}</option>}
                                             {classesList?.map(item => {
                                                 return (
-                                                    <option key={item._id}>{item.class}</option>
+                                                    <option key={item._id} value={item.class}>{item.class}</option>
                                                 )
                                             })}
                                         </select>

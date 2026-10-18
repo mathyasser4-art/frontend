@@ -15,6 +15,8 @@ function TeacherAssignmentReports() {
   const [error, setError] = useState(null);
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [sortBy, setSortBy] = useState('score-desc');
+  const [lastSyncedTime, setLastSyncedTime] = useState(new Date());
+  const [isSyncing, setIsSyncing] = useState(false);
   const { assignmentID } = useParams();
   const navigate = useNavigate();
 
@@ -35,72 +37,84 @@ function TeacherAssignmentReports() {
     return timeStr;
   };
 
-  // ✅ Fetch all student results for this assignment
-  useEffect(() => {
-    const fetchStudentResults = async () => {
-      try {
-        console.log('📊 Fetching student results for assignment:', assignmentID);
+  // ✅ Fetch all student results for this assignment with auto-refresh capability
+  const fetchStudentResults = async (isManual = false) => {
+    if (isManual) setIsSyncing(true);
+    try {
+      console.log('📊 Fetching student results for assignment:', assignmentID);
 
-        const token = safeLocalStorage.getItem('O_authWEB');
-        if (!token) {
-          setError({
-            type: 'auth',
-            message: 'You are not logged in. Please login as a teacher to view reports.'
-          });
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch(`${API_BASE_URL}/assignment/${assignmentID}/student-results`, {
-          headers: {
-            authrization: 'pracYas09' + token,
-          }
+      const token = safeLocalStorage.getItem('O_authWEB');
+      if (!token) {
+        setError({
+          type: 'auth',
+          message: 'You are not logged in. Please login as a teacher to view reports.'
         });
+        setLoading(false);
+        setIsSyncing(false);
+        return;
+      }
 
-        console.log('📡 Response status:', response.status);
-        const data = await response.json();
-        console.log('📦 Full API response:', data);
+      const response = await fetch(`${API_BASE_URL}/assignment/${assignmentID}/student-results`, {
+        headers: {
+          authrization: 'pracYas09' + token,
+        }
+      });
+
+      console.log('📡 Response status:', response.status);
+      const data = await response.json();
+      console.log('📦 Full API response:', data);
+      
+      if (response.status === 502 || response.status === 401 || response.status === 403) {
+        setError({
+          type: 'auth',
+          message: 'Authentication failed. Your session may have expired or you may not have teacher permissions.',
+          details: data.message
+        });
+        setLoading(false);
+        setIsSyncing(false);
+        return;
+      }
+
+      if (data.message === 'success') {
+        console.log('✅ Real API data loaded:', data.students?.length, 'students');
         
-        if (response.status === 502 || response.status === 401 || response.status === 403) {
-          setError({
-            type: 'auth',
-            message: 'Authentication failed. Your session may have expired or you may not have teacher permissions.',
-            details: data.message
-          });
-          setLoading(false);
-          return;
-        }
-
-        if (data.message === 'success') {
-          console.log('✅ Real API data loaded:', data.students?.length, 'students');
-          
-          // Filter students who have completed the assignment (have a score)
-          const completedStudents = (data.students || []).filter(student => 
-            student.score !== undefined && student.score !== null
-          );
-          
-          setStudents(completedStudents);
-          setAssignment(data.assignment);
-        } else {
-          setError({
-            type: 'api',
-            message: 'Failed to load student results',
-            details: data.message
-          });
-        }
-      } catch (error) {
-        console.error('❌ Error fetching student results:', error);
+        // Include all students who have started/answered
+        const studentList = (data.students || []).filter(student => 
+          student.score !== undefined && student.score !== null
+        );
+        
+        setStudents(studentList);
+        setAssignment(data.assignment);
+        setLastSyncedTime(new Date());
+      } else {
+        setError({
+          type: 'api',
+          message: 'Failed to load student results',
+          details: data.message
+        });
+      }
+    } catch (error) {
+      console.error('❌ Error fetching student results:', error);
+      if (!isManual) {
         setError({
           type: 'network',
           message: 'Network error occurred while fetching results',
           details: error.message
         });
-      } finally {
-        setLoading(false);
       }
-    };
+    } finally {
+      setLoading(false);
+      setIsSyncing(false);
+    }
+  };
 
+  useEffect(() => {
     fetchStudentResults();
+    // Auto-poll every 25 seconds for live student submissions
+    const interval = setInterval(() => {
+      fetchStudentResults(false);
+    }, 25000);
+    return () => clearInterval(interval);
   }, [assignmentID]);
 
   // Handle logout and clear authentication
@@ -605,8 +619,26 @@ function TeacherAssignmentReports() {
 
       <div className="reports-content">
         <div className="reports-header">
-          <h1>📊 Homework Reports Hub</h1>
-          <p>{assignment?.title || 'Loading Homework...'}</p>
+          <div className="reports-header-title-row">
+            <div>
+              <h1>📊 Homework Reports Hub</h1>
+              <p>{assignment?.title || 'Loading Homework...'}</p>
+            </div>
+            <div className="live-sync-container">
+              <button 
+                onClick={() => { soundEffects.playClick(); fetchStudentResults(true); }}
+                className="btn-sync-refresh"
+                disabled={isSyncing}
+                title="Refresh to fetch latest student submissions"
+              >
+                <i className={`fa fa-refresh ${isSyncing ? 'fa-spin' : ''}`} aria-hidden="true"></i>
+                {isSyncing ? 'Syncing...' : 'Live Refresh'}
+              </button>
+              <span className="sync-time-text">
+                Live: {lastSyncedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* ============================================================
@@ -751,6 +783,20 @@ function TeacherAssignmentReports() {
                           <div className="student-name-wrapper">
                             <h3>{studentName}</h3>
                             {getGradeBadge(student.percentage)}
+                            {student.isCompleted ? (
+                              <span className="status-badge status-completed" title="Student has completed and submitted this assignment">
+                                🟢 Completed
+                              </span>
+                            ) : (
+                              <span className="status-badge status-solving" title="Student is currently working on this assignment">
+                                🟡 In Progress ({student.answeredQuestions}/{student.totalQuestions || '—'} Qs)
+                              </span>
+                            )}
+                            {student.attemptNumber > 1 && (
+                              <span className="attempt-badge" title={`Attempt #${student.attemptNumber}`}>
+                                🔄 Attempt #{student.attemptNumber}
+                              </span>
+                            )}
                           </div>
                           
                           <div className="student-meta-stats">
@@ -766,7 +812,9 @@ function TeacherAssignmentReports() {
                           
                           <div className="completion-date-text">
                             <i className="fa fa-calendar-check-o" aria-hidden="true"></i>
-                            Completed: {formatDateTime(student.completedAt)}
+                            {student.isCompleted 
+                              ? `Completed: ${formatDateTime(student.completedAt || student.startedAt)}`
+                              : `Started: ${formatDateTime(student.startedAt)} (Still solving...)`}
                           </div>
                         </div>
 

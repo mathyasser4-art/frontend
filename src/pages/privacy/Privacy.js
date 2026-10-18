@@ -10,7 +10,7 @@ function Privacy() {
       <div className="privacy-container">
         <div className="privacy-header">
           <h1>Privacy Policy</h1>
-          <p>Last updated: June 14, 2026</p>
+          <p>Last updated: October 18, 2026</p>
         </div>
         
         <div className="privacy-content">
@@ -45,9 +45,26 @@ function Privacy() {
               You have the right to access, update, or request the deletion of your account and personal data at any time. If you wish to exercise these rights or have any questions about our privacy practices, please contact our support team.
             </p>
           </div>
+
+          <div className="privacy-section">
+            <h2>5. Cookies & Third-Party Advertising</h2>
+            <p>
+              We may partner with third-party advertising networks, including Google AdSense, to support our free educational features. Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to our website or other websites. Google's use of advertising cookies enables it and its partners to serve ads to users based on their visit to our sites and/or other sites on the Internet.
+            </p>
+            <p>
+              Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a> or by visiting <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer">aboutads.info</a>.
+            </p>
+          </div>
+
+          <div className="privacy-section">
+            <h2>6. Children's Privacy (COPPA Compliance)</h2>
+            <p>
+              Abacus Heroes is designed as an educational tool for learners of all ages, including children under 13. We are committed to complying with the Children's Online Privacy Protection Act (COPPA). We do not knowingly serve behavioral or personalized advertising to child accounts. Where advertising is served, it is restricted to contextual and family-safe advertising without tracking or profiling.
+            </p>
+          </div>
           
           <div className="privacy-section">
-            <h2>5. Changes to This Policy</h2>
+            <h2>7. Changes to This Policy</h2>
             <p>
               We may update our Privacy Policy from time to time. We will notify you of any significant changes by posting the new Privacy Policy on this page and updating the "Last updated" date.
             </p>

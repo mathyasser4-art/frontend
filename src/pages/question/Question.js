@@ -12,7 +12,7 @@ import createAssignment from '../../api/assignment/createAssignment.api';
 import getClass from '../../api/teacher/getClass.api';
 import checked from '../../api/question/checkedAnswer.api';
 import API_BASE_URL from '../../config/api.config';
-import AbacusSimulator from '../../components/abacus/AbacusSimulator';
+import { MathQuillRenderer } from '../../components/mathquill/MathQuillEditor';
 import soundEffects from '../../utils/soundEffects';
 import { ArrowRight, Maximize2, Minimize2, Printer, FileText } from 'lucide-react';
 import '../../reusable.css';
@@ -20,6 +20,11 @@ import './Question.css';
 import jsPDF from 'jspdf';
 import { safeLocalStorage } from '../../utils/safeStorage';
 import { markChapterComplete, calculateStars } from '../../utils/learningPathProgress';
+import QuestionPdfNoterModal from '../../components/pdfNoter/QuestionPdfNoterModal';
+import SavedNotesBoxModal from '../../components/pdfNoter/SavedNotesBoxModal';
+import exportPracticeExamPdf from '../../utils/exportPracticeExamPdf';
+import { renderLatexInHtml } from '../../utils/latexRenderer';
+import 'katex/dist/katex.min.css';
 
 // ── Abacus grid helpers ───────────────────────────────────────────────────────
 
@@ -69,7 +74,24 @@ const translateNumbers = (text, toArabic) => {
 };
 
 const renderQuestion = (question, useArabicNumerals) => {
-    const gridRows = parseGridRows(question?.question);
+    let text = question?.question;
+    if (!text) return null;
+
+    text = String(text).replace(/(\d+)\/(\d+)/g, '\\frac{$1}{$2}');
+
+    // Check for LaTeX content first (new math questions)
+    const isLaTeX = /\\(frac|sqrt|sum|int|prod|times|div|pm|leq|geq|neq|approx|overline|text)/.test(String(text)) ||
+                    (/[\^_{}]/.test(String(text)) && /\\/.test(String(text)));
+    if (isLaTeX) {
+        return (
+            <div className="question-math-display">
+                <MathQuillRenderer latex={text} className="mq-display-large" />
+            </div>
+        );
+    }
+
+    // Legacy: abacus grid rendering
+    const gridRows = parseGridRows(text);
     if (gridRows) {
         return (
             <div className="abacus-grid-view">
@@ -91,22 +113,28 @@ const renderQuestion = (question, useArabicNumerals) => {
             </div>
         );
     }
+
+    // HTML / Rich text (e.g. from editor or questions with HTML formatting)
+    if (/<[a-z][\s\S]*>/i.test(String(text))) {
+        return (
+            <div 
+                className="question-html-clean question-stem-text"
+                dangerouslySetInnerHTML={{ __html: renderLatexInHtml(translateNumbers(text, useArabicNumerals)) }}
+            />
+        );
+    }
     
-    let lines = formatQuestionText(question?.question).split('\n');
+    // Plain text rendering
+    let lines = formatQuestionText(text).split('\n');
     return (
-        <pre>
+        <div className="question-plain-text">
             {lines.map((line, i) => {
-                const hasPlus = line.startsWith('+');
                 const restOfLine = translateNumbers(line.replace(/^\+/, ''), useArabicNumerals);
                 return (
-                    <span key={i}>
-                        {hasPlus && <span style={{ color: 'transparent' }}>+</span>}
-                        {restOfLine}
-                        {i < lines.length - 1 && '\n'}
-                    </span>
+                    <p key={i} className="question-stem-text">{restOfLine}</p>
                 );
             })}
-        </pre>
+        </div>
     );
 };
 
@@ -225,6 +253,71 @@ function Question() {
     const [error, setError] = useState(null);
     let [points, setPoints] = useState(0);
     const [questionList, setQuestionList] = useState([]);
+
+    const [showNoterModal, setShowNoterModal] = useState(false);
+    const [showNotesBoxModal, setShowNotesBoxModal] = useState(false);
+    const [savedQuestionNotes, setSavedQuestionNotes] = useState(() => {
+        const saved = localStorage.getItem('savedQuestionNotes');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [isExportingPdf, setIsExportingPdf] = useState(false);
+    const [pdfProgressText, setPdfProgressText] = useState('');
+
+    useEffect(() => {
+        localStorage.setItem('savedQuestionNotes', JSON.stringify(savedQuestionNotes));
+    }, [savedQuestionNotes]);
+
+    const [eliminatedOptions, setEliminatedOptions] = useState({});
+
+    const toggleEliminateOption = (qId, oIdx) => {
+        soundEffects.playClick();
+        setEliminatedOptions(prev => {
+            const currentList = prev[qId] || [];
+            const isEliminated = currentList.includes(oIdx);
+            const newList = isEliminated ? currentList.filter(i => i !== oIdx) : [...currentList, oIdx];
+            return { ...prev, [qId]: newList };
+        });
+    };
+
+    const renderChoiceText = (item) => {
+        if (!item) return '';
+        let str = String(item).trim();
+        str = str.replace(/^(\d+)\/(\d+)$/g, '\\frac{$1}{$2}');
+        if (/\\(frac|sqrt|pm|times|div|leq|geq|neq|approx|alpha|beta|theta|pi)/.test(str) && !str.includes('$')) {
+            str = `$${str}$`;
+        }
+        const translated = translateNumbers(str, useArabicNumerals);
+        return renderLatexInHtml(translated);
+    };
+
+    const handleDownloadExamPdf = async () => {
+        if (!questionData || questionData.length === 0) {
+            alert('No questions loaded to export.');
+            return;
+        }
+
+        setIsExportingPdf(true);
+        setPdfProgressText('Preparing PDF export...');
+
+        try {
+            const currentChapter = safeLocalStorage.getItem('current_chapter_name') || 'Practice Exam';
+            const teacherDispName = safeLocalStorage.getItem('pp_name') || 'Teacher';
+
+            await exportPracticeExamPdf({
+                questions: questionData,
+                examTitle: currentChapter,
+                teacherName: teacherDispName,
+                onProgress: ({ current, total, message }) => {
+                    setPdfProgressText(`Page ${current} of ${total}: ${message}`);
+                }
+            });
+        } catch (err) {
+            console.error('Download practice exam error:', err);
+        } finally {
+            setIsExportingPdf(false);
+            setPdfProgressText('');
+        }
+    };
     const [classesList, setClassesList] = useState([]);
     const [classesBox, setClassesBox] = useState([]);
     let [classSelector, setClassSelector] = useState('');
@@ -828,7 +921,7 @@ function Question() {
                 ? Math.round((correctAnswers / updatedQuestionData.length) * 100)
                 : 0;
             const stars = calculateStars(percentage);
-            markChapterComplete(userId, subjectID, chapterID, stars, percentage, updatedQuestionData.length);
+            markChapterComplete(userId, subjectID, chapterID, stars);
         }
 
         soundEffects.playWinSound();
@@ -893,6 +986,9 @@ function Question() {
     };
 
     const openQuestionList = () => {
+        if (isAuth) {
+            getClass(() => {}, setClassesList);
+        }
         const popup = document.querySelector('.question-list-popup');
         popup.classList.replace('d-none', 'd-flex');
         setTimeout(() => {
@@ -930,17 +1026,25 @@ function Question() {
     };
 
     const addClassToBox = () => {
-        if (!classSelector || classSelector === t('questionPage.selectClass')) {
-            setError(t('questionPage.mustSelectClassFirst'));
+        const cleanSelector = (classSelector || '').trim().replace(/\s+/g, ' ');
+        const selectClassPlaceholder = (t('questionPage.selectClass', 'Select Class') || '').trim().replace(/\s+/g, ' ');
+        const allClassesText = (t('questionPage.allClasses', 'All Classes') || '').trim().replace(/\s+/g, ' ');
+
+        if (!cleanSelector || cleanSelector === selectClassPlaceholder) {
+            setError(t('questionPage.mustSelectClassFirst', 'You must select a class first'));
         } else {
             setError(null);
-            if (classSelector === t('questionPage.allClasses')) {
+            if (cleanSelector === allClassesText || cleanSelector === 'All Classes' || cleanSelector === 'جميع الفصول') {
                 setClassesBox(classesList);
-            } else if (!classesBox.some(c => c.class === classSelector)) {
-                const classToAdd = classesList.find(c => c.class === classSelector);
-                if (classToAdd) setClassesBox(prev => [...prev, classToAdd]);
+            } else if (!classesBox.some(c => (c.class || '').trim().replace(/\s+/g, ' ') === cleanSelector)) {
+                const classToAdd = classesList.find(c => (c.class || '').trim().replace(/\s+/g, ' ') === cleanSelector);
+                if (classToAdd) {
+                    setClassesBox(prev => [...prev, classToAdd]);
+                } else {
+                    setError(t('questionPage.classNotFound', 'Class could not be found'));
+                }
             } else {
-                setError(t('questionPage.classAlreadyAdded'));
+                setError(t('questionPage.classAlreadyAdded', 'Class already added'));
             }
         }
     };
@@ -967,8 +1071,14 @@ function Question() {
             <audio ref={audioRefCorrect} src="/audio/correct.mp3" preload="auto" />
             <audio ref={audioRefWrong} src="/audio/wrong.mp3" preload="auto" />
 
-            <div className={isFullscreen ? 'fullscreen-navbar-hidden' : ''}>
-                <Navbar />
+            <div style={{ width: '100%', padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', borderBottom: '1px solid #e2e8f0', marginBottom: '10px' }}>
+                <div style={{ fontWeight: 'bold', color: '#4C5287', fontSize: '18px' }}>Practice Session</div>
+                <button 
+                    onClick={() => navigate(-1)} 
+                    style={{ background: '#FF4757', color: '#fff', border: 'none', padding: '6px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                    <i className="fa-solid fa-arrow-right-from-bracket"></i> Exit
+                </button>
             </div>
 
             {loading ? <QuestionLoading /> : (
@@ -993,7 +1103,7 @@ function Question() {
                         })}
                     </div>
 
-                    <div className='question-content-wrapper d-flex'>
+                    <div className='question-content-wrapper'>
                         <div className='question-form'>
                             {role === 'Teacher' && thisQuestion && (
                                 <div ref={reportRef} className="report-error-outer-wrapper">
@@ -1073,45 +1183,58 @@ function Question() {
                                         </select>
                                     </div>
                                 )}
-                                <div title={t('questionPage.openAbacus')} className="custom-abacus-btn" style={{ width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE140', backgroundImage: 'linear-gradient(135deg, #FEE140 0%, #ffb347 100%)', borderRadius: '50%', padding: '0', boxShadow: '0 8px 18px rgba(254, 225, 64, 0.35)', border: 'none', cursor: 'pointer', margin: '0 4px' }} onClick={() => { soundEffects.playClick(); setShowAbacus(!showAbacus); }}>
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <rect x="2" y="5" width="20" height="14" rx="2" stroke="#4A4A4A" strokeWidth="2.5"/>
-                                        <line x1="7" y1="5" x2="7" y2="19" stroke="#4A4A4A" strokeWidth="1.5"/>
-                                        <line x1="12" y1="5" x2="12" y2="19" stroke="#4A4A4A" strokeWidth="1.5"/>
-                                        <line x1="17" y1="5" x2="17" y2="19" stroke="#4A4A4A" strokeWidth="1.5"/>
-                                        <line x1="2" y1="10" x2="22" y2="10" stroke="#4A4A4A" strokeWidth="1.5"/>
-                                        <circle cx="7" cy="7.5" r="1.8" fill="#FF6B6B"/>
-                                        <circle cx="7" cy="13" r="1.8" fill="#4ECDC4"/>
-                                        <circle cx="7" cy="16" r="1.8" fill="#4ECDC4"/>
-                                        <circle cx="12" cy="7.5" r="1.8" fill="#FFE66D"/>
-                                        <circle cx="12" cy="15" r="1.8" fill="#FF6B6B"/>
-                                        <circle cx="17" cy="14" r="1.8" fill="#FFE66D"/>
-                                        <circle cx="17" cy="17" r="1.8" fill="#FFE66D"/>
-                                    </svg>
-                                </div>
-                                {role === 'Teacher' && (
 
-                                    <div 
-                                        title={t('questionPage.addAllToPocket')} 
-                                        style={{ position: 'relative', width: '42px', height: '42px', padding: '0', margin: '0 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FA709A', backgroundImage: 'linear-gradient(135deg, #FA709A 0%, #FEE140 100%)', borderRadius: '50%', color: 'white', cursor: 'pointer', boxShadow: '0 8px 18px rgba(250, 112, 154, 0.35)', userSelect: 'none' }}
-                                        onClick={() => { soundEffects.playClick(); addAllToPocket(); }}
-                                    >
-                                        <span style={{ position: 'absolute', top: '50%', left: '22%', transform: 'translate(-50%, -50%)', margin: 0, padding: 0, fontSize: '15px', fontWeight: 'bold', border: 'none', outline: 'none' }}>HW</span>
-                                    </div>
+                                {role === 'Teacher' && (
+                                    <>
+                                        <button 
+                                            type="button"
+                                            onClick={() => { soundEffects.playClick(); setShowNoterModal(true); }} 
+                                            title="Open interactive solution note with pen, colors, shapes, and eraser" 
+                                            className='action-btn noter-btn' 
+                                            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: '700', cursor: 'pointer', fontSize: '12px', boxShadow: '0 2px 6px rgba(245, 158, 11, 0.25)', transition: 'all 0.2s ease', marginLeft: '8px' }}
+                                        >
+                                            <i className='fa-solid fa-pen-nib' aria-hidden='true'></i>
+                                            <span>PDF Note</span>
+                                        </button>
+                                        
+                                        {savedQuestionNotes.length > 0 && (
+                                            <button 
+                                                type="button"
+                                                onClick={() => { soundEffects.playClick(); setShowNotesBoxModal(true); }} 
+                                                title="View all saved question notes and export combined PDF or share via WhatsApp" 
+                                                className='action-btn notes-box-btn' 
+                                                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: '700', cursor: 'pointer', fontSize: '12px', boxShadow: '0 2px 6px rgba(16, 185, 129, 0.25)', transition: 'all 0.2s ease', marginLeft: '8px' }}
+                                            >
+                                                <i className='fa-solid fa-box-archive' aria-hidden='true'></i>
+                                                <span>Notes Box ({savedQuestionNotes.length})</span>
+                                            </button>
+                                        )}
+
+                                        <button 
+                                            type="button"
+                                            onClick={() => { soundEffects.playClick(); handleDownloadExamPdf(); }} 
+                                            title="Download Practice Exam PDF" 
+                                            disabled={isExportingPdf}
+                                            className='action-btn pdf-btn' 
+                                            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: isExportingPdf ? '#7c3aed' : 'linear-gradient(135deg, #7c3aed, #4f46e5)', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: '700', cursor: isExportingPdf ? 'not-allowed' : 'pointer', fontSize: '12px', boxShadow: '0 2px 6px rgba(124, 58, 237, 0.25)', transition: 'all 0.2s ease', marginLeft: '8px' }}
+                                        >
+                                            <i className={`fa ${isExportingPdf ? 'fa-circle-o-notch fa-spin' : 'fa-download'}`} aria-hidden='true'></i>
+                                            <span>{isExportingPdf ? 'Exporting...' : 'Download Exam'}</span>
+                                        </button>
+
+                                        <div 
+                                            title={t('questionPage.addAllToPocket')} 
+                                            style={{ position: 'relative', width: '42px', height: '42px', padding: '0', margin: '0 4px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FA709A', backgroundImage: 'linear-gradient(135deg, #FA709A 0%, #FEE140 100%)', borderRadius: '50%', color: 'white', cursor: 'pointer', boxShadow: '0 8px 18px rgba(250, 112, 154, 0.35)', userSelect: 'none' }}
+                                            onClick={() => { soundEffects.playClick(); addAllToPocket(); }}
+                                        >
+                                            <span style={{ position: 'absolute', top: '50%', left: '22%', transform: 'translate(-50%, -50%)', margin: 0, padding: 0, fontSize: '15px', fontWeight: 'bold', border: 'none', outline: 'none' }}>HW</span>
+                                        </div>
+                                    </>
                                 )}
-                                <div 
-                                    title={useArabicNumerals ? 'Math' : 'عربي'} 
-                                    className="pocket-button" 
-                                    style={{ width: 'auto', padding: '0 10px', fontSize: '14px', fontWeight: 'bold' }}
-                                    onClick={() => { soundEffects.playClick(); setUseArabicNumerals(!useArabicNumerals); }}
-                                >
-                                    {useArabicNumerals ? 'Math' : 'عربي'}
-                                </div>
+
                             </div>
 
                         </div>
-
-                        {showAbacus && <AbacusSimulator onClose={() => setShowAbacus(false)} />}
 
                         <div className='question-form-body'>
                             {thisQuestion?.questionPic && <div className='d-flex question-img justify-content-center align-items-center'><img src={thisQuestion.questionPic} alt="Question visual aid" /></div>}
@@ -1137,6 +1260,70 @@ function Question() {
                                 </div>
                             ) : (
                                 renderQuestion(thisQuestion, useArabicNumerals)
+                            )}
+
+                            {/* MCQ Choices Stacked Directly Under Question Stem (Matching SAT / mrshahin layout) */}
+                            {thisQuestion?.typeOfAnswer === 'MCQ' && (
+                                <div className="bluebook-choice-list">
+                                    {(thisQuestion.wrongAnswer || []).filter(item => item !== null && item !== undefined && String(item).trim() !== '').map((item, index) => {
+                                        const letter = String.fromCharCode(65 + index);
+                                        const isSelected = answer && answer === item;
+                                        const isEliminated = (eliminatedOptions[thisQuestion?._id] || []).includes(index);
+
+                                        return (
+                                            <div key={item} className="bluebook-choice-row">
+                                                <button
+                                                    type="button"
+                                                    className={`bluebook-choice-card ${isSelected ? 'selected' : ''} ${isEliminated ? 'eliminated' : ''}`}
+                                                    onClick={() => handleChecked(item)}
+                                                >
+                                                    <span className="bluebook-choice-badge">{letter}</span>
+                                                    <span 
+                                                        className="bluebook-choice-text question-html-clean"
+                                                        dangerouslySetInnerHTML={{ __html: renderChoiceText(item) }}
+                                                    />
+                                                </button>
+
+                                                {/* Strikethrough Option Elimination Button */}
+                                                <button 
+                                                    type="button"
+                                                    className={`bluebook-eliminate-btn ${isEliminated ? 'active' : ''}`}
+                                                    title={`Eliminate Option ${letter}`}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleEliminateOption(thisQuestion?._id, index);
+                                                    }}
+                                                >
+                                                    {letter}
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                    {error && <p className='text-error mcq-error'>{error}</p>}
+                                </div>
+                            )}
+
+                            {/* Graph Choices Stacked Directly Under Question Stem */}
+                            {thisQuestion?.typeOfAnswer === 'Graph' && (
+                                <div className="bluebook-choice-list graph-choice-list">
+                                    {thisQuestion.wrongPicAnswer?.map((item, index) => {
+                                        const letter = String.fromCharCode(65 + index);
+                                        const isSelected = answer === item;
+                                        return (
+                                            <div key={item} className="bluebook-choice-row">
+                                                <button 
+                                                    type="button"
+                                                    className={`bluebook-choice-card graph-card ${isSelected ? 'selected' : ''}`}
+                                                    onClick={() => handleChecked(item)}
+                                                >
+                                                    <span className="bluebook-choice-badge">{letter}</span>
+                                                    <img src={item} alt={`Graph option ${letter}`} className="graph-choice-img" />
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                    {error && <p className='text-error mcq-error'>{error}</p>}
+                                </div>
                             )}
 
                             {thisQuestion?.typeOfAnswer === 'Essay' && (
@@ -1169,52 +1356,8 @@ function Question() {
                             )}
                             {(thisQuestion?.typeOfAnswer !== 'MCQ' && thisQuestion?.typeOfAnswer !== 'Graph') && <p className='text-error'>{error}</p>}
                         </div>
-                        </div>
-
-                        {/* MCQ Container beside question box */}
-                        {thisQuestion?.typeOfAnswer === 'MCQ' && (
-                            <div className='mcq-container'>
-                                <h3 className='mcq-title'>{t('questionPage.chooseAnswer')}</h3>
-                                <div className='mcq-answer-layout'>
-                                    {thisQuestion.wrongAnswer?.filter(item => item && String(item).trim() !== '').map((item, index) => (
-                                        <label key={item} className={`mcq-choice ${answer && answer === item ? 'selected' : ''}`}>
-                                            <input 
-                                                type='radio' 
-                                                value={item} 
-                                                name={`mcq_${thisQuestion._id}`} 
-                                                checked={answer && answer === item}
-                                                onChange={e => handleChecked(e.target.value)} 
-                                            />
-                                            <span className='mcq-text'>{translateNumbers(item, useArabicNumerals)}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                                {error && <p className='text-error mcq-error'>{error}</p>}
-                            </div>
-                        )}
-
-                        {/* Graph Container beside question box */}
-                        {thisQuestion?.typeOfAnswer === 'Graph' && (
-                            <div className='mcq-container graph-container'>
-                                <h3 className='mcq-title'>{t('questionPage.chooseAnswer')}</h3>
-                                <div className='graph-answer-layout'>
-                                    {thisQuestion.wrongPicAnswer?.map((item, index) => (
-                                        <label key={item} className={`graph-choice ${answer === item ? 'selected' : ''}`}>
-                                            <input 
-                                                type='radio' 
-                                                value={item} 
-                                                name={`graph_${thisQuestion._id}`}
-                                                checked={answer === item}
-                                                onChange={e => handleChecked(e.target.value)} 
-                                            />
-                                            <img src={item} alt="Graph answer choice" />
-                                        </label>
-                                    ))}
-                                </div>
-                                {error && <p className='text-error mcq-error'>{error}</p>}
-                            </div>
-                        )}
                     </div>
+                </div>
 
                     <div className='question-end-btn d-flex'>
                         <button onClick={() => { soundEffects.playEndSound(); openResulPopup(); }} disabled={isCheckingAnswers}>
@@ -1312,9 +1455,15 @@ function Question() {
                         <div className='select-container d-flex'>
                             <div className='select-class'>
                                 <select value={classSelector} onChange={e => setClassSelector(e.target.value)} translate="no" className="notranslate">
-                                    <option>{t('questionPage.selectClass')}</option>
-                                    {classesList?.length === 0 ? <option>{t('questionPage.noClassesAvailable')}</option> : <option>{t('questionPage.allClasses')}</option>}
-                                    {classesList?.map(item => <option key={item._id}>{item.class}</option>)}
+                                    <option value="">{t('questionPage.selectClass', 'Select Class')}</option>
+                                    {classesList?.length === 0 ? (
+                                        <option disabled>{t('questionPage.noClassesAvailable', 'No classes available')}</option>
+                                    ) : (
+                                        <option value={t('questionPage.allClasses', 'All Classes')}>{t('questionPage.allClasses', 'All Classes')}</option>
+                                    )}
+                                    {classesList?.map(item => (
+                                        <option key={item._id} value={item.class}>{item.class}</option>
+                                    ))}
                                 </select>
                             </div>
                             <button onClick={addClassToBox} translate="no" className="notranslate">{t('questionPage.add')}</button>
@@ -1335,6 +1484,34 @@ function Question() {
                     </div>
                 </div>
             </div>
+
+            {/* PDF Export Progress Notification */}
+            {isExportingPdf && (
+                <div style={{ position: 'fixed', bottom: '20px', right: '20px', background: '#333', color: '#fff', padding: '15px 25px', borderRadius: '8px', zIndex: 9999, display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                    <i className='fa fa-circle-o-notch fa-spin'></i>
+                    <span>{pdfProgressText || 'Generating Practice Exam PDF...'}</span>
+                </div>
+            )}
+
+            {/* PDF Noter Modals */}
+            {showNoterModal && (
+                <QuestionPdfNoterModal 
+                    onClose={() => setShowNoterModal(false)}
+                    currentQuestion={thisQuestion}
+                    questionNumber={thisQuestionNumber}
+                    savedNotes={savedQuestionNotes}
+                    setSavedNotes={setSavedQuestionNotes}
+                />
+            )}
+
+            {showNotesBoxModal && (
+                <SavedNotesBoxModal 
+                    onClose={() => setShowNotesBoxModal(false)}
+                    savedNotes={savedQuestionNotes}
+                    setSavedNotes={setSavedQuestionNotes}
+                    examTitle={safeLocalStorage.getItem('current_chapter_name') || 'Practice Exam'}
+                />
+            )}
         </>
     );
 }
