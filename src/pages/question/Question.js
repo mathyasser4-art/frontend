@@ -1262,70 +1262,6 @@ function Question() {
                                 renderQuestion(thisQuestion, useArabicNumerals)
                             )}
 
-                            {/* MCQ Choices Stacked Directly Under Question Stem (Matching SAT / mrshahin layout) */}
-                            {thisQuestion?.typeOfAnswer === 'MCQ' && (
-                                <div className="bluebook-choice-list">
-                                    {(thisQuestion.wrongAnswer || []).filter(item => item !== null && item !== undefined && String(item).trim() !== '').map((item, index) => {
-                                        const letter = String.fromCharCode(65 + index);
-                                        const isSelected = answer && answer === item;
-                                        const isEliminated = (eliminatedOptions[thisQuestion?._id] || []).includes(index);
-
-                                        return (
-                                            <div key={item} className="bluebook-choice-row">
-                                                <button
-                                                    type="button"
-                                                    className={`bluebook-choice-card ${isSelected ? 'selected' : ''} ${isEliminated ? 'eliminated' : ''}`}
-                                                    onClick={() => handleChecked(item)}
-                                                >
-                                                    <span className="bluebook-choice-badge">{letter}</span>
-                                                    <span 
-                                                        className="bluebook-choice-text question-html-clean"
-                                                        dangerouslySetInnerHTML={{ __html: renderChoiceText(item) }}
-                                                    />
-                                                </button>
-
-                                                {/* Strikethrough Option Elimination Button */}
-                                                <button 
-                                                    type="button"
-                                                    className={`bluebook-eliminate-btn ${isEliminated ? 'active' : ''}`}
-                                                    title={`Eliminate Option ${letter}`}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        toggleEliminateOption(thisQuestion?._id, index);
-                                                    }}
-                                                >
-                                                    {letter}
-                                                </button>
-                                            </div>
-                                        );
-                                    })}
-                                    {error && <p className='text-error mcq-error'>{error}</p>}
-                                </div>
-                            )}
-
-                            {/* Graph Choices Stacked Directly Under Question Stem */}
-                            {thisQuestion?.typeOfAnswer === 'Graph' && (
-                                <div className="bluebook-choice-list graph-choice-list">
-                                    {thisQuestion.wrongPicAnswer?.map((item, index) => {
-                                        const letter = String.fromCharCode(65 + index);
-                                        const isSelected = answer === item;
-                                        return (
-                                            <div key={item} className="bluebook-choice-row">
-                                                <button 
-                                                    type="button"
-                                                    className={`bluebook-choice-card graph-card ${isSelected ? 'selected' : ''}`}
-                                                    onClick={() => handleChecked(item)}
-                                                >
-                                                    <span className="bluebook-choice-badge">{letter}</span>
-                                                    <img src={item} alt={`Graph option ${letter}`} className="graph-choice-img" />
-                                                </button>
-                                            </div>
-                                        );
-                                    })}
-                                    {error && <p className='text-error mcq-error'>{error}</p>}
-                                </div>
-                            )}
-
                             {thisQuestion?.typeOfAnswer === 'Essay' && (
                                 <div className='math-keyboard'>
                                     <form 
@@ -1357,6 +1293,50 @@ function Question() {
                             {(thisQuestion?.typeOfAnswer !== 'MCQ' && thisQuestion?.typeOfAnswer !== 'Graph') && <p className='text-error'>{error}</p>}
                         </div>
                     </div>
+
+                    {/* MCQ Container beside question box */}
+                    {thisQuestion?.typeOfAnswer === 'MCQ' && (
+                        <div className='mcq-container'>
+                            <h3 className='mcq-title'>{t('questionPage.chooseAnswer')}</h3>
+                            <div className='mcq-answer-layout'>
+                                {thisQuestion.wrongAnswer?.filter(item => item && String(item).trim() !== '').map((item, index) => (
+                                    <label key={item} className={`mcq-choice ${answer && answer === item ? 'selected' : ''}`}>
+                                        <input 
+                                            type='radio' 
+                                            value={item} 
+                                            name={`mcq_${thisQuestion._id}`} 
+                                            checked={answer && answer === item}
+                                            onChange={e => handleChecked(e.target.value)} 
+                                        />
+                                        <span className='mcq-text'>{translateNumbers(item, useArabicNumerals)}</span>
+                                    </label>
+                                ))}
+                            </div>
+                            {error && <p className='text-error mcq-error'>{error}</p>}
+                        </div>
+                    )}
+
+                    {/* Graph Container beside question box */}
+                    {thisQuestion?.typeOfAnswer === 'Graph' && (
+                        <div className='mcq-container graph-container'>
+                            <h3 className='mcq-title'>{t('questionPage.chooseAnswer')}</h3>
+                            <div className='graph-answer-layout'>
+                                {thisQuestion.wrongPicAnswer?.map((item, index) => (
+                                    <label key={item} className={`graph-choice ${answer === item ? 'selected' : ''}`}>
+                                        <input 
+                                            type='radio' 
+                                            value={item} 
+                                            name={`graph_${thisQuestion._id}`}
+                                            checked={answer === item}
+                                            onChange={e => handleChecked(e.target.value)} 
+                                        />
+                                        <img src={item} alt="Graph answer choice" />
+                                    </label>
+                                ))}
+                            </div>
+                            {error && <p className='text-error mcq-error'>{error}</p>}
+                        </div>
+                    )}
                 </div>
 
                     <div className='question-end-btn d-flex'>
