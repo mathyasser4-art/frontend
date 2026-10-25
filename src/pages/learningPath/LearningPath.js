@@ -478,10 +478,8 @@ const LearningPath = () => {
     return allChapters.map((chapter, idx) => {
       const t = count === 1 ? 0 : idx / (count - 1);
       const coord = interpolateWaypoints(waypoints, t);
-      const isGuestLocked = !isAuth && idx >= 2;
-      const status = isGuestLocked
-        ? 'locked'
-        : getChapterStatus(progress, chapter.chapterId, allChapters, hasFullAccess());
+      const isGuestLocked = false;
+      const status = getChapterStatus(progress, chapter.chapterId, allChapters, true);
       const stars = getStars(progress, chapter.chapterId);
       const score = getScore(progress, chapter.chapterId);
 
@@ -951,27 +949,7 @@ const LearningPath = () => {
         </div>
       </div>
 
-      {/* ── GUEST EXPLORER RIBBON BANNER (Level 1 Free) ── */}
-      {!isAuth && (
-        <div className="guest-journey-ribbon">
-          <div className="guest-ribbon-text">
-            <span className="guest-ribbon-icon">🌟</span>
-            <span className="guest-ribbon-msg">
-              <strong>{t('learningPath.guestBannerTitle', 'Guest Mode: Level 1 is Free to Play!')}</strong>{' '}
-              {t('learningPath.guestBannerSubtitle', 'Start your 3-Day Free Trial to unlock all 8 biomes, 40+ lessons & save your stars!')}
-            </span>
-          </div>
-          <button
-            className="guest-trial-cta-btn"
-            onClick={() => {
-              soundEffects.playClick();
-              navigate('/register');
-            }}
-          >
-            ⭐ {t('learningPath.startTrialBtn', 'Start 3-Day Free Trial')}
-          </button>
-        </div>
-      )}
+
 
       {/* ── THE INTERACTIVE WORLD MAP VIEWPORT ── */}
       <div className="wumpa-viewport-frame">

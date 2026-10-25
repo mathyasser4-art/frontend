@@ -121,7 +121,7 @@ function Home() {
                   >
                     <span className="persona-icon">🎓</span>
                     <span className="persona-title">{t('home.studentSelector', 'أنا طالب / Student')}</span>
-                    <span className="persona-badge-glow">FREE LEVEL 1</span>
+                    <span className="persona-badge-glow">100% FREE</span>
                   </button>
                   <button
                     type="button"
@@ -131,7 +131,7 @@ function Home() {
                   >
                     <span className="persona-icon">👨‍🏫</span>
                     <span className="persona-title">{t('home.teacherSelector', 'أنا معلّم / Teacher')}</span>
-                    <span className="persona-badge-trial">3-DAY TRIAL</span>
+                    <span className="persona-badge-trial" style={{ background: '#3b82f6' }}>TEACHER</span>
                   </button>
                 </div>
               </div>
@@ -149,11 +149,11 @@ function Home() {
                     <div className="home-title">
                       <h1 className="text-dark">{t('home.studentTitle1', 'Smart Games.')}</h1>
                       <h1 className="text-orange">{t('home.studentTitle2', 'Epic Learning Journey.')}</h1>
-                      <h1 className="text-red">{t('home.studentTitle3', 'Level 1 Free to Play!')}</h1>
+                      <h1 className="text-red">{t('home.studentTitle3', 'All Levels Free to Play!')}</h1>
                     </div>
                     <div className="home-paragraph">
                       <p>{t('home.studentDesc1', 'Embark on the Wumpa Island math adventure & race in turbo Math Racer.')}</p>
-                      <p>{t('home.studentDesc2', 'Explore Level 1 for free right now — no credit card, no login required!')}</p>
+                      <p>{t('home.studentDesc2', 'Explore all levels and games for free right now — no credit card, no login required!')}</p>
                     </div>
                     <div className="hero-buttons student-hero-buttons">
                       <div className="hero-btn-wrapper">
@@ -164,7 +164,7 @@ function Home() {
                             navigate('/student/learning-path'); 
                           }}
                         >
-                          <span className="btn-text">🗺️ {t('home.startJourneyFree', 'ENTER THE JOURNEY (LEVEL 1 FREE)')}</span>
+                          <span className="btn-text">🗺️ {t('home.startJourneyFree', 'ENTER THE JOURNEY (FREE ACCESS)')}</span>
                         </button>
                         <div className="btn-subtitle">{t('home.journeySubtitle', 'Play lessons, answer questions & level up')}</div>
                       </div>
@@ -280,33 +280,33 @@ function Home() {
                         </div>
                       </div>
 
-                      {/* Visual node 3: Lesson 3 (Trial) */}
-                      <div className="preview-node node-pos-3 locked" onClick={() => navigate('/student/learning-path')}>
-                        <div className="node-bubble locked-bubble">
-                          <span className="node-lock">🔒</span>
+                      {/* Visual node 3: Lesson 3 */}
+                      <div className="preview-node node-pos-3" onClick={() => navigate('/student/learning-path')}>
+                        <div className="node-glow-ring" />
+                        <div className="node-bubble unlocked-bubble">
+                          <span className="node-num">3</span>
                         </div>
                         <div className="node-label-popup">
                           <span className="node-unit-tag">{isArabic ? '🌟 أصدقاء 5' : '🌟 Small Friends'}</span>
                           <span className="node-title">{isArabic ? 'قاعدة (+5) المساعد الصغير' : 'Small Friends (+5 Rule)'}</span>
-                          <span className="node-badge-trial">3-DAY TRIAL</span>
                         </div>
                       </div>
 
-                      {/* Visual node 4: Unit 2 (Trial) */}
-                      <div className="preview-node node-pos-4 locked" onClick={() => navigate('/student/learning-path')}>
-                        <div className="node-bubble locked-bubble">
-                          <span className="node-lock">🔒</span>
+                      {/* Visual node 4: Unit 2 */}
+                      <div className="preview-node node-pos-4" onClick={() => navigate('/student/learning-path')}>
+                        <div className="node-glow-ring" />
+                        <div className="node-bubble unlocked-bubble">
+                          <span className="node-num">4</span>
                         </div>
                         <div className="node-label-popup">
                           <span className="node-unit-tag">{isArabic ? '⚡ أصدقاء 10' : '⚡ Big Friends'}</span>
                           <span className="node-title">{isArabic ? 'قاعدة (+10) المساعد الكبير' : 'Big Friends (+10 Rule)'}</span>
-                          <span className="node-badge-trial">3-DAY TRIAL</span>
                         </div>
                       </div>
 
                       {/* Mascot Preview */}
                       <div className="preview-mascot-wrap" onClick={() => navigate('/student/learning-path')}>
-                        <div className="mascot-speech">Level 1 Free! 🚀</div>
+                        <div className="mascot-speech">All Levels Free! 🚀</div>
                         <img src="/img/hero_character.jpg" alt="Hero Mascot" className="preview-mascot-img" />
                       </div>
                     </div>
@@ -319,7 +319,7 @@ function Home() {
                           navigate('/student/learning-path');
                         }}
                       >
-                        <span>⚡ {t('home.tryLevel1Now', 'Explore Level 1 Map (Free)')}</span>
+                        <span>⚡ {t('home.tryLevel1Now', 'Explore Wumpa Island Map (Free)')}</span>
                         <span className="cta-arrow">➔</span>
                       </button>
                     </div>

@@ -185,17 +185,17 @@ function App() {
           <Route path='/dashboard-school/live' element={isAuth && isSchoolOrOrg ? <LiveAdminDashboard /> : <Navigate to='/' />} />
           <Route path='/dashboard-school/visibility' element={isAuth && isSchoolOrOrg ? <LevelVisibilityManager /> : <Navigate to='/' />} />
 
-          <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/' />} />
-          <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/' />} />
-          <Route path='/student/competition/:competitionId' element={isAuth ? <StudentCompetition /> : <Navigate to='/login' />} />
-          <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/' />} />
-          <Route path='/teacher/competition/:competitionId' element={isAuth && role === 'Teacher' ? <TeacherCompetitionLobby /> : <Navigate to='/' />} />
-          <Route path='/teacher/competitions-hub' element={isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? <UpcomingCompetitionsHub /> : <Navigate to='/' />} />
-          <Route path='/teacher/question-bank' element={isAuth && role === 'Teacher' && ENABLE_CUSTOM_QUESTION_BANK ? <TeacherQuestionBank /> : <Navigate to='/' />} />
-          <Route path='/teacher/registration' element={isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? <TeacherRegistrationPage /> : <Navigate to='/' />} />
-          <Route path='/dashboard/supervisor' element={isAuth && role === 'Supervisor' ? <SupervisorDashboard /> : <Navigate to='/' />} />
-          <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth && role === 'Teacher' ? <AssignmentReport /> : <Navigate to='/' />} />
-          <Route path='/student/myReport/:assignmentID' element={isAuth && role === 'Student' ? <StudentReport /> : <Navigate to='/' />} />
+          <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/auth/login' />} />
+          <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/auth/login' />} />
+          <Route path='/student/competition/:competitionId' element={isAuth ? <StudentCompetition /> : <Navigate to='/auth/login' />} />
+          <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/auth/login' />} />
+          <Route path='/teacher/competition/:competitionId' element={isAuth && role === 'Teacher' ? <TeacherCompetitionLobby /> : <Navigate to='/auth/login' />} />
+          <Route path='/teacher/competitions-hub' element={isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? <UpcomingCompetitionsHub /> : <Navigate to='/auth/login' />} />
+          <Route path='/teacher/question-bank' element={isAuth && role === 'Teacher' && ENABLE_CUSTOM_QUESTION_BANK ? <TeacherQuestionBank /> : <Navigate to='/auth/login' />} />
+          <Route path='/teacher/registration' element={isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? <TeacherRegistrationPage /> : <Navigate to='/auth/login' />} />
+          <Route path='/dashboard/supervisor' element={isAuth && role === 'Supervisor' ? <SupervisorDashboard /> : <Navigate to='/auth/login' />} />
+          <Route path='/teacher/assignmentReport/:studentID/:assignmentID' element={isAuth && role === 'Teacher' ? <AssignmentReport /> : <Navigate to='/auth/login' />} />
+          <Route path='/student/myReport/:assignmentID' element={isAuth && role === 'Student' ? <StudentReport /> : <Navigate to='/auth/login' />} />
           <Route path="/assignment/:assignmentID/reports" element={<TeacherAssignmentReports />} />
           <Route path='/teacher/student/:studentID/history' element={isAuth ? <StudentHistory /> : <Navigate to='/' />} />
           <Route path='/pricing' element={SHOW_PRICING ? <Pricing /> : <Navigate to='/contact' />} />

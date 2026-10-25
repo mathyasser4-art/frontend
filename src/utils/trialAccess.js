@@ -7,57 +7,16 @@ import { safeLocalStorage } from './safeStorage';
  * - OR has an active paid subscription (is_paid === 'true')
  */
 export const hasFullAccess = () => {
-  // 1. Paid subscription
-  if (safeLocalStorage.getItem('is_paid') === 'true') return true;
-
-  // 2. Trial date active
-  const trialEndsAt = safeLocalStorage.getItem('trial_ends_at');
-  if (trialEndsAt) {
-    const end = new Date(trialEndsAt).getTime();
-    if (!isNaN(end) && end > Date.now()) {
-      return true;
-    }
-  }
-
-  // 3. Trial remaining days
-  const remainingDays = safeLocalStorage.getItem('trial_remaining_days');
-  if (remainingDays !== null && remainingDays !== undefined) {
-    const days = parseInt(remainingDays, 10);
-    if (!isNaN(days) && days > 0) {
-      return true;
-    }
-  }
-
-  // 4. Valid authentication token
-  const token = safeLocalStorage.getItem('O_authWEB');
-  if (token && token !== 'null' && token !== 'undefined' && token.length > 5) {
-    return true;
-  }
-
-  return false;
+  // Platform is 100% unlocked for everyone (practice, games, journey, worksheets).
+  // Login is only required for creating homework (teachers) and solving assigned homework (students).
+  return true;
 };
 
 /**
- * Checks specifically if the user is in an active free trial window.
+ * Checks specifically if the user has unlocked trial access (always true).
  */
 export const isTrialActive = () => {
-  const trialEndsAt = safeLocalStorage.getItem('trial_ends_at');
-  if (trialEndsAt) {
-    const end = new Date(trialEndsAt).getTime();
-    if (!isNaN(end) && end > Date.now()) {
-      return true;
-    }
-  }
-
-  const remainingDays = safeLocalStorage.getItem('trial_remaining_days');
-  if (remainingDays !== null && remainingDays !== undefined) {
-    const days = parseInt(remainingDays, 10);
-    if (!isNaN(days) && days > 0) {
-      return true;
-    }
-  }
-
-  return false;
+  return true;
 };
 
 export default hasFullAccess;
