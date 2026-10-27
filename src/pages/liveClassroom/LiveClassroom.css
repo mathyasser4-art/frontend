@@ -751,7 +751,7 @@
   transition: all 0.2s;
 }
 
-/* Zoom-Style Teaching Mode Toggle Button */
+/* HeroTalk Studio Teaching Mode Toggle Button */
 .live-tool-btn.btn-teaching-toggle {
   background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
   color: #ffffff;
@@ -773,7 +773,7 @@
 }
 
 /* ==========================================================
-   ZOOM-STYLE FLOATING MINI VIDEO (PIP) IN CORNER
+   HEROTALK FLOATING MINI VIDEO (PIP) IN CORNER
    ========================================================== */
 .live-classroom-iframe.pip-mini-mode {
   position: fixed !important;
@@ -846,7 +846,7 @@
 }
 
 /* ==========================================================
-   TEACHING WORKSPACE (MAIN SCREEN IN ZOOM MODE)
+   HEROTALK TEACHING WORKSPACE (MAIN SCREEN)
    ========================================================== */
 .teaching-workspace {
   flex: 1;

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { 
   ArrowLeft, Copy, Check, Share2, Maximize2, Minimize2, 
   RotateCcw, ExternalLink, HelpCircle, X, Monitor, Sparkles,
-  Play, Eye, EyeOff, Edit3, Trash2
+  Play, Eye, EyeOff, Edit3, Trash2, Users
 } from 'lucide-react';
 import { safeLocalStorage } from '../../utils/safeStorage';
 import soundEffects from '../../utils/soundEffects';
@@ -37,9 +37,9 @@ export default function LiveClassroom() {
 
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [teachingMode, setTeachingMode] = useState(false); // Zoom-style Teaching Workspace with Mini Floating Video Bar!
+  // Default to true: HeroTalk Studio workspace is active by default so teachers NEVER see recurring screens!
+  const [teachingMode, setTeachingMode] = useState(true); 
   const [showAbacusDrawer, setShowAbacusDrawer] = useState(false);
-  const [showGuideModal, setShowGuideModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const iframeRef = useRef(null);
 
@@ -66,7 +66,7 @@ export default function LiveClassroom() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [penColor, setPenColor] = useState('#38bdf8');
 
-  // MiroTalk P2P: 100% free open-source WebRTC, zero login required, no time limits
+  // HeroTalk WebRTC engine (Zero external accounts, unlimited duration, full privacy)
   const meetingUrl = `https://p2p.mirotalk.com/join?room=${encodeURIComponent(roomName)}&name=${encodeURIComponent(userName)}&audio=1&video=1&screen=1&chat=1&notify=0`;
 
   // Handle loading state: ensure spinner never hangs indefinitely
@@ -74,7 +74,7 @@ export default function LiveClassroom() {
     setLoading(true);
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 1800);
     return () => clearTimeout(timer);
   }, [roomName]);
 
@@ -225,11 +225,11 @@ export default function LiveClassroom() {
     const link = `${window.location.origin}/live-classroom?room=${encodeURIComponent(roomName)}`;
     const msg = isTeacher
       ? (isArabic 
-          ? `مرحباً يا أبطال 🌟\nتبدأ حصتنا المباشرة الآن في منصة أبطال العداد (Abacus Heroes)!\n\nاضغط على الرابط التالي للانضمام فوراً:\n${link}`
-          : `Hello Heroes! 🌟\nOur Live Class on Abacus Heroes is starting right now!\n\nClick the link to join instantly:\n${link}`)
+          ? `مرحباً يا أبطال 🌟\nتبدأ الآن حصتنا المباشرة عبر HeroTalk في منصة أبطال العداد (Abacus Heroes)!\n\nاضغط على الرابط التالي للانضمام فوراً:\n${link}`
+          : `Hello Heroes! 🌟\nOur HeroTalk Live Class on Abacus Heroes is starting right now!\n\nClick the link to join instantly:\n${link}`)
       : (isArabic
-          ? `انضم معي الآن إلى الحصة المباشرة في أبطال العداد:\n${link}`
-          : `Join our Live Class on Abacus Heroes:\n${link}`);
+          ? `انضم معي الآن إلى حصة HeroTalk في أبطال العداد:\n${link}`
+          : `Join our HeroTalk Live Class on Abacus Heroes:\n${link}`);
 
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
   };
@@ -245,7 +245,7 @@ export default function LiveClassroom() {
     }
   };
 
-  // Open in floating window (Zoom-style floating thumbnail/meeting window)
+  // Open in floating window (HeroTalk floating companion window)
   const handlePopoutWindow = () => {
     if (soundEffects && soundEffects.playClick) soundEffects.playClick();
     const width = 540;
@@ -254,7 +254,7 @@ export default function LiveClassroom() {
     const top = 60;
     window.open(
       meetingUrl,
-      'AbacusLiveClassroom',
+      'HeroTalkLive',
       `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no,status=no`
     );
   };
@@ -272,12 +272,12 @@ export default function LiveClassroom() {
           <div className="live-room-info">
             <div className="live-badge-glow">
               <span className="live-dot-pulse"></span>
-              <span>LIVE</span>
+              <span>HEROTALK</span>
             </div>
             <h2 className="live-room-title" title={userName}>
               {isTeacher 
-                ? (isArabic ? `فصل البث المباشر: ${userName}` : `Live Class: ${userName}`)
-                : (isArabic ? `حصة أبطال العداد: ${userName}` : `Classroom: ${userName}`)}
+                ? (isArabic ? `فصل هيرو توك: ${userName}` : `HeroTalk: ${userName}`)
+                : (isArabic ? `حصة هيرو توك: ${userName}` : `HeroTalk: ${userName}`)}
             </h2>
             <span className="live-room-code-tag">
               #{roomName.slice(-6)}
@@ -286,20 +286,22 @@ export default function LiveClassroom() {
         </div>
 
         <div className="live-header-right">
-          {/* Zoom-Style Teaching Mode Toggle Button */}
+          {/* HeroTalk Studio / Gallery Mode Toggle Button */}
           <button 
             className={`live-tool-btn btn-teaching-toggle ${teachingMode ? 'active-mode' : ''}`}
             onClick={() => {
               if (soundEffects && soundEffects.playClick) soundEffects.playClick();
               setTeachingMode(!teachingMode);
             }}
-            title={isArabic ? 'تصغير الفيديو إلى نافذة عائمة بالزاوية وفتح سبورة التمارين للشرح (مثل زووم)' : 'Minimize video to floating corner and open teaching workspace (Zoom-style)'}
+            title={teachingMode 
+              ? (isArabic ? 'عرض كاميرات جميع الطلاب ملء الشاشة' : 'Switch to Student Video Grid') 
+              : (isArabic ? 'العودة لسبورة الشرح والعداد المباشر' : 'Return to HeroTalk Studio')}
           >
-            {teachingMode ? <Maximize2 size={16} /> : <Monitor size={16} />}
+            {teachingMode ? <Users size={16} /> : <Monitor size={16} />}
             <span className="btn-label">
               {teachingMode 
-                ? (isArabic ? 'عرض الاجتماع الكامل' : 'Full Meeting View')
-                : (isArabic ? 'سبورة الشرح والتمارين 📚' : 'Teaching Board (Zoom-style) 📚')}
+                ? (isArabic ? '👥 عرض الطلاب' : '👥 Student Gallery')
+                : (isArabic ? '📚 ستوديو الشرح والسبورة' : '📚 HeroTalk Studio')}
             </span>
           </button>
 
@@ -307,13 +309,13 @@ export default function LiveClassroom() {
           <button 
             className="live-tool-btn btn-popout" 
             onClick={handlePopoutWindow}
-            title={isArabic ? 'فتح الفصل في نافذة منبثقة خارجية' : 'Pop-Out Window'}
+            title={isArabic ? 'فتح كاميرات هيرو توك في نافذة منبثقة عائمة لتصفح أي برنامج بحرية' : 'Pop-out floating video window'}
           >
             <ExternalLink size={16} />
             <span className="btn-label">{isArabic ? 'نافذة منبثقة' : 'Pop-Out'}</span>
           </button>
 
-          {/* Virtual Soroban Drawer Toggle (if in full video mode) */}
+          {/* Virtual Soroban Drawer Toggle (if in full gallery video mode) */}
           {!teachingMode && (
             <button 
               className={`live-tool-btn btn-abacus ${showAbacusDrawer ? 'active-tool' : ''}`}
@@ -329,13 +331,13 @@ export default function LiveClassroom() {
           )}
 
           {/* Copy Link */}
-          <button className="live-tool-btn" onClick={handleCopyLink} title={isArabic ? 'نسخ رابط الحصة' : 'Copy Room Link'}>
+          <button className="live-tool-btn" onClick={handleCopyLink} title={isArabic ? 'نسخ رابط HeroTalk' : 'Copy Room Link'}>
             {copied ? <Check size={16} color="#10b981" /> : <Copy size={16} />}
             <span className="btn-label">{copied ? (isArabic ? 'تم النسخ!' : 'Copied!') : (isArabic ? 'نسخ الرابط' : 'Copy Link')}</span>
           </button>
 
           {/* Share WhatsApp */}
-          <button className="live-tool-btn btn-wa" onClick={handleShareWhatsApp} title={isArabic ? 'مشاركة عبر واتساب' : 'Share on WhatsApp'}>
+          <button className="live-tool-btn btn-wa" onClick={handleShareWhatsApp} title={isArabic ? 'دعوة الطلاب عبر واتساب' : 'Share on WhatsApp'}>
             <Share2 size={16} />
             <span className="btn-label">{isArabic ? 'دعوة عبر واتساب' : 'Invite'}</span>
           </button>
@@ -354,7 +356,7 @@ export default function LiveClassroom() {
           <div className="live-classroom-loading">
             <div className="loading-spinner-ring"></div>
             <span className="loading-text">
-              {isArabic ? 'جاري تجهيز الفصل المباشر...' : 'Connecting to Live Classroom...'}
+              {isArabic ? 'جاري تجهيز HeroTalk...' : 'Connecting to HeroTalk...'}
             </span>
             <span className="loading-hint">
               {isArabic ? 'يرجى السماح للكاميرا والميكروفون عند المطالبة 🎙️' : 'Please allow camera & microphone when prompted 🎙️'}
@@ -362,23 +364,23 @@ export default function LiveClassroom() {
           </div>
         )}
 
-        {/* TEACHING WORKSPACE (Visible when in Zoom-Style Teaching Mode) */}
+        {/* HEROTALK STUDIO WORKSPACE (DEFAULT VIEW - GUARANTEES ZERO RECURRING SCREENS!) */}
         {teachingMode && (
           <div className="teaching-workspace animate-fade-in">
             {/* Top Workspace Header */}
             <div className="workspace-header-card">
               <div className="workspace-title-box">
-                <span className="workspace-badge">🚀 {isArabic ? 'وضع الشرح النشط (بدون تكرار شاشة)' : 'Active Teaching Mode (No Mirror Effect)'}</span>
-                <h2>{isArabic ? 'سبورة الشرح التفاعلية وبنك المسائل المباشرة' : 'Interactive Math Board & Practice Workspace'}</h2>
+                <span className="workspace-badge">⚡ {isArabic ? 'ستوديو الشرح التفاعلي النشط' : 'HeroTalk Live Studio'}</span>
+                <h2>{isArabic ? 'سبورة الشرح وبنك التمارين المباشرة' : 'Interactive Math Board & Practice Workspace'}</h2>
                 <p>
                   {isArabic 
-                    ? 'الفيديو تم تصغيره في الزاوية مثل Zoom تماماً! شارك هذه الشاشة مع طلابك لشرح المسائل والعداد مباشرة.' 
-                    : 'Video is minimized into the corner like Zoom! Share this screen with your students to demonstrate math operations.'}
+                    ? 'فيديو الطلاب والمعلم يعمل تلقائياً في الزاوية العائمة. شارك هذه الشاشة مع طلابك لشرح المسائل والعداد مباشرة وبدون أي تكرار للشاشة.' 
+                    : 'Live video floats smoothly in the corner. Share this screen with your students to demonstrate math operations with zero screen mirror.'}
                 </p>
               </div>
               <button className="workspace-expand-btn" onClick={() => setTeachingMode(false)}>
-                <Maximize2 size={16} />
-                <span>{isArabic ? 'العودة للاجتماع الكامل' : 'Return to Full View'}</span>
+                <Users size={16} />
+                <span>{isArabic ? 'عرض الطلاب (ملء الشاشة)' : 'Student Video Grid'}</span>
               </button>
             </div>
 
@@ -558,7 +560,7 @@ export default function LiveClassroom() {
           key={roomName}
           ref={iframeRef}
           src={meetingUrl}
-          title="Abacus Heroes Live Video Classroom"
+          title="HeroTalk Live Video Classroom"
           allow="camera *; microphone *; speaker-selection *; display-capture *; fullscreen *; clipboard-read *; clipboard-write *; web-share *; autoplay *; picture-in-picture *"
           onLoad={() => setLoading(false)}
           className={`live-classroom-iframe ${teachingMode ? 'pip-mini-mode' : ''}`}
@@ -569,20 +571,20 @@ export default function LiveClassroom() {
           <div className="pip-mini-header">
             <div className="pip-status-tag">
               <span className="live-dot-pulse"></span>
-              <span>{isArabic ? 'فيديو زووم المصغر' : 'Mini Live Video'}</span>
+              <span>HeroTalk Live</span>
             </div>
             <button 
               className="pip-expand-action-btn"
               onClick={() => setTeachingMode(false)}
-              title={isArabic ? 'تكبير الاجتماع لملء الشاشة' : 'Expand Meeting'}
+              title={isArabic ? 'عرض كاميرات جميع الطلاب ملء الشاشة' : 'Expand Student Video'}
             >
-              <Maximize2 size={14} />
-              <span>{isArabic ? 'تكبير' : 'Expand'}</span>
+              <Users size={14} />
+              <span>{isArabic ? 'عرض الطلاب' : 'Gallery'}</span>
             </button>
           </div>
         )}
 
-        {/* Slide-out Virtual Soroban for Full Mode */}
+        {/* Slide-out Virtual Soroban for Full Gallery Mode */}
         {showAbacusDrawer && !teachingMode && (
           <aside className="live-abacus-drawer">
             <div className="abacus-drawer-header">
@@ -596,8 +598,8 @@ export default function LiveClassroom() {
             <div className="abacus-drawer-body">
               <div className="abacus-helper-tip">
                 💡 {isArabic 
-                  ? 'يمكنك تحريك الخرزات للشرح لطلابك أثناء مشاركة شاشتك أو الشرح بالفيديو!' 
-                  : 'Move beads to illustrate mental math operations while sharing your screen with students!'}
+                  ? 'يمكنك تحريك الخرزات للشرح لطلابك أثناء الشرح بالفيديو!' 
+                  : 'Move beads to illustrate mental math operations while teaching students!'}
               </div>
 
               {/* Soroban Frame */}

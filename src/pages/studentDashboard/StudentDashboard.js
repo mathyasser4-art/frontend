@@ -253,10 +253,10 @@ function StudentDashboard() {
                                             fontSize: '10px',
                                             fontWeight: '800'
                                         }}>
-                                            🔴 LIVE
+                                            🔴 HEROTALK
                                         </span>
                                         <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#ffffff' }}>
-                                            {isArabic ? 'الحصة الافتراضية المباشرة' : 'Live Virtual Classroom'}
+                                            {isArabic ? 'هيرو توك - الحصة المباشرة' : 'HeroTalk Live Classroom'}
                                         </h4>
                                     </div>
                                     <p style={{ margin: 0, fontSize: '0.85rem', color: '#cbd5e1' }}>
@@ -277,7 +277,7 @@ function StudentDashboard() {
                                 boxShadow: '0 4px 12px rgba(239, 68, 68, 0.45)',
                                 flexShrink: 0
                             }}>
-                                🚀 {isArabic ? 'دخول الحصة' : 'Join Live Class'}
+                                🚀 {isArabic ? 'دخول HeroTalk' : 'Join HeroTalk'}
                             </button>
                         </div>
 

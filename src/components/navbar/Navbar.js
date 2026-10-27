@@ -275,8 +275,8 @@ const Navbar = () => {
                                         boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)'
                                     }}
                                 >
-                                    <span style={{ fontSize: '14px' }}>🎥</span>
-                                    <span>{isArabic ? 'الحصة المباشرة' : 'LIVE CLASS'}</span>
+                                    <span style={{ fontSize: '14px' }}>🎙️</span>
+                                    <span>{isArabic ? 'هيرو توك' : 'HEROTALK'}</span>
                                 </div>
                             </Link>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ marginRight: '10px' }}>{t('navbar.games', 'GAMES')} {!featuresUnlocked ? '🔒' : ''}</div></Link>
@@ -436,8 +436,8 @@ const Navbar = () => {
                                         boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)'
                                     }}
                                 >
-                                    <span style={{ fontSize: '14px' }}>🎥</span>
-                                    <span>{isArabic ? 'الحصة المباشرة' : 'LIVE CLASS'}</span>
+                                    <span style={{ fontSize: '14px' }}>🎙️</span>
+                                    <span>{isArabic ? 'هيرو توك' : 'HEROTALK'}</span>
                                 </div>
                             </Link>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}>

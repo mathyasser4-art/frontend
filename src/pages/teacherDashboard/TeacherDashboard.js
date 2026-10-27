@@ -330,17 +330,17 @@ function TeacherDashboard() {
                                     fontSize: '11px',
                                     fontWeight: '800'
                                 }}>
-                                    🔴 {isArabic ? 'بث مباشر تفاعلي' : 'LIVE CLASS'}
+                                    🔴 {isArabic ? 'هيرو توك المباشر' : 'HEROTALK LIVE'}
                                 </span>
                                 <span style={{ fontSize: '12px', color: '#94a3b8' }}>
-                                    {isArabic ? 'بديل Zoom المجاني 100%' : '100% Free Zoom Alternative'}
+                                    {isArabic ? 'ستوديو الشرح التفاعلي والسبورة ⚡' : 'Interactive Math Studio ⚡'}
                                 </span>
                             </div>
                             <h4 style={{ margin: '0 0 4px 0', fontSize: '1.2rem', fontWeight: '800', color: '#ffffff' }}>
-                                {isArabic ? 'ابدأ حصتك المباشرة بالفيديو والسبورة الآن' : 'Start Live Video Class with Interactive Whiteboard'}
+                                {isArabic ? 'ابدأ حصة HeroTalk المباشرة بالفيديو والسبورة الآن' : 'Start HeroTalk Live Class with Interactive Whiteboard'}
                             </h4>
                             <p style={{ margin: 0, fontSize: '0.9rem', color: '#cbd5e1' }}>
-                                {isArabic ? 'مشاركة شاشة، فيديو وصوت غير محدود، وعداد تفاعلي مباشر لطلابك بدون برامج خارجية.' : 'Screen share, unlimited time video/audio, and interactive virtual abacus inside the platform.'}
+                                {isArabic ? 'مشاركة شاشة بدون تكرار، صوت وفيديو غير محدود، وعداد تفاعلي مباشر لطلابك.' : 'Screen share without mirror echo, unlimited time, and interactive virtual abacus.'}
                             </p>
                         </div>
                     </div>
@@ -357,7 +357,7 @@ function TeacherDashboard() {
                         boxShadow: '0 4px 14px rgba(239, 68, 68, 0.45)',
                         flexShrink: 0
                     }}>
-                        🚀 {isArabic ? 'بدء الحصة الآن' : 'Launch Class'}
+                        🚀 {isArabic ? 'بدء حصة HeroTalk' : 'Launch HeroTalk'}
                     </button>
                 </div>
 
