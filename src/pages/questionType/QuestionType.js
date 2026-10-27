@@ -7,6 +7,7 @@ import CreateCompetitionModal from '../../components/navbar/CreateCompetitionMod
 import { ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
 import { safeLocalStorage } from '../../utils/safeStorage'
 import { hasFullAccess } from '../../utils/trialAccess'
+import { isFeaturesUnlocked, openReferralLockModal } from '../../utils/featureLock'
 import logo from '../../logo.png'
 import '../../reusable.css'
 import './QuestionType.css'
@@ -113,7 +114,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Gamepad2 size={64} strokeWidth={2} className="mcq-icon" />
               </div>
-              <h3 className="option-title">{t('academy.funGamesCard', 'Fun Games')}</h3>
+              <h3 className="option-title">{t('academy.funGamesCard', 'Fun Games')} {!isFeaturesUnlocked() && <span className="card-lock-badge">🔒</span>}</h3>
               <img src="/img/games/racer_cover.png" alt="Fun Games Preview" className="card-preview-screenshot" />
             </Link>
           )}
@@ -139,13 +140,17 @@ function QuestionType() {
               className="questionType-option battle-card-option" 
               onClick={() => {
                 soundEffects.playClick();
+                if (!isFeaturesUnlocked()) {
+                  openReferralLockModal();
+                  return;
+                }
                 setShowJoinBattleModal(true);
               }}
             >
               <div className="option-icon-wrapper">
                 <Swords size={64} strokeWidth={2} className="mcq-icon" style={{ color: '#fff' }} />
               </div>
-              <h3 className="option-title">{t('academy.liveBattlesCard', 'Live Battles')}</h3>
+              <h3 className="option-title">{t('academy.liveBattlesCard', 'Live Battles')} {!isFeaturesUnlocked() && <span className="card-lock-badge">🔒</span>}</h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
             </span>
           ) : userRole === 'Teacher' ? (
@@ -153,6 +158,10 @@ function QuestionType() {
               className="questionType-option battle-card-option" 
               onClick={() => {
                 soundEffects.playClick();
+                if (!isFeaturesUnlocked()) {
+                  openReferralLockModal();
+                  return;
+                }
                 setShowCreateCompetition(true);
               }}
               style={{ cursor: 'pointer' }}
@@ -160,7 +169,7 @@ function QuestionType() {
               <div className="option-icon-wrapper">
                 <Swords size={64} strokeWidth={2} className="mcq-icon" style={{ color: '#fff' }} />
               </div>
-              <h3 className="option-title">{t('academy.createCompetitionCard', 'Create a Competition')}</h3>
+              <h3 className="option-title">{t('academy.createCompetitionCard', 'Create a Competition')} {!isFeaturesUnlocked() && <span className="card-lock-badge">🔒</span>}</h3>
               <img src="/img/battle_arena_preview.png" alt="Live Battle Arena Preview" className="card-preview-screenshot" />
             </span>
           ) : (

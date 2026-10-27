@@ -87,9 +87,13 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 }
                 if (responseJson.featuresUnlockedUntil) {
                     safeLocalStorage.setItem('features_unlocked_until', responseJson.featuresUnlockedUntil);
+                } else {
+                    safeLocalStorage.removeItem('features_unlocked_until');
                 }
                 if (responseJson.sharePassExpiresAt) {
                     safeLocalStorage.setItem('share_pass_expires_at', responseJson.sharePassExpiresAt);
+                } else {
+                    safeLocalStorage.removeItem('share_pass_expires_at');
                 }
                 if (responseJson.role === 'Teacher') {
                     if (responseJson.subject) {

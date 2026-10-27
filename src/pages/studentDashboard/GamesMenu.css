@@ -304,4 +304,139 @@
   border: none !important;
 }
 
+/* Referral Unlock Banners & Locked Card States */
+.referral-menu-unlock-banner {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 25px rgba(245, 158, 11, 0.12);
+  border-radius: 20px;
+  padding: 1.25rem 2rem;
+  margin: 2rem auto 0 auto;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #f8fafc;
+}
+
+.referral-menu-unlock-banner:hover {
+  transform: translateY(-3px);
+  border-color: #f59e0b;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25), 0 0 35px rgba(245, 158, 11, 0.2);
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: right;
+}
+
+[dir="ltr"] .banner-left {
+  text-align: left;
+}
+
+.banner-icon-badge {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+.banner-text h4 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.banner-text p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.banner-action-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  transition: all 0.2s ease;
+}
+
+.banner-action-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+}
+
+.referral-menu-unlocked-banner {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #047857;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.locked-game-card {
+  border: 2px solid rgba(245, 158, 11, 0.35);
+  position: relative;
+}
+
+.locked-game-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.15);
+  pointer-events: none;
+}
+
+.locked-label-pill {
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-weight: 800;
+  border: 1px solid #fde68a;
+}
+
+.locked-hover-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4) !important;
+}
+
+@media (max-width: 768px) {
+  .referral-menu-unlock-banner {
+    flex-direction: column;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .banner-left {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  [dir="ltr"] .banner-left {
+    text-align: center;
+  }
+  .banner-action-btn {
+    width: 100%;
+  }
+}
+
+
 

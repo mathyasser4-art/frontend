@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../config/api.config';
 import { safeLocalStorage } from '../../utils/safeStorage';
 import soundEffects from '../../utils/soundEffects';
+import { isFeaturesUnlocked } from '../../utils/featureLock';
 import { useTranslation } from 'react-i18next';
 import './ReferralLockModal.css';
 
@@ -18,46 +19,27 @@ export default function ReferralLockModal() {
     const [sharing, setSharing] = useState(false);
 
     const isAuth = safeLocalStorage.getItem('O_authWEB');
-    const role = safeLocalStorage.getItem('auth_role');
+    const role = safeLocalStorage.getItem('auth_role') || 'Student';
+    const isTeacher = role === 'Teacher';
     const storedCode = safeLocalStorage.getItem('referral_code') || '';
 
-    // Check if the current route is Competitions or Games
+    const isCurrentlyUnlocked = () => isFeaturesUnlocked();
+
+    // Check if the current route is an active game play or competition
     const isProtectedFeatureRoute = () => {
         const path = location.pathname.toLowerCase();
-        const isGame = path.startsWith('/games') || path.includes('/studentdashboard/games');
-        const isComp = path.includes('/competition') || path.includes('/teachercompetition') || path.includes('/upcoming-competitions');
-        return isGame || isComp;
+        // Any direct game play screen (e.g. /student/games/..., /games/...)
+        const isGamePlay = path.startsWith('/student/games/') || 
+                           (path.startsWith('/games/') && path !== '/games');
+        // Any competition route
+        const isComp = path.includes('competition') || path.includes('competitions-hub');
+        return isGamePlay || isComp;
     };
 
     const evaluateLock = () => {
-        // Not logged in -> Don't show this modal
-        if (!isAuth) return false;
-
-        // Admin accounts are exempt
         if (role === 'Admin') return false;
-
-        // Only enforce on Teachers (and students on games if desired; here teacher requested for teachers)
-        if (role !== 'Teacher') return false;
-
-        // Check if on a protected route (Competitions or Games)
-        if (!isProtectedFeatureRoute()) return false;
-
-        // Check if unlocked
-        const now = Date.now();
-        const unlockedUntil = safeLocalStorage.getItem('features_unlocked_until');
-        if (unlockedUntil && new Date(unlockedUntil).getTime() > now) {
-            return false;
-        }
-
-        const sharePass = safeLocalStorage.getItem('share_pass_expires_at');
-        if (sharePass && new Date(sharePass).getTime() > now) {
-            return false;
-        }
-
-        const isFeaturesUnlocked = safeLocalStorage.getItem('is_features_unlocked') === 'true';
-        if (isFeaturesUnlocked) return false;
-
-        return true;
+        if (isCurrentlyUnlocked()) return false;
+        return isProtectedFeatureRoute();
     };
 
     useEffect(() => {
@@ -65,9 +47,20 @@ export default function ReferralLockModal() {
         if (storedCode) setReferralCode(storedCode);
     }, [location.pathname, isAuth, role]);
 
-    // Fetch live referral status from backend if missing
+    // Listen for custom trigger to open lock modal (e.g. clicked locked game card or locked navbar button)
     useEffect(() => {
-        if (!isAuth || role !== 'Teacher') return;
+        const handleOpen = () => {
+            if (!isCurrentlyUnlocked()) {
+                setIsLocked(true);
+            }
+        };
+        window.addEventListener('open-referral-lock', handleOpen);
+        return () => window.removeEventListener('open-referral-lock', handleOpen);
+    }, [role]);
+
+    // Fetch live referral status from backend if available
+    useEffect(() => {
+        if (!isAuth) return;
 
         const fetchStatus = async () => {
             try {
@@ -85,10 +78,18 @@ export default function ReferralLockModal() {
                         if (data.unlockedUntil) safeLocalStorage.setItem('features_unlocked_until', data.unlockedUntil);
                         if (data.sharePassExpiresAt) safeLocalStorage.setItem('share_pass_expires_at', data.sharePassExpiresAt);
                         setIsLocked(false);
+                        window.dispatchEvent(new CustomEvent('features-unlocked'));
+                    } else {
+                        safeLocalStorage.setItem('is_features_unlocked', 'false');
+                        safeLocalStorage.removeItem('features_unlocked_until');
+                        safeLocalStorage.removeItem('share_pass_expires_at');
+                        if (isProtectedFeatureRoute()) {
+                            setIsLocked(true);
+                        }
                     }
                 }
             } catch (e) {
-                console.error('Error checking referral status:', e);
+                // silent fallback
             }
         };
 
@@ -97,45 +98,49 @@ export default function ReferralLockModal() {
 
     if (!isLocked) return null;
 
-    const refLink = `https://abacusheroes.com/register?role=Teacher&ref=${referralCode || 'HERO'}`;
+    const targetRoleParam = isTeacher ? 'Teacher' : 'Student';
+    const effectiveCode = referralCode || storedCode || 'HERO';
+    const refLink = `https://abacusheroes.com/register?role=${targetRoleParam}&ref=${effectiveCode}`;
 
     const handleShareWhatsApp = async () => {
         try {
             setSharing(true);
             if (soundEffects && soundEffects.playClick) soundEffects.playClick();
 
-            // Claim instant 48-hour pass from backend
-            try {
-                const res = await fetch(`${API_BASE_URL}/user/referral/claim-share-pass`, {
+            const now = Date.now();
+            const passExpiry = new Date(now + 48 * 60 * 60 * 1000).toISOString();
+
+            // Set 48h instant pass in localStorage
+            safeLocalStorage.setItem('features_unlocked_until', passExpiry);
+            safeLocalStorage.setItem('share_pass_expires_at', passExpiry);
+            safeLocalStorage.setItem('is_features_unlocked', 'true');
+
+            // Dispatch event so other components immediately know features are unlocked
+            window.dispatchEvent(new CustomEvent('features-unlocked'));
+
+            // Notify backend if authenticated
+            if (isAuth) {
+                fetch(`${API_BASE_URL}/user/referral/claim-share-pass`, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${isAuth}` 
                     }
-                });
-                const data = await res.json();
-                if (data.message === 'success') {
-                    safeLocalStorage.setItem('is_features_unlocked', 'true');
-                    if (data.sharePassExpiresAt) {
-                        safeLocalStorage.setItem('share_pass_expires_at', data.sharePassExpiresAt);
-                    }
-                }
-            } catch (err) {
-                console.warn('Share pass network claim fallback:', err);
-                // Fallback client-side 48-hour pass
-                const fallbackExpiry = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
-                safeLocalStorage.setItem('is_features_unlocked', 'true');
-                safeLocalStorage.setItem('share_pass_expires_at', fallbackExpiry);
+                }).catch(() => {});
             }
 
-            // Open WhatsApp share
-            const msg = isArabic
-                ? `أهلاً بك زميلي المعلم 🌟 أنصحك بتجربة منصة "أبطال العداد - Abacus Heroes" لتدريب الطلاب وتنظيم المسابقات والواجبات التفاعلية.\n\nسجل حسابك كمعلم عبر الرابط التالي واحصل على وصول كامل:\n${refLink}`
-                : `Hello colleague 🌟 I invite you to join Abacus Heroes for mental math training, live competitions, and worksheets.\n\nRegister your Teacher account here:\n${refLink}`;
+            // Compose WhatsApp message based on role
+            const msg = isTeacher
+                ? (isArabic
+                    ? `أهلاً بك زميلي المعلم 🌟 أنصحك بتجربة منصة "أبطال العداد - Abacus Heroes" لتنظيم المسابقات والواجبات التفاعلية.\n\nسجل حسابك كمعلم عبر الرابط التالي واحصل على وصول كامل:\n${refLink}`
+                    : `Hello colleague 🌟 I invite you to join Abacus Heroes for mental math training, live competitions, and worksheets.\n\nRegister your Teacher account here:\n${refLink}`)
+                : (isArabic
+                    ? `مرحباً يا بطل 🌟 العب وتنافس معي في منصة أبطال العداد (Abacus Heroes) للحساب الذهني وألعاب الذكاء!\n\nسجل حسابك وتحداني الآن:\n${refLink}`
+                    : `Hey! 🌟 Play and compete with me on Abacus Heroes for math games and fun challenges!\n\nJoin here:\n${refLink}`);
 
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 
-            // Instantly unlock modal
+            // Unlock and close modal immediately
             setTimeout(() => {
                 setIsLocked(false);
                 setSharing(false);
@@ -157,7 +162,11 @@ export default function ReferralLockModal() {
     const handleBackToHomework = () => {
         if (soundEffects && soundEffects.playClick) soundEffects.playClick();
         setIsLocked(false);
-        navigate('/');
+        if (role === 'Student') {
+            navigate('/dashboard/student');
+        } else {
+            navigate('/');
+        }
     };
 
     return (
@@ -166,22 +175,28 @@ export default function ReferralLockModal() {
                 {/* Glowing Badge */}
                 <div className="ref-lock-icon-wrap">
                     <div className="ref-lock-icon-pulse"></div>
-                    <span className="ref-lock-emoji">🏆🔒</span>
+                    <span className="ref-lock-emoji">{isTeacher ? '🏆🔒' : '🎮🔒'}</span>
                 </div>
 
                 {/* Pill */}
                 <div className="ref-lock-pill">
-                    <span>{isArabic ? 'ميزة المعلمين النشطين' : 'Active Teachers Exclusive'}</span>
+                    <span>{isTeacher ? (isArabic ? 'ميزة المعلمين النشطين' : 'Active Teachers Exclusive') : (isArabic ? 'ألعاب الأبطال' : 'Heroes Games Arena')}</span>
                 </div>
 
                 {/* Title & Desc */}
                 <h2 className="ref-lock-title">
-                    {isArabic ? 'المسابقات المباشرة والألعاب مقفلة' : 'Competitions & Games Locked'}
+                    {isTeacher
+                        ? (isArabic ? 'المسابقات المباشرة والألعاب مقفلة' : 'Competitions & Games Locked')
+                        : (isArabic ? 'الألعاب والسباقات مقفلة' : 'Games & Races Locked')}
                 </h2>
                 <p className="ref-lock-desc">
-                    {isArabic
-                        ? 'الواجبات والتدريب العادي مجانية تماماً! لفتح غرف المسابقات المباشرة والألعاب لطلابك، شارك المنصة مع زميل معلّم عبر واتساب.'
-                        : 'Homework & Practice are completely free! To unlock Live Competitions and Math Games for your class, share Abacus Heroes with a fellow teacher.'}
+                    {isTeacher
+                        ? (isArabic
+                            ? 'الواجبات والتدريب العادي مجانية تماماً! لفتح غرف المسابقات المباشرة والألعاب لطلابك، شارك المنصة مع زميل معلّم عبر واتساب.'
+                            : 'Homework & Practice are completely free! To unlock Live Competitions and Math Games for your class, share Abacus Heroes with a fellow teacher.')
+                        : (isArabic
+                            ? 'الواجبات والتدريب العادي متاحة مجاناً! لفتح جميع ألعاب الذكاء والسباقات، شارك المنصة مع زملائك أو أصدقائك عبر واتساب لفتحها فوراً.'
+                            : 'Homework and Practice are 100% free! To unlock all math games and fun races, share Abacus Heroes with your friends on WhatsApp to unlock instantly.')}
                 </p>
 
                 {/* Referral Link Box */}
@@ -210,9 +225,13 @@ export default function ReferralLockModal() {
 
                 {/* Viral Incentive Banner */}
                 <div className="ref-lock-reward-note">
-                    🎁 {isArabic
-                        ? 'عندما يسجل زميلك حسابه برابطك، يتم فتح المسابقات والألعاب لك لمدة 30 يوماً كاملة!'
-                        : 'When your colleague creates their account via your link, you get 30 Full Days Unlocked!'}
+                    🎁 {isTeacher
+                        ? (isArabic
+                            ? 'عندما يسجل زميلك حسابه برابطك، يتم فتح المسابقات والألعاب لك لمدة 30 يوماً كاملة!'
+                            : 'When your colleague creates their account via your link, you get 30 Full Days Unlocked!')
+                        : (isArabic
+                            ? 'عندما يسجل صديقك حسابه برابطك، يتم فتح جميع الألعاب لك لمدة 30 يوماً كاملة!'
+                            : 'When a friend creates their account via your link, you get 30 Full Days Unlocked!')}
                 </div>
 
                 {/* Back Link */}

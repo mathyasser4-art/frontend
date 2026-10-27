@@ -9,6 +9,7 @@ import { safeLocalStorage } from '../../utils/safeStorage'
 import { getSchoolCompetitionEvents } from '../../api/competitionEvent/competitionEvent.api'
 import { fetchAndCacheTeacherScope } from '../../utils/teacherFilter'
 import { SHOW_PRICING, ENABLE_CUSTOM_QUESTION_BANK } from '../../config/api.config'
+import { isFeaturesUnlocked, openReferralLockModal } from '../../utils/featureLock'
 import '../../reusable.css'
 import './Navbar.css'
 
@@ -40,16 +41,21 @@ const Navbar = () => {
     const [tutorialRole, setTutorialRole] = useState('Teacher')
     const [activeBattleNotification, setActiveBattleNotification] = useState(null)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const [featuresUnlocked, setFeaturesUnlocked] = useState(isFeaturesUnlocked())
 
-    const checkTeacherUnlocked = () => {
-        if (role !== 'Teacher') return true;
-        const now = Date.now();
-        const unlockedUntil = safeLocalStorage.getItem('features_unlocked_until');
-        const sharePass = safeLocalStorage.getItem('share_pass_expires_at');
-        return (unlockedUntil && new Date(unlockedUntil).getTime() > now) ||
-               (sharePass && new Date(sharePass).getTime() > now) ||
-               safeLocalStorage.getItem('is_features_unlocked') === 'true';
-    };
+    useEffect(() => {
+        const handleUnlocked = () => {
+            setFeaturesUnlocked(isFeaturesUnlocked());
+        };
+        window.addEventListener('features-unlocked', handleUnlocked);
+        window.addEventListener('storage', handleUnlocked);
+        return () => {
+            window.removeEventListener('features-unlocked', handleUnlocked);
+            window.removeEventListener('storage', handleUnlocked);
+        };
+    }, []);
+
+    const checkTeacherUnlocked = () => featuresUnlocked;
 
     // Check for unread competition events published by school for teacher accounts
     useEffect(() => {
@@ -250,9 +256,7 @@ const Navbar = () => {
                     {(role === 'School' || role === 'Organization') ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Teacher' ? (
                         <>
-                            <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ marginRight: '10px' }}>{t('navbar.games', 'GAMES')} {!checkTeacherUnlocked() ? '🔒' : ''}</div></Link>
-                            
-                            
+                            <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ marginRight: '10px' }}>{t('navbar.games', 'GAMES')} {!featuresUnlocked ? '🔒' : ''}</div></Link>
                         </>
                     ) : null}
                     {role === 'Teacher' ? (
@@ -265,7 +269,7 @@ const Navbar = () => {
                             className="nav-btn"
                             onClick={() => {
                                 soundEffects.playClick();
-                                navigate('/teacherDashboard/competition-lobby');
+                                openReferralLockModal();
                             }}
                             style={{
                                 background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
@@ -293,14 +297,14 @@ const Navbar = () => {
                             className="nav-btn create-competition-3d-btn"
                             onClick={() => {
                                 soundEffects.playClick();
-                                if (role === 'Teacher' && !checkTeacherUnlocked()) {
-                                    navigate('/teacherDashboard/competition-lobby');
+                                if (role === 'Teacher' && !featuresUnlocked) {
+                                    openReferralLockModal();
                                     return;
                                 }
                                 setShowCreateCompetition(true);
                             }}
                             style={{
-                                background: checkTeacherUnlocked() 
+                                background: featuresUnlocked 
                                     ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' 
                                     : 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
                                 color: '#ffffff',
@@ -314,7 +318,7 @@ const Navbar = () => {
                                 alignItems: 'center',
                                 gap: '6px',
                                 marginRight: '6px',
-                                boxShadow: checkTeacherUnlocked() 
+                                boxShadow: featuresUnlocked 
                                     ? '0 4px 12px rgba(16, 185, 129, 0.35), inset 0 -3px 0 rgba(0,0,0,0.2)' 
                                     : '0 4px 12px rgba(100, 116, 139, 0.35), inset 0 -3px 0 rgba(0,0,0,0.2)',
                                 transition: 'transform 0.1s, box-shadow 0.1s',
@@ -332,14 +336,19 @@ const Navbar = () => {
                                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.35), inset 0 -3px 0 rgba(0,0,0,0.2)';
                             }}
                         >
-                            {t('navbar.createCompetition', '⚔️ CREATE COMPETITION')} {!checkTeacherUnlocked() ? '🔒' : ''}
+                            {t('navbar.createCompetition', '⚔️ CREATE COMPETITION')} {!featuresUnlocked ? '🔒' : ''}
                         </div>
                     ) : null}
                     {isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? (
                         <Link 
                             to="/teacher/competitions-hub" 
-                            onClick={() => {
+                            onClick={(e) => {
                                 soundEffects.playClick();
+                                if (role === 'Teacher' && !featuresUnlocked) {
+                                    e.preventDefault();
+                                    openReferralLockModal();
+                                    return;
+                                }
                                 if (hasUnreadEvents) {
                                     setHasUnreadEvents(false);
                                     safeLocalStorage.setItem('teacher_last_competitions_view', new Date().toISOString());
@@ -364,7 +373,7 @@ const Navbar = () => {
                                     boxShadow: hasUnreadEvents ? '0 4px 14px rgba(239, 68, 68, 0.45)' : '0 4px 12px rgba(245, 158, 11, 0.35)'
                                 }}
                             >
-                                {t('navbar.competitionsHub', '🏆 JOIN A COMPETITION')}
+                                {t('navbar.competitionsHub', '🏆 JOIN A COMPETITION')} {!featuresUnlocked ? '🔒' : ''}
                                 {hasUnreadEvents && (
                                     <span style={{
                                         backgroundColor: '#ffffff',
@@ -385,7 +394,38 @@ const Navbar = () => {
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn"><span className="text-desktop">{t('navbar.homeworkReports', 'HOMEWORK REPORTS')}</span><span className="text-mobile">REPORTS</span></div></Link> : null}
                     {role === 'Student' ? (
                         <>
-                            <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn">{t('navbar.games', 'GAMES')}</div></Link>
+                            <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}>
+                                <div className="games-btn" style={{ marginRight: '10px' }}>
+                                    {t('navbar.games', 'GAMES')} {!featuresUnlocked ? '🔒' : ''}
+                                </div>
+                            </Link>
+                            {!featuresUnlocked && (
+                                <div 
+                                    className="nav-btn"
+                                    onClick={() => {
+                                        soundEffects.playClick();
+                                        openReferralLockModal();
+                                    }}
+                                    style={{
+                                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        fontWeight: '800',
+                                        fontSize: '12px',
+                                        padding: '0.45rem 0.85rem',
+                                        borderRadius: '12px',
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '5px',
+                                        marginRight: '6px',
+                                        boxShadow: '0 4px 10px rgba(16, 185, 129, 0.3)'
+                                    }}
+                                >
+                                    <span>🎁</span>
+                                    <span>{isArabic ? 'افتح الألعاب' : 'Unlock Games'}</span>
+                                </div>
+                            )}
                         </>
                     ) : null}
                     {role === 'IT' ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
