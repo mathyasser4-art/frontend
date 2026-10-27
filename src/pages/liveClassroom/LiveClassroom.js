@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
   ArrowLeft, Copy, Check, Share2, Maximize2, Minimize2, 
-  RotateCcw, ExternalLink
+  RotateCcw, ExternalLink, HelpCircle, X, Monitor, Sparkles
 } from 'lucide-react';
 import { safeLocalStorage } from '../../utils/safeStorage';
 import soundEffects from '../../utils/soundEffects';
@@ -23,7 +23,6 @@ export default function LiveClassroom() {
 
   const queryParams = new URLSearchParams(location.search);
   const queryRoom = queryParams.get('room');
-  const queryProvider = queryParams.get('provider');
 
   // Clean ASCII slug for WebRTC room URL to avoid illegal character issues
   const cleanAscii = (userName || '')
@@ -35,10 +34,11 @@ export default function LiveClassroom() {
   const defaultRoom = `AbacusHeroes_${roomPrefix}_${shortId}`;
   const roomName = (queryRoom && queryRoom.trim()) || defaultRoom;
 
-  const [provider, setProvider] = useState(queryProvider || 'mirotalk'); // 'mirotalk' | 'jitsi'
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showAbacusDrawer, setShowAbacusDrawer] = useState(false);
+  const [showShareTip, setShowShareTip] = useState(true);
+  const [showGuideModal, setShowGuideModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const iframeRef = useRef(null);
 
@@ -51,25 +51,17 @@ export default function LiveClassroom() {
     { upper: 0, lower: 0 }
   ]);
 
-  // Calculate meeting URL based on selected provider
-  const getMeetingUrl = () => {
-    if (provider === 'jitsi') {
-      return `https://meet.jit.si/${encodeURIComponent(roomName)}#userInfo.displayName="${encodeURIComponent(userName)}"`;
-    }
-    // MiroTalk P2P: 100% free open-source WebRTC, instant join, no login needed
-    return `https://p2p.mirotalk.com/join?room=${encodeURIComponent(roomName)}&name=${encodeURIComponent(userName)}&audio=1&video=1&screen=1&chat=1&notify=0`;
-  };
-
-  const meetingUrl = getMeetingUrl();
+  // MiroTalk P2P: 100% free open-source WebRTC, zero login required, no time limits
+  const meetingUrl = `https://p2p.mirotalk.com/join?room=${encodeURIComponent(roomName)}&name=${encodeURIComponent(userName)}&audio=1&video=1&screen=1&chat=1&notify=0`;
 
   // Handle loading state: ensure spinner never hangs indefinitely
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2200);
+    }, 2000);
     return () => clearTimeout(timer);
-  }, [provider, roomName]);
+  }, [roomName]);
 
   // Calculate current abacus numeric value
   const calculateAbacusTotal = () => {
@@ -130,7 +122,7 @@ export default function LiveClassroom() {
 
   const handleCopyLink = () => {
     if (soundEffects && soundEffects.playClick) soundEffects.playClick();
-    const link = `${window.location.origin}/live-classroom?room=${encodeURIComponent(roomName)}&provider=${provider}`;
+    const link = `${window.location.origin}/live-classroom?room=${encodeURIComponent(roomName)}`;
     navigator.clipboard.writeText(link).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
@@ -139,7 +131,7 @@ export default function LiveClassroom() {
 
   const handleShareWhatsApp = () => {
     if (soundEffects && soundEffects.playClick) soundEffects.playClick();
-    const link = `${window.location.origin}/live-classroom?room=${encodeURIComponent(roomName)}&provider=${provider}`;
+    const link = `${window.location.origin}/live-classroom?room=${encodeURIComponent(roomName)}`;
     const msg = isTeacher
       ? (isArabic 
           ? `مرحباً يا أبطال 🌟\nتبدأ حصتنا المباشرة الآن في منصة أبطال العداد (Abacus Heroes)!\n\nاضغط على الرابط التالي للانضمام فوراً:\n${link}`
@@ -162,7 +154,22 @@ export default function LiveClassroom() {
     }
   };
 
-  const handleOpenNewWindow = () => {
+  // Open in floating window (Zoom-style floating thumbnail/meeting window)
+  const handlePopoutWindow = () => {
+    if (soundEffects && soundEffects.playClick) soundEffects.playClick();
+    const width = 540;
+    const height = 740;
+    const left = window.screen.width - width - 20;
+    const top = 60;
+    window.open(
+      meetingUrl,
+      'AbacusLiveClassroom',
+      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no,status=no`
+    );
+  };
+
+  // Open in full standalone browser tab
+  const handleOpenFullTab = () => {
     if (soundEffects && soundEffects.playClick) soundEffects.playClick();
     window.open(meetingUrl, '_blank', 'noopener,noreferrer');
   };
@@ -194,36 +201,27 @@ export default function LiveClassroom() {
         </div>
 
         <div className="live-header-right">
-          {/* Provider Switcher */}
-          <div className="live-provider-switch" title={isArabic ? 'تبديل خادم الفيديو' : 'Switch Video Server'}>
-            <button 
-              className={`provider-btn ${provider === 'mirotalk' ? 'active' : ''}`}
-              onClick={() => {
-                if (soundEffects && soundEffects.playClick) soundEffects.playClick();
-                setProvider('mirotalk');
-              }}
-            >
-              ⚡ MiroTalk
-            </button>
-            <button 
-              className={`provider-btn ${provider === 'jitsi' ? 'active' : ''}`}
-              onClick={() => {
-                if (soundEffects && soundEffects.playClick) soundEffects.playClick();
-                setProvider('jitsi');
-              }}
-            >
-              🎥 Jitsi
-            </button>
-          </div>
-
-          {/* Open in New Window */}
+          {/* Zoom-style Pop-out Floating Window */}
           <button 
-            className="live-tool-btn btn-popup" 
-            onClick={handleOpenNewWindow}
-            title={isArabic ? 'فتح الفصل في نافذة كاملة مستقلة' : 'Open in Full Window'}
+            className="live-tool-btn btn-popout" 
+            onClick={handlePopoutWindow}
+            title={isArabic ? 'فتح في نافذة عائمة جانبية (مثل زووم) لتصفح المنصة بسهولة أثناء الشرح' : 'Pop-out floating window (Zoom-style) to browse platform while teaching'}
           >
             <ExternalLink size={16} />
-            <span className="btn-label">{isArabic ? 'نافذة جديدة' : 'Full Window'}</span>
+            <span className="btn-label">{isArabic ? 'نافذة منبثقة' : 'Pop-Out Window'}</span>
+          </button>
+
+          {/* Screen Share Tip Guide Button */}
+          <button 
+            className="live-tool-btn btn-guide"
+            onClick={() => {
+              if (soundEffects && soundEffects.playClick) soundEffects.playClick();
+              setShowGuideModal(true);
+            }}
+            title={isArabic ? 'طريقة مشاركة الشاشة بدون تكرار' : 'How to share screen without mirror effect'}
+          >
+            <HelpCircle size={16} />
+            <span className="btn-label">{isArabic ? 'دليل الشاشة' : 'Screen Guide'}</span>
           </button>
 
           {/* Virtual Soroban Drawer Toggle */}
@@ -258,6 +256,35 @@ export default function LiveClassroom() {
         </div>
       </header>
 
+      {/* Screen Sharing Tip Banner (Dismissible) */}
+      {showShareTip && (
+        <div className="screen-share-tip-banner">
+          <div className="tip-content">
+            <span className="tip-badge">💡 {isArabic ? 'نصيحة هامة' : 'Pro Tip'}</span>
+            <span className="tip-message">
+              {isArabic 
+                ? 'لمنع تكرار الشاشة اللانهائي: عند الضغط على مشاركة الشاشة، اختر "علامة تبويب Chrome" (مثل التمارين أو كتاب العداد) بدلاً من "الشاشة بأكملها"، أو استخدم زر "نافذة منبثقة 🪟" لتصفح المنصة بسهولة!' 
+                : 'To avoid the infinite screen mirror: when sharing screen, select a specific "Chrome Tab" (like exercises or worksheets) instead of "Entire Screen", or click "Pop-Out Window 🪟" to browse the platform while teaching!'}
+            </span>
+          </div>
+          <div className="tip-actions">
+            <button 
+              className="tip-learn-btn" 
+              onClick={() => setShowGuideModal(true)}
+            >
+              {isArabic ? 'شرح مصور' : 'Learn How'}
+            </button>
+            <button 
+              className="tip-close-btn" 
+              onClick={() => setShowShareTip(false)}
+              title={isArabic ? 'إغلاق' : 'Dismiss'}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Video & Interactive Teaching Space */}
       <div className="live-classroom-body">
         {/* Loading Spinner */}
@@ -275,7 +302,7 @@ export default function LiveClassroom() {
 
         {/* Embedded WebRTC Meeting Iframe */}
         <iframe
-          key={`${provider}_${roomName}`}
+          key={roomName}
           ref={iframeRef}
           src={meetingUrl}
           title="Abacus Heroes Live Video Classroom"
@@ -349,6 +376,63 @@ export default function LiveClassroom() {
           </aside>
         )}
       </div>
+
+      {/* Screen Sharing Visual Guide Modal */}
+      {showGuideModal && (
+        <div className="guide-modal-overlay" onClick={() => setShowGuideModal(false)}>
+          <div className="guide-modal-card" onClick={e => e.stopPropagation()}>
+            <div className="guide-modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Monitor size={22} color="#3b82f6" />
+                <h3>{isArabic ? 'كيف تشارك شاشتك مع الطلاب بدون تكرار؟' : 'How to Share Screen Without Mirror Effect'}</h3>
+              </div>
+              <button className="guide-close-btn" onClick={() => setShowGuideModal(false)}>✕</button>
+            </div>
+
+            <div className="guide-modal-body">
+              <div className="guide-explain-box">
+                <p>
+                  {isArabic
+                    ? 'عندما تشارك "الشاشة بأكملها" وأنت تنظر لنفس نافذة الاجتماع، تقوم الشاشة بتصوير نفسها باستمرار فيحدث تأثير النفق (المرايا المتكررة). هذا يحدث في كل تطبيقات الفيديو بما فيها Zoom وGoogle Meet عند تصوير نفس الشاشة.'
+                    : 'When you share "Entire Screen" while looking at the meeting window, the screen captures itself recursively creating an infinite tunnel effect. Here is how to share cleanly like a pro:'}
+                </p>
+              </div>
+
+              <div className="guide-steps-list">
+                <div className="guide-step-item">
+                  <div className="step-num">1</div>
+                  <div className="step-content">
+                    <h4>{isArabic ? 'الخيار الأفضل: مشاركة علامة تبويب (Chrome Tab)' : 'Best Choice: Share a Chrome Tab'}</h4>
+                    <p>{isArabic ? 'عند الضغط على أيقونة الشاشة في الفصل، اختر تبويب "Chrome Tab" وحدد صفحة تمارين أو ألعاب أبطال العداد أو كتاب الرياضيات.' : 'Click Screen Share in the call, select the "Chrome Tab" option, and choose your Abacus exercises or worksheet tab.'}</p>
+                  </div>
+                </div>
+
+                <div className="guide-step-item">
+                  <div className="step-num">2</div>
+                  <div className="step-content">
+                    <h4>{isArabic ? 'استخدم زر "نافذة منبثقة 🪟" (مثل برنامج Zoom)' : 'Use "Pop-Out Window 🪟" (Zoom-Style)'}</h4>
+                    <p>{isArabic ? 'اضغط زر "نافذة منبثقة" في الأعلى لفتح الفصل في نافذة عائمة جانبية، ثم تصفح بنك الأسئلة أو الواجبات في شاشتك الرئيسية وشاركها مع الطلاب.' : 'Click "Pop-Out Window" to detach the video call into a compact side window, then browse assignments and games on your main screen!'}</p>
+                  </div>
+                </div>
+
+                <div className="guide-step-item">
+                  <div className="step-num">3</div>
+                  <div className="step-content">
+                    <h4>{isArabic ? 'استخدم العداد التفاعلي المدمج 🧮' : 'Use the Built-in Virtual Soroban 🧮'}</h4>
+                    <p>{isArabic ? 'اضغط على زر "العداد التفاعلي" من الشريط العلوي لعرض العداد الصيني وشرح العمليات الحسابية مباشرة لطلابك.' : 'Click "Virtual Soroban" to slide out the interactive abacus and explain mental math steps live.'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="guide-modal-footer">
+              <button className="guide-ok-btn" onClick={() => setShowGuideModal(false)}>
+                {isArabic ? 'فهمت ذلك، شكراً!' : 'Got it, thank you!'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
