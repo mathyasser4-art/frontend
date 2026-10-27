@@ -15,7 +15,8 @@ import './StudentDashboard.css'
 import { safeLocalStorage } from '../../utils/safeStorage';
 
 function StudentDashboard() {
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
+    const isArabic = i18n?.language === 'ar';
     const navigate = useNavigate()
     const [teacherList, setTeacherList] = useState([])
     const [allAsignment, setAllAsignment] = useState([])
