@@ -256,6 +256,29 @@ const Navbar = () => {
                     {(role === 'School' || role === 'Organization') ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Teacher' ? (
                         <>
+                            <Link to={'/teacher/live-class'} onClick={() => soundEffects.playClick()} style={{ textDecoration: 'none' }}>
+                                <div 
+                                    className="nav-btn"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        fontWeight: '900',
+                                        fontSize: '12px',
+                                        padding: '0.45rem 0.85rem',
+                                        borderRadius: '12px',
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        marginRight: '6px',
+                                        boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)'
+                                    }}
+                                >
+                                    <span style={{ fontSize: '14px' }}>🎥</span>
+                                    <span>{isArabic ? 'الحصة المباشرة' : 'LIVE CLASS'}</span>
+                                </div>
+                            </Link>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ marginRight: '10px' }}>{t('navbar.games', 'GAMES')} {!featuresUnlocked ? '🔒' : ''}</div></Link>
                         </>
                     ) : null}
@@ -394,6 +417,29 @@ const Navbar = () => {
                     {role === 'Teacher' ? <Link to={'/dashboard/teacher'} onClick={() => soundEffects.playClick()}><div className="homework-btn teacher-reports-btn"><span className="text-desktop">{t('navbar.homeworkReports', 'HOMEWORK REPORTS')}</span><span className="text-mobile">REPORTS</span></div></Link> : null}
                     {role === 'Student' ? (
                         <>
+                            <Link to={'/student/live-class'} onClick={() => soundEffects.playClick()} style={{ textDecoration: 'none' }}>
+                                <div 
+                                    className="nav-btn"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        fontWeight: '900',
+                                        fontSize: '12px',
+                                        padding: '0.45rem 0.85rem',
+                                        borderRadius: '12px',
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        marginRight: '6px',
+                                        boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)'
+                                    }}
+                                >
+                                    <span style={{ fontSize: '14px' }}>🎥</span>
+                                    <span>{isArabic ? 'الحصة المباشرة' : 'LIVE CLASS'}</span>
+                                </div>
+                            </Link>
                             <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}>
                                 <div className="games-btn" style={{ marginRight: '10px' }}>
                                     {t('navbar.games', 'GAMES')} {!featuresUnlocked ? '🔒' : ''}

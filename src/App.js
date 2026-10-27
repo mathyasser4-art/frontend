@@ -106,6 +106,7 @@ const Shop = safeLazy(() => import('./pages/shop/Shop'));
 const LearningPath = safeLazy(() => import('./pages/learningPath/LearningPath'));
 const JourneyHub = safeLazy(() => import('./pages/learningPath/JourneyHub'));
 const VipManager = safeLazy(() => import('./pages/vipManager/VipManager'));
+const LiveClassroom = safeLazy(() => import('./pages/liveClassroom/LiveClassroom'));
 
 function App() {
   const isAuth = safeLocalStorage.getItem('O_authWEB');
@@ -217,6 +218,9 @@ function App() {
           <Route path='/shop' element={isAuth ? <Shop /> : <Navigate to='/' />} />
           <Route path='/vip' element={<VipManager />} />
           <Route path='/vip-manager' element={<VipManager />} />
+          <Route path='/live-classroom' element={<LiveClassroom />} />
+          <Route path='/teacher/live-class' element={isAuth ? <LiveClassroom /> : <Navigate to='/auth/login' />} />
+          <Route path='/student/live-class' element={isAuth ? <LiveClassroom /> : <Navigate to='/auth/login' />} />
         </Routes>
       </Suspense>
       {location.pathname === '/' && (!role || role === 'Student') && <LiveChatWidget />}

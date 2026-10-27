@@ -282,6 +282,85 @@ function TeacherDashboard() {
             <Navbar />
 
             <div className="teacher-dashboard-container">
+                {/* Live Classroom Quick Launch Banner */}
+                <div 
+                    className="teacher-live-class-promo"
+                    onClick={() => {
+                        soundEffects.playClick();
+                        navigate('/teacher/live-class');
+                    }}
+                    style={{
+                        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25), 0 0 25px rgba(239, 68, 68, 0.15)',
+                        borderRadius: '20px',
+                        padding: '1.25rem 1.75rem',
+                        marginBottom: '1.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        gap: '1.25rem',
+                        color: '#f8fafc'
+                    }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                        <div style={{
+                            width: '54px',
+                            height: '54px',
+                            borderRadius: '16px',
+                            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '1.8rem',
+                            boxShadow: '0 6px 16px rgba(239, 68, 68, 0.45)',
+                            flexShrink: 0
+                        }}>
+                            🎥
+                        </div>
+                        <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                <span style={{
+                                    background: 'rgba(239, 68, 68, 0.2)',
+                                    border: '1px solid #ef4444',
+                                    color: '#ef4444',
+                                    padding: '2px 8px',
+                                    borderRadius: '999px',
+                                    fontSize: '11px',
+                                    fontWeight: '800'
+                                }}>
+                                    🔴 {isArabic ? 'بث مباشر تفاعلي' : 'LIVE CLASS'}
+                                </span>
+                                <span style={{ fontSize: '12px', color: '#94a3b8' }}>
+                                    {isArabic ? 'بديل Zoom المجاني 100%' : '100% Free Zoom Alternative'}
+                                </span>
+                            </div>
+                            <h4 style={{ margin: '0 0 4px 0', fontSize: '1.2rem', fontWeight: '800', color: '#ffffff' }}>
+                                {isArabic ? 'ابدأ حصتك المباشرة بالفيديو والسبورة الآن' : 'Start Live Video Class with Interactive Whiteboard'}
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '0.9rem', color: '#cbd5e1' }}>
+                                {isArabic ? 'مشاركة شاشة، فيديو وصوت غير محدود، وعداد تفاعلي مباشر لطلابك بدون برامج خارجية.' : 'Screen share, unlimited time video/audio, and interactive virtual abacus inside the platform.'}
+                            </p>
+                        </div>
+                    </div>
+                    <button style={{
+                        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.8rem 1.4rem',
+                        borderRadius: '14px',
+                        fontWeight: '800',
+                        fontSize: '0.95rem',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        boxShadow: '0 4px 14px rgba(239, 68, 68, 0.45)',
+                        flexShrink: 0
+                    }}>
+                        🚀 {isArabic ? 'بدء الحصة الآن' : 'Launch Class'}
+                    </button>
+                </div>
+
                 {loading ? <DashboardLoading /> : (error) ? <div className='d-flex justify-content-center'><div className="error">{error}</div> </div> : allAsignment?.map(item => {
                     return (
                         <div key={item._id} className="assignment-teacher-item d-flex justify-content-space-between align-items-center">

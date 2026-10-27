@@ -204,7 +204,83 @@ function StudentDashboard() {
                             )}
                         </div>
 
-{/* Assignment List Header */}
+                        {/* Live Classroom Quick Join Banner */}
+                        <div 
+                            className="student-live-class-promo"
+                            onClick={() => {
+                                soundEffects.playClick();
+                                navigate('/student/live-class');
+                            }}
+                            style={{
+                                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                                border: '1px solid rgba(239, 68, 68, 0.4)',
+                                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2), 0 0 20px rgba(239, 68, 68, 0.12)',
+                                borderRadius: '18px',
+                                padding: '1rem 1.5rem',
+                                marginBottom: '1.75rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                cursor: 'pointer',
+                                gap: '1rem',
+                                color: '#f8fafc'
+                            }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                <div style={{
+                                    width: '46px',
+                                    height: '46px',
+                                    borderRadius: '14px',
+                                    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '1.5rem',
+                                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.45)',
+                                    flexShrink: 0
+                                }}>
+                                    🎥
+                                </div>
+                                <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                                        <span style={{
+                                            background: 'rgba(239, 68, 68, 0.2)',
+                                            border: '1px solid #ef4444',
+                                            color: '#ef4444',
+                                            padding: '1px 6px',
+                                            borderRadius: '999px',
+                                            fontSize: '10px',
+                                            fontWeight: '800'
+                                        }}>
+                                            🔴 LIVE
+                                        </span>
+                                        <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#ffffff' }}>
+                                            {isArabic ? 'الحصة الافتراضية المباشرة' : 'Live Virtual Classroom'}
+                                        </h4>
+                                    </div>
+                                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#cbd5e1' }}>
+                                        {isArabic ? 'انضم لحصة معلمك المباشرة بالفيديو والصوت والسبورة التفاعلية' : 'Join your teacher’s live class with audio, video, & interactive whiteboard'}
+                                    </p>
+                                </div>
+                            </div>
+                            <button style={{
+                                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                                color: 'white',
+                                border: 'none',
+                                padding: '0.65rem 1.25rem',
+                                borderRadius: '12px',
+                                fontWeight: '800',
+                                fontSize: '0.88rem',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                boxShadow: '0 4px 12px rgba(239, 68, 68, 0.45)',
+                                flexShrink: 0
+                            }}>
+                                🚀 {isArabic ? 'دخول الحصة' : 'Join Live Class'}
+                            </button>
+                        </div>
+
+                        {/* Assignment List Header */}
                         <div className="assignment-list-header">
                             <h3>{t('studentDashboard.homeworkListTitle', '📝 Your Homework List')}</h3>
                             <p className="list-tagline">{t('studentDashboard.homeworkListTagline', 'Solve pending assignments or review your grades below.')}</p>
