@@ -181,6 +181,47 @@ function VipManager() {
         }
     };
 
+    const handleToggleFeaturesLock = async (targetUser, unlock) => {
+        setActionLoading(true);
+        setActionSuccessMsg('');
+        soundEffects.playClick();
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/user/vip/toggle-features-lock`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pin,
+                    identifier: targetUser.userName || targetUser.phone,
+                    unlock
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.message === 'success') {
+                const updated = data.user;
+                setActionSuccessMsg(
+                    unlock 
+                        ? (isArabic ? `✓ تم فتح الألعاب والمسابقات دائماً للحساب ${updated.userName} (مدى الحياة)!` : `✓ Successfully granted permanent lifetime games unlock to ${updated.userName}!`)
+                        : (isArabic ? `✓ تم قفل الألعاب للحساب ${updated.userName} (إلزام المشاركة)` : `✓ Locked features for ${updated.userName}`)
+                );
+
+                if (searchResult && searchResult.userName === updated.userName) {
+                    setSearchResult({ 
+                        ...searchResult, 
+                        featuresUnlockedUntil: updated.featuresUnlockedUntil,
+                        isFeaturesUnlocked: updated.isFeaturesUnlocked 
+                    });
+                }
+            } else {
+                alert(data.message || 'Error updating account');
+            }
+        } catch (err) {
+            alert(isArabic ? 'حدث خطأ في الاتصال' : 'Connection error');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
     const handleCreateUser = async (e) => {
         if (e) e.preventDefault();
         setCreateLoading(true);
@@ -384,11 +425,16 @@ function VipManager() {
                                             <span className="vip-school-tag">🏫 {searchResult.createdBy.userName}</span>
                                         )}
                                     </div>
-                                    <div className="vip-status-indicator">
+                                    <div className="vip-status-indicator" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                         {searchResult.isPaid ? (
                                             <span className="vip-pill-paid">🌟 PAID VIP (مفعل)</span>
                                         ) : (
                                             <span className="vip-pill-locked">🔒 LOCKED / TRIAL</span>
+                                        )}
+                                        {searchResult.isFeaturesUnlocked ? (
+                                            <span className="vip-pill-paid" style={{ backgroundColor: '#10b981', color: '#fff' }}>🎮 {isArabic ? 'الألعاب مفتوحة دائماً 🌟' : 'Games: Permanent Unlock'}</span>
+                                        ) : (
+                                            <span className="vip-pill-locked">🔒 {isArabic ? 'الألعاب مقفلة' : 'Games: Locked'}</span>
                                         )}
                                     </div>
                                 </div>
@@ -400,14 +446,14 @@ function VipManager() {
                                     <div><strong>Status:</strong> {searchResult.disable ? 'Disabled' : 'Active'}</div>
                                 </div>
 
-                                <div className="vip-actions-row">
+                                <div className="vip-actions-row" style={{ flexWrap: 'wrap', gap: '10px' }}>
                                     {!searchResult.isPaid ? (
                                         <button
                                             className="vip-btn-unlock-big"
                                             disabled={actionLoading}
                                             onClick={() => handleTogglePaid(searchResult, true)}
                                         >
-                                            {actionLoading ? '...' : (isArabic ? '🔓 فك القفل وتفعيل VIP فوراً' : '🔓 Unlock & Activate Paid VIP')}
+                                            {actionLoading ? '...' : (isArabic ? '🔓 تفعيل VIP للحساب' : '🔓 Activate Paid VIP')}
                                         </button>
                                     ) : (
                                         <button
@@ -418,6 +464,21 @@ function VipManager() {
                                             {actionLoading ? '...' : (isArabic ? '🔒 قفل الحساب' : '🔒 Lock Account')}
                                         </button>
                                     )}
+
+                                    <button
+                                        className="vip-btn-unlock-big"
+                                        style={{ 
+                                            background: searchResult.isFeaturesUnlocked 
+                                                ? 'linear-gradient(135deg, #64748b 0%, #475569 100%)' 
+                                                : 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)' 
+                                        }}
+                                        disabled={actionLoading}
+                                        onClick={() => handleToggleFeaturesLock(searchResult, !searchResult.isFeaturesUnlocked)}
+                                    >
+                                        {actionLoading ? '...' : (searchResult.isFeaturesUnlocked 
+                                            ? (isArabic ? '🔒 قفل الألعاب (إلزام المشاركة)' : '🔒 Lock Games (Require Share)') 
+                                            : (isArabic ? '🎮 فتح الألعاب دائماً مدى الحياة' : '🎮 Lifetime Unlock Games'))}
+                                    </button>
 
                                     <a
                                         href={getWhatsAppUrl(searchResult)}
