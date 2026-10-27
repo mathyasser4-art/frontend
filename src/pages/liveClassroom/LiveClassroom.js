@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
   ArrowLeft, Copy, Check, Share2, Maximize2, Minimize2, 
-  RotateCcw, ExternalLink, HelpCircle, X, Monitor, Sparkles
+  RotateCcw, ExternalLink, HelpCircle, X, Monitor, Sparkles,
+  Play, Eye, EyeOff, Edit3, Trash2
 } from 'lucide-react';
 import { safeLocalStorage } from '../../utils/safeStorage';
 import soundEffects from '../../utils/soundEffects';
@@ -36,8 +37,8 @@ export default function LiveClassroom() {
 
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [teachingMode, setTeachingMode] = useState(false); // Zoom-style Teaching Workspace with Mini Floating Video Bar!
   const [showAbacusDrawer, setShowAbacusDrawer] = useState(false);
-  const [showShareTip, setShowShareTip] = useState(true);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const iframeRef = useRef(null);
@@ -51,6 +52,20 @@ export default function LiveClassroom() {
     { upper: 0, lower: 0 }
   ]);
 
+  // Flash Math Question Generator State
+  const [mathDigits, setMathDigits] = useState(1);
+  const [mathRows, setMathRows] = useState(3);
+  const [currentQuestion, setCurrentQuestion] = useState({
+    terms: [{ op: '+', val: 5 }, { op: '+', val: 3 }, { op: '-', val: 2 }],
+    answer: 6
+  });
+  const [showAnswer, setShowAnswer] = useState(false);
+
+  // Whiteboard Canvas State
+  const canvasRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [penColor, setPenColor] = useState('#38bdf8');
+
   // MiroTalk P2P: 100% free open-source WebRTC, zero login required, no time limits
   const meetingUrl = `https://p2p.mirotalk.com/join?room=${encodeURIComponent(roomName)}&name=${encodeURIComponent(userName)}&audio=1&video=1&screen=1&chat=1&notify=0`;
 
@@ -62,6 +77,82 @@ export default function LiveClassroom() {
     }, 2000);
     return () => clearTimeout(timer);
   }, [roomName]);
+
+  // Generate verified random mental math question
+  const generateNewQuestion = () => {
+    if (soundEffects && soundEffects.playClick) soundEffects.playClick();
+    setShowAnswer(false);
+    const max = Math.pow(10, mathDigits) - 1;
+    const min = mathDigits === 1 ? 1 : Math.pow(10, mathDigits - 1);
+    const terms = [];
+    let runningTotal = 0;
+
+    for (let i = 0; i < mathRows; i++) {
+      if (i === 0) {
+        const val = Math.floor(Math.random() * (max - min + 1)) + min;
+        terms.push({ op: '+', val });
+        runningTotal += val;
+      } else {
+        const canSubtract = runningTotal > min;
+        const isSub = canSubtract && Math.random() > 0.45;
+        if (isSub) {
+          const maxSub = Math.min(runningTotal, max);
+          const val = Math.floor(Math.random() * (maxSub - 1)) + 1;
+          terms.push({ op: '-', val });
+          runningTotal -= val;
+        } else {
+          const val = Math.floor(Math.random() * (max - min + 1)) + min;
+          terms.push({ op: '+', val });
+          runningTotal += val;
+        }
+      }
+    }
+    setCurrentQuestion({ terms, answer: runningTotal });
+  };
+
+  // Canvas Whiteboard Drawing Handlers
+  const handleStartDraw = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    setIsDrawing(true);
+  };
+
+  const handleDraw = (e) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = penColor;
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  const handleStopDraw = () => {
+    setIsDrawing(false);
+  };
+
+  const handleClearCanvas = () => {
+    if (soundEffects && soundEffects.playClick) soundEffects.playClick();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
 
   // Calculate current abacus numeric value
   const calculateAbacusTotal = () => {
@@ -168,12 +259,6 @@ export default function LiveClassroom() {
     );
   };
 
-  // Open in full standalone browser tab
-  const handleOpenFullTab = () => {
-    if (soundEffects && soundEffects.playClick) soundEffects.playClick();
-    window.open(meetingUrl, '_blank', 'noopener,noreferrer');
-  };
-
   return (
     <div className="live-classroom-page" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Header Bar */}
@@ -201,41 +286,47 @@ export default function LiveClassroom() {
         </div>
 
         <div className="live-header-right">
-          {/* Zoom-style Pop-out Floating Window */}
+          {/* Zoom-Style Teaching Mode Toggle Button */}
+          <button 
+            className={`live-tool-btn btn-teaching-toggle ${teachingMode ? 'active-mode' : ''}`}
+            onClick={() => {
+              if (soundEffects && soundEffects.playClick) soundEffects.playClick();
+              setTeachingMode(!teachingMode);
+            }}
+            title={isArabic ? 'تصغير الفيديو إلى نافذة عائمة بالزاوية وفتح سبورة التمارين للشرح (مثل زووم)' : 'Minimize video to floating corner and open teaching workspace (Zoom-style)'}
+          >
+            {teachingMode ? <Maximize2 size={16} /> : <Monitor size={16} />}
+            <span className="btn-label">
+              {teachingMode 
+                ? (isArabic ? 'عرض الاجتماع الكامل' : 'Full Meeting View')
+                : (isArabic ? 'سبورة الشرح والتمارين 📚' : 'Teaching Board (Zoom-style) 📚')}
+            </span>
+          </button>
+
+          {/* External Pop-Out Window */}
           <button 
             className="live-tool-btn btn-popout" 
             onClick={handlePopoutWindow}
-            title={isArabic ? 'فتح في نافذة عائمة جانبية (مثل زووم) لتصفح المنصة بسهولة أثناء الشرح' : 'Pop-out floating window (Zoom-style) to browse platform while teaching'}
+            title={isArabic ? 'فتح الفصل في نافذة منبثقة خارجية' : 'Pop-Out Window'}
           >
             <ExternalLink size={16} />
-            <span className="btn-label">{isArabic ? 'نافذة منبثقة' : 'Pop-Out Window'}</span>
+            <span className="btn-label">{isArabic ? 'نافذة منبثقة' : 'Pop-Out'}</span>
           </button>
 
-          {/* Screen Share Tip Guide Button */}
-          <button 
-            className="live-tool-btn btn-guide"
-            onClick={() => {
-              if (soundEffects && soundEffects.playClick) soundEffects.playClick();
-              setShowGuideModal(true);
-            }}
-            title={isArabic ? 'طريقة مشاركة الشاشة بدون تكرار' : 'How to share screen without mirror effect'}
-          >
-            <HelpCircle size={16} />
-            <span className="btn-label">{isArabic ? 'دليل الشاشة' : 'Screen Guide'}</span>
-          </button>
-
-          {/* Virtual Soroban Drawer Toggle */}
-          <button 
-            className={`live-tool-btn btn-abacus ${showAbacusDrawer ? 'active-tool' : ''}`}
-            onClick={() => {
-              if (soundEffects && soundEffects.playClick) soundEffects.playClick();
-              setShowAbacusDrawer(!showAbacusDrawer);
-            }}
-            title={isArabic ? 'عرض العداد التفاعلي للشرح' : 'Interactive Soroban Tool'}
-          >
-            <span>🧮</span>
-            <span className="btn-label">{isArabic ? 'العداد التفاعلي' : 'Virtual Soroban'}</span>
-          </button>
+          {/* Virtual Soroban Drawer Toggle (if in full video mode) */}
+          {!teachingMode && (
+            <button 
+              className={`live-tool-btn btn-abacus ${showAbacusDrawer ? 'active-tool' : ''}`}
+              onClick={() => {
+                if (soundEffects && soundEffects.playClick) soundEffects.playClick();
+                setShowAbacusDrawer(!showAbacusDrawer);
+              }}
+              title={isArabic ? 'عرض العداد التفاعلي للشرح' : 'Interactive Soroban Tool'}
+            >
+              <span>🧮</span>
+              <span className="btn-label">{isArabic ? 'العداد التفاعلي' : 'Virtual Soroban'}</span>
+            </button>
+          )}
 
           {/* Copy Link */}
           <button className="live-tool-btn" onClick={handleCopyLink} title={isArabic ? 'نسخ رابط الحصة' : 'Copy Room Link'}>
@@ -256,37 +347,8 @@ export default function LiveClassroom() {
         </div>
       </header>
 
-      {/* Screen Sharing Tip Banner (Dismissible) */}
-      {showShareTip && (
-        <div className="screen-share-tip-banner">
-          <div className="tip-content">
-            <span className="tip-badge">💡 {isArabic ? 'نصيحة هامة' : 'Pro Tip'}</span>
-            <span className="tip-message">
-              {isArabic 
-                ? 'لمنع تكرار الشاشة اللانهائي: عند الضغط على مشاركة الشاشة، اختر "علامة تبويب Chrome" (مثل التمارين أو كتاب العداد) بدلاً من "الشاشة بأكملها"، أو استخدم زر "نافذة منبثقة 🪟" لتصفح المنصة بسهولة!' 
-                : 'To avoid the infinite screen mirror: when sharing screen, select a specific "Chrome Tab" (like exercises or worksheets) instead of "Entire Screen", or click "Pop-Out Window 🪟" to browse the platform while teaching!'}
-            </span>
-          </div>
-          <div className="tip-actions">
-            <button 
-              className="tip-learn-btn" 
-              onClick={() => setShowGuideModal(true)}
-            >
-              {isArabic ? 'شرح مصور' : 'Learn How'}
-            </button>
-            <button 
-              className="tip-close-btn" 
-              onClick={() => setShowShareTip(false)}
-              title={isArabic ? 'إغلاق' : 'Dismiss'}
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Main Video & Interactive Teaching Space */}
-      <div className="live-classroom-body">
+      <div className={`live-classroom-body ${teachingMode ? 'teaching-mode' : ''}`}>
         {/* Loading Spinner */}
         {loading && (
           <div className="live-classroom-loading">
@@ -300,7 +362,198 @@ export default function LiveClassroom() {
           </div>
         )}
 
-        {/* Embedded WebRTC Meeting Iframe */}
+        {/* TEACHING WORKSPACE (Visible when in Zoom-Style Teaching Mode) */}
+        {teachingMode && (
+          <div className="teaching-workspace animate-fade-in">
+            {/* Top Workspace Header */}
+            <div className="workspace-header-card">
+              <div className="workspace-title-box">
+                <span className="workspace-badge">🚀 {isArabic ? 'وضع الشرح النشط (بدون تكرار شاشة)' : 'Active Teaching Mode (No Mirror Effect)'}</span>
+                <h2>{isArabic ? 'سبورة الشرح التفاعلية وبنك المسائل المباشرة' : 'Interactive Math Board & Practice Workspace'}</h2>
+                <p>
+                  {isArabic 
+                    ? 'الفيديو تم تصغيره في الزاوية مثل Zoom تماماً! شارك هذه الشاشة مع طلابك لشرح المسائل والعداد مباشرة.' 
+                    : 'Video is minimized into the corner like Zoom! Share this screen with your students to demonstrate math operations.'}
+                </p>
+              </div>
+              <button className="workspace-expand-btn" onClick={() => setTeachingMode(false)}>
+                <Maximize2 size={16} />
+                <span>{isArabic ? 'العودة للاجتماع الكامل' : 'Return to Full View'}</span>
+              </button>
+            </div>
+
+            {/* Grid Layout: Left is Soroban, Right is Question Generator & Whiteboard */}
+            <div className="workspace-grid">
+              {/* Virtual Soroban Abacus Section */}
+              <div className="workspace-panel abacus-panel">
+                <div className="panel-header">
+                  <div className="panel-title">
+                    <span>🧮</span>
+                    <span>{isArabic ? 'العداد الصيني التفاعلي (السوروبان)' : 'Virtual Soroban Abacus'}</span>
+                  </div>
+                  <button className="soroban-reset-btn mini" onClick={resetAbacus}>
+                    <RotateCcw size={14} />
+                    <span>{isArabic ? 'تصفير' : 'Reset'}</span>
+                  </button>
+                </div>
+
+                <div className="soroban-workspace-view">
+                  <div className="soroban-counter-display large">
+                    {calculateAbacusTotal().toLocaleString()}
+                  </div>
+
+                  <div className="soroban-frame full-board">
+                    <div className="soroban-rods-container">
+                      <div className="soroban-divider-bar"></div>
+                      {abacusRods.map((rod, rIdx) => (
+                        <div key={rIdx} className="soroban-rod">
+                          <div className="soroban-rod-wire"></div>
+                          {/* Upper Bead */}
+                          <div className="soroban-upper-deck">
+                            <div 
+                              className={`soroban-bead ${rod.upper === 1 ? 'upper-active' : ''}`}
+                              onClick={() => toggleUpperBead(rIdx)}
+                            ></div>
+                          </div>
+                          {/* Lower 4 Beads */}
+                          <div className="soroban-lower-deck">
+                            {[1, 2, 3, 4].map((beadNum) => (
+                              <div 
+                                key={beadNum}
+                                className={`soroban-bead ${rod.lower >= beadNum ? 'lower-active' : ''}`}
+                                onClick={() => setLowerBeads(rIdx, beadNum)}
+                              ></div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mental Math Flash Practice Generator */}
+              <div className="workspace-panel question-panel">
+                <div className="panel-header">
+                  <div className="panel-title">
+                    <span>⚡</span>
+                    <span>{isArabic ? 'مولد المسائل السريعة للطلاب' : 'Live Mental Math Generator'}</span>
+                  </div>
+                  <button className="btn-generate-next" onClick={generateNewQuestion}>
+                    <span>🎲</span>
+                    <span>{isArabic ? 'مسألة جديدة' : 'New Question'}</span>
+                  </button>
+                </div>
+
+                {/* Generator Controls */}
+                <div className="generator-controls">
+                  <div className="control-group">
+                    <label>{isArabic ? 'الخانات:' : 'Digits:'}</label>
+                    <div className="pill-selector">
+                      {[1, 2, 3].map(d => (
+                        <button 
+                          key={d} 
+                          className={`pill-btn ${mathDigits === d ? 'active' : ''}`}
+                          onClick={() => setMathDigits(d)}
+                        >
+                          {d} {isArabic ? (d === 1 ? 'خانة' : 'خانات') : (d === 1 ? 'Digit' : 'Digits')}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="control-group">
+                    <label>{isArabic ? 'الصفوف:' : 'Rows:'}</label>
+                    <div className="pill-selector">
+                      {[3, 4, 5, 6].map(r => (
+                        <button 
+                          key={r} 
+                          className={`pill-btn ${mathRows === r ? 'active' : ''}`}
+                          onClick={() => setMathRows(r)}
+                        >
+                          {r} {isArabic ? 'صفوف' : 'Rows'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Big Question Flash Card */}
+                <div className="math-question-card">
+                  <div className="math-terms-list">
+                    {currentQuestion.terms.map((term, idx) => (
+                      <div key={idx} className="math-term-row">
+                        <span className="term-op">{idx === 0 ? '' : term.op}</span>
+                        <span className="term-val">{term.val}</span>
+                      </div>
+                    ))}
+                    <div className="math-line-separator"></div>
+                  </div>
+
+                  {/* Answer Reveal Area */}
+                  <div className="math-answer-box">
+                    <button 
+                      className={`btn-toggle-answer ${showAnswer ? 'revealed' : ''}`}
+                      onClick={() => setShowAnswer(!showAnswer)}
+                    >
+                      {showAnswer ? <EyeOff size={16} /> : <Eye size={16} />}
+                      <span>{showAnswer ? (isArabic ? 'إخفاء الإجابة' : 'Hide Answer') : (isArabic ? 'إظهار الناتج' : 'Reveal Answer')}</span>
+                    </button>
+                    {showAnswer && (
+                      <span className="answer-text animate-pop">
+                        = {currentQuestion.answer}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Digital Whiteboard Canvas */}
+              <div className="workspace-panel whiteboard-panel">
+                <div className="panel-header">
+                  <div className="panel-title">
+                    <span>✏️</span>
+                    <span>{isArabic ? 'السبورة الرقمية للكتابة والرسم' : 'Interactive Whiteboard'}</span>
+                  </div>
+                  <div className="canvas-tools">
+                    <div className="color-palette">
+                      {['#38bdf8', '#facc15', '#4ade80', '#f87171', '#ffffff'].map(c => (
+                        <div 
+                          key={c}
+                          className={`color-dot ${penColor === c ? 'active-dot' : ''}`}
+                          style={{ backgroundColor: c }}
+                          onClick={() => setPenColor(c)}
+                        />
+                      ))}
+                    </div>
+                    <button className="canvas-clear-btn" onClick={handleClearCanvas} title={isArabic ? 'مسح السبورة' : 'Clear Board'}>
+                      <Trash2 size={14} />
+                      <span>{isArabic ? 'مسح' : 'Clear'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="canvas-wrapper">
+                  <canvas 
+                    ref={canvasRef}
+                    width={800}
+                    height={300}
+                    className="drawing-canvas"
+                    onMouseDown={handleStartDraw}
+                    onMouseMove={handleDraw}
+                    onMouseUp={handleStopDraw}
+                    onMouseLeave={handleStopDraw}
+                    onTouchStart={handleStartDraw}
+                    onTouchMove={handleDraw}
+                    onTouchEnd={handleStopDraw}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Embedded WebRTC Meeting Iframe (Always mounted so call never drops!) */}
         <iframe
           key={roomName}
           ref={iframeRef}
@@ -308,11 +561,29 @@ export default function LiveClassroom() {
           title="Abacus Heroes Live Video Classroom"
           allow="camera *; microphone *; speaker-selection *; display-capture *; fullscreen *; clipboard-read *; clipboard-write *; web-share *; autoplay *; picture-in-picture *"
           onLoad={() => setLoading(false)}
-          className="live-classroom-iframe"
+          className={`live-classroom-iframe ${teachingMode ? 'pip-mini-mode' : ''}`}
         />
 
-        {/* Interactive Virtual Soroban Slide-out Sidebar */}
-        {showAbacusDrawer && (
+        {/* Floating Mini Window Controls (Visible when in Teaching Mode) */}
+        {teachingMode && (
+          <div className="pip-mini-header">
+            <div className="pip-status-tag">
+              <span className="live-dot-pulse"></span>
+              <span>{isArabic ? 'فيديو زووم المصغر' : 'Mini Live Video'}</span>
+            </div>
+            <button 
+              className="pip-expand-action-btn"
+              onClick={() => setTeachingMode(false)}
+              title={isArabic ? 'تكبير الاجتماع لملء الشاشة' : 'Expand Meeting'}
+            >
+              <Maximize2 size={14} />
+              <span>{isArabic ? 'تكبير' : 'Expand'}</span>
+            </button>
+          </div>
+        )}
+
+        {/* Slide-out Virtual Soroban for Full Mode */}
+        {showAbacusDrawer && !teachingMode && (
           <aside className="live-abacus-drawer">
             <div className="abacus-drawer-header">
               <div className="abacus-drawer-title">
@@ -331,28 +602,21 @@ export default function LiveClassroom() {
 
               {/* Soroban Frame */}
               <div className="soroban-frame">
-                {/* Numeric Display */}
                 <div className="soroban-counter-display">
                   {calculateAbacusTotal().toLocaleString()}
                 </div>
 
                 <div className="soroban-rods-container">
-                  {/* Beam Bar */}
                   <div className="soroban-divider-bar"></div>
-
                   {abacusRods.map((rod, rIdx) => (
                     <div key={rIdx} className="soroban-rod">
                       <div className="soroban-rod-wire"></div>
-
-                      {/* Upper Deck (Value = 5) */}
                       <div className="soroban-upper-deck">
                         <div 
                           className={`soroban-bead ${rod.upper === 1 ? 'upper-active' : ''}`}
                           onClick={() => toggleUpperBead(rIdx)}
                         ></div>
                       </div>
-
-                      {/* Lower Deck (Value = 1 each, 4 beads) */}
                       <div className="soroban-lower-deck">
                         {[1, 2, 3, 4].map((beadNum) => (
                           <div 
@@ -367,7 +631,6 @@ export default function LiveClassroom() {
                 </div>
               </div>
 
-              {/* Reset Button */}
               <button className="soroban-reset-btn" onClick={resetAbacus}>
                 <RotateCcw size={16} />
                 <span>{isArabic ? 'تصفير العداد' : 'Reset Abacus'}</span>
@@ -376,63 +639,6 @@ export default function LiveClassroom() {
           </aside>
         )}
       </div>
-
-      {/* Screen Sharing Visual Guide Modal */}
-      {showGuideModal && (
-        <div className="guide-modal-overlay" onClick={() => setShowGuideModal(false)}>
-          <div className="guide-modal-card" onClick={e => e.stopPropagation()}>
-            <div className="guide-modal-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Monitor size={22} color="#3b82f6" />
-                <h3>{isArabic ? 'كيف تشارك شاشتك مع الطلاب بدون تكرار؟' : 'How to Share Screen Without Mirror Effect'}</h3>
-              </div>
-              <button className="guide-close-btn" onClick={() => setShowGuideModal(false)}>✕</button>
-            </div>
-
-            <div className="guide-modal-body">
-              <div className="guide-explain-box">
-                <p>
-                  {isArabic
-                    ? 'عندما تشارك "الشاشة بأكملها" وأنت تنظر لنفس نافذة الاجتماع، تقوم الشاشة بتصوير نفسها باستمرار فيحدث تأثير النفق (المرايا المتكررة). هذا يحدث في كل تطبيقات الفيديو بما فيها Zoom وGoogle Meet عند تصوير نفس الشاشة.'
-                    : 'When you share "Entire Screen" while looking at the meeting window, the screen captures itself recursively creating an infinite tunnel effect. Here is how to share cleanly like a pro:'}
-                </p>
-              </div>
-
-              <div className="guide-steps-list">
-                <div className="guide-step-item">
-                  <div className="step-num">1</div>
-                  <div className="step-content">
-                    <h4>{isArabic ? 'الخيار الأفضل: مشاركة علامة تبويب (Chrome Tab)' : 'Best Choice: Share a Chrome Tab'}</h4>
-                    <p>{isArabic ? 'عند الضغط على أيقونة الشاشة في الفصل، اختر تبويب "Chrome Tab" وحدد صفحة تمارين أو ألعاب أبطال العداد أو كتاب الرياضيات.' : 'Click Screen Share in the call, select the "Chrome Tab" option, and choose your Abacus exercises or worksheet tab.'}</p>
-                  </div>
-                </div>
-
-                <div className="guide-step-item">
-                  <div className="step-num">2</div>
-                  <div className="step-content">
-                    <h4>{isArabic ? 'استخدم زر "نافذة منبثقة 🪟" (مثل برنامج Zoom)' : 'Use "Pop-Out Window 🪟" (Zoom-Style)'}</h4>
-                    <p>{isArabic ? 'اضغط زر "نافذة منبثقة" في الأعلى لفتح الفصل في نافذة عائمة جانبية، ثم تصفح بنك الأسئلة أو الواجبات في شاشتك الرئيسية وشاركها مع الطلاب.' : 'Click "Pop-Out Window" to detach the video call into a compact side window, then browse assignments and games on your main screen!'}</p>
-                  </div>
-                </div>
-
-                <div className="guide-step-item">
-                  <div className="step-num">3</div>
-                  <div className="step-content">
-                    <h4>{isArabic ? 'استخدم العداد التفاعلي المدمج 🧮' : 'Use the Built-in Virtual Soroban 🧮'}</h4>
-                    <p>{isArabic ? 'اضغط على زر "العداد التفاعلي" من الشريط العلوي لعرض العداد الصيني وشرح العمليات الحسابية مباشرة لطلابك.' : 'Click "Virtual Soroban" to slide out the interactive abacus and explain mental math steps live.'}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="guide-modal-footer">
-              <button className="guide-ok-btn" onClick={() => setShowGuideModal(false)}>
-                {isArabic ? 'فهمت ذلك، شكراً!' : 'Got it, thank you!'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
