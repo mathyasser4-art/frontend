@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
   ArrowLeft, Copy, Check, Share2, Maximize2, Minimize2, 
-  RotateCcw, Sparkles 
+  RotateCcw, ExternalLink
 } from 'lucide-react';
 import { safeLocalStorage } from '../../utils/safeStorage';
 import soundEffects from '../../utils/soundEffects';
@@ -13,43 +13,63 @@ export default function LiveClassroom() {
   const location = useLocation();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
-  const isArabic = i18n.language === 'ar';
+  const isArabic = i18n?.language === 'ar';
 
-  const isAuth = safeLocalStorage.getItem('O_authWEB');
   const role = safeLocalStorage.getItem('auth_role') || 'Student';
   const isTeacher = role === 'Teacher' || role === 'School' || role === 'Admin';
   const userName = safeLocalStorage.getItem('pp_name') || safeLocalStorage.getItem('auth_userName') || 'Hero';
-  const userAvatar = safeLocalStorage.getItem('user_profile_avatar') || '';
+  const rawId = safeLocalStorage.getItem('pp_id') || safeLocalStorage.getItem('auth_id') || '';
+  const shortId = rawId ? rawId.slice(-6) : Math.random().toString(36).substring(2, 8);
 
-  // Extract room from URL query, or construct teacher's standard room
   const queryParams = new URLSearchParams(location.search);
   const queryRoom = queryParams.get('room');
+  const queryProvider = queryParams.get('provider');
 
-  const sanitizeRoom = (str) => (str || '').replace(/[^a-zA-Z0-9_-]/g, '_');
+  // Clean ASCII slug for WebRTC room URL to avoid illegal character issues
+  const cleanAscii = (userName || '')
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '_')
+    .slice(0, 12);
+  const roomPrefix = cleanAscii || (isTeacher ? 'Teacher' : 'Hero');
+  const defaultRoom = `AbacusHeroes_${roomPrefix}_${shortId}`;
+  const roomName = (queryRoom && queryRoom.trim()) || defaultRoom;
 
-  const defaultRoom = isTeacher 
-    ? `AbacusHeroes_${sanitizeRoom(userName)}` 
-    : 'AbacusHeroes_Live_Class';
-
-  const [roomName, setRoomName] = useState(sanitizeRoom(queryRoom) || defaultRoom);
+  const [provider, setProvider] = useState(queryProvider || 'mirotalk'); // 'mirotalk' | 'jitsi'
   const [copied, setCopied] = useState(false);
-  const [meetingEnded, setMeetingEnded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showAbacusDrawer, setShowAbacusDrawer] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const iframeRef = useRef(null);
 
   // Virtual Abacus State: 5 rods (Units, Tens, Hundreds, Thousands, Ten-Thousands)
-  // Each rod: upper (0 or 1 active), lower (number of active beads 0-4)
   const [abacusRods, setAbacusRods] = useState([
-    { upper: 0, lower: 0 }, // 10,000s
-    { upper: 0, lower: 0 }, // 1,000s
-    { upper: 0, lower: 0 }, // 100s
-    { upper: 0, lower: 0 }, // 10s
-    { upper: 0, lower: 0 }  // 1s
+    { upper: 0, lower: 0 },
+    { upper: 0, lower: 0 },
+    { upper: 0, lower: 0 },
+    { upper: 0, lower: 0 },
+    { upper: 0, lower: 0 }
   ]);
 
-  const jitsiContainerRef = useRef(null);
-  const jitsiApiRef = useRef(null);
+  // Calculate meeting URL based on selected provider
+  const getMeetingUrl = () => {
+    if (provider === 'jitsi') {
+      return `https://meet.jit.si/${encodeURIComponent(roomName)}#userInfo.displayName="${encodeURIComponent(userName)}"`;
+    }
+    // MiroTalk P2P: 100% free open-source WebRTC, instant join, no login needed
+    return `https://p2p.mirotalk.com/join?room=${encodeURIComponent(roomName)}&name=${encodeURIComponent(userName)}&audio=1&video=1&screen=1&chat=1&notify=0`;
+  };
+
+  const meetingUrl = getMeetingUrl();
+
+  // Handle loading state: ensure spinner never hangs indefinitely
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2200);
+    return () => clearTimeout(timer);
+  }, [provider, roomName]);
 
   // Calculate current abacus numeric value
   const calculateAbacusTotal = () => {
@@ -90,7 +110,6 @@ export default function LiveClassroom() {
     setAbacusRods(prev => {
       const updated = [...prev];
       const currentActive = updated[rodIdx].lower;
-      // If clicking already active bead, decrease or clear; else set to beadIndex
       const newActive = currentActive === beadIndex ? beadIndex - 1 : beadIndex;
       updated[rodIdx] = {
         ...updated[rodIdx],
@@ -99,111 +118,6 @@ export default function LiveClassroom() {
       return updated;
     });
   };
-
-  // Load and mount Jitsi Meet iframe
-  useEffect(() => {
-    let isCancelled = false;
-
-    const loadScript = () => {
-      return new Promise((resolve, reject) => {
-        if (window.JitsiMeetExternalAPI) {
-          resolve(window.JitsiMeetExternalAPI);
-          return;
-        }
-        const existingScript = document.getElementById('jitsi-external-api-script');
-        if (existingScript) {
-          existingScript.onload = () => resolve(window.JitsiMeetExternalAPI);
-          return;
-        }
-        const script = document.createElement('script');
-        script.id = 'jitsi-external-api-script';
-        script.src = 'https://meet.jit.si/external_api.js';
-        script.async = true;
-        script.onload = () => resolve(window.JitsiMeetExternalAPI);
-        script.onerror = () => reject(new Error('Failed to load Jitsi API'));
-        document.body.appendChild(script);
-      });
-    };
-
-    loadScript()
-      .then((JitsiAPI) => {
-        if (isCancelled || !jitsiContainerRef.current) return;
-
-        // Dispose any existing instance
-        if (jitsiApiRef.current) {
-          try { jitsiApiRef.current.dispose(); } catch (e) {}
-        }
-
-        const domain = 'meet.jit.si';
-        const displayName = isTeacher ? `👨‍🏫 ${userName} (Teacher)` : `🎓 ${userName}`;
-
-        const options = {
-          roomName: roomName,
-          width: '100%',
-          height: '100%',
-          parentNode: jitsiContainerRef.current,
-          userInfo: {
-            displayName: displayName,
-            email: `${sanitizeRoom(userName).toLowerCase()}@abacusheroes.com`
-          },
-          configOverwrite: {
-            startWithAudioMuted: !isTeacher,
-            startWithVideoMuted: false,
-            prejoinPageEnabled: false,
-            disableDeepLinking: true,
-            enableWelcomePage: false,
-            enableClosePage: false,
-            defaultLanguage: isArabic ? 'ar' : 'en',
-            toolbarButtons: [
-              'camera',
-              'chat',
-              'desktop', // Screen Sharing!
-              'fullscreen',
-              'hangup',
-              'microphone',
-              'participants-pane',
-              'profile',
-              'raisehand',
-              'recording',
-              'select-background',
-              'settings',
-              'tileview',
-              'toggle-camera',
-              'videoquality',
-              'whiteboard' // Built-in Collaborative Whiteboard!
-            ]
-          },
-          interfaceConfigOverwrite: {
-            SHOW_JITSI_WATERMARK: false,
-            SHOW_WATERMARK_FOR_GUESTS: false,
-            DEFAULT_BACKGROUND: '#090d16',
-            TOOLBAR_ALWAYS_VISIBLE: true
-          }
-        };
-
-        const api = new JitsiAPI(domain, options);
-        jitsiApiRef.current = api;
-
-        api.addEventListener('videoConferenceJoined', () => {
-          setLoading(false);
-        });
-
-        api.addEventListener('videoConferenceLeft', () => {
-          setMeetingEnded(true);
-        });
-      })
-      .catch((err) => {
-        console.error('Error loading Jitsi API:', err);
-        setLoading(false);
-      });
-
-    return () => {
-      isCancelled = true;
-      if (jitsiApiRef.current) {
-        try { jitsiApiRef.current.dispose(); } catch (e) {}
-      }
-    };
-  }, [roomName, isTeacher, userName, isArabic]);
 
   // Fullscreen toggle
   const toggleFullscreen = () => {
@@ -216,7 +130,7 @@ export default function LiveClassroom() {
 
   const handleCopyLink = () => {
     if (soundEffects && soundEffects.playClick) soundEffects.playClick();
-    const link = `${window.location.origin}/live-classroom?room=${roomName}`;
+    const link = `${window.location.origin}/live-classroom?room=${encodeURIComponent(roomName)}&provider=${provider}`;
     navigator.clipboard.writeText(link).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
@@ -225,7 +139,7 @@ export default function LiveClassroom() {
 
   const handleShareWhatsApp = () => {
     if (soundEffects && soundEffects.playClick) soundEffects.playClick();
-    const link = `${window.location.origin}/live-classroom?room=${roomName}`;
+    const link = `${window.location.origin}/live-classroom?room=${encodeURIComponent(roomName)}&provider=${provider}`;
     const msg = isTeacher
       ? (isArabic 
           ? `مرحباً يا أبطال 🌟\nتبدأ حصتنا المباشرة الآن في منصة أبطال العداد (Abacus Heroes)!\n\nاضغط على الرابط التالي للانضمام فوراً:\n${link}`
@@ -248,6 +162,11 @@ export default function LiveClassroom() {
     }
   };
 
+  const handleOpenNewWindow = () => {
+    if (soundEffects && soundEffects.playClick) soundEffects.playClick();
+    window.open(meetingUrl, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="live-classroom-page" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Top Header Bar */}
@@ -263,16 +182,50 @@ export default function LiveClassroom() {
               <span className="live-dot-pulse"></span>
               <span>LIVE</span>
             </div>
-            <h2 className="live-room-title" title={roomName}>
-              {roomName.replace('AbacusHeroes_', '').replace(/_/g, ' ')}
+            <h2 className="live-room-title" title={userName}>
+              {isTeacher 
+                ? (isArabic ? `فصل البث المباشر: ${userName}` : `Live Class: ${userName}`)
+                : (isArabic ? `حصة أبطال العداد: ${userName}` : `Classroom: ${userName}`)}
             </h2>
             <span className="live-room-code-tag">
-              #{roomName.slice(-8)}
+              #{roomName.slice(-6)}
             </span>
           </div>
         </div>
 
         <div className="live-header-right">
+          {/* Provider Switcher */}
+          <div className="live-provider-switch" title={isArabic ? 'تبديل خادم الفيديو' : 'Switch Video Server'}>
+            <button 
+              className={`provider-btn ${provider === 'mirotalk' ? 'active' : ''}`}
+              onClick={() => {
+                if (soundEffects && soundEffects.playClick) soundEffects.playClick();
+                setProvider('mirotalk');
+              }}
+            >
+              ⚡ MiroTalk
+            </button>
+            <button 
+              className={`provider-btn ${provider === 'jitsi' ? 'active' : ''}`}
+              onClick={() => {
+                if (soundEffects && soundEffects.playClick) soundEffects.playClick();
+                setProvider('jitsi');
+              }}
+            >
+              🎥 Jitsi
+            </button>
+          </div>
+
+          {/* Open in New Window */}
+          <button 
+            className="live-tool-btn btn-popup" 
+            onClick={handleOpenNewWindow}
+            title={isArabic ? 'فتح الفصل في نافذة كاملة مستقلة' : 'Open in Full Window'}
+          >
+            <ExternalLink size={16} />
+            <span className="btn-label">{isArabic ? 'نافذة جديدة' : 'Full Window'}</span>
+          </button>
+
           {/* Virtual Soroban Drawer Toggle */}
           <button 
             className={`live-tool-btn btn-abacus ${showAbacusDrawer ? 'active-tool' : ''}`}
@@ -299,7 +252,7 @@ export default function LiveClassroom() {
           </button>
 
           {/* Fullscreen */}
-          <button className="live-tool-btn" onClick={toggleFullscreen}>
+          <button className="live-tool-btn" onClick={toggleFullscreen} title={isArabic ? 'شاشة كاملة' : 'Fullscreen'}>
             {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
           </button>
         </div>
@@ -312,13 +265,24 @@ export default function LiveClassroom() {
           <div className="live-classroom-loading">
             <div className="loading-spinner-ring"></div>
             <span className="loading-text">
-              {isArabic ? 'جاري تجهيز الغرفة الافتراضية...' : 'Launching Live Classroom...'}
+              {isArabic ? 'جاري تجهيز الفصل المباشر...' : 'Connecting to Live Classroom...'}
+            </span>
+            <span className="loading-hint">
+              {isArabic ? 'يرجى السماح للكاميرا والميكروفون عند المطالبة 🎙️' : 'Please allow camera & microphone when prompted 🎙️'}
             </span>
           </div>
         )}
 
-        {/* Jitsi Meet Embed */}
-        <div className="jitsi-meeting-container" ref={jitsiContainerRef}></div>
+        {/* Embedded WebRTC Meeting Iframe */}
+        <iframe
+          key={`${provider}_${roomName}`}
+          ref={iframeRef}
+          src={meetingUrl}
+          title="Abacus Heroes Live Video Classroom"
+          allow="camera *; microphone *; speaker-selection *; display-capture *; fullscreen *; clipboard-read *; clipboard-write *; web-share *; autoplay *; picture-in-picture *"
+          onLoad={() => setLoading(false)}
+          className="live-classroom-iframe"
+        />
 
         {/* Interactive Virtual Soroban Slide-out Sidebar */}
         {showAbacusDrawer && (
@@ -385,38 +349,6 @@ export default function LiveClassroom() {
           </aside>
         )}
       </div>
-
-      {/* Meeting Ended Modal */}
-      {meetingEnded && (
-        <div className="meeting-ended-modal">
-          <div className="meeting-ended-card animate-pop">
-            <div className="meeting-ended-icon">👋</div>
-            <h2>{isArabic ? 'انتهت الحصة المباشرة' : 'Live Class Finished'}</h2>
-            <p>
-              {isArabic 
-                ? 'شكراً لحضورك ومشاركتك في الحصة الافتراضية مع أبطال العداد!' 
-                : 'Thank you for participating in the Abacus Heroes Live Classroom!'}
-            </p>
-            <div className="meeting-ended-actions">
-              <button 
-                className="ended-rejoin-btn"
-                onClick={() => {
-                  setMeetingEnded(false);
-                  setLoading(true);
-                }}
-              >
-                🔄 {isArabic ? 'إعادة الانضمام للحصة' : 'Rejoin Class'}
-              </button>
-              <button 
-                className="ended-dashboard-btn"
-                onClick={handleBack}
-              >
-                🏠 {isArabic ? 'العودة للرئيسية' : 'Return to Dashboard'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
