@@ -1,0 +1,210 @@
+/* Referral & Feature Lock Modal Styling */
+.ref-lock-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10, 15, 30, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    padding: 20px;
+    box-sizing: border-box;
+    animation: refFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes refFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.ref-lock-modal {
+    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(245, 158, 11, 0.15);
+    border-radius: 24px;
+    max-width: 480px;
+    width: 100%;
+    padding: 32px 28px;
+    text-align: center;
+    color: #f8fafc;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.ref-lock-icon-wrap {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ref-lock-icon-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.4) 0%, transparent 70%);
+    animation: refPulse 2s infinite ease-in-out;
+}
+
+@keyframes refPulse {
+    0%, 100% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+.ref-lock-emoji {
+    font-size: 40px;
+    z-index: 2;
+}
+
+.ref-lock-pill {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #fbbf24;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.ref-lock-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    color: #ffffff;
+}
+
+.ref-lock-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #94a3b8;
+    margin: 0 0 20px 0;
+}
+
+/* Link Box */
+.ref-lock-link-box {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px dashed rgba(148, 163, 184, 0.3);
+    border-radius: 12px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.ref-link-text {
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: ltr;
+    font-family: monospace;
+}
+
+.ref-copy-btn {
+    background: rgba(245, 158, 11, 0.2);
+    border: 1px solid #f59e0b;
+    color: #fbbf24;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.ref-copy-btn:hover {
+    background: #f59e0b;
+    color: #0f172a;
+}
+
+/* Actions */
+.ref-lock-actions {
+    margin-bottom: 16px;
+}
+
+.ref-btn-wa {
+    width: 100%;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #ffffff;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ref-btn-wa:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
+}
+
+.ref-btn-wa:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.ref-lock-reward-note {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+.ref-lock-footer {
+    display: flex;
+    justify-content: center;
+}
+
+.ref-back-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.ref-back-btn:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}

@@ -36,17 +36,19 @@ const register = (userData, setError, setLoading, navigate) => {
                     safeLocalStorage.setItem('trial_ends_at', responseJson.trialEndsAt || defaultTrialEnd);
                     safeLocalStorage.setItem('trial_remaining_days', responseJson.remainingDays !== undefined ? responseJson.remainingDays : 3);
 
-                    // School and academy storage
-                    const effectiveSchoolName = responseJson.schoolName || responseJson.createdBy?.userName || userData.academy || '';
-                    if (effectiveSchoolName) {
-                        safeLocalStorage.setItem('school_name', effectiveSchoolName);
-                    }
                     if (responseJson.schoolId) {
                         safeLocalStorage.setItem('school_id', responseJson.schoolId);
-                    } else if (responseJson.createdBy?._id) {
-                        safeLocalStorage.setItem('school_id', responseJson.createdBy._id);
                     } else if (responseJson.createdBy) {
-                        safeLocalStorage.setItem('school_id', responseJson.createdBy);
+                        safeLocalStorage.setItem('school_id', responseJson.createdBy._id || responseJson.createdBy);
+                    }
+                    if (responseJson.referralCode) {
+                        safeLocalStorage.setItem('referral_code', responseJson.referralCode);
+                    }
+                    if (responseJson.isFeaturesUnlocked !== undefined) {
+                        safeLocalStorage.setItem('is_features_unlocked', responseJson.isFeaturesUnlocked ? 'true' : 'false');
+                    }
+                    if (responseJson.featuresUnlockedUntil) {
+                        safeLocalStorage.setItem('features_unlocked_until', responseJson.featuresUnlockedUntil);
                     }
 
                     const targetRoute = assignedRole === 'Teacher' ? '/dashboard/teacher' : '/dashboard/student';

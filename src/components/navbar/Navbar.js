@@ -41,6 +41,16 @@ const Navbar = () => {
     const [activeBattleNotification, setActiveBattleNotification] = useState(null)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
+    const checkTeacherUnlocked = () => {
+        if (role !== 'Teacher') return true;
+        const now = Date.now();
+        const unlockedUntil = safeLocalStorage.getItem('features_unlocked_until');
+        const sharePass = safeLocalStorage.getItem('share_pass_expires_at');
+        return (unlockedUntil && new Date(unlockedUntil).getTime() > now) ||
+               (sharePass && new Date(sharePass).getTime() > now) ||
+               safeLocalStorage.getItem('is_features_unlocked') === 'true';
+    };
+
     // Check for unread competition events published by school for teacher accounts
     useEffect(() => {
         if (isAuth && role === 'Teacher') {
@@ -240,7 +250,7 @@ const Navbar = () => {
                     {(role === 'School' || role === 'Organization') ? <Link to={'/dashboard-school'} onClick={() => soundEffects.playClick()}><div className="homework-btn"><span className="text-desktop">{t('navbar.homework', 'HOMEWORK')}</span><span className="text-mobile">HW</span></div></Link> : null}
                     {role === 'Teacher' ? (
                         <>
-                            <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ marginRight: '10px' }}>{t('navbar.games', 'GAMES')}</div></Link>
+                            <Link to={'/student/games-menu'} onClick={() => soundEffects.playClick()}><div className="games-btn" style={{ marginRight: '10px' }}>{t('navbar.games', 'GAMES')} {!checkTeacherUnlocked() ? '🔒' : ''}</div></Link>
                             
                             
                         </>
@@ -250,13 +260,49 @@ const Navbar = () => {
                             <span className="text-desktop">{t('navbar.createHw', 'CREATE HW')}</span><span className="text-mobile">+HW</span>
                         </div>
                     ) : null}
+                    {role === 'Teacher' ? (
+                        <div 
+                            className="nav-btn"
+                            onClick={() => {
+                                soundEffects.playClick();
+                                navigate('/teacherDashboard/competition-lobby');
+                            }}
+                            style={{
+                                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                                color: '#ffffff',
+                                border: 'none',
+                                fontWeight: '800',
+                                fontSize: '12px',
+                                padding: '0.45rem 0.85rem',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                marginRight: '6px',
+                                boxShadow: '0 4px 10px rgba(245, 158, 11, 0.3)'
+                            }}
+                        >
+                            <span>🎁</span>
+                            <span>{isArabic ? 'ادعُ معلماً' : 'Invite Teacher'}</span>
+                        </div>
+                    ) : null}
                     
                     {isAuth && (role === 'Teacher' || role === 'School' || role === 'IT' || role === 'Organization') ? (
                         <div 
                             className="nav-btn create-competition-3d-btn"
-                            onClick={() => { soundEffects.playClick(); setShowCreateCompetition(true); }}
+                            onClick={() => {
+                                soundEffects.playClick();
+                                if (role === 'Teacher' && !checkTeacherUnlocked()) {
+                                    navigate('/teacherDashboard/competition-lobby');
+                                    return;
+                                }
+                                setShowCreateCompetition(true);
+                            }}
                             style={{
-                                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                background: checkTeacherUnlocked() 
+                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' 
+                                    : 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
                                 color: '#ffffff',
                                 border: 'none',
                                 fontWeight: '900',
@@ -268,7 +314,9 @@ const Navbar = () => {
                                 alignItems: 'center',
                                 gap: '6px',
                                 marginRight: '6px',
-                                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.35), inset 0 -3px 0 rgba(0,0,0,0.2)',
+                                boxShadow: checkTeacherUnlocked() 
+                                    ? '0 4px 12px rgba(16, 185, 129, 0.35), inset 0 -3px 0 rgba(0,0,0,0.2)' 
+                                    : '0 4px 12px rgba(100, 116, 139, 0.35), inset 0 -3px 0 rgba(0,0,0,0.2)',
                                 transition: 'transform 0.1s, box-shadow 0.1s',
                             }}
                             onMouseDown={(e) => {
@@ -284,7 +332,7 @@ const Navbar = () => {
                                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.35), inset 0 -3px 0 rgba(0,0,0,0.2)';
                             }}
                         >
-                            {t('navbar.createCompetition', '⚔️ CREATE COMPETITION')}
+                            {t('navbar.createCompetition', '⚔️ CREATE COMPETITION')} {!checkTeacherUnlocked() ? '🔒' : ''}
                         </div>
                     ) : null}
                     {isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? (

@@ -6,6 +6,7 @@ const URL = `${API_BASE_URL}/auth/login`;
 const ROLE_ROUTES = {
     School: '/dashboard-school',
     IT: '/dashboard-school',
+    Organization: '/dashboard-school',
     Teacher: '/',
     Student: '/dashboard/student',
     Supervisor: '/dashboard/supervisor',
@@ -28,7 +29,7 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 safeLocalStorage.setItem('O_authWEB', responseJson.userToken);
                 safeLocalStorage.setItem('auth_role', responseJson.role);
                 safeLocalStorage.setItem('pp_name', responseJson.userName);
-                if (responseJson.role === 'School') {
+                if (responseJson.role === 'School' || responseJson.role === 'Organization') {
                     safeLocalStorage.setItem('school_name', responseJson.userName);
                 } else if (responseJson.schoolName) {
                     safeLocalStorage.setItem('school_name', responseJson.schoolName);
@@ -47,8 +48,8 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                     safeLocalStorage.setItem('teacher_id', responseJson.createdBy);
                 }
                 // Persist school_id so all users in a school share visibility settings
-                if (responseJson.role === 'School' || responseJson.role === 'IT') {
-                    // School admin: their own ID is the school ID
+                if (responseJson.role === 'School' || responseJson.role === 'IT' || responseJson.role === 'Organization') {
+                    // School/Organization admin: their own ID is the school ID
                     safeLocalStorage.setItem('school_id', responseJson.userID);
                 } else if (responseJson.school?._id) {
                     safeLocalStorage.setItem('school_id', responseJson.school._id);
@@ -77,6 +78,28 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                 }
                 if (responseJson.phone) {
                     safeLocalStorage.setItem('user_phone', responseJson.phone);
+                }
+                if (responseJson.referralCode) {
+                    safeLocalStorage.setItem('referral_code', responseJson.referralCode);
+                }
+                if (responseJson.isFeaturesUnlocked !== undefined) {
+                    safeLocalStorage.setItem('is_features_unlocked', responseJson.isFeaturesUnlocked ? 'true' : 'false');
+                }
+                if (responseJson.featuresUnlockedUntil) {
+                    safeLocalStorage.setItem('features_unlocked_until', responseJson.featuresUnlockedUntil);
+                }
+                if (responseJson.sharePassExpiresAt) {
+                    safeLocalStorage.setItem('share_pass_expires_at', responseJson.sharePassExpiresAt);
+                }
+                if (responseJson.role === 'Teacher') {
+                    if (responseJson.subject) {
+                        const sName = responseJson.subject.schoolSubjectName || responseJson.subject.subjectName || responseJson.subject;
+                        safeLocalStorage.setItem('teacher_subject', typeof sName === 'string' ? sName : JSON.stringify(sName));
+                        safeLocalStorage.setItem('teacher_subject_name', typeof sName === 'string' ? sName : (responseJson.subject.schoolSubjectName || ''));
+                    }
+                    if (responseJson.assignedSystemList && Array.isArray(responseJson.assignedSystemList)) {
+                        safeLocalStorage.setItem('teacher_assigned_systems', JSON.stringify(responseJson.assignedSystemList));
+                    }
                 }
                 const route = ROLE_ROUTES[responseJson.role] || '/';
                 window.location.href = route;

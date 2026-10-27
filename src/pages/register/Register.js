@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import logo from '../../logo.png';
 import register from '../../api/auth/register.api';
 import '../../reusable.css';
@@ -9,10 +9,14 @@ import { useTranslation } from 'react-i18next';
 function Register() {
     const { t, i18n } = useTranslation();
     const isArabic = i18n.language === 'ar';
-    const [accountType, setAccountType] = useState('Student'); // 'Student' or 'Teacher'
+    const [searchParams] = useSearchParams();
+    const initialRef = searchParams.get('ref') || searchParams.get('referral') || '';
+    const initialRole = searchParams.get('role');
+
+    const [accountType, setAccountType] = useState(initialRole === 'Teacher' || initialRef ? 'Teacher' : 'Student');
+    const [referralCode, setReferralCode] = useState(initialRef);
     const [userName, setUserName] = useState('');
     const [phone, setPhone] = useState('');
-    const [academy, setAcademy] = useState('');
     const [password, setPassword] = useState('');
     const [cPassword, setCPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -54,11 +58,6 @@ function Register() {
             return;
         }
 
-        if (!academy) {
-            setError(isArabic ? 'يرجى اختيار الأكاديمية (ماستر مايندز، توب سوروبان، أو أخرى)' : 'Please select an Academy (MasterMinds, Topsoroban, or Other)');
-            return;
-        }
-
         const cleanDigits = trimmedPhone.replace(/[^\d]/g, '');
         let cleanUser = trimmedName.toLowerCase().replace(/[^a-z0-9]/g, '');
         if (!cleanUser) {
@@ -70,10 +69,11 @@ function Register() {
             userName: trimmedName,
             phone: trimmedPhone,
             email: fallbackEmail,
-            academy: academy,
+            academy: 'Other',
             password,
             cPassword,
-            role: accountType
+            role: accountType,
+            referralCode: referralCode ? referralCode.trim().toUpperCase() : undefined
         };
 
         register(userData, setError, setLoading, navigate);
@@ -85,13 +85,33 @@ function Register() {
                 {/* Logo */}
                 <div className="register-logo-wrap">
                     <Link to={'/'}>
-                        <img 
-                            src={academy === 'Topsoroban' ? '/img/topsoroban_abacusheroes_logo.png' : academy === 'MasterMinds' ? '/img/masterminds_logo.png' : logo} 
-                            alt="Abacus Heroes" 
-                            className="register-logo-img" 
-                        />
+                        <img src={logo} alt="Abacus Heroes" className="register-logo-img" />
                     </Link>
                 </div>
+
+                {/* Referral Invitation Banner if code exists */}
+                {referralCode && (
+                    <div style={{
+                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        color: '#fff',
+                        padding: '10px 14px',
+                        borderRadius: '10px',
+                        marginBottom: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontSize: '0.9rem',
+                        fontWeight: '600',
+                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
+                    }}>
+                        <span>🎁</span>
+                        <span>
+                            {isArabic 
+                                ? `دعوة خاصة (${referralCode}): تم تفعيل تجربة المسابقات والألعاب المجانية لحسابك!` 
+                                : `Invitation (${referralCode}): Welcome pass for Competitions & Games unlocked!`}
+                        </span>
+                    </div>
+                )}
 
                 {/* Free Trial Badge */}
                 <div className="trial-badge-banner">
@@ -232,34 +252,6 @@ function Register() {
                         </div>
                         <small className="input-hint">
                             {isArabic ? 'سيتم استخدام رقم الهاتف لتسجيل الدخول والدعم الفني' : 'Used for quick login & subscription support'}
-                        </small>
-                    </div>
-
-                    <div className="input-group">
-                        <label htmlFor="reg-academy">
-                            {isArabic ? 'الأكاديمية / المنظومة' : 'Academy / Organization'}
-                        </label>
-                        <div className="input-field-wrap">
-                            <span className="input-icon">🏫</span>
-                            <select
-                                id="reg-academy"
-                                value={academy}
-                                onChange={(e) => {
-                                    setAcademy(e.target.value);
-                                    setError(null);
-                                }}
-                                className="academy-select-field"
-                                required
-                            >
-                                <option value="" disabled>{isArabic ? '-- اختر الأكاديمية --' : '-- Select Academy --'}</option>
-                                <option value="MasterMinds">MasterMinds</option>
-                                <option value="Topsoroban">Topsoroban</option>
-                                <option value="Other">{isArabic ? 'أخرى (Other)' : 'Other'}</option>
-                            </select>
-                            <span className="select-dropdown-arrow">▼</span>
-                        </div>
-                        <small className="input-hint">
-                            {isArabic ? 'اختر أكاديميتك أو اختر "أخرى"' : 'Select your academy or choose "Other"'}
                         </small>
                     </div>
 

@@ -7,6 +7,7 @@ import DashboardLoading from './components/dashboardLoading/DashboardLoading';
 import ErrorBoundary from './components/errorBoundary/ErrorBoundary';
 import MobileAppDownloadPopup from './components/mobileAppPopup/MobileAppDownloadPopup';
 import SubscriptionLockModal from './components/subscriptionLockModal/SubscriptionLockModal';
+import ReferralLockModal from './components/referralLockModal/ReferralLockModal';
 import { Analytics } from '@vercel/analytics/react';
 import { safeLocalStorage, safeSessionStorage } from './utils/safeStorage';
 
@@ -221,6 +222,7 @@ function App() {
       {location.pathname === '/' && (!role || role === 'Student') && <LiveChatWidget />}
       {['/', '/pricing', '/about', '/privacy', '/contact'].includes(location.pathname) && <Footer />}
       <SubscriptionLockModal />
+      <ReferralLockModal />
       <MobileAppDownloadPopup />
     </ErrorBoundary>
   );
