@@ -1,588 +1,1262 @@
-/* Live Classroom Styling - Abacus Heroes */
-.live-classroom-page {
+/* ==========================================================================
+   HeroTalk — Authentic Zoom-Style Classroom UI (Abacus Heroes)
+   ========================================================================== */
+
+.zoom-classroom-root {
   display: flex;
   flex-direction: column;
-  height: 100vh;
   width: 100vw;
-  background: #090d16;
-  color: #f8fafc;
+  height: 100vh;
+  background-color: #1a1a1a;
+  color: #ffffff;
   overflow: hidden;
-  position: relative;
-  font-family: inherit;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  user-select: none;
 }
 
-/* Header Bar */
-.live-header-bar {
-  height: 64px;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* ==========================================================================
+   1. ZOOM TOP HEADER BAR
+   ========================================================================== */
+.zoom-top-bar {
+  height: 44px;
+  min-height: 44px;
+  background: #131619;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.25rem;
-  z-index: 50;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  padding: 0 16px;
+  z-index: 60;
 }
 
-.live-header-left, .live-header-right {
+.zoom-top-left,
+.zoom-top-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 10px;
 }
 
-.live-back-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #e2e8f0;
-  border-radius: 10px;
-  padding: 0.5rem 0.85rem;
-  font-weight: 700;
-  font-size: 0.85rem;
+.zoom-shield-btn {
+  background: rgba(35, 217, 89, 0.14);
+  border: 1px solid rgba(35, 217, 89, 0.35);
+  color: #23d959;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  position: relative;
+  transition: all 0.15s ease;
 }
 
-.live-back-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  transform: translateX(-2px);
+.zoom-shield-btn:hover {
+  background: rgba(35, 217, 89, 0.25);
 }
 
-[dir="rtl"] .live-back-btn:hover {
-  transform: translateX(2px);
-}
-
-.live-room-info {
+.zoom-live-pill {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
-
-.live-badge-glow {
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid #ef4444;
-  color: #ef4444;
-  padding: 0.3rem 0.65rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
+  gap: 6px;
+  background: rgba(224, 40, 40, 0.18);
+  border: 1px solid rgba(224, 40, 40, 0.45);
+  color: #ff5c5c;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 11px;
   font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
 }
 
-.live-dot-pulse {
-  width: 8px;
-  height: 8px;
-  background-color: #ef4444;
+.zoom-live-dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  animation: livePulse 1.5s infinite;
+  background: #ff3b3b;
+  animation: zoomPulse 1.5s infinite;
 }
 
-@keyframes livePulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-  70% { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+@keyframes zoomPulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.7); }
+  70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(255, 59, 59, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 59, 0); }
 }
 
-.live-room-title {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin: 0;
+.zoom-meeting-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e4e6eb;
+  max-width: 260px;
   white-space: nowrap;
-  max-width: 250px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.live-room-code-tag {
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #f59e0b;
-  padding: 0.2rem 0.5rem;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 700;
+.zoom-timer-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
   font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 5px;
 }
 
-/* Action Buttons */
-.live-tool-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #f1f5f9;
-  padding: 0.5rem 0.9rem;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 0.82rem;
+.zoom-top-btn {
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #e4e6eb;
+  padding: 5px 11px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   white-space: nowrap;
 }
 
-.live-tool-btn:hover {
+.zoom-top-btn:hover {
   background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
+  color: #ffffff;
 }
 
-.live-tool-btn.btn-wa {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+.zoom-top-btn.whatsapp-invite {
+  background: rgba(35, 217, 89, 0.16);
+  border-color: rgba(35, 217, 89, 0.4);
+  color: #4ade80;
+}
+
+.zoom-top-btn.whatsapp-invite:hover {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+/* Meeting Info Popover */
+.zoom-info-popover {
+  position: absolute;
+  top: 48px;
+  left: 16px;
+  background: #242424;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 16px;
+  width: 320px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  z-index: 120;
+  color: #f1f5f9;
+}
+
+[dir="rtl"] .zoom-info-popover {
+  left: auto;
+  right: 16px;
+}
+
+.zoom-info-popover h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.zoom-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: #94a3b8;
+}
+
+.zoom-info-row strong {
+  color: #e2e8f0;
+}
+
+/* ==========================================================================
+   2. ZOOM FLOATING TOP SCREEN-SHARE BAR (Active when sharing screen!)
+   ========================================================================== */
+.zoom-floating-share-bar-wrapper {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: zoomSlideDown 0.25s ease;
+}
+
+@keyframes zoomSlideDown {
+  from { transform: translate(-50%, -100%); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.zoom-share-status-strip {
+  display: flex;
+  align-items: center;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.65);
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+}
+
+.zoom-share-green-pill {
+  background: #23d959;
+  color: #062811;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 7px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zoom-share-stop-btn {
+  background: #e02828;
   color: #ffffff;
   border: none;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 7px 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
 }
 
-.live-tool-btn.btn-wa:hover {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.45);
+.zoom-share-stop-btn:hover {
+  background: #c81e1e;
 }
 
-.live-tool-btn.btn-abacus {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+.zoom-share-mini-toolbar {
+  background: rgba(24, 26, 29, 0.96);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  margin-top: 4px;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.zoom-share-mini-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f1f5f9;
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.zoom-share-mini-btn:hover,
+.zoom-share-mini-btn.active {
+  background: #0e71eb;
+  border-color: #0e71eb;
   color: #ffffff;
-  border: none;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
-.live-tool-btn.btn-abacus:hover {
-  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-}
-
-.live-tool-btn.active-tool {
-  border-color: #3b82f6;
-  background: rgba(59, 130, 246, 0.25);
-}
-
-/* Main Classroom Layout */
-.live-classroom-body {
+/* ==========================================================================
+   3. MAIN ZOOM STAGE & VIDEO GRID (100% FULL SCREEN FIRST PAGE!)
+   ========================================================================== */
+.zoom-main-workspace {
   flex: 1;
   display: flex;
   position: relative;
   overflow: hidden;
+  background: #1a1a1a;
 }
 
-.live-classroom-iframe {
+.zoom-stage-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+/* Speaker View Filmstrip for Additional Participants */
+.zoom-top-filmstrip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 124px;
+  min-height: 124px;
+  width: 100%;
+  margin-bottom: 10px;
+  overflow-x: auto;
+  padding: 2px 8px;
+}
+
+.zoom-filmstrip-tile {
+  width: 196px;
+  height: 112px;
+  background: #242424;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.zoom-filmstrip-tile.active-speaker {
+  border-color: #23d959;
+}
+
+/* Main Stage Primary Video Box (Full Size!) */
+.zoom-primary-stage-box {
   flex: 1;
   width: 100%;
   height: 100%;
-  border: none;
-  background: #090d16;
-}
-
-/* Loading Overlay - Non-blocking pointer events so user can interact immediately */
-.live-classroom-loading {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(11, 17, 32, 0.88);
-  backdrop-filter: blur(8px);
-  z-index: 5;
-  pointer-events: none;
-  gap: 0.85rem;
-  transition: opacity 0.3s ease;
-}
-
-.loading-spinner-ring {
-  width: 50px;
-  height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.loading-text {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #cbd5e1;
-}
-
-.loading-hint {
-  font-size: 0.85rem;
-  color: #94a3b8;
-  font-weight: 500;
-}
-
-.live-tool-btn.btn-popout {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.25) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.45);
-  color: #60a5fa;
-  font-weight: 800;
-}
-
-.live-tool-btn.btn-popout:hover {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.35) 0%, rgba(37, 99, 235, 0.4) 100%);
-  border-color: #60a5fa;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.live-tool-btn.btn-guide {
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #fbbf24;
-}
-
-.live-tool-btn.btn-guide:hover {
-  background: rgba(245, 158, 11, 0.22);
-  border-color: #fbbf24;
-  color: #ffffff;
-}
-
-/* Screen Share Tip Banner */
-.screen-share-tip-banner {
-  background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
-  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
-  padding: 0.65rem 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  z-index: 30;
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  from { transform: translateY(-100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.tip-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex: 1;
-}
-
-.tip-badge {
-  background: rgba(59, 130, 246, 0.2);
-  border: 1px solid rgba(59, 130, 246, 0.4);
-  color: #60a5fa;
-  font-size: 0.75rem;
-  font-weight: 800;
-  padding: 2px 8px;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
-.tip-message {
-  font-size: 0.85rem;
-  color: #cbd5e1;
-  line-height: 1.4;
-}
-
-.tip-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-shrink: 0;
-}
-
-.tip-learn-btn {
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.4);
-  color: #93c5fd;
-  padding: 0.25rem 0.65rem;
-  border-radius: 6px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.tip-learn-btn:hover {
-  background: #3b82f6;
-  color: white;
-}
-
-.tip-close-btn {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.tip-close-btn:hover {
-  color: white;
-}
-
-/* Guide Modal */
-.guide-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: 1rem;
-  animation: fadeIn 0.2s ease;
-}
-
-.guide-modal-card {
-  background: #0f172a;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(59, 130, 246, 0.2);
-  border-radius: 20px;
-  width: 100%;
-  max-width: 580px;
-  overflow: hidden;
-  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes scaleUp {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.guide-modal-header {
-  padding: 1.25rem 1.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.guide-modal-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #f8fafc;
-}
-
-.guide-close-btn {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-
-.guide-modal-body {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.guide-explain-box {
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  max-width: 1680px;
+  background: #242424;
   border-radius: 12px;
-  padding: 0.9rem 1.1rem;
-}
-
-.guide-explain-box p {
-  margin: 0;
-  font-size: 0.88rem;
-  color: #fde68a;
-  line-height: 1.5;
-}
-
-.guide-steps-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.guide-step-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 1rem;
-}
-
-.step-num {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
-  font-size: 0.95rem;
-  flex-shrink: 0;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
 }
 
-.step-content h4 {
-  margin: 0 0 0.35rem 0;
-  font-size: 0.95rem;
+.zoom-primary-stage-box.speaking-glow {
+  border-color: #23d959;
+  box-shadow: 0 0 0 2px rgba(35, 217, 89, 0.35), 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.zoom-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #181818;
+}
+
+.zoom-video-element.mirrored {
+  transform: scaleX(-1);
+}
+
+.zoom-video-element.screen-fit {
+  object-fit: contain;
+  background: #0d0d0d;
+}
+
+/* Gallery Grid Mode */
+.zoom-gallery-grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  gap: 12px;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.zoom-gallery-grid.count-1 {
+  grid-template-columns: 1fr;
+}
+
+.zoom-gallery-grid.count-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.zoom-gallery-grid.count-3,
+.zoom-gallery-grid.count-4 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.zoom-gallery-grid.count-many {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-auto-rows: 1fr;
+}
+
+.zoom-gallery-tile {
+  background: #242424;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Camera Off Zoom Avatar Placeholder */
+.zoom-avatar-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.zoom-avatar-circle {
+  width: 112px;
+  height: 112px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, #0e71eb 0%, #0952ab 100%);
+  color: #ffffff;
+  font-size: 44px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 28px rgba(14, 113, 235, 0.35);
+  text-transform: uppercase;
+}
+
+.zoom-avatar-circle.small {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 20px;
+}
+
+.zoom-avatar-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e4e6eb;
+}
+
+/* Participant Name Tag in Bottom-Left Corner of Tile (Exact Zoom Style) */
+.zoom-tile-nametag {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #ffffff;
+  z-index: 10;
+}
+
+[dir="rtl"] .zoom-tile-nametag {
+  left: auto;
+  right: 10px;
+}
+
+.zoom-hand-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(14, 113, 235, 0.9);
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 12;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   4. PRESENTER SCREEN-SHARE DESKTOP VIEW (ZERO RECURSIVE MIRROR!)
+   ========================================================================== */
+.zoom-desktop-share-mode {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #1e242b 0%, #121519 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+}
+
+.zoom-share-clean-card {
+  background: rgba(30, 35, 42, 0.92);
+  border: 1px solid rgba(35, 217, 89, 0.4);
+  border-radius: 18px;
+  padding: 28px 36px;
+  max-width: 620px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 40px rgba(35, 217, 89, 0.12);
+}
+
+.zoom-share-active-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: rgba(35, 217, 89, 0.16);
+  border: 2px solid #23d959;
+  color: #23d959;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.zoom-share-clean-card h2 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
   font-weight: 800;
   color: #ffffff;
 }
 
-.step-content p {
-  margin: 0;
-  font-size: 0.84rem;
-  color: #94a3b8;
-  line-height: 1.45;
+.zoom-share-clean-card p {
+  margin: 0 0 20px 0;
+  font-size: 14.5px;
+  color: #cbd5e1;
+  line-height: 1.55;
 }
 
-.guide-modal-footer {
-  padding: 1rem 1.5rem;
+.zoom-share-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.zoom-share-action-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #f8fafc;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.zoom-share-action-pill:hover {
+  background: #0e71eb;
+  border-color: #0e71eb;
+  transform: translateY(-1px);
+}
+
+.zoom-share-action-pill.stop-red {
+  background: #e02828;
+  border-color: #e02828;
+  color: #ffffff;
+}
+
+.zoom-share-action-pill.stop-red:hover {
+  background: #c81e1e;
+}
+
+/* Floating Mini Camera Corner Overlay during Screen Share or Tool Overlay */
+.zoom-floating-corner-cam {
+  position: fixed;
+  top: 64px;
+  right: 20px;
+  width: 240px;
+  height: 144px;
+  background: #242424;
+  border: 2px solid #23d959;
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 150;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[dir="rtl"] .zoom-floating-corner-cam {
+  right: auto;
+  left: 20px;
+}
+
+/* ==========================================================================
+   5. ZOOM BOTTOM CONTROL BAR (WITH CENTER GREEN SHARE BUTTON!)
+   ========================================================================== */
+.zoom-bottom-toolbar {
+  height: 76px;
+  min-height: 76px;
+  background: #131619;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 80;
 }
 
-.guide-ok-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
+.zoom-toolbar-left,
+.zoom-toolbar-center,
+.zoom-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zoom-toolbar-center {
+  gap: 8px;
+}
+
+/* Standard Zoom Control Button */
+.zoom-ctrl-btn {
+  background: transparent;
   border: none;
-  padding: 0.65rem 1.5rem;
+  color: #d1d5db;
+  min-width: 68px;
+  height: 58px;
+  padding: 6px 10px;
   border-radius: 10px;
-  font-weight: 800;
-  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   cursor: pointer;
-  transition: all 0.2s;
+  position: relative;
+  transition: all 0.15s ease;
 }
 
-.guide-ok-btn:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+.zoom-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
-/* Interactive Virtual Abacus Sidebar Tool */
-.live-abacus-drawer {
-  width: 380px;
-  background: #0f172a;
+.zoom-ctrl-btn.active-panel {
+  background: rgba(14, 113, 235, 0.22);
+  color: #60a5fa;
+}
+
+.zoom-ctrl-btn.danger-state {
+  color: #ff5c5c;
+}
+
+.zoom-ctrl-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+}
+
+.zoom-ctrl-badge {
+  position: absolute;
+  top: -6px;
+  right: -12px;
+  background: #0e71eb;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 999px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.zoom-ctrl-badge.unread {
+  background: #e02828;
+}
+
+.zoom-ctrl-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: 0.1px;
+}
+
+/* ==========================================================================
+   THE ICONIC ZOOM GREEN "SHARE SCREEN" BUTTON (CENTER OF BOTTOM BAR)
+   ========================================================================== */
+.zoom-ctrl-btn.zoom-share-screen-btn {
+  background: linear-gradient(135deg, #23d959 0%, #16a34a 100%);
+  color: #04200c;
+  min-width: 108px;
+  padding: 6px 16px;
+  border-radius: 12px;
+  border: 1px solid #4ade80;
+  box-shadow: 0 4px 18px rgba(35, 217, 89, 0.45);
+  margin: 0 6px;
+}
+
+.zoom-ctrl-btn.zoom-share-screen-btn .zoom-ctrl-label {
+  color: #04200c;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.zoom-ctrl-btn.zoom-share-screen-btn:hover {
+  background: linear-gradient(135deg, #2be864 0%, #15803d 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(35, 217, 89, 0.65);
+}
+
+.zoom-ctrl-btn.zoom-share-screen-btn.sharing-active {
+  background: linear-gradient(135deg, #e02828 0%, #b91c1c 100%);
+  border-color: #f87171;
+  color: #ffffff;
+  box-shadow: 0 4px 18px rgba(224, 40, 40, 0.5);
+}
+
+.zoom-ctrl-btn.zoom-share-screen-btn.sharing-active .zoom-ctrl-label {
+  color: #ffffff;
+}
+
+/* Zoom Red "End" Button on Bottom-Right */
+.zoom-end-btn {
+  background: #e02828;
+  color: #ffffff;
+  border: none;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.zoom-end-btn:hover {
+  background: #c81e1e;
+}
+
+/* End Meeting Confirmation Popover */
+.zoom-end-popover {
+  position: absolute;
+  bottom: 84px;
+  right: 20px;
+  background: #242424;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  padding: 12px;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75);
+  z-index: 130;
+}
+
+[dir="rtl"] .zoom-end-popover {
+  right: auto;
+  left: 20px;
+}
+
+.zoom-end-option-all {
+  background: #e02828;
+  color: #ffffff;
+  border: none;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.zoom-end-option-leave {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Reactions Popover & Floating Emojis */
+.zoom-reactions-popover {
+  position: absolute;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #242424;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75);
+  z-index: 130;
+}
+
+.zoom-emoji-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zoom-emoji-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s;
+}
+
+.zoom-emoji-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(1.2);
+}
+
+.zoom-raise-hand-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.zoom-raise-hand-btn.active {
+  background: rgba(14, 113, 235, 0.3);
+  border-color: #0e71eb;
+}
+
+.zoom-floating-reactions-layer {
+  position: fixed;
+  bottom: 90px;
+  left: 40px;
+  pointer-events: none;
+  z-index: 160;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+}
+
+.zoom-reaction-bubble {
+  background: rgba(24, 26, 29, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  animation: zoomFloatUp 3.2s ease forwards;
+}
+
+@keyframes zoomFloatUp {
+  0% { transform: translateY(20px) scale(0.8); opacity: 0; }
+  15% { transform: translateY(0) scale(1); opacity: 1; }
+  80% { transform: translateY(-60px) scale(1); opacity: 1; }
+  100% { transform: translateY(-90px) scale(0.9); opacity: 0; }
+}
+
+/* ==========================================================================
+   6. ZOOM RIGHT SIDEBAR PANELS (Participants & Chat)
+   ========================================================================== */
+.zoom-right-sidebar {
+  width: 330px;
+  min-width: 330px;
+  background: #202327;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  z-index: 40;
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-  animation: slideInDrawer 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 70;
 }
 
-[dir="rtl"] .live-abacus-drawer {
+[dir="rtl"] .zoom-right-sidebar {
   border-left: none;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
 }
 
-@keyframes slideInDrawer {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-[dir="rtl"] @keyframes slideInDrawer {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-
-.abacus-drawer-header {
-  padding: 1rem 1.25rem;
+.zoom-sidebar-header {
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(30, 41, 59, 0.5);
 }
 
-.abacus-drawer-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 800;
-  font-size: 1rem;
-  color: #fbbf24;
+.zoom-sidebar-header h3 {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
 }
 
-.close-drawer-btn {
+.zoom-sidebar-close {
   background: transparent;
   border: none;
   color: #94a3b8;
-  font-size: 1.25rem;
   cursor: pointer;
   padding: 4px;
   border-radius: 6px;
-  line-height: 1;
 }
 
-.close-drawer-btn:hover {
-  color: white;
+.zoom-sidebar-close:hover {
+  color: #ffffff;
   background: rgba(255, 255, 255, 0.1);
 }
 
-.abacus-drawer-body {
+.zoom-participants-list {
   flex: 1;
-  padding: 1.25rem;
   overflow-y: auto;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 8px;
 }
 
-.abacus-helper-tip {
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.25);
-  border-radius: 12px;
-  padding: 0.85rem;
-  font-size: 0.82rem;
-  color: #93c5fd;
+.zoom-participant-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.zoom-participant-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.zoom-participant-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #0e71eb;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-participant-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.zoom-participant-role {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.zoom-participant-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zoom-sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  gap: 8px;
+}
+
+.zoom-sidebar-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #e2e8f0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.zoom-sidebar-btn:hover {
+  background: #0e71eb;
+  border-color: #0e71eb;
+  color: #ffffff;
+}
+
+/* Chat Panel */
+.zoom-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.zoom-chat-empty {
+  text-align: center;
+  color: #64748b;
+  font-size: 13px;
+  margin-top: 40px;
+}
+
+.zoom-chat-bubble {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.zoom-chat-bubble.mine {
+  background: rgba(14, 113, 235, 0.22);
+  border: 1px solid rgba(14, 113, 235, 0.35);
+}
+
+.zoom-chat-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.zoom-chat-meta strong {
+  color: #60a5fa;
+}
+
+.zoom-chat-text {
+  font-size: 13px;
+  color: #f1f5f9;
   line-height: 1.4;
+  word-break: break-word;
 }
 
-/* Virtual Soroban Interactive Board */
+.zoom-chat-form {
+  padding: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  gap: 8px;
+}
+
+.zoom-chat-input {
+  flex: 1;
+  background: #131619;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+}
+
+.zoom-chat-input:focus {
+  border-color: #0e71eb;
+}
+
+.zoom-chat-send {
+  background: #0e71eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   7. INTEGRATED ZOOM WHITEBOARD & SOROBAN OVERLAY (ON DEMAND)
+   ========================================================================== */
+.zoom-tool-stage-overlay {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background: #141820;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.zoom-tool-header {
+  height: 50px;
+  padding: 0 18px;
+  background: #1c212b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.zoom-tool-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zoom-tool-tab {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zoom-tool-tab.active {
+  background: #0e71eb;
+  border-color: #0e71eb;
+  color: #ffffff;
+}
+
+.zoom-tool-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* Whiteboard Canvas */
+.zoom-whiteboard-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.zoom-wb-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1e2430;
+  padding: 8px 14px;
+  border-radius: 10px;
+}
+
+.zoom-wb-colors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zoom-color-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.zoom-color-dot.active {
+  border-color: #ffffff;
+  transform: scale(1.2);
+}
+
+.zoom-wb-canvas-wrap {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.zoom-wb-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  display: block;
+}
+
+/* Soroban & Math Generator Layout */
+.zoom-soroban-math-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.zoom-soroban-card,
+.zoom-math-card {
+  background: #1c222d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .soroban-frame {
   background: #78350f;
   border: 6px solid #451a03;
   border-radius: 16px;
   padding: 12px 10px;
+  width: 100%;
+  max-width: 440px;
   box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.5);
-  position: relative;
 }
 
 .soroban-counter-display {
-  background: #1e293b;
+  background: #0f172a;
   border: 2px solid #334155;
   border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 1.4rem;
+  padding: 8px 16px;
+  font-size: 28px;
   font-weight: 900;
   font-family: monospace;
   color: #38bdf8;
   text-align: center;
   margin-bottom: 12px;
-  letter-spacing: 4px;
+  letter-spacing: 6px;
+  width: 100%;
+  max-width: 280px;
 }
 
 .soroban-rods-container {
   display: flex;
   justify-content: space-around;
-  height: 240px;
+  height: 230px;
   position: relative;
 }
 
 .soroban-divider-bar {
   position: absolute;
-  top: 65px;
+  top: 62px;
   left: 0;
   right: 0;
   height: 10px;
@@ -607,12 +1281,11 @@
   width: 4px;
   background: #cbd5e1;
   border-radius: 2px;
-  box-shadow: inset 1px 0 2px rgba(0,0,0,0.4);
   z-index: 1;
 }
 
 .soroban-upper-deck {
-  height: 65px;
+  height: 62px;
   display: flex;
   align-items: flex-start;
   z-index: 2;
@@ -622,7 +1295,7 @@
 }
 
 .soroban-lower-deck {
-  height: 165px;
+  height: 158px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -641,454 +1314,43 @@
   cursor: pointer;
   transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4), inset 0 2px 2px rgba(255, 255, 255, 0.6);
-  user-select: none;
-}
-
-.soroban-bead:hover {
-  filter: brightness(1.15);
-  transform: scale(1.05);
 }
 
 .soroban-bead.upper-active {
-  transform: translateY(32px);
+  transform: translateY(30px);
 }
 
 .soroban-bead.lower-active {
-  transform: translateY(-40px);
+  transform: translateY(-38px);
 }
 
-.soroban-reset-btn {
-  background: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 0.65rem 1rem;
-  font-weight: 800;
-  font-size: 0.9rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.2s;
-}
-
-.soroban-reset-btn:hover {
-  background: #b91c1c;
-  transform: scale(1.02);
-}
-
-/* End Meeting Screen */
-.meeting-ended-modal {
-  position: absolute;
-  inset: 0;
-  background: rgba(11, 17, 32, 0.92);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: 20px;
-}
-
-.meeting-ended-card {
-  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 24px;
-  padding: 2.5rem 2rem;
-  max-width: 440px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
-}
-
-.meeting-ended-icon {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
-}
-
-.meeting-ended-card h2 {
-  font-size: 1.6rem;
-  font-weight: 900;
-  margin: 0 0 0.5rem 0;
-  color: #ffffff;
-}
-
-.meeting-ended-card p {
-  color: #94a3b8;
-  margin-bottom: 2rem;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-.meeting-ended-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.ended-rejoin-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  border: none;
-  padding: 0.85rem;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.ended-dashboard-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #e2e8f0;
-  padding: 0.85rem;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-/* HeroTalk Studio Teaching Mode Toggle Button */
-.live-tool-btn.btn-teaching-toggle {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-  color: #ffffff;
-  border: none;
-  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
-  font-weight: 800;
-  transition: all 0.2s ease;
-}
-
-.live-tool-btn.btn-teaching-toggle:hover {
-  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.55);
-}
-
-.live-tool-btn.btn-teaching-toggle.active-mode {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
-}
-
-/* ==========================================================
-   HEROTALK FLOATING MINI VIDEO (PIP) IN CORNER
-   ========================================================== */
-.live-classroom-iframe.pip-mini-mode {
-  position: fixed !important;
-  bottom: 24px !important;
-  right: 24px !important;
-  width: 380px !important;
-  height: 250px !important;
-  border-radius: 18px !important;
-  border: 3px solid #3b82f6 !important;
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 30px rgba(59, 130, 246, 0.45) !important;
-  z-index: 95 !important;
-  background: #000000 !important;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-[dir="rtl"] .live-classroom-iframe.pip-mini-mode {
-  right: auto !important;
-  left: 24px !important;
-}
-
-.pip-mini-header {
-  position: fixed;
-  bottom: 282px;
-  right: 24px;
-  width: 380px;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(59, 130, 246, 0.5);
-  border-radius: 12px;
-  padding: 6px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 96;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-}
-
-[dir="rtl"] .pip-mini-header {
-  right: auto;
-  left: 24px;
-}
-
-.pip-status-tag {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #60a5fa;
-}
-
-.pip-expand-action-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 0.76rem;
-  font-weight: 800;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.2s;
-}
-
-.pip-expand-action-btn:hover {
-  background: #1d4ed8;
-  transform: scale(1.04);
-}
-
-/* ==========================================================
-   HEROTALK TEACHING WORKSPACE (MAIN SCREEN)
-   ========================================================== */
-.teaching-workspace {
-  flex: 1;
-  overflow-y: auto;
-  background: #090d16;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding-bottom: 120px; /* space so floating PIP doesn't cover content */
-}
-
-.workspace-header-card {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid rgba(59, 130, 246, 0.35);
-  border-radius: 20px;
-  padding: 1.25rem 1.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-}
-
-.workspace-badge {
-  background: rgba(16, 185, 129, 0.2);
-  border: 1px solid #10b981;
-  color: #34d399;
-  font-size: 0.75rem;
-  font-weight: 800;
-  padding: 3px 10px;
-  border-radius: 999px;
-  display: inline-block;
-  margin-bottom: 6px;
-}
-
-.workspace-title-box h2 {
-  margin: 0 0 4px 0;
-  font-size: 1.35rem;
-  font-weight: 900;
-  color: #ffffff;
-}
-
-.workspace-title-box p {
-  margin: 0;
-  font-size: 0.88rem;
-  color: #94a3b8;
-}
-
-.workspace-expand-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #f1f5f9;
-  padding: 0.7rem 1.25rem;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 0.88rem;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.workspace-expand-btn:hover {
-  background: #3b82f6;
-  border-color: #3b82f6;
-  color: white;
-}
-
-/* Grid for Workspace Panels */
-.workspace-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
-
-.workspace-panel {
+.math-question-box {
   background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-}
-
-.workspace-panel.abacus-panel {
-  grid-column: 1 / 2;
-}
-
-.workspace-panel.question-panel {
-  grid-column: 2 / 3;
-}
-
-.workspace-panel.whiteboard-panel {
-  grid-column: 1 / -1; /* spans full width */
-}
-
-.panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.panel-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 800;
-  font-size: 1.05rem;
-  color: #f8fafc;
-}
-
-/* Large Soroban View */
-.soroban-workspace-view {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.soroban-counter-display.large {
-  font-size: 2.2rem;
-  padding: 10px 24px;
-  letter-spacing: 8px;
+  border: 2px solid rgba(59, 130, 246, 0.35);
+  border-radius: 14px;
+  padding: 20px;
   width: 100%;
-  max-width: 320px;
-}
-
-.soroban-frame.full-board {
-  width: 100%;
-  max-width: 480px;
-}
-
-.soroban-reset-btn.mini {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.8rem;
-}
-
-/* Question Generator */
-.btn-generate-next {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 0.85rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
-  transition: all 0.2s;
-}
-
-.btn-generate-next:hover {
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-  transform: translateY(-1px);
-}
-
-.generator-controls {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  margin-bottom: 1.25rem;
-  flex-wrap: wrap;
-}
-
-.control-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.control-group label {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #94a3b8;
-}
-
-.pill-selector {
-  display: flex;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 2px;
-  border-radius: 8px;
-  gap: 2px;
-}
-
-.pill-btn {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 0.3rem 0.65rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.pill-btn.active {
-  background: #3b82f6;
-  color: white;
-}
-
-/* Math Question Card */
-.math-question-card {
-  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-  border: 2px solid rgba(59, 130, 246, 0.3);
-  border-radius: 18px;
-  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  margin-top: 12px;
 }
 
 .math-terms-list {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  min-width: 140px;
+  min-width: 120px;
 }
 
 .math-term-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 2.2rem;
+  font-size: 32px;
   font-weight: 900;
   font-family: monospace;
   color: #ffffff;
-  line-height: 1.2;
 }
 
 .term-op {
@@ -1102,142 +1364,29 @@
   height: 4px;
   background: #3b82f6;
   border-radius: 2px;
-  margin-top: 8px;
-  margin-bottom: 12px;
+  margin: 8px 0 12px 0;
 }
 
-.math-answer-box {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 0.5rem;
-}
-
-.btn-toggle-answer {
-  background: rgba(59, 130, 246, 0.2);
-  border: 1px solid #3b82f6;
-  color: #60a5fa;
-  padding: 0.6rem 1.25rem;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 0.9rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s;
-}
-
-.btn-toggle-answer:hover {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-toggle-answer.revealed {
-  background: rgba(16, 185, 129, 0.2);
-  border-color: #10b981;
-  color: #34d399;
-}
-
-.answer-text {
-  font-size: 2rem;
-  font-weight: 900;
-  color: #10b981;
-  font-family: monospace;
-}
-
-/* Whiteboard Canvas */
-.canvas-wrapper {
-  background: #020617;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-}
-
-.drawing-canvas {
-  width: 100%;
-  height: 240px;
-  background: #020617;
-  cursor: crosshair;
-}
-
-.canvas-tools {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.color-palette {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.color-dot {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.2s;
-}
-
-.color-dot:hover {
-  transform: scale(1.15);
-}
-
-.color-dot.active-dot {
-  border-color: #ffffff;
-  transform: scale(1.25);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-}
-
-.canvas-clear-btn {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #f87171;
-  padding: 0.35rem 0.75rem;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.78rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.2s;
-}
-
-.canvas-clear-btn:hover {
-  background: #ef4444;
-  color: white;
-}
-
-@media (max-width: 768px) {
-  .live-header-bar {
-    height: 56px;
-    padding: 0 0.75rem;
+@media (max-width: 900px) {
+  .zoom-soroban-math-grid {
+    grid-template-columns: 1fr;
   }
-  .live-room-title {
-    max-width: 140px;
-    font-size: 0.9rem;
-  }
-  .live-room-code-tag {
-    display: none;
-  }
-  .live-tool-btn span.btn-label {
-    display: none;
-  }
-  .live-tool-btn {
-    padding: 0.45rem 0.65rem;
-  }
-  .live-abacus-drawer {
+  .zoom-right-sidebar {
     position: absolute;
-    top: 0;
     right: 0;
+    top: 0;
     bottom: 0;
     width: 100%;
-    max-width: 340px;
+    max-width: 320px;
+  }
+  .zoom-meeting-title {
+    display: none;
+  }
+  .zoom-ctrl-btn {
+    min-width: 52px;
+    padding: 4px 6px;
+  }
+  .zoom-ctrl-label {
+    font-size: 10px;
   }
 }
