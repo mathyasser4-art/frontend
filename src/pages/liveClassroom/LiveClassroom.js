@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Pusher from 'pusher-js';
 import {
   Mic, MicOff, Video, VideoOff, Shield, Users, MessageSquare,
   Monitor, Square, Smile, Edit3, RotateCcw, Copy, Check, Share2,
-  Maximize2, Minimize2, LayoutGrid, UserCheck, Send, X, Hand,
-  Eye, EyeOff, Trash2, ExternalLink, ArrowLeft, ChevronDown, ChevronUp, Minus
+  Maximize2, Minimize2, LayoutGrid, Send, X,
+  Eye, EyeOff, Trash2, ExternalLink, ArrowLeft, ChevronDown, ChevronUp, Minus,
+  MousePointer, Eraser, Undo2, Pause, Play
 } from 'lucide-react';
 import API_BASE_URL from '../../config/api.config';
 import { safeLocalStorage } from '../../utils/safeStorage';
@@ -67,6 +69,7 @@ export default function LiveClassroom() {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const [isSharePaused, setIsSharePaused] = useState(false);
   const [handRaised, setHandRaised] = useState(false);
   const [roomLocked, setRoomLocked] = useState(false);
 
@@ -76,12 +79,28 @@ export default function LiveClassroom() {
   const [activeStageTool, setActiveStageTool] = useState(null); // null | 'whiteboard' | 'soroban'
   const [showScreenPreview, setShowScreenPreview] = useState(false);
   const [floatingCamMode, setFloatingCamMode] = useState('speaker'); // 'minimized' | 'speaker' | 'grid'
+  const [camBoxPos, setCamBoxPos] = useState({ x: null, y: null });
   const [showInfoPopover, setShowInfoPopover] = useState(false);
   const [showReactionsPopover, setShowReactionsPopover] = useState(false);
   const [showEndPopover, setShowEndPopover] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  // Zoom Screen Share Annotation State ("Annotate" button in floating bar)
+  const [isAnnotating, setIsAnnotating] = useState(false);
+  const [annotateTool, setAnnotateTool] = useState('pen'); // 'mouse' | 'pen' | 'highlighter' | 'rect' | 'eraser'
+  const [annotateColor, setAnnotateColor] = useState('#ff2e2e');
+  const [annotateHistory, setAnnotateHistory] = useState([]);
+  const annotateCanvasRef = useRef(null);
+  const remoteAnnotateCanvasRef = useRef(null);
+  const isAnnotateDrawingRef = useRef(false);
+  const currentStrokeRef = useRef(null);
+
+  // Always-On-Top Document Picture-in-Picture Window State (keeps floating bar + camera visible on Desktop!)
+  const [docPipWindow, setDocPipWindow] = useState(null);
+  const docPipVideoRef = useRef(null);
+  const docPipPreviewRef = useRef(null);
 
   // Participants, Remote Streams, Chat, Reactions
   const [participants, setParticipants] = useState({});
@@ -117,6 +136,10 @@ export default function LiveClassroom() {
   // Refs for Media & Networking
   const localStreamRef = useRef(null);
   const screenStreamRef = useRef(null);
+  const screenCaptureVideoRef = useRef(null);
+  const sharedSurfaceCanvasRef = useRef(null);
+  const isMonitorShareRef = useRef(false);
+  const hasInitialMonitorFrameRef = useRef(false);
   const localVideoRef = useRef(null);
   const cornerVideoRef = useRef(null);
   const pipVideoRef = useRef(null);
@@ -130,6 +153,9 @@ export default function LiveClassroom() {
   const activeCallsRef = useRef({});
   const rightSidebarRef = useRef(rightSidebar);
   rightSidebarRef.current = rightSidebar;
+
+  // Dragging state for Floating Camera Box
+  const dragStateRef = useRef({ dragging: false, startX: 0, startY: 0, origX: 0, origY: 0 });
 
   // Meeting Elapsed Timer
   useEffect(() => {
@@ -149,38 +175,86 @@ export default function LiveClassroom() {
 
   // Attach local camera stream whenever video elements mount or change
   const syncLocalVideoElements = useCallback(() => {
-    if (localVideoRef.current && localStreamRef.current) {
-      if (localVideoRef.current.srcObject !== localStreamRef.current) {
-        localVideoRef.current.srcObject = localStreamRef.current;
+    const attach = (el) => {
+      if (el && localStreamRef.current && el.srcObject !== localStreamRef.current) {
+        el.srcObject = localStreamRef.current;
       }
-    }
-    if (cornerVideoRef.current && localStreamRef.current) {
-      if (cornerVideoRef.current.srcObject !== localStreamRef.current) {
-        cornerVideoRef.current.srcObject = localStreamRef.current;
-      }
-    }
-    if (pipVideoRef.current && localStreamRef.current) {
-      if (pipVideoRef.current.srcObject !== localStreamRef.current) {
-        pipVideoRef.current.srcObject = localStreamRef.current;
-      }
-    }
+    };
+    attach(localVideoRef.current);
+    attach(cornerVideoRef.current);
+    attach(pipVideoRef.current);
+    attach(docPipVideoRef.current);
   }, []);
 
   useEffect(() => {
     syncLocalVideoElements();
-  }, [isVideoOff, isScreenSharing, activeStageTool, viewMode, floatingCamMode, syncLocalVideoElements]);
+  }, [isVideoOff, isScreenSharing, activeStageTool, viewMode, floatingCamMode, docPipWindow, syncLocalVideoElements]);
 
   useEffect(() => {
-    if (showScreenPreview && localScreenPreviewRef.current && screenStreamRef.current) {
-      localScreenPreviewRef.current.srcObject = screenStreamRef.current;
+    if (showScreenPreview && screenStreamRef.current) {
+      if (localScreenPreviewRef.current && localScreenPreviewRef.current.srcObject !== screenStreamRef.current) {
+        localScreenPreviewRef.current.srcObject = screenStreamRef.current;
+      }
+      if (docPipPreviewRef.current && docPipPreviewRef.current.srcObject !== screenStreamRef.current) {
+        docPipPreviewRef.current.srcObject = screenStreamRef.current;
+      }
     }
-  }, [showScreenPreview]);
+  }, [showScreenPreview, docPipWindow, isScreenSharing]);
 
   useEffect(() => {
     if (remoteScreenVideoRef.current && remoteScreenStream) {
       remoteScreenVideoRef.current.srcObject = remoteScreenStream;
     }
   }, [remoteScreenStream]);
+
+  // ============================================================================
+  // LIVE SHARED SCREEN STAGE PUMP (DIRECT DESKTOP VIEW WITHOUT INFINITE MIRROR)
+  // ============================================================================
+  useEffect(() => {
+    if (!isScreenSharing || !screenStreamRef.current) return;
+
+    const hiddenVid = screenCaptureVideoRef.current;
+    if (hiddenVid && hiddenVid.srcObject !== screenStreamRef.current) {
+      hiddenVid.srcObject = screenStreamRef.current;
+      hiddenVid.play().catch(() => {});
+    }
+
+    let animId = null;
+    let startTimestamp = performance.now();
+
+    const renderSurfaceLoop = () => {
+      const canvas = sharedSurfaceCanvasRef.current;
+      const vid = screenCaptureVideoRef.current;
+      if (canvas && vid && vid.readyState >= 2 && vid.videoWidth > 0 && !isSharePaused) {
+        if (canvas.width !== vid.videoWidth || canvas.height !== vid.videoHeight) {
+          canvas.width = vid.videoWidth;
+          canvas.height = vid.videoHeight;
+        }
+        const ctx = canvas.getContext('2d');
+        const now = performance.now();
+
+        // If sharing a specific Window or Tab, OR if user is interacting with Desktop/other apps (!document.hasFocus()),
+        // OR during the initial capture frames right as the OS screen picker closes, draw live frames directly!
+        // When sharing Entire Monitor AND focused on the HeroTalk browser window itself after the initial capture,
+        // we freeze the canvas feed so HeroTalk never renders a recursive hall-of-mirrors loop of itself.
+        const isFocusedOnSelf = document.hasFocus() && !document.hidden;
+        const allowMonitorFrame = !isFocusedOnSelf || !hasInitialMonitorFrameRef.current || (now - startTimestamp < 320);
+
+        if (!isMonitorShareRef.current || allowMonitorFrame) {
+          ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+          if (isMonitorShareRef.current && (now - startTimestamp >= 250)) {
+            hasInitialMonitorFrameRef.current = true;
+          }
+        }
+      }
+      animId = requestAnimationFrame(renderSurfaceLoop);
+    };
+
+    animId = requestAnimationFrame(renderSurfaceLoop);
+    return () => {
+      if (animId) cancelAnimationFrame(animId);
+    };
+  }, [isScreenSharing, isSharePaused]);
 
   // Helper to broadcast room events via Pusher + local BroadcastChannel
   const broadcastRoomEvent = useCallback(async (eventName, payload) => {
@@ -202,6 +276,60 @@ export default function LiveClassroom() {
       });
     } catch (e) {}
   }, [myClientId, roomName]);
+
+  // Redraw annotations helper
+  const redrawAnnotationLayer = useCallback((canvas, strokesList, activeStroke = null) => {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const allStrokes = activeStroke ? [...strokesList, activeStroke] : strokesList;
+    allStrokes.forEach((stroke) => {
+      if (!stroke || !stroke.points || stroke.points.length === 0) return;
+      ctx.save();
+      if (stroke.tool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 24;
+        ctx.strokeStyle = 'rgba(0,0,0,1)';
+      } else if (stroke.tool === 'highlighter') {
+        ctx.globalAlpha = 0.38;
+        ctx.lineWidth = 18;
+        ctx.strokeStyle = stroke.color || '#facc15';
+      } else {
+        ctx.globalAlpha = 1;
+        ctx.lineWidth = 3.5;
+        ctx.strokeStyle = stroke.color || '#ff2e2e';
+      }
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      if (stroke.tool === 'rect' && stroke.points.length >= 2) {
+        const start = stroke.points[0];
+        const end = stroke.points[stroke.points.length - 1];
+        ctx.strokeRect(
+          start.x * canvas.width,
+          start.y * canvas.height,
+          (end.x - start.x) * canvas.width,
+          (end.y - start.y) * canvas.height
+        );
+      } else {
+        ctx.beginPath();
+        stroke.points.forEach((pt, idx) => {
+          const px = pt.x * canvas.width;
+          const py = pt.y * canvas.height;
+          if (idx === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.stroke();
+      }
+      ctx.restore();
+    });
+  }, []);
+
+  useEffect(() => {
+    redrawAnnotationLayer(annotateCanvasRef.current, annotateHistory);
+    redrawAnnotationLayer(remoteAnnotateCanvasRef.current, annotateHistory);
+  }, [annotateHistory, redrawAnnotationLayer, isScreenSharing, remoteScreenStream]);
 
   // Call a remote peer with our camera (and screen if currently sharing)
   const callRemotePeer = useCallback((targetPeerId) => {
@@ -249,7 +377,6 @@ export default function LiveClassroom() {
         localStreamRef.current = stream;
         syncLocalVideoElements();
       } catch (camErr) {
-        // Fallback to audio-only if camera is busy/unavailable
         try {
           const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
           if (isMounted) {
@@ -364,6 +491,11 @@ export default function LiveClassroom() {
         } else if (eventName === 'screen-share-stopped') {
           setRemoteScreenStream(null);
           setRemoteScreenSharer(null);
+          setAnnotateHistory([]);
+        } else if (eventName === 'annotate-sync') {
+          if (Array.isArray(data.strokes)) {
+            setAnnotateHistory(data.strokes);
+          }
         } else if (eventName === 'chat-message') {
           setChatMessages((prev) => [...prev, data]);
           if (rightSidebarRef.current !== 'chat') {
@@ -413,6 +545,7 @@ export default function LiveClassroom() {
           'participant-update',
           'participant-left',
           'screen-share-stopped',
+          'annotate-sync',
           'chat-message',
           'reaction',
           'soroban-sync',
@@ -457,6 +590,66 @@ export default function LiveClassroom() {
       }
     };
   }, [roomName]);
+
+  // ============================================================================
+  // ALWAYS-ON-TOP FLOATING BAR WINDOW (Document Picture-in-Picture API)
+  // Keeps "You are screen sharing - Stop Share", all buttons & camera floating
+  // on top of the Windows Desktop even when Chrome is minimized or behind apps!
+  // ============================================================================
+  const openAlwaysOnTopFloatingBar = useCallback(async () => {
+    if (typeof window.documentPictureInPicture !== 'undefined') {
+      try {
+        if (window.documentPictureInPicture.window) {
+          setDocPipWindow(window.documentPictureInPicture.window);
+          return window.documentPictureInPicture.window;
+        }
+        const pipWin = await window.documentPictureInPicture.requestWindow({
+          width: 820,
+          height: 170
+        });
+
+        // Copy all stylesheets so the floating bar looks 100% identical to Zoom
+        [...document.styleSheets].forEach((styleSheet) => {
+          try {
+            const cssRules = [...styleSheet.cssRules].map((r) => r.cssText).join('');
+            const style = document.createElement('style');
+            style.textContent = cssRules;
+            pipWin.document.head.appendChild(style);
+          } catch (e) {
+            if (styleSheet.href) {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = styleSheet.href;
+              pipWin.document.head.appendChild(link);
+            }
+          }
+        });
+
+        pipWin.document.body.style.margin = '0';
+        pipWin.document.body.style.background = '#11161f';
+        pipWin.document.body.style.overflow = 'hidden';
+
+        pipWin.addEventListener('pagehide', () => {
+          setDocPipWindow(null);
+        });
+
+        setDocPipWindow(pipWin);
+        return pipWin;
+      } catch (e) {
+        // Fallback to video PiP if Document PiP was blocked without transient gesture
+      }
+    }
+
+    const vid = pipVideoRef.current || cornerVideoRef.current || localVideoRef.current;
+    if (vid && document.pictureInPictureEnabled && !isVideoOff) {
+      try {
+        if (!document.pictureInPictureElement) {
+          await vid.requestPictureInPicture();
+        }
+      } catch (e) {}
+    }
+    return null;
+  }, [isVideoOff]);
 
   // Toggle Microphone Mute/Unmute
   const handleToggleMute = () => {
@@ -516,7 +709,7 @@ export default function LiveClassroom() {
   };
 
   // ============================================================================
-  // ZOOM GREEN "SHARE SCREEN" HANDLER — ZERO INFINITE MIRROR & DESKTOP PIP MODE
+  // ZOOM GREEN "SHARE SCREEN" HANDLER — DIRECT DESKTOP STAGE & FLOATING DOCK
   // ============================================================================
   const handleStopScreenShare = useCallback(() => {
     if (screenStreamRef.current) {
@@ -524,14 +717,24 @@ export default function LiveClassroom() {
       screenStreamRef.current = null;
     }
     setIsScreenSharing(false);
+    setIsSharePaused(false);
     setShowScreenPreview(false);
+    setIsAnnotating(false);
+    setAnnotateHistory([]);
+    hasInitialMonitorFrameRef.current = false;
 
-    // Exit Picture-in-Picture if active
+    // Close Always-On-Top Document PiP window if open
+    if (window.documentPictureInPicture && window.documentPictureInPicture.window) {
+      try {
+        window.documentPictureInPicture.window.close();
+      } catch (e) {}
+    }
+    setDocPipWindow(null);
+
     if (document.pictureInPictureElement) {
       document.exitPictureInPicture().catch(() => {});
     }
 
-    // If opened as a standalone window, restore to full screen size
     if (window.opener) {
       try {
         window.resizeTo(window.screen.availWidth, window.screen.availHeight);
@@ -551,16 +754,10 @@ export default function LiveClassroom() {
     });
   }, [broadcastRoomEvent, handRaised, isMuted, isTeacher, isVideoOff, userName]);
 
-  const handleToggleScreenShare = async () => {
+  const startNewScreenShare = async () => {
     if (soundEffects?.playClick) soundEffects.playClick();
 
-    if (isScreenSharing) {
-      handleStopScreenShare();
-      return;
-    }
-
     try {
-      // Configure CaptureController so the browser focuses the shared surface cleanly
       let captureController = null;
       if (typeof window.CaptureController !== 'undefined') {
         try {
@@ -584,11 +781,21 @@ export default function LiveClassroom() {
       }
 
       const screenStream = await navigator.mediaDevices.getDisplayMedia(displayOptions);
-      screenStreamRef.current = screenStream;
-      setIsScreenSharing(true);
 
-      // Automatically stop share when user clicks the browser's native "Stop sharing" bar
+      // Stop previous screen stream tracks if switching via "New Share"
+      if (screenStreamRef.current) {
+        screenStreamRef.current.getTracks().forEach((t) => t.stop());
+      }
+
+      screenStreamRef.current = screenStream;
       const screenVideoTrack = screenStream.getVideoTracks()[0];
+      const settings = screenVideoTrack ? screenVideoTrack.getSettings() : {};
+      isMonitorShareRef.current = settings.displaySurface === 'monitor';
+      hasInitialMonitorFrameRef.current = false;
+
+      setIsScreenSharing(true);
+      setIsSharePaused(false);
+
       if (screenVideoTrack) {
         screenVideoTrack.onended = () => {
           handleStopScreenShare();
@@ -613,22 +820,8 @@ export default function LiveClassroom() {
         });
       }
 
-      // Pop out camera into native Always-On-Top Picture-in-Picture (PiP) so teacher sees floating camera on Desktop!
-      const pipTarget = pipVideoRef.current || localVideoRef.current;
-      if (pipTarget && document.pictureInPictureEnabled && !isVideoOff) {
-        pipTarget.requestPictureInPicture().catch(() => {});
-      }
-
-      // If running as a standalone popup window, collapse to Zoom's top floating bar so teacher sees their Desktop!
-      if (window.opener) {
-        try {
-          const barW = 620;
-          const barH = 110;
-          const leftPos = Math.round((window.screen.availWidth - barW) / 2);
-          window.resizeTo(barW, barH);
-          window.moveTo(leftPos, 0);
-        } catch (e) {}
-      }
+      // Open Always-On-Top Floating Share Bar window so it never gets minimized on Desktop!
+      openAlwaysOnTopFloatingBar();
 
       broadcastRoomEvent('participant-update', {
         peerId: myPeerIdRef.current,
@@ -644,18 +837,123 @@ export default function LiveClassroom() {
     }
   };
 
-  // Trigger Picture-in-Picture floating camera manually if desired
-  const handleTriggerPiP = async () => {
-    const vid = pipVideoRef.current || cornerVideoRef.current || localVideoRef.current;
-    if (vid && document.pictureInPictureEnabled) {
-      try {
-        if (document.pictureInPictureElement) {
-          await document.exitPictureInPicture();
-        } else {
-          await vid.requestPictureInPicture();
-        }
-      } catch (e) {}
+  const handleToggleScreenShare = async () => {
+    if (isScreenSharing) {
+      handleStopScreenShare();
+    } else {
+      await startNewScreenShare();
     }
+  };
+
+  const handleTogglePauseShare = () => {
+    if (!screenStreamRef.current) return;
+    const nextPaused = !isSharePaused;
+    setIsSharePaused(nextPaused);
+    screenStreamRef.current.getVideoTracks().forEach((t) => {
+      t.enabled = !nextPaused;
+    });
+  };
+
+  // ============================================================================
+  // ZOOM SCREEN ANNOTATION HANDLERS ("Annotate" Button in Floating Bar)
+  // ============================================================================
+  const getNormalizedPoint = (e, canvas) => {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)),
+      y: Math.max(0, Math.min(1, (clientY - rect.top) / rect.height))
+    };
+  };
+
+  const handleAnnotateStart = (e) => {
+    if (!isAnnotating || annotateTool === 'mouse') return;
+    const canvas = annotateCanvasRef.current;
+    if (!canvas) return;
+    const pt = getNormalizedPoint(e, canvas);
+    isAnnotateDrawingRef.current = true;
+    currentStrokeRef.current = {
+      tool: annotateTool,
+      color: annotateColor,
+      points: [pt]
+    };
+    redrawAnnotationLayer(canvas, annotateHistory, currentStrokeRef.current);
+  };
+
+  const handleAnnotateMove = (e) => {
+    if (!isAnnotateDrawingRef.current || !currentStrokeRef.current) return;
+    const canvas = annotateCanvasRef.current;
+    if (!canvas) return;
+    const pt = getNormalizedPoint(e, canvas);
+    currentStrokeRef.current.points.push(pt);
+    redrawAnnotationLayer(canvas, annotateHistory, currentStrokeRef.current);
+  };
+
+  const handleAnnotateEnd = () => {
+    if (!isAnnotateDrawingRef.current || !currentStrokeRef.current) return;
+    isAnnotateDrawingRef.current = false;
+    const finishedStroke = currentStrokeRef.current;
+    currentStrokeRef.current = null;
+    setAnnotateHistory((prev) => {
+      const updated = [...prev, finishedStroke];
+      broadcastRoomEvent('annotate-sync', { strokes: updated });
+      return updated;
+    });
+  };
+
+  const handleAnnotateUndo = () => {
+    setAnnotateHistory((prev) => {
+      const updated = prev.slice(0, -1);
+      broadcastRoomEvent('annotate-sync', { strokes: updated });
+      return updated;
+    });
+  };
+
+  const handleAnnotateClear = () => {
+    setAnnotateHistory([]);
+    broadcastRoomEvent('annotate-sync', { strokes: [] });
+  };
+
+  // ============================================================================
+  // DRAGGABLE FLOATING CAMERA BOX HANDLERS
+  // ============================================================================
+  const handleCamDragStart = (e) => {
+    if (e.target.closest('button')) return;
+    const box = e.currentTarget.parentElement;
+    if (!box) return;
+    const rect = box.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    dragStateRef.current = {
+      dragging: true,
+      startX: clientX,
+      startY: clientY,
+      origX: rect.left,
+      origY: rect.top
+    };
+
+    const handleMove = (moveEv) => {
+      if (!dragStateRef.current.dragging) return;
+      const mx = moveEv.touches ? moveEv.touches[0].clientX : moveEv.clientX;
+      const my = moveEv.touches ? moveEv.touches[0].clientY : moveEv.clientY;
+      const nextX = Math.max(8, Math.min(window.innerWidth - 180, dragStateRef.current.origX + (mx - dragStateRef.current.startX)));
+      const nextY = Math.max(8, Math.min(window.innerHeight - 60, dragStateRef.current.origY + (my - dragStateRef.current.startY)));
+      setCamBoxPos({ x: nextX, y: nextY });
+    };
+
+    const handleUp = () => {
+      dragStateRef.current.dragging = false;
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleUp);
+    };
+
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('touchend', handleUp);
   };
 
   // Send Reaction or Toggle Raise Hand
@@ -862,9 +1160,261 @@ export default function LiveClassroom() {
   const remoteParticipantList = Object.values(participants);
   const totalParticipantCount = 1 + remoteParticipantList.length;
 
+  // Reusable Zoom Floating Share Control Dock (renders at top of screen AND inside Always-On-Top OS Window!)
+  const renderZoomShareDock = (inPipWindow = false) => (
+    <div
+      className="zoom-floating-share-bar-wrapper"
+      style={inPipWindow ? { position: 'relative', top: 0, left: 0, transform: 'none', width: '100%' } : undefined}
+    >
+      {/* Top Row: Full Zoom Floating Control Bar */}
+      <div className="zoom-share-main-dock">
+        <button className={`zoom-dock-btn ${isMuted ? 'danger-text' : ''}`} onClick={handleToggleMute}>
+          <div className="zoom-dock-icon">
+            {isMuted ? <MicOff size={18} color="#ff5c5c" /> : <Mic size={18} color="#23d959" />}
+          </div>
+          <span>{isMuted ? (isArabic ? 'إلغاء الكتم' : 'Unmute') : (isArabic ? 'كتم الصوت' : 'Mute')}</span>
+        </button>
+
+        <button className={`zoom-dock-btn ${isVideoOff ? 'danger-text' : ''}`} onClick={handleToggleVideo}>
+          <div className="zoom-dock-icon">
+            {isVideoOff ? <VideoOff size={18} color="#ff5c5c" /> : <Video size={18} />}
+          </div>
+          <span>{isVideoOff ? (isArabic ? 'تشغيل الفيديو' : 'Start Video') : (isArabic ? 'إيقاف الفيديو' : 'Stop Video')}</span>
+        </button>
+
+        <button
+          className={`zoom-dock-btn ${rightSidebar === 'participants' ? 'active-tool' : ''}`}
+          onClick={() => setRightSidebar(rightSidebar === 'participants' ? null : 'participants')}
+        >
+          <div className="zoom-dock-icon">
+            <Users size={18} />
+            <span className="zoom-dock-badge">{totalParticipantCount}</span>
+          </div>
+          <span>{isArabic ? 'المشاركون' : 'Participants'}</span>
+        </button>
+
+        <button
+          className={`zoom-dock-btn ${rightSidebar === 'chat' ? 'active-tool' : ''}`}
+          onClick={() => {
+            setUnreadChatCount(0);
+            setRightSidebar(rightSidebar === 'chat' ? null : 'chat');
+          }}
+        >
+          <div className="zoom-dock-icon">
+            <MessageSquare size={18} />
+            {unreadChatCount > 0 && <span className="zoom-dock-badge">{unreadChatCount}</span>}
+          </div>
+          <span>{isArabic ? 'المحادثة' : 'Chat'}</span>
+        </button>
+
+        <button className="zoom-dock-btn green-share-accent" onClick={startNewScreenShare}>
+          <div className="zoom-dock-icon">
+            <Monitor size={18} color="#23d959" />
+          </div>
+          <span>{isArabic ? 'مشاركة جديدة' : 'New Share'}</span>
+        </button>
+
+        <button className="zoom-dock-btn" onClick={handleTogglePauseShare}>
+          <div className="zoom-dock-icon">
+            {isSharePaused ? <Play size={18} color="#f59e0b" /> : <Pause size={18} />}
+          </div>
+          <span>
+            {isSharePaused
+              ? (isArabic ? 'استئناف' : 'Resume Share')
+              : (isArabic ? 'إيقاف مؤقت' : 'Pause Share')}
+          </span>
+        </button>
+
+        {/* ZOOM "ANNOTATE" BUTTON IN FLOATING BAR */}
+        <button
+          className={`zoom-dock-btn ${isAnnotating ? 'active-tool' : ''}`}
+          onClick={() => setIsAnnotating(!isAnnotating)}
+        >
+          <div className="zoom-dock-icon">
+            <Edit3 size={18} />
+          </div>
+          <span>{isArabic ? 'القلم (Annotate)' : 'Annotate'}</span>
+        </button>
+
+        <button
+          className={`zoom-dock-btn ${activeStageTool === 'whiteboard' ? 'active-tool' : ''}`}
+          onClick={() => setActiveStageTool(activeStageTool === 'whiteboard' ? null : 'whiteboard')}
+        >
+          <div className="zoom-dock-icon">
+            <Monitor size={17} />
+          </div>
+          <span>{isArabic ? 'السبورة' : 'Whiteboard'}</span>
+        </button>
+
+        <button
+          className={`zoom-dock-btn ${activeStageTool === 'soroban' ? 'active-tool' : ''}`}
+          onClick={() => setActiveStageTool(activeStageTool === 'soroban' ? null : 'soroban')}
+        >
+          <div className="zoom-dock-icon">
+            <span style={{ fontSize: '16px' }}>🧮</span>
+          </div>
+          <span>{isArabic ? 'العداد' : 'Soroban'}</span>
+        </button>
+
+        {!inPipWindow && (
+          <button
+            className="zoom-dock-btn"
+            onClick={openAlwaysOnTopFloatingBar}
+            title={isArabic ? 'تثبيت الشريط عائماً فوق سطح المكتب دائماً' : 'Keep bar floating on top of Desktop'}
+          >
+            <div className="zoom-dock-icon">
+              <ExternalLink size={17} color="#38bdf8" />
+            </div>
+            <span>{isArabic ? 'تثبيت فوق سطح المكتب' : 'Float on Desktop'}</span>
+          </button>
+        )}
+      </div>
+
+      {/* Attached Bottom Strip: Green "You are screen sharing [v]" + Red "Stop Share" */}
+      <div className="zoom-share-status-strip">
+        <div className="zoom-share-green-pill">
+          <Shield size={14} />
+          <span>
+            {isSharePaused
+              ? (isArabic ? 'مشاركة الشاشة متوقفة مؤقتاً' : 'Screen sharing is paused')
+              : (isArabic ? 'أنت تشارك شاشتك الآن' : 'You are screen sharing')}
+          </span>
+          <button
+            type="button"
+            className={`zoom-share-preview-toggle-btn ${showScreenPreview ? 'active' : ''}`}
+            onClick={() => setShowScreenPreview(!showScreenPreview)}
+            title={isArabic ? 'معاينة شاشة المشاركين' : 'Preview what participants see'}
+          >
+            {showScreenPreview ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+          </button>
+        </div>
+        <button className="zoom-share-stop-btn" onClick={handleStopScreenShare}>
+          <Square size={12} fill="#ffffff" />
+          <span>{isArabic ? 'إيقاف المشاركة' : 'Stop Share'}</span>
+        </button>
+      </div>
+
+      {/* ZOOM ANNOTATION SUB-TOOLBAR (Opens when "Annotate" is clicked) */}
+      {isAnnotating && (
+        <div className="zoom-annotate-toolbar">
+          <button
+            type="button"
+            className={`zoom-ann-tool-btn ${annotateTool === 'mouse' ? 'active' : ''}`}
+            onClick={() => setAnnotateTool('mouse')}
+          >
+            <MousePointer size={15} />
+            <span>{isArabic ? 'الماوس' : 'Mouse'}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`zoom-ann-tool-btn ${annotateTool === 'pen' ? 'active' : ''}`}
+            onClick={() => setAnnotateTool('pen')}
+          >
+            <Edit3 size={15} />
+            <span>{isArabic ? 'قلم' : 'Draw'}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`zoom-ann-tool-btn ${annotateTool === 'highlighter' ? 'active' : ''}`}
+            onClick={() => setAnnotateTool('highlighter')}
+          >
+            <Edit3 size={15} color="#facc15" />
+            <span>{isArabic ? 'تظليل' : 'Spotlight'}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`zoom-ann-tool-btn ${annotateTool === 'rect' ? 'active' : ''}`}
+            onClick={() => setAnnotateTool('rect')}
+          >
+            <Square size={15} />
+            <span>{isArabic ? 'إطار' : 'Shape'}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`zoom-ann-tool-btn ${annotateTool === 'eraser' ? 'active' : ''}`}
+            onClick={() => setAnnotateTool('eraser')}
+          >
+            <Eraser size={15} />
+            <span>{isArabic ? 'ممحاة' : 'Eraser'}</span>
+          </button>
+
+          <div className="zoom-ann-divider" />
+
+          <div className="zoom-ann-colors">
+            {['#ff2e2e', '#facc15', '#23d959', '#0e71eb', '#a855f7', '#ffffff'].map((col) => (
+              <div
+                key={col}
+                className={`zoom-ann-color-dot ${annotateColor === col ? 'active' : ''}`}
+                style={{ backgroundColor: col }}
+                onClick={() => setAnnotateColor(col)}
+              />
+            ))}
+          </div>
+
+          <div className="zoom-ann-divider" />
+
+          <button type="button" className="zoom-ann-tool-btn" onClick={handleAnnotateUndo}>
+            <Undo2 size={15} />
+            <span>{isArabic ? 'تراجع' : 'Undo'}</span>
+          </button>
+
+          <button type="button" className="zoom-ann-tool-btn" onClick={handleAnnotateClear}>
+            <Trash2 size={15} />
+            <span>{isArabic ? 'مسح الكل' : 'Clear'}</span>
+          </button>
+
+          <button
+            type="button"
+            className="zoom-ann-close-btn"
+            onClick={() => setIsAnnotating(false)}
+            title={isArabic ? 'إغلاق شريط القلم' : 'Close Annotate'}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* Screen Share Live Preview Dropdown (What Attendees See) */}
+      {showScreenPreview && (
+        <div className="zoom-screen-preview-dropdown">
+          <div className="zoom-screen-preview-header">
+            <div className="zoom-preview-title">
+              <Monitor size={14} color="#23d959" />
+              <span>{isArabic ? 'معاينة شاشة المشاركين (ما يشاهده الطلاب الآن)' : 'Participants Screen Preview (Live)'}</span>
+            </div>
+            <button
+              type="button"
+              className="zoom-preview-close-btn"
+              onClick={() => setShowScreenPreview(false)}
+            >
+              <X size={14} />
+            </button>
+          </div>
+          <div className="zoom-screen-preview-body">
+            <video
+              ref={inPipWindow ? docPipPreviewRef : localScreenPreviewRef}
+              autoPlay
+              playsInline
+              muted
+              className="zoom-screen-preview-video"
+            />
+          </div>
+          <div className="zoom-screen-preview-footer">
+            <span className="zoom-live-dot" style={{ width: 6, height: 6 }}></span>
+            <span>{isArabic ? 'بث مباشر لشاشتك كما يشاهدها الحاضرون' : 'Live preview of your screen as seen by attendees'}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="zoom-classroom-root" dir={isArabic ? 'rtl' : 'ltr'}>
-      {/* Persistent Video Element for Desktop Picture-in-Picture (PiP) so PiP never drops */}
+      {/* Hidden Video Elements for PiP and Screen Surface Canvas Capture */}
       <video
         ref={pipVideoRef}
         autoPlay
@@ -872,182 +1422,119 @@ export default function LiveClassroom() {
         muted
         style={{ position: 'fixed', width: '1px', height: '1px', opacity: 0, pointerEvents: 'none', bottom: 0, right: 0 }}
       />
+      <video
+        ref={screenCaptureVideoRef}
+        autoPlay
+        playsInline
+        muted
+        style={{ position: 'fixed', width: '1px', height: '1px', opacity: 0, pointerEvents: 'none', bottom: 0, left: 0 }}
+      />
+
+      {/* Always-On-Top OS Window Portal (when Document PiP is open, stays visible over Desktop even when Chrome is minimized!) */}
+      {docPipWindow &&
+        createPortal(
+          <div dir={isArabic ? 'rtl' : 'ltr'} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '6px' }}>
+            {renderZoomShareDock(true)}
+          </div>,
+          docPipWindow.document.body
+        )}
+
       {/* ====================================================================
-          ZOOM FLOATING TOP BAR WHEN SHARING SCREEN (ZERO INFINITE MIRROR!)
+          ZOOM FLOATING TOP DOCK WHEN SHARING SCREEN
           ==================================================================== */}
-      {isScreenSharing && (
-        <div className="zoom-floating-share-bar-wrapper">
-          <div className="zoom-share-status-strip">
-            <div className="zoom-share-green-pill">
+      {isScreenSharing && renderZoomShareDock(false)}
+
+      {/* ====================================================================
+          1. ZOOM TOP HEADER BAR (Hidden during Screen Share just like Zoom!)
+          ==================================================================== */}
+      {!isScreenSharing && (
+        <header className="zoom-top-bar">
+          <div className="zoom-top-left">
+            <button
+              className="zoom-top-btn"
+              onClick={() => handleLeaveMeeting(false)}
+              title={isArabic ? 'العودة للوحة التحكم' : 'Back to Dashboard'}
+            >
+              <ArrowLeft size={14} style={{ transform: isArabic ? 'scaleX(-1)' : 'none' }} />
+              <span>{isArabic ? 'لوحة التحكم' : 'Dashboard'}</span>
+            </button>
+
+            <button
+              className="zoom-shield-btn"
+              onClick={() => setShowInfoPopover(!showInfoPopover)}
+              title={isArabic ? 'معلومات الحصة والأمان' : 'Meeting Information & Security'}
+            >
               <Shield size={15} />
-              <span>{isArabic ? 'أنت تشارك شاشتك الآن' : 'You are screen sharing'}</span>
+            </button>
+
+            <div className="zoom-live-pill">
+              <span className="zoom-live-dot"></span>
+              <span>HEROTALK</span>
+            </div>
+
+            <span className="zoom-meeting-title">
+              {isArabic ? `غرفة ${userName}` : `${userName}'s Classroom`}
+            </span>
+
+            <span className="zoom-timer-badge">{formatDuration(elapsedSeconds)}</span>
+
+            <button className="zoom-top-btn" onClick={handleCopyInvite}>
+              {copied ? <Check size={13} color="#23d959" /> : <Copy size={13} />}
+              <span>{copied ? (isArabic ? 'تم نسخ الرابط!' : 'Copied!') : (isArabic ? 'نسخ رابط الدعوة' : 'Copy Invite Link')}</span>
+            </button>
+
+            <button className="zoom-top-btn whatsapp-invite" onClick={handleWhatsAppInvite}>
+              <Share2 size={13} />
+              <span>{isArabic ? 'دعوة واتساب' : 'Invite WhatsApp'}</span>
+            </button>
+          </div>
+
+          <div className="zoom-top-right">
+            <button
+              className="zoom-top-btn"
+              onClick={() => setViewMode(viewMode === 'speaker' ? 'gallery' : 'speaker')}
+            >
+              <LayoutGrid size={14} />
+              <span>
+                {viewMode === 'speaker'
+                  ? (isArabic ? 'طريقة العرض: المتحدث' : 'View: Speaker')
+                  : (isArabic ? 'طريقة العرض: المعرض' : 'View: Gallery')}
+              </span>
+            </button>
+
+            <button className="zoom-top-btn" onClick={toggleFullscreen} title="Fullscreen">
+              {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+            </button>
+          </div>
+
+          {/* Zoom Meeting Info Popover */}
+          {showInfoPopover && (
+            <div className="zoom-info-popover">
+              <h4>{isArabic ? 'معلومات حصة HeroTalk' : 'HeroTalk Meeting Info'}</h4>
+              <div className="zoom-info-row">
+                <span>{isArabic ? 'المضيف:' : 'Host:'}</span>
+                <strong>{userName}</strong>
+              </div>
+              <div className="zoom-info-row">
+                <span>{isArabic ? 'رمز الغرفة:' : 'Room Code:'}</span>
+                <strong>{roomName}</strong>
+              </div>
+              <div className="zoom-info-row">
+                <span>{isArabic ? 'التشفير:' : 'Encryption:'}</span>
+                <strong style={{ color: '#23d959' }}>{isArabic ? 'مفعل (WebRTC P2P)' : 'Enabled (WebRTC P2P)'}</strong>
+              </div>
               <button
-                type="button"
-                className={`zoom-share-preview-toggle-btn ${showScreenPreview ? 'active' : ''}`}
-                onClick={() => setShowScreenPreview(!showScreenPreview)}
-                title={isArabic ? 'معاينة شاشة المشاركين' : 'Preview what participants see'}
+                className="zoom-sidebar-btn"
+                style={{ width: '100%', marginTop: '8px' }}
+                onClick={handleCopyInvite}
               >
-                {showScreenPreview ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                <span>{copied ? (isArabic ? 'تم النسخ!' : 'Link Copied!') : (isArabic ? 'نسخ رابط الانضمام' : 'Copy Join Link')}</span>
               </button>
             </div>
-            <button className="zoom-share-stop-btn" onClick={handleStopScreenShare}>
-              <Square size={13} fill="#ffffff" />
-              <span>{isArabic ? 'إيقاف المشاركة' : 'Stop Share'}</span>
-            </button>
-          </div>
-
-          {/* Screen Share Live Preview Dropdown (What Attendees See) */}
-          {showScreenPreview && (
-            <div className="zoom-screen-preview-dropdown">
-              <div className="zoom-screen-preview-header">
-                <div className="zoom-preview-title">
-                  <Monitor size={14} color="#23d959" />
-                  <span>{isArabic ? 'معاينة شاشة المشاركين (ما يشاهده الطلاب الآن)' : 'Participants Screen Preview (Live)'}</span>
-                </div>
-                <button
-                  type="button"
-                  className="zoom-preview-close-btn"
-                  onClick={() => setShowScreenPreview(false)}
-                >
-                  <X size={14} />
-                </button>
-              </div>
-              <div className="zoom-screen-preview-body">
-                <video
-                  ref={localScreenPreviewRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="zoom-screen-preview-video"
-                />
-              </div>
-              <div className="zoom-screen-preview-footer">
-                <span className="zoom-live-dot" style={{ width: 6, height: 6 }}></span>
-                <span>{isArabic ? 'بث مباشر لشاشتك كما يشاهدها الحاضرون' : 'Live preview of your screen as seen by attendees'}</span>
-              </div>
-            </div>
           )}
-
-          <div className="zoom-share-mini-toolbar">
-            <button className="zoom-share-mini-btn" onClick={handleToggleMute}>
-              {isMuted ? <MicOff size={14} color="#ff5c5c" /> : <Mic size={14} color="#23d959" />}
-              <span>{isMuted ? (isArabic ? 'إلغاء الكتم' : 'Unmute') : (isArabic ? 'كتم' : 'Mute')}</span>
-            </button>
-            <button className="zoom-share-mini-btn" onClick={handleToggleVideo}>
-              {isVideoOff ? <VideoOff size={14} color="#ff5c5c" /> : <Video size={14} />}
-              <span>{isVideoOff ? (isArabic ? 'تشغيل الفيديو' : 'Start Video') : (isArabic ? 'إيقاف الفيديو' : 'Stop Video')}</span>
-            </button>
-            <button
-              className={`zoom-share-mini-btn ${activeStageTool === 'whiteboard' ? 'active' : ''}`}
-              onClick={() => setActiveStageTool(activeStageTool === 'whiteboard' ? null : 'whiteboard')}
-            >
-              <Edit3 size={14} />
-              <span>{isArabic ? 'السبورة' : 'Whiteboard'}</span>
-            </button>
-            <button
-              className={`zoom-share-mini-btn ${activeStageTool === 'soroban' ? 'active' : ''}`}
-              onClick={() => setActiveStageTool(activeStageTool === 'soroban' ? null : 'soroban')}
-            >
-              <span>🧮</span>
-              <span>{isArabic ? 'العداد والمسائل' : 'Soroban & Math'}</span>
-            </button>
-            <button className="zoom-share-mini-btn" onClick={handleTriggerPiP}>
-              <ExternalLink size={14} />
-              <span>{isArabic ? 'كاميرا عائمة على سطح المكتب' : 'Float Camera on Desktop'}</span>
-            </button>
-          </div>
-        </div>
+        </header>
       )}
-
-      {/* ====================================================================
-          1. ZOOM TOP HEADER BAR
-          ==================================================================== */}
-      <header className="zoom-top-bar">
-        <div className="zoom-top-left">
-          <button
-            className="zoom-top-btn"
-            onClick={() => handleLeaveMeeting(false)}
-            title={isArabic ? 'العودة للوحة التحكم' : 'Back to Dashboard'}
-          >
-            <ArrowLeft size={14} style={{ transform: isArabic ? 'scaleX(-1)' : 'none' }} />
-            <span>{isArabic ? 'لوحة التحكم' : 'Dashboard'}</span>
-          </button>
-
-          <button
-            className="zoom-shield-btn"
-            onClick={() => setShowInfoPopover(!showInfoPopover)}
-            title={isArabic ? 'معلومات الحصة والأمان' : 'Meeting Information & Security'}
-          >
-            <Shield size={15} />
-          </button>
-
-          <div className="zoom-live-pill">
-            <span className="zoom-live-dot"></span>
-            <span>HEROTALK</span>
-          </div>
-
-          <span className="zoom-meeting-title">
-            {isArabic ? `غرفة ${userName}` : `${userName}'s Classroom`}
-          </span>
-
-          <span className="zoom-timer-badge">{formatDuration(elapsedSeconds)}</span>
-
-          <button className="zoom-top-btn" onClick={handleCopyInvite}>
-            {copied ? <Check size={13} color="#23d959" /> : <Copy size={13} />}
-            <span>{copied ? (isArabic ? 'تم نسخ الرابط!' : 'Copied!') : (isArabic ? 'نسخ رابط الدعوة' : 'Copy Invite Link')}</span>
-          </button>
-
-          <button className="zoom-top-btn whatsapp-invite" onClick={handleWhatsAppInvite}>
-            <Share2 size={13} />
-            <span>{isArabic ? 'دعوة واتساب' : 'Invite WhatsApp'}</span>
-          </button>
-        </div>
-
-        <div className="zoom-top-right">
-          <button
-            className="zoom-top-btn"
-            onClick={() => setViewMode(viewMode === 'speaker' ? 'gallery' : 'speaker')}
-          >
-            <LayoutGrid size={14} />
-            <span>
-              {viewMode === 'speaker'
-                ? (isArabic ? 'طريقة العرض: المتحدث' : 'View: Speaker')
-                : (isArabic ? 'طريقة العرض: المعرض' : 'View: Gallery')}
-            </span>
-          </button>
-
-          <button className="zoom-top-btn" onClick={toggleFullscreen} title="Fullscreen">
-            {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-          </button>
-        </div>
-
-        {/* Zoom Meeting Info Popover */}
-        {showInfoPopover && (
-          <div className="zoom-info-popover">
-            <h4>{isArabic ? 'معلومات حصة HeroTalk' : 'HeroTalk Meeting Info'}</h4>
-            <div className="zoom-info-row">
-              <span>{isArabic ? 'المضيف:' : 'Host:'}</span>
-              <strong>{userName}</strong>
-            </div>
-            <div className="zoom-info-row">
-              <span>{isArabic ? 'رمز الغرفة:' : 'Room Code:'}</span>
-              <strong>{roomName}</strong>
-            </div>
-            <div className="zoom-info-row">
-              <span>{isArabic ? 'التشفير:' : 'Encryption:'}</span>
-              <strong style={{ color: '#23d959' }}>{isArabic ? 'مفعل (WebRTC P2P)' : 'Enabled (WebRTC P2P)'}</strong>
-            </div>
-            <button
-              className="zoom-sidebar-btn"
-              style={{ width: '100%', marginTop: '8px' }}
-              onClick={handleCopyInvite}
-            >
-              {copied ? <Check size={14} /> : <Copy size={14} />}
-              <span>{copied ? (isArabic ? 'تم النسخ!' : 'Link Copied!') : (isArabic ? 'نسخ رابط الانضمام' : 'Copy Join Link')}</span>
-            </button>
-          </div>
-        )}
-      </header>
 
       {/* ====================================================================
           2. MAIN ZOOM STAGE (100% FULL SCREEN FIRST PAGE!)
@@ -1231,45 +1718,32 @@ export default function LiveClassroom() {
             </div>
           ) : isScreenSharing ? (
             /* ==================================================================
-               CASE B: PRESENTER IS SHARING SCREEN — ZERO RECURSIVE MIRROR!
-               Just like Zoom, we NEVER render the local screen video back onto
-               the presenter's screen so there is NEVER an infinite mirror!
+               CASE B: PRESENTER IS SHARING SCREEN — DIRECT LIVE STAGE + ANNOTATE
+               Directly displays what is open on the shared screen/desktop with
+               green Zoom border & full-screen interactive Annotation canvas!
                ================================================================== */
-            <div className="zoom-desktop-share-mode">
-              <div className="zoom-share-clean-card">
-                <div className="zoom-share-active-icon">
-                  <Monitor size={32} />
-                </div>
-                <h2>
-                  {isArabic
-                    ? '🟢 أنت تشارك شاشتك الآن بنجاح (بدون تكرار الشاشة!)'
-                    : '🟢 Your Screen is Live for Students (Zero Screen Mirror!)'}
-                </h2>
-                <p>
-                  {isArabic
-                    ? 'تماماً مثل Zoom: لا يتم عرض شاشة داخل شاشة أبداً. يمكنك الآن تصغير المتصفح (—) والانتقال لسطح المكتب أو أي برنامج على جهازك للشرح بحرية، أو فتح السبورة والعداد من الأزرار التالية:'
-                    : 'Just like Zoom: your screen is shared cleanly without infinite screen-in-screen mirroring. Minimize this browser window (—) to work directly on your Desktop, or launch a teaching tool below:'}
-                </p>
-
-                <div className="zoom-share-quick-actions">
-                  <button className="zoom-share-action-pill" onClick={() => setActiveStageTool('whiteboard')}>
-                    <Edit3 size={16} />
-                    <span>{isArabic ? 'فتح السبورة البيضاء' : 'Open Whiteboard'}</span>
-                  </button>
-                  <button className="zoom-share-action-pill" onClick={() => setActiveStageTool('soroban')}>
-                    <span>🧮</span>
-                    <span>{isArabic ? 'فتح العداد والمسائل' : 'Open Soroban Abacus'}</span>
-                  </button>
-                  <button className="zoom-share-action-pill" onClick={handleTriggerPiP}>
-                    <ExternalLink size={16} />
-                    <span>{isArabic ? 'تثبيت الكاميرا فوق سطح المكتب' : 'Float Camera on Desktop (PiP)'}</span>
-                  </button>
-                  <button className="zoom-share-action-pill stop-red" onClick={handleStopScreenShare}>
-                    <Square size={15} fill="#ffffff" />
-                    <span>{isArabic ? 'إيقاف مشاركة الشاشة' : 'Stop Share'}</span>
-                  </button>
-                </div>
-              </div>
+            <div className="zoom-live-share-stage">
+              <canvas
+                ref={sharedSurfaceCanvasRef}
+                width={1920}
+                height={1080}
+                className="zoom-shared-surface-canvas"
+              />
+              <canvas
+                ref={annotateCanvasRef}
+                width={1920}
+                height={1080}
+                className={`zoom-annotation-overlay-canvas ${
+                  isAnnotating && annotateTool !== 'mouse' ? 'drawing-enabled' : ''
+                }`}
+                onMouseDown={handleAnnotateStart}
+                onMouseMove={handleAnnotateMove}
+                onMouseUp={handleAnnotateEnd}
+                onMouseLeave={handleAnnotateEnd}
+                onTouchStart={handleAnnotateStart}
+                onTouchMove={handleAnnotateMove}
+                onTouchEnd={handleAnnotateEnd}
+              />
             </div>
           ) : remoteScreenStream ? (
             /* ==================================================================
@@ -1281,6 +1755,12 @@ export default function LiveClassroom() {
                 autoPlay
                 playsInline
                 className="zoom-video-element screen-fit"
+              />
+              <canvas
+                ref={remoteAnnotateCanvasRef}
+                width={1920}
+                height={1080}
+                className="zoom-annotation-overlay-canvas"
               />
               <div className="zoom-tile-nametag">
                 <Monitor size={14} color="#23d959" />
@@ -1404,38 +1884,55 @@ export default function LiveClassroom() {
             </>
           )}
 
-          {/* Floating Corner Camera Box with 3 Zoom Size/Display Options */}
+          {/* ==================================================================
+              DRAGGABLE FLOATING CAMERA BOX WITH 3 ZOOM SIZE OPTIONS (—, ▫, ☷)
+              ================================================================== */}
           {(isScreenSharing || activeStageTool || remoteScreenStream) && (
-            <div className={`zoom-floating-corner-cam mode-${floatingCamMode}`}>
-              {/* Header Bar with 3 Zoom Size Options */}
-              <div className="zoom-float-cam-header">
+            <div
+              className={`zoom-floating-corner-cam mode-${floatingCamMode}`}
+              style={
+                camBoxPos.x !== null && camBoxPos.y !== null
+                  ? { left: `${camBoxPos.x}px`, top: `${camBoxPos.y}px`, right: 'auto', bottom: 'auto' }
+                  : undefined
+              }
+            >
+              {/* Single Sleek Header Bar with 3 Zoom Size Options */}
+              <div
+                className="zoom-float-cam-header"
+                onMouseDown={handleCamDragStart}
+                onTouchStart={handleCamDragStart}
+              >
                 <div className="zoom-float-cam-drag-title">
-                  <span className="zoom-live-dot" style={{ width: 6, height: 6 }}></span>
+                  {floatingCamMode === 'minimized' ? (
+                    isMuted ? <MicOff size={13} color="#ff5c5c" /> : <Mic size={13} color="#23d959" />
+                  ) : (
+                    <span className="zoom-live-dot" style={{ width: 6, height: 6 }}></span>
+                  )}
                   <span>
                     {floatingCamMode === 'minimized'
-                      ? userName
-                      : (floatingCamMode === 'grid'
-                          ? (isArabic ? 'الكاميرات' : 'Cameras')
-                          : userName)}
+                      ? `${isArabic ? 'المتحدث:' : 'Talking:'} ${userName}`
+                      : floatingCamMode === 'grid'
+                      ? (isArabic ? 'الكاميرات' : 'Cameras')
+                      : userName}
                   </span>
                 </div>
                 <div className="zoom-float-cam-controls">
-                  {/* Option 1: Minimize volume / size of the box */}
+                  {/* Option 1: Minimize box volume (single compact header bar) */}
                   <button
                     type="button"
                     className={`zoom-float-ctrl-btn ${floatingCamMode === 'minimized' ? 'active' : ''}`}
                     onClick={() => setFloatingCamMode('minimized')}
-                    title={isArabic ? 'تصغير حجم الصندوق (إخفاء الفيديو)' : 'Minimize box volume (hide video)'}
+                    title={isArabic ? 'تصغير حجم الصندوق' : 'Hide Thumbnail Video'}
                   >
                     <Minus size={12} strokeWidth={3} />
                   </button>
 
-                  {/* Option 2: Single camera box (Speaker) */}
+                  {/* Option 2: Single active speaker camera */}
                   <button
                     type="button"
                     className={`zoom-float-ctrl-btn ${floatingCamMode === 'speaker' ? 'active' : ''}`}
                     onClick={() => setFloatingCamMode('speaker')}
-                    title={isArabic ? 'عرض الكاميرا الفردية' : 'Single speaker video'}
+                    title={isArabic ? 'عرض كاميرا المتحدث' : 'Show Active Speaker Video'}
                   >
                     <Square size={11} strokeWidth={2.5} />
                   </button>
@@ -1445,23 +1942,15 @@ export default function LiveClassroom() {
                     type="button"
                     className={`zoom-float-ctrl-btn ${floatingCamMode === 'grid' ? 'active' : ''}`}
                     onClick={() => setFloatingCamMode('grid')}
-                    title={isArabic ? 'عرض كاميرات المشاركين' : 'Show participants grid'}
+                    title={isArabic ? 'عرض شبكة كاميرات المشاركين' : 'Show Thumbnail Video Grid'}
                   >
                     <LayoutGrid size={11} strokeWidth={2.5} />
                   </button>
                 </div>
               </div>
 
-              {/* Box Body depending on selected mode */}
-              {floatingCamMode === 'minimized' ? (
-                <div className="zoom-float-minimized-body">
-                  {isMuted ? <MicOff size={13} color="#ff5c5c" /> : <Mic size={13} color="#23d959" />}
-                  <span className="zoom-float-minimized-name">{userName}</span>
-                  {remoteParticipantList.length > 0 && (
-                    <span className="zoom-float-minimized-badge">+{remoteParticipantList.length}</span>
-                  )}
-                </div>
-              ) : floatingCamMode === 'grid' ? (
+              {/* Box Body for Grid or Speaker mode (Minimized mode has no body row so it never clips!) */}
+              {floatingCamMode === 'grid' && (
                 <div className="zoom-float-grid-body">
                   {/* Local Camera Tile */}
                   <div className="zoom-float-grid-tile">
@@ -1507,8 +1996,9 @@ export default function LiveClassroom() {
                     );
                   })}
                 </div>
-              ) : (
-                /* Standard Single Camera Box (Speaker Mode) */
+              )}
+
+              {floatingCamMode === 'speaker' && (
                 <div className="zoom-float-speaker-body">
                   {!isVideoOff ? (
                     <video
@@ -1663,173 +2153,175 @@ export default function LiveClassroom() {
       </div>
 
       {/* ====================================================================
-          3. ZOOM BOTTOM CONTROL BAR (WITH BRIGHT GREEN SHARE BUTTON IN CENTER!)
+          3. ZOOM BOTTOM CONTROL BAR (Hidden during Screen Share — moves to Top Floating Dock!)
           ==================================================================== */}
-      <footer className="zoom-bottom-toolbar">
-        {/* Left: Audio & Video Controls */}
-        <div className="zoom-toolbar-left">
-          <button
-            className={`zoom-ctrl-btn ${isMuted ? 'danger-state' : ''}`}
-            onClick={handleToggleMute}
-          >
-            <div className="zoom-ctrl-icon-wrap">
-              {isMuted ? <MicOff size={21} color="#ff5c5c" /> : <Mic size={21} />}
-            </div>
-            <span className="zoom-ctrl-label">
-              {isMuted ? (isArabic ? 'إلغاء الكتم' : 'Unmute') : (isArabic ? 'كتم الصوت' : 'Mute')}
-            </span>
-          </button>
-
-          <button
-            className={`zoom-ctrl-btn ${isVideoOff ? 'danger-state' : ''}`}
-            onClick={handleToggleVideo}
-          >
-            <div className="zoom-ctrl-icon-wrap">
-              {isVideoOff ? <VideoOff size={21} color="#ff5c5c" /> : <Video size={21} />}
-            </div>
-            <span className="zoom-ctrl-label">
-              {isVideoOff ? (isArabic ? 'تشغيل الفيديو' : 'Start Video') : (isArabic ? 'إيقاف الفيديو' : 'Stop Video')}
-            </span>
-          </button>
-        </div>
-
-        {/* Center: Security, Participants, Chat, BRIGHT GREEN SHARE SCREEN, Whiteboard, Soroban, Reactions */}
-        <div className="zoom-toolbar-center">
-          {isTeacher && (
+      {!isScreenSharing && (
+        <footer className="zoom-bottom-toolbar">
+          {/* Left: Audio & Video Controls */}
+          <div className="zoom-toolbar-left">
             <button
-              className={`zoom-ctrl-btn ${roomLocked ? 'active-panel' : ''}`}
-              onClick={() => setRoomLocked(!roomLocked)}
+              className={`zoom-ctrl-btn ${isMuted ? 'danger-state' : ''}`}
+              onClick={handleToggleMute}
             >
               <div className="zoom-ctrl-icon-wrap">
-                <Shield size={20} />
+                {isMuted ? <MicOff size={21} color="#ff5c5c" /> : <Mic size={21} />}
               </div>
-              <span className="zoom-ctrl-label">{isArabic ? 'الأمان' : 'Security'}</span>
+              <span className="zoom-ctrl-label">
+                {isMuted ? (isArabic ? 'إلغاء الكتم' : 'Unmute') : (isArabic ? 'كتم الصوت' : 'Mute')}
+              </span>
             </button>
-          )}
 
-          <button
-            className={`zoom-ctrl-btn ${rightSidebar === 'participants' ? 'active-panel' : ''}`}
-            onClick={() => setRightSidebar(rightSidebar === 'participants' ? null : 'participants')}
-          >
-            <div className="zoom-ctrl-icon-wrap">
-              <Users size={20} />
-              <span className="zoom-ctrl-badge">{totalParticipantCount}</span>
-            </div>
-            <span className="zoom-ctrl-label">{isArabic ? 'المشاركون' : 'Participants'}</span>
-          </button>
-
-          <button
-            className={`zoom-ctrl-btn ${rightSidebar === 'chat' ? 'active-panel' : ''}`}
-            onClick={() => {
-              setUnreadChatCount(0);
-              setRightSidebar(rightSidebar === 'chat' ? null : 'chat');
-            }}
-          >
-            <div className="zoom-ctrl-icon-wrap">
-              <MessageSquare size={20} />
-              {unreadChatCount > 0 && (
-                <span className="zoom-ctrl-badge unread">{unreadChatCount}</span>
-              )}
-            </div>
-            <span className="zoom-ctrl-label">{isArabic ? 'المحادثة' : 'Chat'}</span>
-          </button>
-
-          {/* ================================================================
-              CENTER BRIGHT GREEN "SHARE SCREEN" BUTTON (EXACT ZOOM PLACE & COLOR)
-              ================================================================ */}
-          <button
-            className={`zoom-ctrl-btn zoom-share-screen-btn ${isScreenSharing ? 'sharing-active' : ''}`}
-            onClick={handleToggleScreenShare}
-          >
-            <div className="zoom-ctrl-icon-wrap">
-              {isScreenSharing ? <Square size={20} fill="#ffffff" /> : <Monitor size={21} strokeWidth={2.4} />}
-            </div>
-            <span className="zoom-ctrl-label">
-              {isScreenSharing
-                ? (isArabic ? 'إيقاف المشاركة' : 'Stop Share')
-                : (isArabic ? 'مشاركة الشاشة' : 'Share Screen')}
-            </span>
-          </button>
-
-          <button
-            className={`zoom-ctrl-btn ${activeStageTool === 'whiteboard' ? 'active-panel' : ''}`}
-            onClick={() => setActiveStageTool(activeStageTool === 'whiteboard' ? null : 'whiteboard')}
-          >
-            <div className="zoom-ctrl-icon-wrap">
-              <Edit3 size={20} />
-            </div>
-            <span className="zoom-ctrl-label">{isArabic ? 'السبورة' : 'Whiteboard'}</span>
-          </button>
-
-          <button
-            className={`zoom-ctrl-btn ${activeStageTool === 'soroban' ? 'active-panel' : ''}`}
-            onClick={() => setActiveStageTool(activeStageTool === 'soroban' ? null : 'soroban')}
-          >
-            <div className="zoom-ctrl-icon-wrap">
-              <span style={{ fontSize: '19px' }}>🧮</span>
-            </div>
-            <span className="zoom-ctrl-label">{isArabic ? 'العداد' : 'Soroban'}</span>
-          </button>
-
-          <button
-            className={`zoom-ctrl-btn ${showReactionsPopover ? 'active-panel' : ''}`}
-            onClick={() => setShowReactionsPopover(!showReactionsPopover)}
-          >
-            <div className="zoom-ctrl-icon-wrap">
-              <Smile size={20} />
-            </div>
-            <span className="zoom-ctrl-label">{isArabic ? 'تفاعلات' : 'Reactions'}</span>
-          </button>
-        </div>
-
-        {/* Right: Zoom Red "End" Button */}
-        <div className="zoom-toolbar-right">
-          <button
-            className="zoom-end-btn"
-            onClick={() => setShowEndPopover(!showEndPopover)}
-          >
-            {isTeacher ? (isArabic ? 'إنهاء' : 'End') : (isArabic ? 'مغادرة' : 'Leave')}
-          </button>
-        </div>
-
-        {/* Reactions Popover */}
-        {showReactionsPopover && (
-          <div className="zoom-reactions-popover">
-            <div className="zoom-emoji-row">
-              {['👏', '👍', '❤️', '😂', '😮', '🎉'].map((em) => (
-                <button key={em} className="zoom-emoji-btn" onClick={() => handleSendReaction(em)}>
-                  {em}
-                </button>
-              ))}
-            </div>
             <button
-              className={`zoom-raise-hand-btn ${handRaised ? 'active' : ''}`}
-              onClick={handleToggleHand}
+              className={`zoom-ctrl-btn ${isVideoOff ? 'danger-state' : ''}`}
+              onClick={handleToggleVideo}
             >
-              <span>✋</span>
-              <span>
-                {handRaised
-                  ? (isArabic ? 'خفض اليد (Lower Hand)' : 'Lower Hand')
-                  : (isArabic ? 'رفع اليد (Raise Hand)' : 'Raise Hand')}
+              <div className="zoom-ctrl-icon-wrap">
+                {isVideoOff ? <VideoOff size={21} color="#ff5c5c" /> : <Video size={21} />}
+              </div>
+              <span className="zoom-ctrl-label">
+                {isVideoOff ? (isArabic ? 'تشغيل الفيديو' : 'Start Video') : (isArabic ? 'إيقاف الفيديو' : 'Stop Video')}
               </span>
             </button>
           </div>
-        )}
 
-        {/* End Meeting Confirmation Popover */}
-        {showEndPopover && (
-          <div className="zoom-end-popover">
+          {/* Center: Security, Participants, Chat, BRIGHT GREEN SHARE SCREEN, Whiteboard, Soroban, Reactions */}
+          <div className="zoom-toolbar-center">
             {isTeacher && (
-              <button className="zoom-end-option-all" onClick={() => handleLeaveMeeting(true)}>
-                {isArabic ? 'إنهاء الحصة للجميع' : 'End Meeting for All'}
+              <button
+                className={`zoom-ctrl-btn ${roomLocked ? 'active-panel' : ''}`}
+                onClick={() => setRoomLocked(!roomLocked)}
+              >
+                <div className="zoom-ctrl-icon-wrap">
+                  <Shield size={20} />
+                </div>
+                <span className="zoom-ctrl-label">{isArabic ? 'الأمان' : 'Security'}</span>
               </button>
             )}
-            <button className="zoom-end-option-leave" onClick={() => handleLeaveMeeting(false)}>
-              {isArabic ? 'مغادرة الحصة' : 'Leave Meeting'}
+
+            <button
+              className={`zoom-ctrl-btn ${rightSidebar === 'participants' ? 'active-panel' : ''}`}
+              onClick={() => setRightSidebar(rightSidebar === 'participants' ? null : 'participants')}
+            >
+              <div className="zoom-ctrl-icon-wrap">
+                <Users size={20} />
+                <span className="zoom-ctrl-badge">{totalParticipantCount}</span>
+              </div>
+              <span className="zoom-ctrl-label">{isArabic ? 'المشاركون' : 'Participants'}</span>
+            </button>
+
+            <button
+              className={`zoom-ctrl-btn ${rightSidebar === 'chat' ? 'active-panel' : ''}`}
+              onClick={() => {
+                setUnreadChatCount(0);
+                setRightSidebar(rightSidebar === 'chat' ? null : 'chat');
+              }}
+            >
+              <div className="zoom-ctrl-icon-wrap">
+                <MessageSquare size={20} />
+                {unreadChatCount > 0 && (
+                  <span className="zoom-ctrl-badge unread">{unreadChatCount}</span>
+                )}
+              </div>
+              <span className="zoom-ctrl-label">{isArabic ? 'المحادثة' : 'Chat'}</span>
+            </button>
+
+            {/* ================================================================
+                CENTER BRIGHT GREEN "SHARE SCREEN" BUTTON (EXACT ZOOM PLACE & COLOR)
+                ================================================================ */}
+            <button
+              className={`zoom-ctrl-btn zoom-share-screen-btn ${isScreenSharing ? 'sharing-active' : ''}`}
+              onClick={handleToggleScreenShare}
+            >
+              <div className="zoom-ctrl-icon-wrap">
+                {isScreenSharing ? <Square size={20} fill="#ffffff" /> : <Monitor size={21} strokeWidth={2.4} />}
+              </div>
+              <span className="zoom-ctrl-label">
+                {isScreenSharing
+                  ? (isArabic ? 'إيقاف المشاركة' : 'Stop Share')
+                  : (isArabic ? 'مشاركة الشاشة' : 'Share Screen')}
+              </span>
+            </button>
+
+            <button
+              className={`zoom-ctrl-btn ${activeStageTool === 'whiteboard' ? 'active-panel' : ''}`}
+              onClick={() => setActiveStageTool(activeStageTool === 'whiteboard' ? null : 'whiteboard')}
+            >
+              <div className="zoom-ctrl-icon-wrap">
+                <Edit3 size={20} />
+              </div>
+              <span className="zoom-ctrl-label">{isArabic ? 'السبورة' : 'Whiteboard'}</span>
+            </button>
+
+            <button
+              className={`zoom-ctrl-btn ${activeStageTool === 'soroban' ? 'active-panel' : ''}`}
+              onClick={() => setActiveStageTool(activeStageTool === 'soroban' ? null : 'soroban')}
+            >
+              <div className="zoom-ctrl-icon-wrap">
+                <span style={{ fontSize: '19px' }}>🧮</span>
+              </div>
+              <span className="zoom-ctrl-label">{isArabic ? 'العداد' : 'Soroban'}</span>
+            </button>
+
+            <button
+              className={`zoom-ctrl-btn ${showReactionsPopover ? 'active-panel' : ''}`}
+              onClick={() => setShowReactionsPopover(!showReactionsPopover)}
+            >
+              <div className="zoom-ctrl-icon-wrap">
+                <Smile size={20} />
+              </div>
+              <span className="zoom-ctrl-label">{isArabic ? 'تفاعلات' : 'Reactions'}</span>
             </button>
           </div>
-        )}
-      </footer>
+
+          {/* Right: Zoom Red "End" Button */}
+          <div className="zoom-toolbar-right">
+            <button
+              className="zoom-end-btn"
+              onClick={() => setShowEndPopover(!showEndPopover)}
+            >
+              {isTeacher ? (isArabic ? 'إنهاء' : 'End') : (isArabic ? 'مغادرة' : 'Leave')}
+            </button>
+          </div>
+
+          {/* Reactions Popover */}
+          {showReactionsPopover && (
+            <div className="zoom-reactions-popover">
+              <div className="zoom-emoji-row">
+                {['👏', '👍', '❤️', '😂', '😮', '🎉'].map((em) => (
+                  <button key={em} className="zoom-emoji-btn" onClick={() => handleSendReaction(em)}>
+                    {em}
+                  </button>
+                ))}
+              </div>
+              <button
+                className={`zoom-raise-hand-btn ${handRaised ? 'active' : ''}`}
+                onClick={handleToggleHand}
+              >
+                <span>✋</span>
+                <span>
+                  {handRaised
+                    ? (isArabic ? 'خفض اليد (Lower Hand)' : 'Lower Hand')
+                    : (isArabic ? 'رفع اليد (Raise Hand)' : 'Raise Hand')}
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* End Meeting Confirmation Popover */}
+          {showEndPopover && (
+            <div className="zoom-end-popover">
+              {isTeacher && (
+                <button className="zoom-end-option-all" onClick={() => handleLeaveMeeting(true)}>
+                  {isArabic ? 'إنهاء الحصة للجميع' : 'End Meeting for All'}
+                </button>
+              )}
+              <button className="zoom-end-option-leave" onClick={() => handleLeaveMeeting(false)}>
+                {isArabic ? 'مغادرة الحصة' : 'Leave Meeting'}
+              </button>
+            </div>
+          )}
+        </footer>
+      )}
     </div>
   );
 }

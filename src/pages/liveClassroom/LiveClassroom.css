@@ -178,18 +178,18 @@
 }
 
 /* ==========================================================================
-   2. ZOOM FLOATING TOP SCREEN-SHARE BAR (Active when sharing screen!)
+   2. ZOOM FLOATING TOP SCREEN-SHARE BAR & ANNOTATE BAR (EXACT ZOOM LAYOUT!)
    ========================================================================== */
 .zoom-floating-share-bar-wrapper {
   position: fixed;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 200;
+  z-index: 250;
   display: flex;
   flex-direction: column;
   align-items: center;
-  animation: zoomSlideDown 0.25s ease;
+  animation: zoomSlideDown 0.22s ease;
 }
 
 @keyframes zoomSlideDown {
@@ -197,10 +197,104 @@
   to { transform: translate(-50%, 0); opacity: 1; }
 }
 
+/* Top Dark Zoom Control Dock during Screen Share */
+.zoom-share-main-dock {
+  background: rgba(22, 25, 30, 0.98);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.75);
+}
+
+.zoom-dock-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #e2e8f0;
+  min-width: 64px;
+  height: 50px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.zoom-dock-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.zoom-dock-btn.active,
+.zoom-dock-btn.active-tool {
+  background: rgba(14, 113, 235, 0.25);
+  border-color: rgba(14, 113, 235, 0.55);
+  color: #60a5fa;
+}
+
+.zoom-dock-btn.annotate-active {
+  background: rgba(35, 217, 89, 0.22);
+  border-color: #23d959;
+  color: #4ade80;
+}
+
+.zoom-dock-btn.green-share-accent,
+.zoom-dock-btn.new-share-green {
+  color: #23d959;
+}
+
+.zoom-dock-btn.danger,
+.zoom-dock-btn.danger-text {
+  color: #ff5c5c;
+}
+
+.zoom-dock-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-dock-badge {
+  position: absolute;
+  top: -6px;
+  right: -9px;
+  background: #0e71eb;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 9px;
+  min-width: 15px;
+  text-align: center;
+}
+
+.zoom-dock-btn span {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.zoom-dock-label {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Attached Green "You are screen sharing" + Red "Stop Share" Strip */
 .zoom-share-status-strip {
   display: flex;
   align-items: center;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.65);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
   border-radius: 0 0 10px 10px;
   overflow: hidden;
 }
@@ -210,44 +304,153 @@
   color: #062811;
   font-weight: 800;
   font-size: 13px;
-  padding: 7px 16px;
+  padding: 6px 14px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .zoom-share-preview-toggle-btn {
-  background: rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.28);
   color: #062811;
-  border-radius: 4px;
+  border-radius: 5px;
   padding: 2px 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
-  margin-left: 6px;
+  margin-left: 4px;
 }
 
 [dir="rtl"] .zoom-share-preview-toggle-btn {
   margin-left: 0;
-  margin-right: 6px;
+  margin-right: 4px;
 }
 
 .zoom-share-preview-toggle-btn:hover,
 .zoom-share-preview-toggle-btn.active {
   background: rgba(0, 0, 0, 0.35);
   color: #000000;
-  transform: scale(1.08);
+  transform: scale(1.06);
+}
+
+.zoom-share-stop-btn {
+  background: #e02828;
+  color: #ffffff;
+  border: none;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.zoom-share-stop-btn:hover {
+  background: #c81e1e;
+}
+
+/* Zoom Annotation Sub-Toolbar (Appears when clicking "Annotate" in Floating Bar!) */
+.zoom-annotate-toolbar {
+  margin-top: 6px;
+  background: rgba(24, 28, 34, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75);
+}
+
+.zoom-ann-tool-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.zoom-ann-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.zoom-ann-tool-btn.active {
+  background: #0e71eb;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.zoom-ann-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.zoom-ann-colors {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zoom-ann-color-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.zoom-ann-color-dot:hover {
+  transform: scale(1.15);
+}
+
+.zoom-ann-color-dot.active {
+  transform: scale(1.22);
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+.zoom-ann-close-btn {
+  background: rgba(224, 40, 40, 0.18);
+  border: 1px solid rgba(224, 40, 40, 0.4);
+  color: #ff5c5c;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 4px;
+}
+
+[dir="rtl"] .zoom-ann-close-btn {
+  margin-left: 0;
+  margin-right: 4px;
+}
+
+.zoom-ann-close-btn:hover {
+  background: #e02828;
+  color: #ffffff;
 }
 
 /* Dropdown Window: What Participants are Viewing on Screen */
 .zoom-screen-preview-dropdown {
-  position: absolute;
-  top: 48px;
-  left: 50%;
-  transform: translateX(-50%);
+  margin-top: 6px;
   width: 380px;
   max-width: 90vw;
   background: #181b20;
@@ -256,12 +459,12 @@
   overflow: hidden;
   box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(35, 217, 89, 0.25);
   animation: zoomPreviewPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 220;
+  z-index: 260;
 }
 
 @keyframes zoomPreviewPop {
-  from { opacity: 0; transform: translate(-50%, -8px) scale(0.96); }
-  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .zoom-screen-preview-header {
@@ -325,59 +528,6 @@
   gap: 6px;
 }
 
-.zoom-share-stop-btn {
-  background: #e02828;
-  color: #ffffff;
-  border: none;
-  font-weight: 800;
-  font-size: 13px;
-  padding: 7px 16px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.zoom-share-stop-btn:hover {
-  background: #c81e1e;
-}
-
-.zoom-share-mini-toolbar {
-  background: rgba(24, 26, 29, 0.96);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  margin-top: 4px;
-  padding: 5px 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-}
-
-.zoom-share-mini-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #f1f5f9;
-  border-radius: 7px;
-  padding: 5px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.zoom-share-mini-btn:hover,
-.zoom-share-mini-btn.active {
-  background: #0e71eb;
-  border-color: #0e71eb;
-  color: #ffffff;
-}
-
 /* ==========================================================================
    3. MAIN ZOOM STAGE & VIDEO GRID (100% FULL SCREEN FIRST PAGE!)
    ========================================================================== */
@@ -400,6 +550,10 @@
   overflow: hidden;
   width: 100%;
   height: 100%;
+}
+
+.zoom-stage-area.sharing-stage-full {
+  padding: 0;
 }
 
 /* Speaker View Filmstrip for Additional Participants */
@@ -583,117 +737,62 @@
   font-weight: 700;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   z-index: 12;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* ==========================================================================
-   4. PRESENTER SCREEN-SHARE DESKTOP VIEW (ZERO RECURSIVE MIRROR!)
+   4. LIVE SCREEN SHARE CANVAS & TRANSPARENT ANNOTATION OVERLAY
    ========================================================================== */
-.zoom-desktop-share-mode {
+.zoom-live-share-stage {
   flex: 1;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, #1e242b 0%, #121519 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  background: #0d1015;
+  border: 3px solid #23d959;
   position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.zoom-share-clean-card {
-  background: rgba(30, 35, 42, 0.92);
-  border: 1px solid rgba(35, 217, 89, 0.4);
-  border-radius: 18px;
-  padding: 28px 36px;
-  max-width: 620px;
+.zoom-shared-surface-canvas {
   width: 100%;
-  text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 40px rgba(35, 217, 89, 0.12);
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
-.zoom-share-active-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  background: rgba(35, 217, 89, 0.16);
-  border: 2px solid #23d959;
-  color: #23d959;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px auto;
+.zoom-annotation-overlay-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 30;
+  pointer-events: none;
 }
 
-.zoom-share-clean-card h2 {
-  margin: 0 0 8px 0;
-  font-size: 22px;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.zoom-share-clean-card p {
-  margin: 0 0 20px 0;
-  font-size: 14.5px;
-  color: #cbd5e1;
-  line-height: 1.55;
-}
-
-.zoom-share-quick-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.zoom-share-action-pill {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #f8fafc;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: 13.5px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.zoom-share-action-pill:hover {
-  background: #0e71eb;
-  border-color: #0e71eb;
-  transform: translateY(-1px);
-}
-
-.zoom-share-action-pill.stop-red {
-  background: #e02828;
-  border-color: #e02828;
-  color: #ffffff;
-}
-
-.zoom-share-action-pill.stop-red:hover {
-  background: #c81e1e;
+.zoom-annotation-overlay-canvas.drawing-enabled {
+  pointer-events: auto;
+  cursor: crosshair;
 }
 
 /* ==========================================================================
-   Floating Camera Box (with 3 Zoom Size/Display Options)
+   5. FLOATING CAMERA BOX (WITH 3 ZOOM SIZE OPTIONS — NO DUPLICATE NAME!)
    ========================================================================== */
 .zoom-floating-corner-cam {
   position: fixed;
-  top: 64px;
+  top: 72px;
   right: 20px;
   background: #181b20;
   border: 2px solid #23d959;
   border-radius: 12px;
   overflow: hidden;
-  z-index: 150;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
+  z-index: 210;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85);
   display: flex;
   flex-direction: column;
   transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.2s ease;
@@ -706,43 +805,48 @@
 
 /* Header with 3 Size Options */
 .zoom-float-cam-header {
-  height: 28px;
-  min-height: 28px;
-  background: rgba(18, 20, 24, 0.96);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  height: 32px;
+  min-height: 32px;
+  background: rgba(18, 20, 24, 0.98);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 8px;
+  padding: 0 10px;
+  cursor: grab;
   user-select: none;
+}
+
+.zoom-float-cam-header:active {
+  cursor: grabbing;
 }
 
 .zoom-float-cam-drag-title {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 11px;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 700;
-  color: #cbd5e1;
+  color: #f1f5f9;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 120px;
+  max-width: 130px;
 }
 
 .zoom-float-cam-controls {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .zoom-float-ctrl-btn {
-  background: transparent;
-  border: 1px solid transparent;
-  color: #94a3b8;
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -753,54 +857,31 @@
 
 .zoom-float-ctrl-btn:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .zoom-float-ctrl-btn.active {
   background: #0e71eb;
-  border-color: #0e71eb;
+  border-color: #3b82f6;
   color: #ffffff;
 }
 
-/* 1. Mode Minimized (Title only, no video box) */
+/* 1. Mode Minimized (Single Sleek Bar — NO duplicate row!) */
 .zoom-floating-corner-cam.mode-minimized {
   width: 220px;
-  height: 34px;
+  height: 36px;
   border-radius: 8px;
-  justify-content: center;
 }
 
-.zoom-float-minimized-body {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 8px;
+.zoom-floating-corner-cam.mode-minimized .zoom-float-cam-header {
   height: 100%;
-}
-
-.zoom-float-minimized-name {
-  font-size: 12px;
-  font-weight: 700;
-  color: #f1f5f9;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 120px;
-}
-
-.zoom-float-minimized-badge {
-  background: #0e71eb;
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 800;
-  padding: 1px 5px;
-  border-radius: 999px;
+  border-bottom: none;
 }
 
 /* 2. Mode Speaker (Standard Single Camera Box) */
 .zoom-floating-corner-cam.mode-speaker {
   width: 240px;
-  height: 170px;
+  height: 172px;
 }
 
 .zoom-float-speaker-body {
@@ -815,7 +896,7 @@
 
 /* 3. Mode Grid (Multiple Cameras) */
 .zoom-floating-corner-cam.mode-grid {
-  width: 280px;
+  width: 290px;
   max-height: 380px;
 }
 
@@ -823,8 +904,8 @@
   flex: 1;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 4px;
-  padding: 4px;
+  gap: 5px;
+  padding: 5px;
   background: #14171c;
   overflow-y: auto;
   max-height: 340px;
@@ -835,7 +916,7 @@
   border-radius: 6px;
   position: relative;
   overflow: hidden;
-  height: 90px;
+  height: 92px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -843,8 +924,8 @@
 }
 
 .zoom-avatar-circle.mini {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
   font-size: 14px;
 }
@@ -863,7 +944,7 @@
 }
 
 /* ==========================================================================
-   5. ZOOM BOTTOM CONTROL BAR (WITH CENTER GREEN SHARE BUTTON!)
+   6. ZOOM BOTTOM CONTROL BAR (WITH CENTER GREEN SHARE BUTTON!)
    ========================================================================== */
 .zoom-bottom-toolbar {
   height: 76px;
@@ -889,7 +970,6 @@
   gap: 8px;
 }
 
-/* Standard Zoom Control Button */
 .zoom-ctrl-btn {
   background: transparent;
   border: none;
@@ -955,9 +1035,7 @@
   letter-spacing: 0.1px;
 }
 
-/* ==========================================================================
-   THE ICONIC ZOOM GREEN "SHARE SCREEN" BUTTON (CENTER OF BOTTOM BAR)
-   ========================================================================== */
+/* THE ICONIC ZOOM GREEN "SHARE SCREEN" BUTTON (CENTER OF BOTTOM BAR) */
 .zoom-ctrl-btn.zoom-share-screen-btn {
   background: linear-gradient(135deg, #23d959 0%, #16a34a 100%);
   color: #04200c;
@@ -992,7 +1070,6 @@
   color: #ffffff;
 }
 
-/* Zoom Red "End" Button on Bottom-Right */
 .zoom-end-btn {
   background: #e02828;
   color: #ffffff;
@@ -1009,7 +1086,6 @@
   background: #c81e1e;
 }
 
-/* End Meeting Confirmation Popover */
 .zoom-end-popover {
   position: absolute;
   bottom: 84px;
@@ -1144,7 +1220,7 @@
 }
 
 /* ==========================================================================
-   6. ZOOM RIGHT SIDEBAR PANELS (Participants & Chat)
+   7. ZOOM RIGHT SIDEBAR PANELS (Participants & Chat)
    ========================================================================== */
 .zoom-right-sidebar {
   width: 330px;
@@ -1357,7 +1433,7 @@
 }
 
 /* ==========================================================================
-   7. INTEGRATED ZOOM WHITEBOARD & SOROBAN OVERLAY (ON DEMAND)
+   8. INTEGRATED ZOOM WHITEBOARD & SOROBAN OVERLAY (ON DEMAND)
    ========================================================================== */
 .zoom-tool-stage-overlay {
   flex: 1;
@@ -1441,8 +1517,8 @@
 }
 
 .zoom-color-dot {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
@@ -1450,7 +1526,7 @@
 
 .zoom-color-dot.active {
   border-color: #ffffff;
-  transform: scale(1.2);
+  transform: scale(1.18);
 }
 
 .zoom-wb-canvas-wrap {
@@ -1649,11 +1725,11 @@
   .zoom-meeting-title {
     display: none;
   }
-  .zoom-ctrl-btn {
-    min-width: 52px;
+  .zoom-ctrl-btn, .zoom-dock-btn {
+    min-width: 50px;
     padding: 4px 6px;
   }
-  .zoom-ctrl-label {
+  .zoom-ctrl-label, .zoom-dock-label {
     font-size: 10px;
   }
 }
