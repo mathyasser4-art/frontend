@@ -216,6 +216,115 @@
   gap: 8px;
 }
 
+.zoom-share-preview-toggle-btn {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  color: #062811;
+  border-radius: 4px;
+  padding: 2px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 6px;
+}
+
+[dir="rtl"] .zoom-share-preview-toggle-btn {
+  margin-left: 0;
+  margin-right: 6px;
+}
+
+.zoom-share-preview-toggle-btn:hover,
+.zoom-share-preview-toggle-btn.active {
+  background: rgba(0, 0, 0, 0.35);
+  color: #000000;
+  transform: scale(1.08);
+}
+
+/* Dropdown Window: What Participants are Viewing on Screen */
+.zoom-screen-preview-dropdown {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 380px;
+  max-width: 90vw;
+  background: #181b20;
+  border: 2px solid #23d959;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(35, 217, 89, 0.25);
+  animation: zoomPreviewPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 220;
+}
+
+@keyframes zoomPreviewPop {
+  from { opacity: 0; transform: translate(-50%, -8px) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.zoom-screen-preview-header {
+  padding: 8px 12px;
+  background: rgba(35, 217, 89, 0.14);
+  border-bottom: 1px solid rgba(35, 217, 89, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.zoom-preview-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #23d959;
+}
+
+.zoom-preview-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-preview-close-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.zoom-screen-preview-body {
+  width: 100%;
+  height: 215px;
+  background: #0d0e12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-screen-preview-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.zoom-screen-preview-footer {
+  padding: 6px 12px;
+  background: #111317;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .zoom-share-stop-btn {
   background: #e02828;
   color: #ffffff;
@@ -572,27 +681,185 @@
   background: #c81e1e;
 }
 
-/* Floating Mini Camera Corner Overlay during Screen Share or Tool Overlay */
+/* ==========================================================================
+   Floating Camera Box (with 3 Zoom Size/Display Options)
+   ========================================================================== */
 .zoom-floating-corner-cam {
   position: fixed;
   top: 64px;
   right: 20px;
-  width: 240px;
-  height: 144px;
-  background: #242424;
+  background: #181b20;
   border: 2px solid #23d959;
   border-radius: 12px;
   overflow: hidden;
   z-index: 150;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.2s ease;
 }
 
 [dir="rtl"] .zoom-floating-corner-cam {
   right: auto;
   left: 20px;
+}
+
+/* Header with 3 Size Options */
+.zoom-float-cam-header {
+  height: 28px;
+  min-height: 28px;
+  background: rgba(18, 20, 24, 0.96);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  user-select: none;
+}
+
+.zoom-float-cam-drag-title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.zoom-float-cam-controls {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.zoom-float-ctrl-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #94a3b8;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.zoom-float-ctrl-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.zoom-float-ctrl-btn.active {
+  background: #0e71eb;
+  border-color: #0e71eb;
+  color: #ffffff;
+}
+
+/* 1. Mode Minimized (Title only, no video box) */
+.zoom-floating-corner-cam.mode-minimized {
+  width: 220px;
+  height: 34px;
+  border-radius: 8px;
+  justify-content: center;
+}
+
+.zoom-float-minimized-body {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  height: 100%;
+}
+
+.zoom-float-minimized-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.zoom-float-minimized-badge {
+  background: #0e71eb;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 999px;
+}
+
+/* 2. Mode Speaker (Standard Single Camera Box) */
+.zoom-floating-corner-cam.mode-speaker {
+  width: 240px;
+  height: 170px;
+}
+
+.zoom-float-speaker-body {
+  flex: 1;
+  position: relative;
+  background: #242424;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 3. Mode Grid (Multiple Cameras) */
+.zoom-floating-corner-cam.mode-grid {
+  width: 280px;
+  max-height: 380px;
+}
+
+.zoom-float-grid-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  padding: 4px;
+  background: #14171c;
+  overflow-y: auto;
+  max-height: 340px;
+}
+
+.zoom-float-grid-tile {
+  background: #242424;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.zoom-avatar-circle.mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.zoom-tile-nametag.mini {
+  padding: 1px 5px;
+  font-size: 10px;
+  bottom: 4px;
+  left: 4px;
+  gap: 3px;
+}
+
+[dir="rtl"] .zoom-tile-nametag.mini {
+  left: auto;
+  right: 4px;
 }
 
 /* ==========================================================================

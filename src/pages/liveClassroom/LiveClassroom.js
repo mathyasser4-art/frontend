@@ -6,7 +6,7 @@ import {
   Mic, MicOff, Video, VideoOff, Shield, Users, MessageSquare,
   Monitor, Square, Smile, Edit3, RotateCcw, Copy, Check, Share2,
   Maximize2, Minimize2, LayoutGrid, UserCheck, Send, X, Hand,
-  Eye, EyeOff, Trash2, ExternalLink, ArrowLeft
+  Eye, EyeOff, Trash2, ExternalLink, ArrowLeft, ChevronDown, ChevronUp, Minus
 } from 'lucide-react';
 import API_BASE_URL from '../../config/api.config';
 import { safeLocalStorage } from '../../utils/safeStorage';
@@ -74,6 +74,8 @@ export default function LiveClassroom() {
   const [viewMode, setViewMode] = useState('speaker'); // 'speaker' | 'gallery'
   const [rightSidebar, setRightSidebar] = useState(null); // null | 'participants' | 'chat'
   const [activeStageTool, setActiveStageTool] = useState(null); // null | 'whiteboard' | 'soroban'
+  const [showScreenPreview, setShowScreenPreview] = useState(false);
+  const [floatingCamMode, setFloatingCamMode] = useState('speaker'); // 'minimized' | 'speaker' | 'grid'
   const [showInfoPopover, setShowInfoPopover] = useState(false);
   const [showReactionsPopover, setShowReactionsPopover] = useState(false);
   const [showEndPopover, setShowEndPopover] = useState(false);
@@ -118,6 +120,7 @@ export default function LiveClassroom() {
   const localVideoRef = useRef(null);
   const cornerVideoRef = useRef(null);
   const pipVideoRef = useRef(null);
+  const localScreenPreviewRef = useRef(null);
   const remoteScreenVideoRef = useRef(null);
   const peerRef = useRef(null);
   const myPeerIdRef = useRef(null);
@@ -165,7 +168,13 @@ export default function LiveClassroom() {
 
   useEffect(() => {
     syncLocalVideoElements();
-  }, [isVideoOff, isScreenSharing, activeStageTool, viewMode, syncLocalVideoElements]);
+  }, [isVideoOff, isScreenSharing, activeStageTool, viewMode, floatingCamMode, syncLocalVideoElements]);
+
+  useEffect(() => {
+    if (showScreenPreview && localScreenPreviewRef.current && screenStreamRef.current) {
+      localScreenPreviewRef.current.srcObject = screenStreamRef.current;
+    }
+  }, [showScreenPreview]);
 
   useEffect(() => {
     if (remoteScreenVideoRef.current && remoteScreenStream) {
@@ -515,6 +524,7 @@ export default function LiveClassroom() {
       screenStreamRef.current = null;
     }
     setIsScreenSharing(false);
+    setShowScreenPreview(false);
 
     // Exit Picture-in-Picture if active
     if (document.pictureInPictureElement) {
@@ -871,12 +881,52 @@ export default function LiveClassroom() {
             <div className="zoom-share-green-pill">
               <Shield size={15} />
               <span>{isArabic ? 'أنت تشارك شاشتك الآن' : 'You are screen sharing'}</span>
+              <button
+                type="button"
+                className={`zoom-share-preview-toggle-btn ${showScreenPreview ? 'active' : ''}`}
+                onClick={() => setShowScreenPreview(!showScreenPreview)}
+                title={isArabic ? 'معاينة شاشة المشاركين' : 'Preview what participants see'}
+              >
+                {showScreenPreview ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
             </div>
             <button className="zoom-share-stop-btn" onClick={handleStopScreenShare}>
               <Square size={13} fill="#ffffff" />
               <span>{isArabic ? 'إيقاف المشاركة' : 'Stop Share'}</span>
             </button>
           </div>
+
+          {/* Screen Share Live Preview Dropdown (What Attendees See) */}
+          {showScreenPreview && (
+            <div className="zoom-screen-preview-dropdown">
+              <div className="zoom-screen-preview-header">
+                <div className="zoom-preview-title">
+                  <Monitor size={14} color="#23d959" />
+                  <span>{isArabic ? 'معاينة شاشة المشاركين (ما يشاهده الطلاب الآن)' : 'Participants Screen Preview (Live)'}</span>
+                </div>
+                <button
+                  type="button"
+                  className="zoom-preview-close-btn"
+                  onClick={() => setShowScreenPreview(false)}
+                >
+                  <X size={14} />
+                </button>
+              </div>
+              <div className="zoom-screen-preview-body">
+                <video
+                  ref={localScreenPreviewRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="zoom-screen-preview-video"
+                />
+              </div>
+              <div className="zoom-screen-preview-footer">
+                <span className="zoom-live-dot" style={{ width: 6, height: 6 }}></span>
+                <span>{isArabic ? 'بث مباشر لشاشتك كما يشاهدها الحاضرون' : 'Live preview of your screen as seen by attendees'}</span>
+              </div>
+            </div>
+          )}
 
           <div className="zoom-share-mini-toolbar">
             <button className="zoom-share-mini-btn" onClick={handleToggleMute}>
@@ -1354,24 +1404,129 @@ export default function LiveClassroom() {
             </>
           )}
 
-          {/* Floating Corner Camera Thumbnail when Screen Sharing or Whiteboard is open */}
+          {/* Floating Corner Camera Box with 3 Zoom Size/Display Options */}
           {(isScreenSharing || activeStageTool || remoteScreenStream) && (
-            <div className="zoom-floating-corner-cam">
-              {!isVideoOff ? (
-                <video
-                  ref={cornerVideoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="zoom-video-element mirrored"
-                />
-              ) : (
-                <div className="zoom-avatar-circle small">{userName.charAt(0)}</div>
-              )}
-              <div className="zoom-tile-nametag" style={{ padding: '2px 7px', fontSize: '11px' }}>
-                {isMuted ? <MicOff size={11} color="#ff5c5c" /> : <Mic size={11} color="#23d959" />}
-                <span>{userName}</span>
+            <div className={`zoom-floating-corner-cam mode-${floatingCamMode}`}>
+              {/* Header Bar with 3 Zoom Size Options */}
+              <div className="zoom-float-cam-header">
+                <div className="zoom-float-cam-drag-title">
+                  <span className="zoom-live-dot" style={{ width: 6, height: 6 }}></span>
+                  <span>
+                    {floatingCamMode === 'minimized'
+                      ? userName
+                      : (floatingCamMode === 'grid'
+                          ? (isArabic ? 'الكاميرات' : 'Cameras')
+                          : userName)}
+                  </span>
+                </div>
+                <div className="zoom-float-cam-controls">
+                  {/* Option 1: Minimize volume / size of the box */}
+                  <button
+                    type="button"
+                    className={`zoom-float-ctrl-btn ${floatingCamMode === 'minimized' ? 'active' : ''}`}
+                    onClick={() => setFloatingCamMode('minimized')}
+                    title={isArabic ? 'تصغير حجم الصندوق (إخفاء الفيديو)' : 'Minimize box volume (hide video)'}
+                  >
+                    <Minus size={12} strokeWidth={3} />
+                  </button>
+
+                  {/* Option 2: Single camera box (Speaker) */}
+                  <button
+                    type="button"
+                    className={`zoom-float-ctrl-btn ${floatingCamMode === 'speaker' ? 'active' : ''}`}
+                    onClick={() => setFloatingCamMode('speaker')}
+                    title={isArabic ? 'عرض الكاميرا الفردية' : 'Single speaker video'}
+                  >
+                    <Square size={11} strokeWidth={2.5} />
+                  </button>
+
+                  {/* Option 3: Multi-camera grid (Show other participants) */}
+                  <button
+                    type="button"
+                    className={`zoom-float-ctrl-btn ${floatingCamMode === 'grid' ? 'active' : ''}`}
+                    onClick={() => setFloatingCamMode('grid')}
+                    title={isArabic ? 'عرض كاميرات المشاركين' : 'Show participants grid'}
+                  >
+                    <LayoutGrid size={11} strokeWidth={2.5} />
+                  </button>
+                </div>
               </div>
+
+              {/* Box Body depending on selected mode */}
+              {floatingCamMode === 'minimized' ? (
+                <div className="zoom-float-minimized-body">
+                  {isMuted ? <MicOff size={13} color="#ff5c5c" /> : <Mic size={13} color="#23d959" />}
+                  <span className="zoom-float-minimized-name">{userName}</span>
+                  {remoteParticipantList.length > 0 && (
+                    <span className="zoom-float-minimized-badge">+{remoteParticipantList.length}</span>
+                  )}
+                </div>
+              ) : floatingCamMode === 'grid' ? (
+                <div className="zoom-float-grid-body">
+                  {/* Local Camera Tile */}
+                  <div className="zoom-float-grid-tile">
+                    {!isVideoOff ? (
+                      <video
+                        ref={cornerVideoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="zoom-video-element mirrored"
+                      />
+                    ) : (
+                      <div className="zoom-avatar-circle mini">{userName.charAt(0)}</div>
+                    )}
+                    <div className="zoom-tile-nametag mini">
+                      {isMuted ? <MicOff size={10} color="#ff5c5c" /> : <Mic size={10} color="#23d959" />}
+                      <span>{userName} ({isArabic ? 'أنت' : 'Me'})</span>
+                    </div>
+                  </div>
+
+                  {/* Other Participants' Camera Tiles */}
+                  {remoteParticipantList.map((p) => {
+                    const stream = p.peerId ? remoteCameraStreams[p.peerId] : null;
+                    return (
+                      <div key={p.clientId} className="zoom-float-grid-tile">
+                        {stream && !p.isVideoOff ? (
+                          <video
+                            autoPlay
+                            playsInline
+                            ref={(el) => {
+                              if (el && el.srcObject !== stream) el.srcObject = stream;
+                            }}
+                            className="zoom-video-element"
+                          />
+                        ) : (
+                          <div className="zoom-avatar-circle mini">{(p.name || 'H').charAt(0)}</div>
+                        )}
+                        <div className="zoom-tile-nametag mini">
+                          {p.isMuted ? <MicOff size={10} color="#ff5c5c" /> : <Mic size={10} color="#23d959" />}
+                          <span>{p.name}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* Standard Single Camera Box (Speaker Mode) */
+                <div className="zoom-float-speaker-body">
+                  {!isVideoOff ? (
+                    <video
+                      ref={cornerVideoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="zoom-video-element mirrored"
+                    />
+                  ) : (
+                    <div className="zoom-avatar-circle small">{userName.charAt(0)}</div>
+                  )}
+                  <div className="zoom-tile-nametag" style={{ padding: '2px 7px', fontSize: '11px' }}>
+                    {isMuted ? <MicOff size={11} color="#ff5c5c" /> : <Mic size={11} color="#23d959" />}
+                    <span>{userName}</span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
