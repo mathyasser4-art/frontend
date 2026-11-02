@@ -12,6 +12,7 @@ import { jsPDF } from 'jspdf';
 import './TeacherCompetitionLobby.css';
 import CertificateModal from '../../components/certificate/CertificateModal';
 import { safeLocalStorage } from '../../utils/safeStorage';
+import { sortParticipants, isPodiumEligible } from '../../utils/competitionRanking';
 
 // Helper to extract participant ID safely (handling populated student object, ObjectId string, and guestId)
 const getParticipantId = (p) => {
@@ -79,6 +80,42 @@ function TeacherCompetitionLobby() {
     const wakeLockRef = useRef(null);
     const finishingRef = useRef(false);
     const autoFinishTimeoutRef = useRef(null);
+    // Timer is computed from the server's absolute startedAt/deadline (a background
+    // tab throttles setTimeout and the device clock may be off)
+    const serverOffsetRef = useRef(0);
+    const bestRttRef = useRef(Number.POSITIVE_INFINITY);
+    const startedAtMsRef = useRef(null);
+    const deadlineMsRef = useRef(null);
+    const statusRef = useRef('lobby');
+    const serverNowMs = () => Date.now() + serverOffsetRef.current;
+    const updateServerOffset = (serverNow, sentAt, receivedAt) => {
+        const serverMs = new Date(serverNow).getTime();
+        if (!Number.isFinite(serverMs)) return;
+        const rtt = Math.max(0, receivedAt - sentAt);
+        const candidate = serverMs - (sentAt + receivedAt) / 2;
+        if (rtt <= bestRttRef.current || Math.abs(candidate - serverOffsetRef.current) > 5000) {
+            bestRttRef.current = rtt;
+            serverOffsetRef.current = candidate;
+        }
+    };
+    const applyTiming = (comp) => {
+        if (!comp || !comp.startedAt) return;
+        const startMs = new Date(comp.startedAt).getTime();
+        if (!Number.isFinite(startMs)) return;
+        startedAtMsRef.current = startMs;
+        deadlineMsRef.current = startMs + (comp.timer || 300) * 1000;
+    };
+    // Detail fetch that also measures the server clock offset
+    const fetchDetailsTimed = async () => {
+        const sentAt = Date.now();
+        const res = await getCompetitionDetails(competitionId);
+        if (res && res.message === 'success' && res.competition?.serverNow) {
+            updateServerOffset(res.competition.serverNow, sentAt, Date.now());
+            applyTiming(res.competition);
+        }
+        return res;
+    };
+    useEffect(() => { statusRef.current = status; }, [status]);
 
     // Clear a pending auto-finish if the teacher leaves the page
     useEffect(() => () => {
@@ -162,63 +199,19 @@ function TeacherCompetitionLobby() {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const res = await getCompetitionDetails(competitionId);
+                const res = await fetchDetailsTimed();
                 if (res.message === 'success') {
                     setCompetition(res.competition);
-                    setParticipants(prev => {
-                        const dbParticipants = res.competition.participants || [];
-                        const merged = dbParticipants.map(dbP => {
-                            const pId = getParticipantId(dbP);
-                            const existing = prev.find(p => String(getParticipantId(p)) === String(pId));
-                            if (!existing) return dbP;
-
-                            const score = Math.max(dbP.score || 0, existing.score || 0);
-                            const totalAnswered = Math.max(
-                                dbP.totalAnswered || 0,
-                                existing.totalAnswered || 0,
-                                dbP.answers?.length || 0,
-                                existing.answers?.length || 0
-                            );
-                            const wrongAnswers = Math.max(dbP.wrongAnswers || 0, existing.wrongAnswers || 0);
-                            const finishedAt = existing.finishedAt || dbP.finishedAt || null;
-                            const answers = (dbP.answers && dbP.answers.length >= (existing.answers?.length || 0))
-                                ? dbP.answers
-                                : (existing.answers || dbP.answers || []);
-
-                            return {
-                                ...dbP,
-                                ...existing,
-                                student: dbP.student || existing.student,
-                                score,
-                                totalAnswered,
-                                wrongAnswers,
-                                finishedAt,
-                                answers
-                            };
-                        });
-
-                        prev.forEach(p => {
-                            const pId = getParticipantId(p);
-                            if (pId && !merged.some(m => String(getParticipantId(m)) === String(pId))) {
-                                merged.push(p);
-                            }
-                        });
-
-                        return merged;
-                    });
-                    setStatus(res.competition.status || 'lobby');
-                    if (res.competition.status === 'finished') {
+                    setParticipants(res.competition.participants || []);
+                    const initialStatus = res.competition.status || 'lobby';
+                    if (initialStatus === 'active' && startedAtMsRef.current && serverNowMs() < startedAtMsRef.current) {
+                        setStatus('countdown');
+                    } else {
+                        setStatus(initialStatus);
+                    }
+                    if (initialStatus === 'finished') {
+                        finishingRef.current = true;
                         setTriggerConfetti(true);
-                    } else if (res.competition.status === 'active') {
-                        if (res.competition.remainingSeconds !== undefined) {
-                            setTimerRemaining(Math.max(0, res.competition.remainingSeconds));
-                        } else if (res.competition.startedAt && res.competition.serverNow) {
-                            const elapsed = Math.max(0, Math.floor((res.competition.serverNow - new Date(res.competition.startedAt).getTime()) / 1000));
-                            const remaining = Math.max(0, (res.competition.timer || 300) - elapsed);
-                            setTimerRemaining(remaining);
-                        } else {
-                            setTimerRemaining(res.competition.timer || 300);
-                        }
                     }
                 } else {
                     setError(res.message);
@@ -277,68 +270,37 @@ function TeacherCompetitionLobby() {
 
         const pollInterval = setInterval(async () => {
             try {
-                const res = await getCompetitionDetails(competitionId);
+                const pollRequestedAt = Date.now();
+                const res = await fetchDetailsTimed();
                 if (res.message === 'success') {
                     const dbParticipants = res.competition.participants || [];
+                    const pollStartedAt = pollRequestedAt;
                     // Sync competition object (ensures startedAt is always fresh)
                     setCompetition(res.competition);
                     setParticipants(prev => {
+                        // The database is the source of truth (scores can go DOWN when a
+                        // student changes a correct answer, so max() merging got stuck on
+                        // stale values). Live Pusher updates newer than this poll are kept.
                         const merged = dbParticipants.map(dbP => {
                             const pId = getParticipantId(dbP);
                             const existing = prev.find(p => String(getParticipantId(p)) === String(pId));
                             if (!existing) return dbP;
-
-                            const score = Math.max(dbP.score || 0, existing.score || 0);
-                            const totalAnswered = Math.max(
-                                dbP.totalAnswered || 0,
-                                existing.totalAnswered || 0,
-                                dbP.answers?.length || 0,
-                                existing.answers?.length || 0
-                            );
-                            const wrongAnswers = Math.max(dbP.wrongAnswers || 0, existing.wrongAnswers || 0);
-                            const finishedAt = existing.finishedAt || dbP.finishedAt || null;
-                            const answers = (dbP.answers && dbP.answers.length >= (existing.answers?.length || 0))
-                                ? dbP.answers
-                                : (existing.answers || dbP.answers || []);
-
-                            return {
-                                ...dbP,
-                                ...existing,
-                                student: dbP.student || existing.student,
-                                score,
-                                totalAnswered,
-                                wrongAnswers,
-                                finishedAt,
-                                answers
-                            };
+                            const liveIsNewer = existing.liveUpdatedAt && existing.liveUpdatedAt > pollStartedAt;
+                            return liveIsNewer
+                                ? { ...dbP, score: existing.score, totalAnswered: existing.totalAnswered, wrongAnswers: existing.wrongAnswers, finishedAt: existing.finishedAt || dbP.finishedAt, liveUpdatedAt: existing.liveUpdatedAt }
+                                : dbP;
                         });
-
-                        prev.forEach(p => {
-                            const pId = getParticipantId(p);
-                            if (pId && !merged.some(m => String(getParticipantId(m)) === String(pId))) {
-                                merged.push(p);
-                            }
-                        });
-
                         return merged;
                     });
                     // Also sync status from DB (but don't cut the local 3-2-1 countdown short)
                     const dbStatus = res.competition.status;
                     if (dbStatus && dbStatus !== status && !(status === 'countdown' && dbStatus === 'active')) {
-                        setStatus(res.competition.status);
-                        if (res.competition.status === 'finished') {
+                        if (dbStatus === 'finished') {
+                            finishingRef.current = true;
                             setTriggerConfetti(true);
-                        } else if (res.competition.status === 'active') {
-                            if (res.competition.remainingSeconds !== undefined) {
-                                setTimerRemaining(Math.max(0, res.competition.remainingSeconds));
-                            } else if (res.competition.startedAt && res.competition.serverNow) {
-                                const elapsed = Math.max(0, Math.floor((res.competition.serverNow - new Date(res.competition.startedAt).getTime()) / 1000));
-                                const remaining = Math.max(0, (res.competition.timer || 300) - elapsed);
-                                setTimerRemaining(remaining);
-                            } else {
-                                setTimerRemaining(res.competition.timer || 300);
-                            }
+                            setTimerRemaining(null);
                         }
+                        setStatus(dbStatus === 'active' && startedAtMsRef.current && serverNowMs() < startedAtMsRef.current ? 'countdown' : dbStatus);
                     }
                 }
             } catch (err) {
@@ -349,156 +311,138 @@ function TeacherCompetitionLobby() {
         return () => clearInterval(pollInterval);
     }, [competitionId, status]);
 
+    const refreshFromServer = async () => {
+        const res = await fetchDetailsTimed();
+        if (res && res.message === 'success' && res.competition) {
+            setCompetition(res.competition);
+            setParticipants(res.competition.participants || []);
+        }
+        return res;
+    };
+
     // Pusher real-time bindings
     useEffect(() => {
         if (!competitionId) return;
 
-        // Initialize Pusher Channels
-        Pusher.logToConsole = true;
         const pusher = new Pusher('06df370fb33f1263ec1f', {
             cluster: 'eu',
         });
 
+        // Shared channel: start / kicked / finished
         const channel = pusher.subscribe(`competition-${competitionId}`);
+        // Host-only channel: joins and live score updates
+        const hostChannel = pusher.subscribe(`competition-${competitionId}-host`);
 
         // Listen for new student joining
-        channel.bind('student-joined', (data) => {
+        hostChannel.bind('student-joined', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+            if (!data || !data.studentId) return;
             soundEffects.playClick();
             setParticipants(prev => {
                 const exists = prev.some(p => String(getParticipantId(p)) === String(data.studentId));
                 if (exists) return prev;
-                return [...prev, { student: { _id: data.studentId, userName: data.userName }, guestId: data.studentId, guestName: data.userName, score: 0, totalAnswered: 0, wrongAnswers: 0 }];
+                return [...prev, { student: { _id: data.studentId, userName: data.userName }, score: 0, totalAnswered: 0, wrongAnswers: 0, answers: [], joinedAt: new Date().toISOString() }];
             });
         });
 
         // Listen for live score updates from students
-        channel.bind('score-updated', (data) => {
+        hostChannel.bind('score-updated', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+            if (!data || !data.studentId) return;
+            const targetId = String(data.studentId);
             setParticipants(prev => {
-                const targetId = String(data.studentId);
                 const exists = prev.some(p => String(getParticipantId(p)) === targetId);
+                const live = {
+                    score: data.score || 0,
+                    totalAnswered: data.totalAnswered || 0,
+                    wrongAnswers: data.wrongAnswers || 0,
+                    liveUpdatedAt: Date.now()
+                };
                 if (!exists) {
                     return [...prev, {
                         student: { _id: data.studentId, userName: data.userName },
-                        guestId: data.studentId,
-                        guestName: data.userName,
-                        score: data.score || 0,
-                        totalAnswered: data.totalAnswered || (data.answers ? data.answers.length : 0),
-                        wrongAnswers: data.wrongAnswers || 0,
-                        finishedAt: data.finishedAt ? new Date(data.finishedAt) : (data.finished ? new Date() : null),
-                        answers: data.answers || []
+                        ...live,
+                        finishedAt: data.finishedAt || null,
+                        answers: []
                     }];
                 }
-                return prev.map(p => {
-                    const pId = getParticipantId(p);
-                    if (String(pId) === targetId) {
-                        const newScore = data.score !== undefined ? data.score : (p.score || 0);
-                        const newTotal = Math.max(
-                            data.totalAnswered !== undefined ? data.totalAnswered : (p.totalAnswered || 0),
-                            p.totalAnswered || 0,
-                            data.answers?.length || 0,
-                            p.answers?.length || 0
-                        );
-                        const newWrong = data.wrongAnswers !== undefined ? data.wrongAnswers : (p.wrongAnswers || 0);
-                        return { 
-                            ...p, 
-                            student: p.student || { _id: data.studentId, userName: data.userName },
-                            guestName: p.guestName || data.userName,
-                            score: newScore, 
-                            totalAnswered: newTotal,
-                            wrongAnswers: newWrong,
-                            finishedAt: data.finishedAt ? new Date(data.finishedAt) : (data.finished ? (p.finishedAt || new Date()) : p.finishedAt),
-                            answers: (data.answers && data.answers.length >= (p.answers?.length || 0)) ? data.answers : (p.answers || [])
-                        };
-                    }
-                    return p;
-                });
+                return prev.map(p => (String(getParticipantId(p)) === targetId
+                    ? { ...p, ...live, finishedAt: data.finishedAt || p.finishedAt || null }
+                    : p));
             });
         });
 
-        // Listen for competition start (e.g. if page was reloaded by teacher)
+        // Competition started (e.g. from another tab of the teacher)
         channel.bind('start-competition', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
-            setStatus('countdown');
-            setLobbyCountdown(3);
-            const initialTimer = data?.remainingSeconds || data?.timer || 300;
-            setTimerRemaining(initialTimer);
+            if (!data || !data.startedAt) return;
+            applyTiming({ startedAt: data.startedAt, timer: data.timer || 300 });
             setCompetition(prev => ({
                 ...prev,
                 status: 'active',
-                startedAt: data?.startedAt,
-                timer: data?.timer || 300
+                startedAt: data.startedAt,
+                timer: data.timer || 300
             }));
+            if (statusRef.current === 'lobby') {
+                setStatus(serverNowMs() < startedAtMsRef.current ? 'countdown' : 'active');
+            }
         });
 
         // Listen for student kicked/removed event
         channel.bind('student-kicked', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             if (data && data.studentId) {
-                setParticipants(prev => prev.filter(item => String(getParticipantId(item)) !== String(data.studentId)));
+                setParticipants(prev => prev.filter(item => String(getParticipantId(item)) !== String(data.studentId) && String(item._id) !== String(data.participantId)));
             }
         });
 
-        // Listen for competition finished
-        channel.bind('competition-finished', (data) => {
-            if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        // Listen for competition finished (manual End, auto-end, or another tab)
+        channel.bind('competition-finished', () => {
+            finishingRef.current = true;
+            if (autoFinishTimeoutRef.current) {
+                clearTimeout(autoFinishTimeoutRef.current);
+                autoFinishTimeoutRef.current = null;
+            }
             setStatus('finished');
             setTriggerConfetti(true);
             setTimerRemaining(null);
-            getCompetitionDetails(competitionId).then(res => {
-                if (res.message === 'success' && res.competition) {
-                    setCompetition(res.competition);
-                    setParticipants(res.competition.participants || []);
-                }
-            });
+            refreshFromServer();
         });
 
         return () => {
             channel.unbind_all();
             channel.unsubscribe();
+            hostChannel.unbind_all();
+            hostChannel.unsubscribe();
             pusher.disconnect();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [competitionId]);
 
+    const startingRef = useRef(false);
     const handleStart = async () => {
+        if (startingRef.current) return;
+        startingRef.current = true;
         soundEffects.playClick();
         try {
+            const sentAt = Date.now();
             const res = await startCompetition(competitionId);
             if (res.message === 'success' && res.competition) {
-                setStatus('countdown');
-                setLobbyCountdown(3);
-                setCompetition(res.competition);
-                const initialTimer = res.competition.remainingSeconds || res.competition.timer || 300;
-                setTimerRemaining(initialTimer);
+                updateServerOffset(res.competition.serverNow, sentAt, Date.now());
+                applyTiming(res.competition);
+                setCompetition(prev => ({ ...prev, ...res.competition, questions: prev?.questions || res.competition.questions }));
+                setStatus(serverNowMs() < startedAtMsRef.current ? 'countdown' : 'active');
             } else {
-                setError(res.message);
+                // Keep the lobby on screen (e.g. "No students have joined yet")
+                alert(res.message || 'Failed to start the competition. Please try again.');
             }
         } catch (err) {
             console.error("Failed to start competition:", err);
-            setError("Failed to start competition. Please try again.");
+            alert("Failed to start competition. Please try again.");
+        } finally {
+            startingRef.current = false;
         }
     };
-
-    // 3-2-1 Lobby countdown trigger for Teacher (Synchronized with Students)
-    useEffect(() => {
-        if (status === 'countdown' && lobbyCountdown !== null) {
-            if (lobbyCountdown > 0) {
-                const timer = setTimeout(() => {
-                    setLobbyCountdown(prev => prev - 1);
-                }, 1000);
-                return () => clearTimeout(timer);
-            } else if (lobbyCountdown === 0) {
-                // Show GO! for 800ms before switching to active gameplay
-                const timer = setTimeout(() => {
-                    setStatus('active');
-                    setLobbyCountdown(null);
-                    setTimerRemaining(prev => (prev && prev > 0 ? prev : (competition?.timer || 300)));
-                }, 800);
-                return () => clearTimeout(timer);
-            }
-        }
-    }, [status, lobbyCountdown, competition]);
 
     const handleFinish = async () => {
         // Manual "End" click and the auto-finish timer can fire together; end only once
@@ -509,7 +453,7 @@ function TeacherCompetitionLobby() {
             autoFinishTimeoutRef.current = null;
         }
         soundEffects.playClick();
-        const previousStatus = status;
+        const previousStatus = statusRef.current;
         setStatus('finished');
         setTriggerConfetti(true);
         setTimerRemaining(null);
@@ -523,40 +467,51 @@ function TeacherCompetitionLobby() {
                 alert(`Failed to end the competition: ${finishRes?.message || 'Unknown error'}. Please try again.`);
                 return;
             }
-            const res = await getCompetitionDetails(competitionId);
-            if (res.message === 'success' && res.competition) {
-                setCompetition(res.competition);
-                setParticipants(res.competition.participants || []);
-            }
+            // Load the official, frozen final ranking
+            await refreshFromServer();
         } catch (err) {
             finishingRef.current = false;
             console.error("Failed to finish competition:", err);
         }
     };
+    const handleFinishRef = useRef(handleFinish);
+    handleFinishRef.current = handleFinish;
 
-    // Live Game Timer countdown trigger for Teacher (automatically ends competition when time expires)
+    // Single clock for the 3-2-1 countdown and the live timer, computed from the
+    // server's absolute times. When time is up the competition is ended for everyone
+    // after a short grace period: students submit their final answers when their own
+    // timer hits 0, and those must land before the podium and coins are calculated.
     useEffect(() => {
-        if (status === 'active' && timerRemaining !== null) {
-            if (timerRemaining > 0) {
-                const timer = setTimeout(() => {
-                    setTimerRemaining(prev => prev - 1);
-                }, 1000);
-                return () => clearTimeout(timer);
-            } else {
-                // Timer expired! End the competition for everyone and show the podium.
-                // Wait a few seconds first: students submit their final answers when
-                // their own timer hits 0, and those must land before the podium and
-                // coin rewards are calculated on the server.
-                setTimerRemaining(null);
-                if (!autoFinishTimeoutRef.current) {
-                    autoFinishTimeoutRef.current = setTimeout(() => {
-                        autoFinishTimeoutRef.current = null;
-                        handleFinish();
-                    }, 4000);
+        if (status !== 'countdown' && status !== 'active') return;
+        const tick = () => {
+            const now = serverNowMs();
+            if (!startedAtMsRef.current || !deadlineMsRef.current) return;
+            if (statusRef.current === 'countdown') {
+                const msLeft = startedAtMsRef.current - now;
+                if (msLeft <= 0) {
+                    setLobbyCountdown(null);
+                    statusRef.current = 'active';
+                    setStatus('active');
+                } else {
+                    setLobbyCountdown(msLeft <= 600 ? 0 : Math.ceil((msLeft - 600) / 1000));
                 }
+                setTimerRemaining(Math.round((deadlineMsRef.current - startedAtMsRef.current) / 1000));
+                return;
             }
-        }
-    }, [status, timerRemaining]);
+            const remaining = Math.max(0, Math.ceil((deadlineMsRef.current - now) / 1000));
+            setTimerRemaining(remaining);
+            if (remaining <= 0 && !finishingRef.current && !autoFinishTimeoutRef.current) {
+                autoFinishTimeoutRef.current = setTimeout(() => {
+                    autoFinishTimeoutRef.current = null;
+                    handleFinishRef.current();
+                }, 4000);
+            }
+        };
+        tick();
+        const interval = setInterval(tick, 250);
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [status]);
 
     const handleForceJoinStudent = async (studentId) => {
         if (!studentId) return;
@@ -686,21 +641,8 @@ function TeacherCompetitionLobby() {
             doc.text("Elapsed Time", 440, yPos + 3);
             yPos += 22;
 
-            // Sort participants using the robust tie-breaker rules
-            const sorted = [...participants].sort((a, b) => {
-                if (b.score !== a.score) return b.score - a.score;
-                const aFinished = !!a.finishedAt;
-                const bFinished = !!b.finishedAt;
-                if (aFinished !== bFinished) return bFinished ? 1 : -1;
-                if (a.finishedAt && b.finishedAt) {
-                    const diff = new Date(a.finishedAt) - new Date(b.finishedAt);
-                    if (diff !== 0) return diff;
-                }
-                const aWrong = a.wrongAnswers || 0;
-                const bWrong = b.wrongAnswers || 0;
-                if (aWrong !== bWrong) return aWrong - bWrong;
-                return (b.totalAnswered || 0) - (a.totalAnswered || 0);
-            });
+            // Same ranking as the screen and the server
+            const sorted = sortParticipants(participants, status === 'finished');
 
             // Draw Standings Rows
             sorted.forEach((p, idx) => {
@@ -716,7 +658,7 @@ function TeacherCompetitionLobby() {
                 doc.setTextColor(30, 41, 59);
 
                 doc.setFont("helvetica", "bold");
-                doc.text(`#${idx + 1}`, 50, yPos);
+                doc.text(`#${p.displayRank || idx + 1}`, 50, yPos);
                 doc.setFont("helvetica", "normal");
                 doc.text(getStudentName(p), 100, yPos);
                 doc.text(`${p.score} / ${totalQ}`, 240, yPos);
@@ -879,38 +821,11 @@ function TeacherCompetitionLobby() {
 
     const totalQuestions = competition.questions?.length || 0;
 
-    // Helper to sort participants with tie-breakers (highest score, finish speed, accuracy)
-    const sortedParticipants = [...participants].sort((a, b) => {
-        const aScore = a.score || 0;
-        const bScore = b.score || 0;
-        if (bScore !== aScore) {
-            return bScore - aScore;
-        }
-        
-        // Tie-breaker 1: Finished vs Unfinished
-        const aFinished = !!a.finishedAt;
-        const bFinished = !!b.finishedAt;
-        if (aFinished && !bFinished) return -1;
-        if (!aFinished && bFinished) return 1;
-        
-        // Tie-breaker 2: Speed (earlier finishedAt first)
-        if (aFinished && bFinished) {
-            return new Date(a.finishedAt) - new Date(b.finishedAt);
-        }
-        
-        // Tie-breaker 3: Accuracy (fewer wrong answers first)
-        const aWrong = a.wrongAnswers || 0;
-        const bWrong = b.wrongAnswers || 0;
-        if (aWrong !== bWrong) {
-            return aWrong - bWrong;
-        }
-        
-        // Tie-breaker 4: Pace (more total answered first)
-        const aTotal = Math.max(a.totalAnswered || 0, a.answers?.length || 0, aScore + aWrong);
-        const bTotal = Math.max(b.totalAnswered || 0, b.answers?.length || 0, bScore + bWrong);
-        return bTotal - aTotal;
-    });
-    const podiumWinners = sortedParticipants.slice(0, 3);
+    // Same ranking as the server (frozen final ranks once finished)
+    const sortedParticipants = sortParticipants(participants, status === 'finished');
+    // Podium / certificates only for students who scored (the server awards coins the same way)
+    const podiumWinners = sortedParticipants.filter(isPodiumEligible).slice(0, 3);
+    const certificateWinners = sortedParticipants.filter(p => isPodiumEligible(p) && p.displayRank <= 10);
 
     return (
         <div className="teacher-competition-lobby-global">
@@ -1159,7 +1074,7 @@ function TeacherCompetitionLobby() {
 
                                 return (
                                     <div key={getParticipantId(p) || idx} className="race-track-row">
-                                        <div className="racer-rank">#{idx + 1}</div>
+                                        <div className="racer-rank">#{p.displayRank || idx + 1}</div>
                                         <div className="racer-name-tag">
                                             <span 
                                                 className="name name-clickable" 
@@ -1291,7 +1206,7 @@ function TeacherCompetitionLobby() {
                                 <tbody>
                                     {sortedParticipants.map((p, idx) => (
                                         <tr key={p.student?._id || idx}>
-                                            <td><strong>#{idx + 1}</strong></td>
+                                            <td><strong>#{p.displayRank}</strong></td>
                                             <td 
                                                 className="student-name-cell" 
                                                 onClick={() => setSelectedStudentReport(p)}
@@ -1317,11 +1232,11 @@ function TeacherCompetitionLobby() {
                                                 )}
                                             </td>
                                             <td>
-                                                {idx < 10 ? (
+                                                {(isPodiumEligible(p) && p.displayRank <= 10) ? (
                                                     <button
                                                         onClick={() => setSelectedCertStudent({
                                                             userName: p.student?.userName,
-                                                            rank: idx + 1,
+                                                            rank: p.displayRank,
                                                             score: p.score
                                                         })}
                                                         className="print-single-cert-btn"
@@ -1358,7 +1273,7 @@ function TeacherCompetitionLobby() {
                             >
                                 📊 Export Combined PDF Report
                             </button>
-                            {participants.length > 0 && (
+                            {certificateWinners.length > 0 && (
                                 <button 
                                     onClick={() => setIsBulkCertOpen(true)} 
                                     className="action-button bulk-cert-btn"
@@ -1490,7 +1405,7 @@ function TeacherCompetitionLobby() {
                 competitionTitle={competition?.title}
                 teacherName={safeLocalStorage.getItem('pp_name') || 'Instructor'}
                 isMasterminds={(safeLocalStorage.getItem('school_name') || '').toLowerCase() === 'masterminds'}
-                bulkStudents={sortedParticipants.slice(0, 10)}
+                bulkStudents={certificateWinners.map(p => ({ ...p, rank: p.displayRank }))}
             />
         </div>
     );

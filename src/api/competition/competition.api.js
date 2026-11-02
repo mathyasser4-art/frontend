@@ -16,7 +16,16 @@ const getHeaders = () => {
 const safeJsonFetch = async (url, options) => {
     try {
         const response = await fetch(url, options);
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch (parseErr) {
+            // e.g. the rate limiter's plain-text "Too many requests" reply
+            return { message: response.status === 429 ? "Too many requests, please try again in a moment." : `Unexpected server response (${response.status})`, error: true, httpStatus: response.status };
+        }
+        if (data && typeof data === 'object' && !Array.isArray(data)) {
+            data.httpStatus = response.status;
+        }
         return data;
     } catch (err) {
         console.error('API Fetch error:', url, err);
@@ -41,6 +50,15 @@ export const getTeacherCompetitions = async () => {
 
 export const getCompetitionDetails = async (competitionId) => {
     return safeJsonFetch(`${API_BASE_URL}/competition/${competitionId}/details`, {
+        method: 'GET',
+        headers: getHeaders()
+    });
+};
+
+// Lightweight polling fallback: status, timing and whether the requester is still a participant
+export const getCompetitionStatus = async (competitionId, studentId = null) => {
+    const query = studentId ? `?studentId=${encodeURIComponent(studentId)}` : '';
+    return safeJsonFetch(`${API_BASE_URL}/competition/${competitionId}/status${query}`, {
         method: 'GET',
         headers: getHeaders()
     });

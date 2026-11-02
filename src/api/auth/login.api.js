@@ -105,7 +105,16 @@ const login = (userData, setError, setLoading, navigate, showAlert) => {
                         safeLocalStorage.setItem('teacher_assigned_systems', JSON.stringify(responseJson.assignedSystemList));
                     }
                 }
-                const route = ROLE_ROUTES[responseJson.role] || '/';
+                let route = ROLE_ROUTES[responseJson.role] || '/';
+                // Return to the competition invite link that sent the student to login
+                try {
+                    const saved = JSON.parse(safeLocalStorage.getItem('post_login_redirect') || 'null');
+                    safeLocalStorage.removeItem('post_login_redirect');
+                    const isFresh = saved && saved.at && (Date.now() - saved.at) < 6 * 60 * 60 * 1000;
+                    if (isFresh && typeof saved.path === 'string' && /^\/student\/competition\/[a-zA-Z0-9]+$/.test(saved.path) && responseJson.role !== 'Teacher') {
+                        route = saved.path;
+                    }
+                } catch (e) { /* ignore malformed value */ }
                 window.location.href = route;
             } else {
                 let errorMsg = responseJson.message;

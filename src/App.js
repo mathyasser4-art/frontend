@@ -108,6 +108,16 @@ const JourneyHub = safeLazy(() => import('./pages/learningPath/JourneyHub'));
 const VipManager = safeLazy(() => import('./pages/vipManager/VipManager'));
 const LiveClassroom = safeLazy(() => import('./pages/liveClassroom/LiveClassroom'));
 
+// A logged-out student who opens a competition invite link is sent to login and
+// then brought back to that competition (instead of losing the link on the dashboard)
+function RememberAndLogin() {
+  const location = useLocation();
+  try {
+    safeLocalStorage.setItem('post_login_redirect', JSON.stringify({ path: location.pathname, at: Date.now() }));
+  } catch (e) { /* storage unavailable */ }
+  return <Navigate to='/auth/login' />;
+}
+
 function App() {
   const isAuth = safeLocalStorage.getItem('O_authWEB');
   const role = safeLocalStorage.getItem('auth_role');
@@ -189,7 +199,7 @@ function App() {
 
           <Route path='/dashboard/student' element={isAuth && role === 'Student' ? <StudentDashboard /> : <Navigate to='/auth/login' />} />
           <Route path='/student/assignment/:assignmentID' element={isAuth && role === 'Student' ? <Assignment /> : <Navigate to='/auth/login' />} />
-          <Route path='/student/competition/:competitionId' element={isAuth ? <StudentCompetition /> : <Navigate to='/auth/login' />} />
+          <Route path='/student/competition/:competitionId' element={isAuth ? <StudentCompetition /> : <RememberAndLogin />} />
           <Route path='/dashboard/teacher' element={isAuth && role === 'Teacher' ? <TeacherDashboard /> : <Navigate to='/auth/login' />} />
           <Route path='/teacher/competition/:competitionId' element={isAuth && role === 'Teacher' ? <TeacherCompetitionLobby /> : <Navigate to='/auth/login' />} />
           <Route path='/teacher/competitions-hub' element={isAuth && (role === 'Teacher' || role === 'School' || role === 'IT') ? <UpcomingCompetitionsHub /> : <Navigate to='/auth/login' />} />

@@ -78,7 +78,10 @@ const Navbar = () => {
 
     // Cleanup and heartbeat listeners for live battle creations (exclusive to logged-in students)
     useEffect(() => {
-        if (isAuth && role && role.toLowerCase() === 'student') {
+        // Not on the battle page itself: it has its own real-time connection, and a
+        // second one per student doubles Pusher connection usage for big classes.
+        const onCompetitionPage = typeof window !== 'undefined' && window.location.pathname.startsWith('/student/competition/');
+        if (isAuth && role && role.toLowerCase() === 'student' && !onCompetitionPage) {
             let isCancelled = false;
             let pusher = null;
             let channel = null;
