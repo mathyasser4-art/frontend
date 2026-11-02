@@ -75,7 +75,7 @@ function StudentCompetition() {
     // Strict authentication guard: No guests permitted under any circumstance
     useEffect(() => {
         if (!token || !studentID || studentID === 'undefined' || studentID === 'null') {
-            navigate('/login');
+            navigate('/auth/login');
         }
     }, [token, studentID, navigate]);
 
@@ -86,6 +86,12 @@ function StudentCompetition() {
     const answersMapRef = useRef({});
     const [localFinishedAt, setLocalFinishedAt] = useState(null);
     const lastAnswerClickTimeRef = useRef(null);
+    // Background score sync is serialized: only one request is in flight at a time and
+    // the latest answers are sent once it completes. Parallel requests used to finish
+    // out of order and overwrite newer answers/counts with stale ones.
+    const syncInFlightRef = useRef(null);
+    const syncPendingRef = useRef(false);
+    const finishingRef = useRef(false);
     const wakeLockRef = useRef(null);
     const currentQuestion = questions[currentIndex];
 
@@ -188,7 +194,7 @@ function StudentCompetition() {
     useEffect(() => {
         const initLobby = async () => {
             if (!token || !studentID || studentID === 'undefined' || studentID === 'null') {
-                navigate('/login');
+                navigate('/auth/login');
                 return;
             }
             try {
@@ -198,7 +204,7 @@ function StudentCompetition() {
                 if (joinRes.message !== 'success') {
                     console.warn("[Competition] Could not join lobby:", joinRes.message);
                     if (joinRes.message && (joinRes.message.includes("Guests are not allowed") || joinRes.message.includes("log in"))) {
-                        navigate('/login');
+                        navigate('/auth/login');
                         return;
                     }
                 } else {
@@ -229,6 +235,16 @@ function StudentCompetition() {
 
                     // Restore answers & score counts if any
                     const myDetails = (detailsRes.competition.participants || []).find(p => String(getParticipantId(p)) === String(studentID));
+
+                    // Not a participant and the battle already started: the server would
+                    // reject every answer, so don't let the student play a ghost round.
+                    if (!myDetails && compStatus !== 'lobby') {
+                        setError(joinRes.message && joinRes.message !== 'success'
+                            ? joinRes.message
+                            : 'This competition has already started. You can no longer join it.');
+                        setLoading(false);
+                        return;
+                    }
                     if (myDetails) {
                         const initAnswersMap = {};
                         let newCorrectCount = myDetails.score || 0;
@@ -337,7 +353,7 @@ function StudentCompetition() {
             const myId = String(studentID);
             if (data && data.studentId && String(data.studentId) === myId) {
                 alert("You were removed from this competition by the host teacher.");
-                navigate('/student/dashboard');
+                navigate('/dashboard/student');
             } else if (data && data.studentId) {
                 setParticipants(prev => prev.filter(p => String(getParticipantId(p)) !== String(data.studentId)));
             }
@@ -464,62 +480,82 @@ function StudentCompetition() {
         requestWakeLock();
     };
 
-    // Background answer check (fire & forget) — secure flow
-    const syncAnswerWithBackend = async (questionId, questionAnswer) => {
-        try {
-            // Synchronously ensure answersMapRef has the latest answer so it is never dropped on question 1
-            const currentAnswers = {
-                ...answersMapRef.current,
-                [questionId]: { ...answersMapRef.current[questionId], checked: true, answer: questionAnswer }
-            };
-            answersMapRef.current = currentAnswers;
-            setAnswersMap(currentAnswers);
+    // Applies the server-graded answers returned by the score endpoint
+    const applySecureAnswers = (secureAnswers) => {
+        if (!Array.isArray(secureAnswers)) return;
+        let newCorrectCount = 0;
+        let newWrongCount = 0;
 
-            // Send score update with synchronous latest answers and counts
-            const response = await updateLiveScore(competitionId, {
-                studentId: studentID,
-                userName: studentName,
-                finished: false,
-                score: correctCountRef.current,
-                totalAnswered: totalAnsweredRef.current,
-                wrongAnswers: wrongCountRef.current,
-                answers: Object.entries(currentAnswers).map(([qId, data]) => ({
-                    question: qId,
-                    studentAnswer: data.answer !== undefined && data.answer !== null ? String(data.answer) : ""
-                }))
-            });
-
-            // The backend returns the secure answers map containing isCorrect
-            if (response && response.answers) {
-                 const secureAnswers = response.answers;
-                 let newCorrectCount = 0;
-                 let newWrongCount = 0;
-                 let newTotalAnswered = secureAnswers.length;
-                 
-                 const updated = { ...answersMapRef.current };
-                 secureAnswers.forEach(ans => {
-                     if (updated[ans.question]) {
-                         updated[ans.question].correct = ans.isCorrect;
-                         updated[ans.question].checked = true;
-                     } else {
-                         updated[ans.question] = { answer: ans.studentAnswer, checked: true, correct: ans.isCorrect };
-                     }
-                     if (ans.isCorrect) newCorrectCount++;
-                     else newWrongCount++;
-                 });
-                 answersMapRef.current = updated;
-                 setAnswersMap(updated);
-                 
-                 correctCountRef.current = newCorrectCount;
-                 setCorrectCount(newCorrectCount);
-                 wrongCountRef.current = newWrongCount;
-                 setWrongCount(newWrongCount);
-                 totalAnsweredRef.current = Math.max(totalAnsweredRef.current, newTotalAnswered);
-                 setTotalAnswered(totalAnsweredRef.current);
+        const updated = { ...answersMapRef.current };
+        secureAnswers.forEach(ans => {
+            const local = updated[ans.question];
+            if (local) {
+                // Only mark as checked if the student hasn't changed it since this request
+                const sameAnswer = String(local.answer) === String(ans.studentAnswer);
+                updated[ans.question] = { ...local, correct: sameAnswer ? ans.isCorrect : local.correct, checked: sameAnswer ? true : local.checked };
+            } else {
+                updated[ans.question] = { answer: ans.studentAnswer, checked: true, correct: ans.isCorrect };
             }
-        } catch (err) {
-            console.error('Background sync failed for question', questionId, err);
+            if (ans.isCorrect) newCorrectCount++;
+            else newWrongCount++;
+        });
+        answersMapRef.current = updated;
+        setAnswersMap(updated);
+
+        correctCountRef.current = newCorrectCount;
+        setCorrectCount(newCorrectCount);
+        wrongCountRef.current = newWrongCount;
+        setWrongCount(newWrongCount);
+        totalAnsweredRef.current = Math.max(totalAnsweredRef.current, secureAnswers.length);
+        setTotalAnswered(totalAnsweredRef.current);
+    };
+
+    const buildAnswersPayload = () => Object.entries(answersMapRef.current).map(([qId, data]) => ({
+        question: qId,
+        studentAnswer: data.answer !== undefined && data.answer !== null ? String(data.answer) : ""
+    }));
+
+    // Sends the latest answers; if a request is already running, the newest state is
+    // sent right after it finishes (requests never overlap).
+    const flushAnswers = () => {
+        if (syncInFlightRef.current) {
+            syncPendingRef.current = true;
+            return syncInFlightRef.current;
         }
+        const run = async () => {
+            do {
+                syncPendingRef.current = false;
+                try {
+                    const response = await updateLiveScore(competitionId, {
+                        studentId: studentID,
+                        userName: studentName,
+                        finished: false,
+                        answers: buildAnswersPayload()
+                    });
+                    // The backend returns the secure answers map containing isCorrect
+                    if (response && response.message === 'success' && response.answers) {
+                        applySecureAnswers(response.answers);
+                    }
+                } catch (err) {
+                    console.error('Background answer sync failed', err);
+                }
+            } while (syncPendingRef.current);
+            syncInFlightRef.current = null;
+        };
+        syncInFlightRef.current = run();
+        return syncInFlightRef.current;
+    };
+
+    // Background answer check (fire & forget) — secure flow
+    const syncAnswerWithBackend = (questionId, questionAnswer) => {
+        // Synchronously ensure answersMapRef has the latest answer so it is never dropped on question 1
+        const currentAnswers = {
+            ...answersMapRef.current,
+            [questionId]: { ...answersMapRef.current[questionId], checked: false, answer: questionAnswer }
+        };
+        answersMapRef.current = currentAnswers;
+        setAnswersMap(currentAnswers);
+        return flushAnswers();
     };
 
     // Submit answer — homework style: save locally, check in background, move to next immediately
@@ -636,6 +672,10 @@ function StudentCompetition() {
     };
 
     const handleFinishExam = async (isTimerExpired = false) => {
+        // Guard against double submits (e.g. rapid taps on the last MCQ option, or
+        // the timer expiring while the last answer is being submitted)
+        if (finishingRef.current) return;
+        finishingRef.current = true;
         let now = lastAnswerClickTimeRef.current || new Date();
         if (isTimerExpired === true || (timerRemaining !== null && timerRemaining <= 0)) {
             if (competition && competition.startedAt && competition.timer) {
@@ -650,25 +690,23 @@ function StudentCompetition() {
         setLocalFinishedAt(now);
         setIsCheckingAnswers(true);
 
-        // Wait a moment for any pending background checks to complete
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Final score broadcast
+        // Wait for any in-flight background sync so the final submit is the last write
         try {
-            await updateLiveScore(competitionId, {
+            if (syncInFlightRef.current) await syncInFlightRef.current;
+        } catch (e) { /* already logged */ }
+
+        // Final score submit (the server grades the answers; client scores are ignored)
+        try {
+            const finalRes = await updateLiveScore(competitionId, {
                 studentId: studentID,
                 userName: studentName,
-                score: correctCountRef.current,
-                totalAnswered: totalAnsweredRef.current,
-                wrongAnswers: wrongCountRef.current,
                 finished: true,
                 finishedAt: now.toISOString(),
-                answers: Object.entries(answersMapRef.current).map(([qId, data]) => ({
-                    question: qId,
-                    studentAnswer: data.answer !== undefined && data.answer !== null ? String(data.answer) : "",
-                    isCorrect: !!data.correct
-                }))
+                answers: buildAnswersPayload()
             });
+            if (finalRes && finalRes.message === 'success' && finalRes.answers) {
+                applySecureAnswers(finalRes.answers);
+            }
         } catch (e) {
             console.error("Failed to broadcast final score:", e);
         }

@@ -77,6 +77,13 @@ function TeacherCompetitionLobby() {
     }, []);
 
     const wakeLockRef = useRef(null);
+    const finishingRef = useRef(false);
+    const autoFinishTimeoutRef = useRef(null);
+
+    // Clear a pending auto-finish if the teacher leaves the page
+    useEffect(() => () => {
+        if (autoFinishTimeoutRef.current) clearTimeout(autoFinishTimeoutRef.current);
+    }, []);
 
     // Robust, gesture-authorized Screen Wake Lock request helper for teacher
     const requestWakeLock = async () => {
@@ -315,8 +322,9 @@ function TeacherCompetitionLobby() {
 
                         return merged;
                     });
-                    // Also sync status from DB
-                    if (res.competition.status && res.competition.status !== status) {
+                    // Also sync status from DB (but don't cut the local 3-2-1 countdown short)
+                    const dbStatus = res.competition.status;
+                    if (dbStatus && dbStatus !== status && !(status === 'countdown' && dbStatus === 'active')) {
                         setStatus(res.competition.status);
                         if (res.competition.status === 'finished') {
                             setTriggerConfetti(true);
@@ -428,7 +436,7 @@ function TeacherCompetitionLobby() {
         channel.bind('student-kicked', (data) => {
             if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
             if (data && data.studentId) {
-                setParticipants(prev => prev.filter(item => getParticipantId(item) !== String(data.studentId)));
+                setParticipants(prev => prev.filter(item => String(getParticipantId(item)) !== String(data.studentId)));
             }
         });
 
@@ -493,18 +501,35 @@ function TeacherCompetitionLobby() {
     }, [status, lobbyCountdown, competition]);
 
     const handleFinish = async () => {
+        // Manual "End" click and the auto-finish timer can fire together; end only once
+        if (finishingRef.current) return;
+        finishingRef.current = true;
+        if (autoFinishTimeoutRef.current) {
+            clearTimeout(autoFinishTimeoutRef.current);
+            autoFinishTimeoutRef.current = null;
+        }
         soundEffects.playClick();
+        const previousStatus = status;
         setStatus('finished');
         setTriggerConfetti(true);
         setTimerRemaining(null);
         try {
-            await finishCompetition(competitionId);
+            const finishRes = await finishCompetition(competitionId);
+            if (!finishRes || finishRes.message !== 'success') {
+                // Don't show a podium for a battle that is still running on the server
+                finishingRef.current = false;
+                setStatus(previousStatus);
+                setTriggerConfetti(false);
+                alert(`Failed to end the competition: ${finishRes?.message || 'Unknown error'}. Please try again.`);
+                return;
+            }
             const res = await getCompetitionDetails(competitionId);
             if (res.message === 'success' && res.competition) {
                 setCompetition(res.competition);
                 setParticipants(res.competition.participants || []);
             }
         } catch (err) {
+            finishingRef.current = false;
             console.error("Failed to finish competition:", err);
         }
     };
@@ -518,9 +543,17 @@ function TeacherCompetitionLobby() {
                 }, 1000);
                 return () => clearTimeout(timer);
             } else {
-                // Timer expired! Automatically call handleFinish to end the competition for everyone and show the podium
+                // Timer expired! End the competition for everyone and show the podium.
+                // Wait a few seconds first: students submit their final answers when
+                // their own timer hits 0, and those must land before the podium and
+                // coin rewards are calculated on the server.
                 setTimerRemaining(null);
-                handleFinish();
+                if (!autoFinishTimeoutRef.current) {
+                    autoFinishTimeoutRef.current = setTimeout(() => {
+                        autoFinishTimeoutRef.current = null;
+                        handleFinish();
+                    }, 4000);
+                }
             }
         }
     }, [status, timerRemaining]);
@@ -532,19 +565,15 @@ function TeacherCompetitionLobby() {
 
         soundEffects.playClick();
         try {
-            await joinCompetition(competitionId, { studentId: student._id, userName: student.userName });
-            await fetch(`${API_BASE_URL}/competition/mathracer/trigger`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    channelName: 'global-battle-arena',
-                    eventName: 'force-join-student',
-                    eventData: {
-                        studentId: student._id,
-                        competitionId: competitionId
-                    }
-                })
-            });
+            // The server adds the student and broadcasts the force-join redirect itself
+            const res = await joinCompetition(competitionId, { studentId: student._id, userName: student.userName });
+            if (!res || res.message !== 'success') {
+                alert(`Failed to summon ${student.userName}: ${res?.message || 'Unknown error'}`);
+                return;
+            }
+            setParticipants(prev => prev.some(p => String(getParticipantId(p)) === String(student._id))
+                ? prev
+                : [...prev, { student: { _id: student._id, userName: student.userName, email: student.email }, score: 0, totalAnswered: 0, wrongAnswers: 0, answers: [] }]);
             alert(`Successfully summoned ${student.userName} into the competition!`);
         } catch (err) {
             console.error('Failed to force join student:', err);
@@ -558,7 +587,7 @@ function TeacherCompetitionLobby() {
         soundEffects.playClick();
 
         // Optimistically update local UI state immediately
-        setParticipants(prev => prev.filter(item => getParticipantId(item) !== targetId));
+        setParticipants(prev => prev.filter(item => String(getParticipantId(item)) !== String(targetId)));
 
         try {
             const res = await removeParticipant(competitionId, targetId);
