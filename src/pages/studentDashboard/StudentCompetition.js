@@ -11,7 +11,7 @@ import { Award, Trophy, Timer, HelpCircle, ArrowRight, Target, Star } from 'luci
 import './StudentCompetition.css';
 import CertificateModal from '../../components/certificate/CertificateModal';
 import { adjustQuestionOrderAndShuffleMCQ } from '../../utils/questionShuffle';
-import { safeLocalStorage } from '../../utils/safeStorage';
+import { safeLocalStorage, clearUserSession } from '../../utils/safeStorage';
 import { useTranslation } from 'react-i18next';
 
 // Helper to extract participant ID safely (handling populated student object, ObjectId string, and guestId)
@@ -117,6 +117,7 @@ function StudentCompetition() {
     const resultsLoadedRef = useRef(false);
     const loadingQuestionsRef = useRef(false);
     const removedHandledRef = useRef(false);
+    const authLostRef = useRef(false);
     const pollStatusRef = useRef(null);
     const handleFinishExamRef = useRef(null);
     const optionLockRef = useRef(false);
@@ -341,7 +342,7 @@ function StudentCompetition() {
                 }
                 if (cancelled) return;
                 if (joinRes && joinRes.code === 'AUTH') {
-                    navigate('/auth/login');
+                    handleAuthLost();
                     return;
                 }
                 if (joinRes && joinRes.code === 'HOST') {
@@ -411,6 +412,20 @@ function StudentCompetition() {
         return () => { cancelled = true; };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [competitionId, initAttempt]);
+
+    // The server only accepts answers from a valid login. If it rejects ours (account
+    // disabled, token from another server...), log in again and come straight back
+    // here - answers already saved are kept on the server.
+    const handleAuthLost = () => {
+        if (authLostRef.current) return;
+        authLostRef.current = true;
+        try {
+            safeLocalStorage.setItem('post_login_redirect', JSON.stringify({ path: `/student/competition/${competitionId}`, at: Date.now() }));
+        } catch (e) { /* storage unavailable */ }
+        clearUserSession();
+        alert('Please log in again to continue the competition. Your saved answers are kept.');
+        window.location.href = '/auth/login';
+    };
 
     const handleRemoved = () => {
         if (removedHandledRef.current) return;
@@ -658,6 +673,9 @@ function StudentCompetition() {
                         break;
                     } else if (response && response.code === 'NOT_PARTICIPANT') {
                         break;
+                    } else if (response && response.code === 'AUTH') {
+                        handleAuthLost();
+                        break;
                     } else if (response && (response.error || (response.httpStatus || 0) >= 500) && failures < 3) {
                         // Network / server hiccup: try again shortly with the latest answers
                         failures++;
@@ -835,6 +853,10 @@ function StudentCompetition() {
                     break;
                 }
                 if (finalRes && finalRes.code === 'COMPETITION_FINISHED') {
+                    break;
+                }
+                if (finalRes && finalRes.code === 'AUTH') {
+                    handleAuthLost();
                     break;
                 }
                 if (!finalRes || !(finalRes.error || (finalRes.httpStatus || 0) >= 500)) break;
